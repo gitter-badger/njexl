@@ -1084,20 +1084,20 @@ public class Interpreter implements ParserVisitor {
         int argc = node.jjtGetNumChildren() - argb;
         Object[] argv = new Object[argc];
 
-        SimpleNode n = node.jjtGetChild(argb);
-        if ( n instanceof ASTBlock ){
+        if ( argc >0  ) {
+            SimpleNode n = node.jjtGetChild(argb);
+            if (n instanceof ASTBlock) {
             /* the anonymous function is passed here.
                 Thus, we should pass this as argument
             */
-            argv[0] = new AnonymousParam(this,(ASTBlock)n,context);
+                argv[0] = new AnonymousParam(this, (ASTBlock) n, context);
+            } else {
+                argv[0] = n.jjtAccept(this, null);
+            }
+            for (int i = 1; i < argc; i++) {
+                argv[i] = node.jjtGetChild(i + argb).jjtAccept(this, null);
+            }
         }
-        else{
-            argv[0] = n.jjtAccept(this,null);
-        }
-        for (int i = 1; i < argc; i++) {
-            argv[i] = node.jjtGetChild(i + argb).jjtAccept(this, null);
-        }
-
         JexlException xjexl = null;
         try {
             // attempt to reuse last executor cached in volatile JexlNode.value
