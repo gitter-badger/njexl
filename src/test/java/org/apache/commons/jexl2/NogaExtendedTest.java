@@ -84,6 +84,10 @@ public class NogaExtendedTest extends JexlTestCase {
 
         Object o = e.execute(jc);
         assertTrue(o!=null);
+        e = JEXL.createScript("set({$_ * 10 } 1,2,3,4 )");
+        o = e.execute(jc);
+        assertTrue(o!=null);
+
     }
 
 }

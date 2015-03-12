@@ -17,9 +17,14 @@
 
 package org.apache.commons.jexl2;
 
+import org.apache.commons.jexl2.extension.Predicate;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Test application for JEXL.
@@ -27,42 +32,81 @@ import java.io.InputStreamReader;
  * @since 2.0
  */
 public class Main {
-    /**
-     * Test application for JEXL
-     * 
-     * If a single argument is present, it is treated as a filename of a JEXL
-     * script to be executed as a script. Any exceptions terminate the application.
-     * 
-     * Otherwise, lines are read from standard input and evaluated.
-     * ParseExceptions and JexlExceptions are logged, and do not cause the application to exit.
-     * This is done so that interactive testing is easier.
-     * 
-     * @param args (optional) filename to execute. Stored in the args variable.
-     * 
-     * @throws Exception if parsing or IO fail
-     */
-    public static void main(String[] args) throws Exception {
-        JexlEngine engine = new JexlEngine();
+
+    public static final String PROMPT = "njexl>" ;
+
+    public static JexlContext getContext(){
+        Map<Object,Object> m = System.getProperties();
+        // dummy context to get variables
         JexlContext context = new MapContext();
-        context.set("args", args);
-        if (args.length == 1) {
-            Script script = engine.createScript(new File(args[0]));
-            Object value = script.execute(context);
-            System.out.println("Return value: " + value);
-        } else {
-            BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-            String line;
-            System.out.print("> ");
-            while (null != (line = console.readLine())) {
-                try {
-                    Expression expression = engine.createExpression(line);
-                    Object value = expression.evaluate(context);
-                    System.out.println("Return value: " + value);
-                } catch (JexlException e) {
-                    System.out.println(e.getLocalizedMessage());
-                }
-                System.out.print("> ");
+        for(Map.Entry<Object,Object> e : m.entrySet()) {
+            context.set(e.getKey().toString(), e.getValue());
+        }
+        return context;
+    }
+
+    public static HashMap<String,Object> getFunction(){
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("pred", Predicate.class);
+        map.put("str",String.class);
+
+        return map;
+    }
+
+    public static JexlEngine getJexl(){
+        JexlEngine jexl = new JexlEngine();
+        HashMap<String,Object> map = getFunction();
+        jexl.setFunctions(map);
+        return jexl;
+    }
+
+    public static void interpret(){
+        JexlEngine JEXL = getJexl();
+        JexlContext context = getContext();
+
+        while(true){
+            System.out.print(PROMPT);
+            String line = System.console().readLine();
+            if ( line == null || line.equals("q")){
+                break;
             }
+            line = line.trim();
+            try {
+                Expression e = JEXL.createExpression(line);
+                Object o = e.evaluate(context);
+                context.set("_o_", o);
+                context.set("_e_", null);
+                System.out.printf("=>%s\n", o);
+            }catch (Exception e){
+                context.set("_e_", e);
+                context.set("_o_", null);
+                System.err.println(e);
+            }
+        }
+        System.exit(0);
+    }
+
+    public static void executeScript(String[] args){
+        JexlEngine JEXL = getJexl();
+        JexlContext jc = getContext();
+        jc.set("args", args);
+        try {
+            Script sc = JEXL.createScript(new File(args[0]));
+            Object o = sc.execute(jc);
+            System.out.printf("======\n%s\n=====\n", o);
+            System.exit(0);
+        }catch (Exception e){
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public static void main(String[] args) {
+        if ( args.length == 0 ){
+            interpret();
+        }
+        if ( args.length >= 1 ){
+            executeScript(args);
         }
     }
 }

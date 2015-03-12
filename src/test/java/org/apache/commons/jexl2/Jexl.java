@@ -17,6 +17,7 @@
 
 package org.apache.commons.jexl2;
 
+import java.io.File;
 import java.util.Map;
 
 /**
@@ -24,23 +25,67 @@ import java.util.Map;
  * @since 1.0
  */
 public class Jexl {
+
+    public static final String PROMPT = "njexl>" ;
     private Jexl() {}
 
-    public static void main(String[] args) {
-        final JexlEngine JEXL = new JexlEngine();
+    public static JexlContext getContext(){
         Map<Object,Object> m = System.getProperties();
         // dummy context to get variables
         JexlContext context = new MapContext();
         for(Map.Entry<Object,Object> e : m.entrySet()) {
             context.set(e.getKey().toString(), e.getValue());
         }
-        try {
-            for (int i = 0; i < args.length; i++) {
-                Expression e = JEXL.createExpression(args[i]);
-                System.out.println("evaluate(" + args[i] + ") = '" + e.evaluate(context) + "'");
+        return context;
+    }
+
+    public static void interpret(){
+        final JexlEngine JEXL = new JexlEngine();
+        JexlContext context = getContext();
+
+        while(true){
+            System.out.print(PROMPT);
+            String line = System.console().readLine();
+            if ( line == null || line.equals("q")){
+                break;
             }
-        } catch (Exception e) {
+            line = line.trim();
+            try {
+                Expression e = JEXL.createExpression(line);
+                Object o = e.evaluate(context);
+                context.set("_o_", o);
+                context.set("_e_", null);
+                System.out.println(o);
+            }catch (Exception e){
+                context.set("_e_", e);
+                context.set("_o_", null);
+                System.err.println(e);
+            }
+        }
+        System.exit(0);
+    }
+
+    public static void executeScript(String[] args){
+        JexlEngine JEXL = new JexlEngine();
+        JexlContext jc = getContext();
+        jc.set("args", args);
+        try {
+            Script sc = JEXL.createScript(new File(args[0]));
+            Object o = sc.execute(jc);
+            System.out.printf("======\n%s\n=====\n", o);
+            System.exit(0);
+        }catch (Exception e){
             e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public static void main(String[] args) {
+        if ( args.length == 0 ){
+            interpret();
+        }
+        if ( args.length >= 1 ){
+            executeScript(args);
         }
     }
 }

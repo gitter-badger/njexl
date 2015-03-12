@@ -16,13 +16,13 @@
  */
 package org.apache.commons.jexl2;
 
+import org.apache.commons.jexl2.extension.TypeUtility;
 import org.apache.commons.jexl2.introspection.JexlMethod;
 import org.apache.commons.jexl2.introspection.JexlPropertyGet;
 import org.apache.commons.jexl2.introspection.JexlPropertySet;
 import org.apache.commons.jexl2.introspection.Uberspect;
 import org.apache.commons.jexl2.parser.*;
 import org.apache.commons.logging.Log;
-import org.joda.time.DateTime;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -1145,7 +1145,7 @@ public class Interpreter implements ParserVisitor {
                         if possible
                          */
                         Boolean[] success = new Boolean[1];
-                        Object ret = TypeUtility.interceptCastingCall( methodName , argv, success);
+                        Object ret = TypeUtility.interceptCastingCall(methodName, argv, success);
                         if ( success[0] ){
                             return ret ;
                         }
