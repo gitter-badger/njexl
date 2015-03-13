@@ -19,6 +19,8 @@ package org.apache.commons.jexl2;
 
 import org.junit.Test;
 
+import java.util.HashMap;
+
 /**
  * Tests for while statement.
  * @since 2.2-N
@@ -78,6 +80,8 @@ public class NogaExtendedTest extends JexlTestCase {
     }
     @Test
     public void testAnonymousFunction() throws Exception {
+
+        JEXL.setFunctions(Main.getFunction());
         Script e = JEXL.createScript("set{$_ * 10 }(y)");
         JexlContext jc = new MapContext();
         jc.set("y",new int[]{1,1,2,2,3,4} );
@@ -85,6 +89,9 @@ public class NogaExtendedTest extends JexlTestCase {
         Object o = e.execute(jc);
         assertTrue(o!=null);
         e = JEXL.createScript("set{$_ * 10 }(1,2,3,4)");
+        o = e.execute(jc);
+        assertTrue(o!=null);
+        e = JEXL.createScript("lgc:multiset(1,2,2,3,3,3,4,4,4,4)");
         o = e.execute(jc);
         assertTrue(o!=null);
 

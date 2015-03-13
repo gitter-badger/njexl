@@ -47,8 +47,12 @@ public class Main {
 
     public static HashMap<String,Object> getFunction(){
         HashMap<String,Object> map = new HashMap<>();
-        map.put("pred", Predicate.class);
+        map.put("lgc", new Predicate());
         map.put("str",String.class);
+        map.put("math",Math.class);
+        map.put("out", System.out);
+        map.put("con", System.console());
+        map.put("sys", System.class);
 
         return map;
     }
@@ -71,6 +75,9 @@ public class Main {
                 break;
             }
             line = line.trim();
+            if ( line.isEmpty() ){
+                continue;
+            }
             try {
                 Expression e = JEXL.createExpression(line);
                 Object o = e.evaluate(context);
@@ -80,7 +87,10 @@ public class Main {
             }catch (Exception e){
                 context.set("_e_", e);
                 context.set("_o_", null);
-                System.err.println(e);
+                System.err.println(e.getMessage());
+                if ( e.getCause() != null ){
+                    System.err.println(e.getCause().getMessage());
+                }
             }
         }
         System.exit(0);
