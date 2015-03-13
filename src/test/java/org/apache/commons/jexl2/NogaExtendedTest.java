@@ -78,13 +78,13 @@ public class NogaExtendedTest extends JexlTestCase {
     }
     @Test
     public void testAnonymousFunction() throws Exception {
-        Script e = JEXL.createScript("set({$_ * 10 } y )");
+        Script e = JEXL.createScript("set{$_ * 10 }(y)");
         JexlContext jc = new MapContext();
         jc.set("y",new int[]{1,1,2,2,3,4} );
 
         Object o = e.execute(jc);
         assertTrue(o!=null);
-        e = JEXL.createScript("set({$_ * 10 } 1,2,3,4 )");
+        e = JEXL.createScript("set{$_ * 10 }(1,2,3,4)");
         o = e.execute(jc);
         assertTrue(o!=null);
 

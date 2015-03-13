@@ -494,15 +494,21 @@ final class Debugger implements ParserVisitor {
     public Object visit(ASTMethodNode node, Object data) {
         int num = node.jjtGetNumChildren();
         accept(node.jjtGetChild(0), data);
+
+        JexlNode n ;
+        int start = 1;
+        if ( num > 1 ) {
+            n = node.jjtGetChild(1);
+            if (n instanceof ASTBlock) {
+                accept(n,data);
+                start = 2;
+            }
+        }
+
         builder.append("(");
-        JexlNode n = null;
-        for (int i = 1; i < num; ++i) {
-            if (i > 1 ) {
-                if ( n instanceof ASTBlock){
-                    builder.append(" ");
-                }else {
-                    builder.append(", ");
-                }
+        for (int i = start; i < num; ++i) {
+            if (i > start ) {
+                builder.append(", ");
             }
             n = node.jjtGetChild(i);
             accept(n, data);
