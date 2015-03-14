@@ -91,8 +91,18 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript("set{$_ * 10 }(1,2,3,4)");
         o = e.execute(jc);
         assertTrue(o!=null);
-        e = JEXL.createScript("lgc:multiset(1,2,2,3,3,3,4,4,4,4)");
+        e = JEXL.createScript("lgc:multiset{$_ * 10} (1,2,2,3,3,3,4,4,4,4)");
         o = e.execute(jc);
+        assertTrue(o!=null);
+
+    }
+    @Test
+    public void testAnonymousExternalFunction() throws Exception {
+
+        JEXL.setFunctions(Main.getFunction());
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript("lgc:multiset{$_ * 10} (1,2,2,3,3,3,4,4,4,4)");
+        Object o = e.execute(jc);
         assertTrue(o!=null);
 
     }

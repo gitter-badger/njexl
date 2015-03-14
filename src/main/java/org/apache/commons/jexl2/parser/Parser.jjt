@@ -529,8 +529,7 @@ void SizeFunction() : {}
 
 void Function() #FunctionNode: {}
 {
-
-   Identifier() <COLON> Identifier() <LPAREN>[ Expression() ( <COMMA> Expression() )* ] <RPAREN>
+   Identifier() <COLON> Identifier() ( Block() )? <LPAREN>[ Expression() ( <COMMA> Expression() )* ] <RPAREN>
 }
 
 void Method() #MethodNode: {}
@@ -610,7 +609,9 @@ void Reference() : {}
 |
    LOOKAHEAD(Identifier() <LBRACKET> ) ArrayAccess()
 |
-   LOOKAHEAD(Identifier() <COLON> Identifier() <LPAREN>) Function()
+   LOOKAHEAD(Identifier() <COLON> Identifier()  <LPAREN>) Function()
+|
+   LOOKAHEAD(Identifier() <COLON> Identifier() Block() <LPAREN>) Function()
 |
    LOOKAHEAD(Identifier() <LPAREN>) Method()
 |
