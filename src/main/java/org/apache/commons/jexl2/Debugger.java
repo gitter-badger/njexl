@@ -140,7 +140,8 @@ final class Debugger implements ParserVisitor {
         if (child instanceof ASTBlock
                 || child instanceof ASTIfStatement
                 || child instanceof ASTForeachStatement
-                || child instanceof ASTWhileStatement) {
+                || child instanceof ASTWhileStatement
+                || child instanceof ASTMethodDef) {
             return value;
         }
         builder.append(";");
@@ -234,6 +235,29 @@ final class Debugger implements ParserVisitor {
         if (paren) {
             builder.append(")");
         }
+        return data;
+    }
+
+    @Override
+    public Object visit(ASTMethodDef node, Object data) {
+        int numChild = node.jjtGetNumChildren();
+        builder.append("def ");
+        builder.append( node.jjtGetChild(0).image);
+        builder.append("( ");
+        // now the params
+        String params = "" ;
+        int numParams = numChild - 2;
+        for ( int i = 1; i < numChild -1 ; i++ ){
+            String paramName = node.jjtGetChild(i).image;
+            params = paramName + "," ;
+        }
+        if( numParams > 0 ){
+            params = params.substring(0, params.length()-1);
+        }
+        builder.append(params);
+        builder.append(") ");
+        // now the body
+        accept(node.jjtGetChild(numChild-1),data);
         return data;
     }
 
@@ -482,7 +506,7 @@ final class Debugger implements ParserVisitor {
 
         JexlNode n ;
         int start = 2;
-        if ( num > 1 ) {
+        if ( num > 2 ) {
             n = node.jjtGetChild(2);
             if (n instanceof ASTBlock) {
                 accept(n,data);

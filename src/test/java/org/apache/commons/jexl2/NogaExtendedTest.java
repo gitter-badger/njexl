@@ -19,6 +19,7 @@ package org.apache.commons.jexl2;
 
 import org.junit.Test;
 
+import java.io.File;
 import java.util.HashMap;
 
 /**
@@ -107,4 +108,11 @@ public class NogaExtendedTest extends JexlTestCase {
 
     }
 
+    public void testScriptWithMethods() throws Exception{
+        JEXL.setFunctions(Main.getFunction());
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript(new File("samples/dummy.jexl"));
+        Object o = e.execute(jc);
+        assertTrue(o!=null);
+    }
 }

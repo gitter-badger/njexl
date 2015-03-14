@@ -1,2 +1,10 @@
-string = 'Hello, Jexl!\n'
-print(string)
+def some_func(s){
+    out:println(s)
+    return true
+}
+
+def void_func(){
+    return false
+}
+
+some_func("Hello, World!")

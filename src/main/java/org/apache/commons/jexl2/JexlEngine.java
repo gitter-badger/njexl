@@ -26,6 +26,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.lang.ref.SoftReference;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
@@ -112,6 +113,11 @@ public class JexlEngine {
 
         /** {@inheritDoc} */
         public void set(String name, Object value) {
+            throw new UnsupportedOperationException("Not supported in void context.");
+        }
+
+        /** {@inheritDoc} */
+        public void remove(String name) {
             throw new UnsupportedOperationException("Not supported in void context.");
         }
     };
@@ -495,6 +501,35 @@ public class JexlEngine {
      */
     public Script createScript(String scriptText, String... names) {
         return createScript(scriptText, null, names);
+    }
+
+    /**
+     * Import a script from a location
+     * @param from
+     * @param as
+     * @return
+     * @throws Exception
+     */
+    public Script importScript(String from, String as) throws Exception{
+        String scriptText = null;
+        if ( from.startsWith(Script.RELATIVE )){
+            from = System.getProperty("user.dir") + "/" + from ;
+        }
+        if ( !from.endsWith(Script.DEFAULT_EXTENSION)){
+            from +=  Script.DEFAULT_EXTENSION;
+        }
+        File f = new File(from);
+        BufferedReader reader = new BufferedReader(new FileReader(f));
+        scriptText = readerToString(reader);
+        // name mangling for linking
+        scriptText = scriptText.replaceAll(Script.SELF +":", as+":");
+        // now create script
+        Script script = createScript(scriptText,null , null);
+        if ( script instanceof  ExpressionImpl ){
+            ((ExpressionImpl) script).location = f.getAbsolutePath();
+            ((ExpressionImpl) script).importName = as;
+        }
+        return script;
     }
 
     /**

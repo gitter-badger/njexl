@@ -16,11 +16,13 @@
  */
 package org.apache.commons.jexl2;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.jexl2.parser.ASTJexlScript;
+import org.apache.commons.jexl2.parser.*;
 
 /**
  * Instances of ExpressionImpl are created by the {@link JexlEngine},
@@ -29,6 +31,14 @@ import org.apache.commons.jexl2.parser.ASTJexlScript;
  * @since 1.0
  */
 public class ExpressionImpl implements Expression, Script {
+
+
+    String location;
+
+    String importName;
+
+    HashMap<String,ASTMethodDef> methods;
+
     /** The engine for this expression. */
     protected final JexlEngine jexl;
     /**
@@ -40,6 +50,28 @@ public class ExpressionImpl implements Expression, Script {
      */
     protected final ASTJexlScript script;
 
+    protected void findMethods(JexlNode node){
+        if ( node instanceof ASTMethodDef ){
+            ASTMethodDef methodDef = (ASTMethodDef)node;
+            methods.put( methodDef.jjtGetChild(0).image, methodDef );
+        }else {
+            int numChild = node.jjtGetNumChildren();
+            for ( int i =0; i < numChild; i++ ){
+                findMethods( node.jjtGetChild(i) );
+            }
+        }
+    }
+
+    protected ExpressionImpl(String from, String as, JexlEngine engine, String expr, ASTJexlScript ref) {
+        jexl = engine;
+        expression = expr;
+        script = ref;
+        methods = new HashMap<>();
+        location = from;
+        importName = as;
+        findMethods(script);
+    }
+
     /**
      * Do not let this be generally instantiated with a 'new'.
      *
@@ -48,9 +80,7 @@ public class ExpressionImpl implements Expression, Script {
      * @param ref the parsed expression.
      */
     protected ExpressionImpl(JexlEngine engine, String expr, ASTJexlScript ref) {
-        jexl = engine;
-        expression = expr;
-        script = ref;
+        this("", Script.DEFAULT_IMPORT_NAME, engine, expr, ref);
     }
 
     /**
@@ -104,8 +134,51 @@ public class ExpressionImpl implements Expression, Script {
     public Object execute(JexlContext context) {
         Interpreter interpreter = jexl.createInterpreter(context);
         interpreter.setFrame(script.createFrame((Object[]) null));
+        // the following are key for calling methods ...
+        interpreter.imports.put(Script.DEFAULT_IMPORT_NAME, this);
+        interpreter.imports.put(Script.SELF, this);
+        interpreter.imports.put(null, this);
+
         return interpreter.interpret(script);
     }
+
+    @Override
+    public Object execMethod(String method,JexlContext context,Object[] args){
+        ASTMethodDef methodDef = methods.get(method) ;
+        if ( methodDef == null ){
+            return null;
+        }
+        Object ret = null;
+        int numChild = methodDef.jjtGetNumChildren();
+        int numParams = numChild - 2 ; // function_name ...params... code_block
+
+        try {
+            Debugger debugger = new Debugger();
+            ASTBlock codeBlock = (ASTBlock) methodDef.jjtGetChild(numChild - 1);
+            String script = debugger.data(codeBlock);
+            Script child = jexl.createScript(script);
+            // create the params
+            for ( int i = 0 ; i< numParams;i++ ){
+                String paramName = methodDef.jjtGetChild(i+1).image;
+                if ( i< args.length ){
+                    context.set(paramName,args[i]);
+                }else{
+                    context.set(paramName,null);
+                }
+            }
+            ret = child.execute(context);
+
+        }finally {
+            //clear the params
+            for (int i = 0; i < numParams; i++) {
+                String paramName = methodDef.jjtGetChild(i + 1).image;
+                //remove context
+                context.remove(paramName);
+            }
+        }
+        return ret;
+    }
+
 
     /**
      * {@inheritDoc}
@@ -171,4 +244,33 @@ public class ExpressionImpl implements Expression, Script {
         };
     }
 
+    /**
+     * From where it was imported
+     *
+     * @return
+     */
+    @Override
+    public String location() {
+        return location;
+    }
+
+    /**
+     * The defined methods of the script
+     *
+     * @return
+     */
+    @Override
+    public HashMap<String, ASTMethodDef> methods() {
+        return methods;
+    }
+
+    /**
+     * The name under which it was imported
+     *
+     * @return
+     */
+    @Override
+    public String name() {
+        return importName;
+    }
 }

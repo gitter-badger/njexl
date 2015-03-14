@@ -59,4 +59,11 @@ public class MapContext implements JexlContext {
     public void set(String name, Object value) {
         map.put(name, value);
     }
+
+    /** {@inheritDoc} */
+    public void remove(String name) {
+        if ( map.containsKey(name)){
+            map.remove(name);
+        }
+    }
 }

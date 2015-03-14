@@ -51,4 +51,9 @@ public class ObjectContext<T> implements JexlContext {
     public boolean has(String name) {
         return jexl.getUberspect().getPropertyGet(object, name, null) != null;
     }
+
+    /** {@inheritDoc} */
+    public void remove(String name) {
+        jexl.setProperty(object, name, null);
+    }
 }

@@ -46,4 +46,11 @@ public interface JexlContext {
      * @return true if it exists, false otherwise
      */
     boolean has(String name);
+
+    /**
+     * Remove the variable if needed,
+     * should never throw exception
+     * @param name
+     */
+    void remove(String name);
 }

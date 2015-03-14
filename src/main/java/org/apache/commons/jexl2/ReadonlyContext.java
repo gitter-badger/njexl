@@ -46,6 +46,10 @@ public final class ReadonlyContext implements JexlContext {
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    public void remove(String name) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
     /** {@inheritDoc} */
     public boolean has(String name) {
         return wrapped.has(name);

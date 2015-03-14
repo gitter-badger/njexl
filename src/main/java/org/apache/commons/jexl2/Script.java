@@ -16,6 +16,9 @@
  */
 package org.apache.commons.jexl2;
 
+import org.apache.commons.jexl2.parser.ASTMethodDef;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -32,6 +35,16 @@ import java.util.concurrent.Callable;
  * @since 1.1
  */
 public interface Script {
+
+    public static final String SELF = "my" ;
+
+    public static final String DEFAULT_IMPORT_NAME = "_jexl_" ;
+
+    public static final String DEFAULT_EXTENSION = ".jexl" ;
+
+    public static final String RELATIVE = "_" ;
+
+
     /**
      * Executes the script with the variables contained in the
      * supplied {@link JexlContext}. 
@@ -104,4 +117,32 @@ public interface Script {
      * @since 2.1
      */
     Callable<Object> callable(JexlContext context, Object... args);
-}
+
+    /**
+     * The defined methods of the script
+     * @return
+     */
+    HashMap<String,ASTMethodDef> methods();
+
+    /**
+     * The name under which it was imported
+     * @return
+     */
+    String name();
+
+    /**
+     * From where it was imported
+     * @return
+     */
+    String location();
+
+    /**
+     * Execute method inside a script
+     * @param method
+     * @param context
+     * @param args
+     * @return
+     */
+    public Object execMethod(String method,JexlContext context,Object[] args);
+
+    }

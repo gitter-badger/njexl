@@ -1255,6 +1255,13 @@ public final class UnifiedJEXL {
         }
 
         /** {@inheritDoc} */
+        public void remove(String name) {
+            if ( wrap.has(name)){
+                wrap.remove(name);
+            }
+        }
+
+        /** {@inheritDoc} */
         public Object resolveNamespace(String ns) {
             if ("jexl".equals(ns)) {
                 return this;

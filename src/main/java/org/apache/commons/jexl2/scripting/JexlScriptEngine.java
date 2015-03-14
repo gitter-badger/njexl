@@ -324,6 +324,17 @@ public class JexlScriptEngine extends AbstractScriptEngine implements Compilable
         }
 
         /** {@inheritDoc} */
+        public void remove(final String name) {
+            int scope = scriptContext.getAttributesScope(name);
+            if (scope == -1) { // not found, default to engine
+                scope = ScriptContext.ENGINE_SCOPE;
+            }
+            if ( scriptContext.getBindings(scope).containsKey(name) ){
+                scriptContext.getBindings(scope).remove(name);
+            }
+        }
+
+        /** {@inheritDoc} */
         public boolean has(final String name) {
             Bindings bnd = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
             return bnd.containsKey(name);

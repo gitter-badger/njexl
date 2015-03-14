@@ -35,7 +35,25 @@ import java.util.*;
  */
 public class Interpreter implements ParserVisitor {
 
+    HashMap<String,Script> imports;
 
+    public HashMap<String,Script> imports(){ return  imports; }
+
+    protected Script resolveScriptForFunction(String prefix, String name){
+        Script script = imports.get(prefix);
+        if ( script != null ){
+            return script;
+        }
+        // else do some more
+        for ( String key : imports.keySet() ){
+            script = imports.get(key);
+            HashMap<String,ASTMethodDef> methods = script.methods();
+            if ( methods.containsKey(name)){
+                return script;
+            }
+        }
+        return null;
+    }
 
     /**
      * The logger.
@@ -102,18 +120,6 @@ public class Interpreter implements ParserVisitor {
     /**
      * Creates an interpreter.
      *
-     * @param jexl     the engine creating this interpreter
-     * @param aContext the context to evaluate expression
-     * @deprecated
-     */
-    @Deprecated
-    public Interpreter(JexlEngine jexl, JexlContext aContext) {
-        this(jexl, aContext, !jexl.isLenient(), jexl.isSilent());
-    }
-
-    /**
-     * Creates an interpreter.
-     *
      * @param jexl       the engine creating this interpreter
      * @param aContext   the context to evaluate expression
      * @param strictFlag whether this interpreter runs in strict mode
@@ -130,6 +136,7 @@ public class Interpreter implements ParserVisitor {
         this.cache = jexl.cache != null;
         this.context = aContext != null ? aContext : JexlEngine.EMPTY_CONTEXT;
         this.functors = null;
+        imports = new HashMap<>();
     }
 
     /**
@@ -148,6 +155,7 @@ public class Interpreter implements ParserVisitor {
         this.cache = base.cache;
         this.context = base.context;
         this.functors = base.functors;
+        this.imports = base.imports ;
     }
 
     /**
@@ -366,10 +374,22 @@ public class Interpreter implements ParserVisitor {
             namespace = ((NamespaceResolver) context).resolveNamespace(prefix);
         }
         if (namespace == null) {
+            String methodName = "";
+            if ( prefix == null ) {
+                methodName = node.jjtGetChild(0).image;
+            }else{
+                methodName = node.jjtGetChild(1).image;
+            }
+            namespace = resolveScriptForFunction(prefix,methodName);
+            if ( namespace != null){
+                return namespace;
+            }
+
             namespace = functions.get(prefix);
             if (prefix != null && namespace == null) {
                 throw new JexlException(node, "no such function namespace " + prefix);
             }
+
         }
         // allow namespace to be instantiated as functor with context if possible, not an error otherwise
         if (namespace instanceof Class<?>) {
@@ -388,6 +408,11 @@ public class Interpreter implements ParserVisitor {
             }
         }
         return namespace;
+    }
+
+    @Override
+    public Object visit(ASTMethodDef node, Object data) {
+        return null;
     }
 
     /**
@@ -1112,6 +1137,10 @@ public class Interpreter implements ParserVisitor {
                 }
             }
             boolean cacheable = cache;
+            if ( bean instanceof Script ){
+                 return ((Script)bean).execMethod( methodName, context, argv);
+            }
+
             JexlMethod vm = uberspect.getMethod(bean, methodName, argv, node);
             // DG: If we can't find an exact match, narrow the parameters and try again
             if (vm == null) {

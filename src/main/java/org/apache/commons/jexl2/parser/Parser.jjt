@@ -91,6 +91,7 @@ PARSER_END(Parser)
     | < TRUE : "true" >
     | < FALSE : "false" >
     | < RETURN : "return" >
+    | < DEF : "def" >
 }
 
 <FOR_EACH_IN> TOKEN : /* foreach in */
@@ -204,6 +205,7 @@ void Statement() #void : {}
     | ExpressionStatement()
     | ReturnStatement()
     | Var()
+    | MethodDef()
 }
 
 void Block() #Block : {}
@@ -211,6 +213,12 @@ void Block() #Block : {}
     <LCURLY> ( Statement() )* <RCURLY>
 }
 
+void MethodDef() #MethodDef : {}
+{
+    LOOKAHEAD(3) <DEF>  Identifier()  <LPAREN>[  Identifier() ( <COMMA> Identifier() )* ] <RPAREN> Block()
+    |
+    <DEF>  Identifier()  <LPAREN>  <RPAREN> Block()
+}
 
 void ExpressionStatement() #void : {}
 {
