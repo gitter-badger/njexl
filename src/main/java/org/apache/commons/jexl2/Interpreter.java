@@ -41,9 +41,10 @@ public class Interpreter implements ParserVisitor {
 
     protected Script resolveScriptForFunction(String prefix, String name){
         Script script = imports.get(prefix);
-        if ( script != null ){
-            return script;
+        if ( script != null && script.methods().containsKey(name)){
+            return script ;
         }
+
         // else do some more
         for ( String key : imports.keySet() ){
             script = imports.get(key);

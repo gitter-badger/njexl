@@ -701,16 +701,4 @@ public class TypeUtility {
             return 0;
         }
     }
-
-    public static void main(String[] args) throws Exception {
-        if (args.length > 0) {
-            JexlEngine JEXL = new JexlEngine();
-            JexlContext jc = new MapContext();
-            jc.set("args", args);
-            Script sc = JEXL.createScript(new File(args[0]));
-            Object o = sc.execute(jc);
-            System.out.println(o);
-            System.exit(0);
-        }
-    }
 }
