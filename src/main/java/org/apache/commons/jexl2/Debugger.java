@@ -239,6 +239,15 @@ final class Debugger implements ParserVisitor {
     }
 
     @Override
+    public Object visit(ASTImportStatement node, Object data) {
+        builder.append("import '");
+        builder.append( node.jjtGetChild(0).image);
+        builder.append("' as ");
+        builder.append(node.jjtGetChild(1).image);
+        return data;
+    }
+
+    @Override
     public Object visit(ASTMethodDef node, Object data) {
         int numChild = node.jjtGetNumChildren();
         builder.append("def ");

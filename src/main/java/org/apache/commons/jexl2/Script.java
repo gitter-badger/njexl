@@ -139,10 +139,10 @@ public interface Script {
     /**
      * Execute method inside a script
      * @param method
-     * @param context
+     * @param interpreter
      * @param args
      * @return
      */
-    public Object execMethod(String method,JexlContext context,Object[] args);
+    public Object execMethod(String method,Interpreter interpreter,Object[] args);
 
     }

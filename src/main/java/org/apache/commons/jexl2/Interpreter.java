@@ -56,6 +56,7 @@ public class Interpreter implements ParserVisitor {
         return null;
     }
 
+    protected JexlEngine jexlEngine;
     /**
      * The logger.
      */
@@ -128,6 +129,8 @@ public class Interpreter implements ParserVisitor {
      * @since 2.1
      */
     public Interpreter(JexlEngine jexl, JexlContext aContext, boolean strictFlag, boolean silentFlag) {
+
+        this.jexlEngine = jexl;
         this.logger = jexl.logger;
         this.uberspect = jexl.uberspect;
         this.arithmetic = jexl.arithmetic;
@@ -147,6 +150,7 @@ public class Interpreter implements ParserVisitor {
      * @since 2.1
      */
     protected Interpreter(Interpreter base) {
+        this.jexlEngine = base.jexlEngine;
         this.logger = base.logger;
         this.uberspect = base.uberspect;
         this.arithmetic = base.arithmetic;
@@ -409,6 +413,24 @@ public class Interpreter implements ParserVisitor {
             }
         }
         return namespace;
+    }
+
+    @Override
+    public Object visit(ASTImportStatement node, Object data) {
+        String from = node.jjtGetChild(0).image ;
+        String as = node.jjtGetChild(1).image ;
+        try{
+            if ( functions.containsKey(as) || imports.containsKey(as)){
+                throw new Exception(String.format("[%s] is already taken as import name!",as));
+            }
+            Script freshlyImported = jexlEngine.importScript(from, as);
+            imports.put(as,freshlyImported);
+
+        }catch (Exception e){
+            JexlException jexlException = new JexlException(node,"Import Failed!",e);
+            return invocationFailed(jexlException);
+        }
+        return data;
     }
 
     @Override
@@ -1139,7 +1161,7 @@ public class Interpreter implements ParserVisitor {
             }
             boolean cacheable = cache;
             if ( bean instanceof Script ){
-                 return ((Script)bean).execMethod( methodName, context, argv);
+                 return ((Script)bean).execMethod( methodName, this, argv);
             }
 
             JexlMethod vm = uberspect.getMethod(bean, methodName, argv, node);

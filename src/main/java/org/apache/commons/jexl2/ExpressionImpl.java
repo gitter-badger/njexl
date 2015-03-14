@@ -128,35 +128,21 @@ public class ExpressionImpl implements Expression, Script {
         return toString();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public Object execute(JexlContext context) {
-        Interpreter interpreter = jexl.createInterpreter(context);
-        interpreter.setFrame(script.createFrame((Object[]) null));
-        // the following are key for calling methods ...
-        interpreter.imports.put(Script.DEFAULT_IMPORT_NAME, this);
-        interpreter.imports.put(Script.SELF, this);
-        interpreter.imports.put(null, this);
-
-        return interpreter.interpret(script);
-    }
 
     @Override
-    public Object execMethod(String method,JexlContext context,Object[] args){
+    public Object execMethod(String method,Interpreter interpreter ,Object[] args){
         ASTMethodDef methodDef = methods.get(method) ;
         if ( methodDef == null ){
             return null;
         }
+        JexlContext context = interpreter.context;
         Object ret = null;
         int numChild = methodDef.jjtGetNumChildren();
         int numParams = numChild - 2 ; // function_name ...params... code_block
 
         try {
-            Debugger debugger = new Debugger();
             ASTBlock codeBlock = (ASTBlock) methodDef.jjtGetChild(numChild - 1);
-            String script = debugger.data(codeBlock);
-            Script child = jexl.createScript(script);
+
             // create the params
             for ( int i = 0 ; i< numParams;i++ ){
                 String paramName = methodDef.jjtGetChild(i+1).image;
@@ -166,9 +152,12 @@ public class ExpressionImpl implements Expression, Script {
                     context.set(paramName,null);
                 }
             }
-            ret = child.execute(context);
+            ret = codeBlock.jjtAccept(interpreter,null);
 
-        }finally {
+        }catch (JexlException.Return er){
+            ret = er.getValue();
+        }
+        finally {
             //clear the params
             for (int i = 0; i < numParams; i++) {
                 String paramName = methodDef.jjtGetChild(i + 1).image;
@@ -179,6 +168,12 @@ public class ExpressionImpl implements Expression, Script {
         return ret;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Object execute(JexlContext context) {
+        return execute( context,(Object[])null);
+    }
 
     /**
      * {@inheritDoc}
@@ -187,6 +182,10 @@ public class ExpressionImpl implements Expression, Script {
     public Object execute(JexlContext context, Object... args) {
         Interpreter interpreter = jexl.createInterpreter(context);
         interpreter.setFrame(script.createFrame(args));
+        // the following are key for calling methods ...
+        interpreter.imports.put(importName, this);
+        interpreter.imports.put(Script.SELF, this);
+        interpreter.imports.put(null, this);
         return interpreter.interpret(script);
     }
 

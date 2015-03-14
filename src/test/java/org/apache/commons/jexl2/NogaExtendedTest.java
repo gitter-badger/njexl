@@ -115,4 +115,13 @@ public class NogaExtendedTest extends JexlTestCase {
         Object o = e.execute(jc);
         assertTrue(o!=null);
     }
+
+    public void testScriptWithImportedMethods() throws Exception{
+        JEXL.setFunctions(Main.getFunction());
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript(" import 'samples/dummy.jexl' as dummy ; some_func('Hello, World!') " );
+        Object o = e.execute(jc);
+        assertTrue(o!=null);
+
+    }
 }

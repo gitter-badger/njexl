@@ -1,5 +1,6 @@
 def some_func(s){
     out:println(s)
+    my:void_func()
     return true
 }
 

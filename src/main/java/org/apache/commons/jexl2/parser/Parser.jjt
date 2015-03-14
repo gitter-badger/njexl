@@ -92,6 +92,8 @@ PARSER_END(Parser)
     | < FALSE : "false" >
     | < RETURN : "return" >
     | < DEF : "def" >
+    | < IMPORT : "import" >
+    | < AS : "as" >
 }
 
 <FOR_EACH_IN> TOKEN : /* foreach in */
@@ -206,11 +208,17 @@ void Statement() #void : {}
     | ReturnStatement()
     | Var()
     | MethodDef()
+    | ImportStatement()
 }
 
 void Block() #Block : {}
 {
     <LCURLY> ( Statement() )* <RCURLY>
+}
+
+void ImportStatement() : {}
+{
+    <IMPORT>  StringLiteral()  <AS> Identifier()
 }
 
 void MethodDef() #MethodDef : {}
