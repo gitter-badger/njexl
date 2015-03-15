@@ -14,10 +14,17 @@ public class ReflectionUtility {
         try {
             if ( arg instanceof String) {
                 ClassLoaderUtil.addFileToClassPath(new File(arg.toString()), ClassLoaderUtil.getDefaultClassLoader());
+                return true;
+            }
+            if ( arg instanceof File) {
+                ClassLoaderUtil.addFileToClassPath((File)arg, ClassLoaderUtil.getDefaultClassLoader());
+                return true;
             }
             if ( arg instanceof URL){
                 ClassLoaderUtil.addUrlToClassPath((URL) arg, ClassLoaderUtil.getDefaultClassLoader());
+                return true;
             }
+            return false;
         }catch (Exception e){
           System.err.println(e);
         }
@@ -42,9 +49,10 @@ public class ReflectionUtility {
             if ( !f.isDirectory()) {
                 continue;
             }
-            String[] files = f.list();
-            for (String file : files ){
-                if ( !file.endsWith(".jar")){
+            File[] files = f.listFiles();
+            for (File file : files ){
+                String name = file.getName();
+                if ( !name.endsWith(".jar")){
                     continue;
                 }
                 ret = ret && load_jar(file);

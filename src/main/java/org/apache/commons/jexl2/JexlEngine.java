@@ -511,7 +511,7 @@ public class JexlEngine {
     public Script importScript(String from, String as) throws Exception{
         String scriptText = null;
         if ( from.startsWith(Script.RELATIVE )){
-            from = System.getProperty("user.dir") + "/" + from ;
+            from = System.getProperty("user.dir")  + from.substring(1) ;
         }
         if ( !from.endsWith(Script.DEFAULT_EXTENSION)){
             from +=  Script.DEFAULT_EXTENSION;

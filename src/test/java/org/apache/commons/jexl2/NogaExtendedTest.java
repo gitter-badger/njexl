@@ -90,27 +90,27 @@ public class NogaExtendedTest extends JexlTestCase {
         assertEquals(100, o);
     }
 
-    public void testSetFunctions() throws Exception{
-        ListSet oe = TypeUtility.set(new int[]{}) ;
+    public void testSetFunctions() throws Exception {
+        ListSet oe = TypeUtility.set(new int[]{});
         Predicate predicate = new Predicate();
 
-        ListSet a = TypeUtility.set( new int[]{ 0 ,1, 2, 3 } ) ;
-        ListSet b = TypeUtility.set( new int[]{ 0 , 1, 2, 3, 4 } ) ;
-        ListSet c = TypeUtility.set( new int[]{ 5 , 6 } );
+        ListSet a = TypeUtility.set(new int[]{0, 1, 2, 3});
+        ListSet b = TypeUtility.set(new int[]{0, 1, 2, 3, 4});
+        ListSet c = TypeUtility.set(new int[]{5, 6});
 
         Assert.assertTrue(predicate.is_set_relation(oe, oe, "="));
 
-        Assert.assertTrue(predicate.is_set_relation(oe, a,"<") );
+        Assert.assertTrue(predicate.is_set_relation(oe, a, "<"));
 
-        Assert.assertTrue(predicate.is_set_relation(a, oe,">") );
+        Assert.assertTrue(predicate.is_set_relation(a, oe, ">"));
 
-        Assert.assertTrue(predicate.is_set_relation(a, b,"<") );
+        Assert.assertTrue(predicate.is_set_relation(a, b, "<"));
 
-        Assert.assertTrue(predicate.is_set_relation(b, a,">") );
+        Assert.assertTrue(predicate.is_set_relation(b, a, ">"));
 
-        Assert.assertTrue( predicate.is_set_relation(c, a,"><") );
+        Assert.assertTrue(predicate.is_set_relation(c, a, "><"));
 
-        Assert.assertTrue( predicate.is_set_relation(c, c,"=") );
+        Assert.assertTrue(predicate.is_set_relation(c, c, "="));
 
     }
 
@@ -123,10 +123,10 @@ public class NogaExtendedTest extends JexlTestCase {
         jc.set("y", new int[]{1, 1, 2, 2, 3, 4});
 
         Object o = e.execute(jc);
-        assertTrue(((Set)o).size() == 4 );
+        assertTrue(((Set) o).size() == 4);
         e = JEXL.createScript("set{$_ * 10 }(1,2,2,2,3,4)");
         o = e.execute(jc);
-        assertTrue(((Set)o).size() == 4 );
+        assertTrue(((Set) o).size() == 4);
         e = JEXL.createScript("lgc:multiset{$_ * 10} (1,2,2,3,3,3,4,4,4,4)");
         o = e.execute(jc);
         assertTrue(((Map) o).size() == 4);
@@ -156,19 +156,29 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue(o != null);
 
     }
-    private static class XClass{
+
+    private static class XClass {
         private int i;
-        private XClass(){
-            i=420;
+
+        private XClass() {
+            i = 420;
         }
     }
+
     public void testWithPrivateFields() throws Exception {
         JEXL.setFunctions(Main.getFunction());
         JexlContext jc = new MapContext();
-        String s = String.format("x = new('%s') ; x.i = 204 ; x.i",XClass.class.getName());
+        String s = String.format("x = new('%s') ; x.i = 204 ; x.i", XClass.class.getName());
         Script e = JEXL.createScript(s);
         Object o = e.execute(jc);
-        assertTrue(o.equals( 204) );
+        assertTrue(o.equals(204));
 
+    }
+
+    public void testJarLoad() throws Exception {
+        JEXL.setFunctions(Main.getFunction());
+        JexlContext jc = new MapContext();
+        Script e = JEXL.importScript("_/samples/main.jexl","main");
+        Object o = e.execute(jc);
     }
 }
