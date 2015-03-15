@@ -1,9 +1,5 @@
 package org.apache.commons.jexl2.extension;
 
-import org.apache.commons.jexl2.JexlContext;
-import org.apache.commons.jexl2.JexlEngine;
-import org.apache.commons.jexl2.MapContext;
-import org.apache.commons.jexl2.Script;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -282,12 +278,10 @@ public class TypeUtility {
         return objectValue.toString();
     }
 
-    public static ArrayList makeLiteralList(Object[] argv) {
+    public static ArrayList makeLiteralList(Object... argv) {
         ArrayList list = new ArrayList();
-        if (argv != null) {
-            for (int i = 0; i < argv.length; i++) {
-                list.add(argv[i]);
-            }
+        for (int i = 0; i < argv.length; i++) {
+            list.add(argv[i]);
         }
         return list;
     }
@@ -352,7 +346,7 @@ public class TypeUtility {
      * @param args
      * @return
      */
-    public static ArrayList combine(Object[] args) {
+    public static ArrayList combine(Object... args) {
         AnonymousParam anon = null;
         ArrayList list = new ArrayList();
         if (args.length > 1) {
@@ -418,46 +412,24 @@ public class TypeUtility {
         return array;
     }
 
-    public static HashSet set(Object[] args) {
-
+    public static ListSet set(Object... args) {
         ArrayList list = combine(args);
-        HashSet set = new HashSet();
-
-        for (Object obj : list) {
-            set.add(obj);
-        }
-
+        ListSet set = new ListSet();
+        set.addAll(list);
         return set;
     }
 
     public static Boolean within(Object[] args) throws Exception {
-        AnonymousParam anon = null;
-        if (args.length > 1) {
-            if (args[0] instanceof AnonymousParam) {
-                anon = (AnonymousParam) args[0];
-                args = shiftArrayLeft(args, 1);
-            }
-        }
+        ArrayList list = combine(args);
 
-        if (args.length != 2) {
-            throw new Exception("At least 2 args are needed for within ");
+        if (list.size() < 3) {
+            throw new Exception("At least 3 args are needed for within ");
         }
-
-        Comparable item;
-        try {
-            item = new XNumber(args[0]);
-        } catch (ClassCastException e) {
-            item = (Comparable) args[0];
-        }
-
-        ArrayList list = combine(shiftArrayLeft(args, 1));
-        if (list.size() == 0) {
-            return false;
-        }
-        Comparable minItem = (Comparable) list.get(0);
-        Comparable maxItem = (Comparable) list.get(0);
-        for (int i = 1; i < list.size(); i++) {
-            Comparable listItem = (Comparable) list.get(i);
+        XNumber item = new XNumber(list.get(0));
+        XNumber minItem = new XNumber(list.get(1));
+        XNumber maxItem =  minItem;
+        for (int i = 2; i < list.size(); i++) {
+            XNumber listItem = new XNumber(list.get(i));
             if (listItem.compareTo(minItem) < 0) {
                 minItem = listItem;
                 continue;
@@ -502,7 +474,6 @@ public class TypeUtility {
     }
 
     private static Object sqlmath(Object[] argv) {
-        AnonymousParam anon = null;
         Double[] math = new Double[]{null, null, null};
         ArrayList list = combine(argv);
         if (list.size() > 0) {
@@ -647,7 +618,10 @@ public class TypeUtility {
                 this.number = ((Date) number).getTime();
             } else if (number instanceof DateTime) {
                 this.number = ((DateTime) number).toDate().getTime();
-            } else {
+            } else if ( number instanceof Boolean){
+                this.number = (Boolean)number?1:0;
+            }
+            else {
                 throw new ClassCastException("Can not convert to Number!");
             }
         }

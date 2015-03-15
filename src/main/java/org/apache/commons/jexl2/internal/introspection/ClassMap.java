@@ -19,11 +19,9 @@ package org.apache.commons.jexl2.internal.introspection;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import org.apache.commons.jexl2.extension.TypeUtility;
 import org.apache.commons.logging.Log;
 
 /**
@@ -80,10 +78,17 @@ final class ClassMap {
      * @return the map of fields (may be the empty map, can not be null)
      */
     private static Map<String, Field> createFieldCache(Class<?> clazz) {
+        HashSet<Field> fieldSet = new HashSet<>();
         Field[] fields = clazz.getFields();
+        fieldSet.addAll(TypeUtility.from(fields) );
+        fields = clazz.getDeclaredFields();
+        fieldSet.addAll(TypeUtility.from(fields) );
+
         if (fields.length > 0) {
             Map<String, Field> cache = new HashMap<String, Field>();
-            for (Field field : fields) {
+            for (Field field : fieldSet) {
+                //set everything accessible...
+                field.setAccessible(true);
                 cache.put(field.getName(), field);
             }
             return cache;
@@ -182,10 +187,8 @@ final class ClassMap {
         try {
             Method[] methods = clazz.getDeclaredMethods();
             for (int i = 0; i < methods.length; i++) {
-                int modifiers = methods[i].getModifiers();
-                if (Modifier.isPublic(modifiers)) {
-                    cache.put(methods[i]);
-                }
+                methods[i].setAccessible(true); // ignore stupidity
+                cache.put(methods[i]);
             }
         } catch (SecurityException se) {
             // Everybody feels better with...

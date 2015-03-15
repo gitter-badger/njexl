@@ -2,10 +2,7 @@ package org.apache.commons.jexl2.extension;
 
 import org.apache.commons.jexl2.Interpreter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by noga on 10/03/15.
@@ -49,10 +46,10 @@ public class Predicate {
         }
     }
 
-    public HashSet set_i(HashSet s1, HashSet s2){
-        HashSet i = new HashSet();
-        HashSet b = s1;
-        HashSet s = s2;
+    public ListSet set_i(Set s1, Set s2){
+        ListSet i = new ListSet();
+        Set b = s1;
+        Set s = s2;
         if ( s2.size() > s1.size() ){
             b = s2;
             s = s1 ;
@@ -65,14 +62,15 @@ public class Predicate {
         return i;
     }
 
-    public HashSet set_u(HashSet s1, HashSet s2){
-        HashSet b = s1;
-        HashSet s = s2;
+    public ListSet set_u(Set s1, Set s2){
+        Set b = s1;
+        Set s = s2;
         if ( s2.size() > s1.size() ){
             b = s2;
             s = s1 ;
         }
-        HashSet u = (HashSet)b.clone();
+
+        ListSet u = new ListSet(b);
 
         for ( Object o : s ){
             u.add(o);
@@ -80,8 +78,8 @@ public class Predicate {
         return u;
     }
 
-    public HashSet set_d(HashSet s1, HashSet s2){
-        HashSet d = (HashSet)s1.clone();
+    public ListSet set_d(Set s1, Set s2){
+        ListSet d = new ListSet(s1);
         for ( Object o : s2 ){
             if ( s1.contains(o)){
                 d.remove(o);
@@ -90,16 +88,16 @@ public class Predicate {
         return d;
     }
 
-    public HashSet set_sym_d(HashSet s1, HashSet s2){
-        HashSet d12 = set_d(s1,s2);
-        HashSet d21 = set_d(s2,s1);
-        HashSet ssd = set_u(d12,d21);
+    public ListSet set_sym_d(Set s1, Set s2){
+        ListSet d12 = set_d(s1,s2);
+        ListSet d21 = set_d(s2,s1);
+        ListSet ssd = set_u(d12,d21);
         return ssd;
     }
 
-    public SetRelation set_relation(HashSet s1, HashSet s2){
+    public SetRelation set_relation(Set s1, Set s2){
 
-        HashSet ssd = set_sym_d(s1,s2);
+        ListSet ssd = set_sym_d(s1,s2);
         if ( ssd.isEmpty() ){
             return SetRelation.EQUAL ;
         }
@@ -111,23 +109,23 @@ public class Predicate {
             return SetRelation.SUPERSET ;
         }
 
-        HashSet i = set_i(s1,s2);
+        ListSet i = set_i(s1,s2);
         if ( i.isEmpty() ){
             return SetRelation.INDEPENDENT ;
         }
 
-        HashSet ssd_1_i = set_sym_d(i,s1);
+        ListSet ssd_1_i = set_sym_d(i,s1);
         if ( ssd_1_i.isEmpty() ){
             return SetRelation.SUBSET ;
         }
-        HashSet ssd_2_i = set_sym_d(i,s2);
+        ListSet ssd_2_i = set_sym_d(i,s2);
         if ( ssd_2_i.isEmpty() ){
             return SetRelation.SUPERSET ;
         }
         return SetRelation.OVERLAP ;
     }
 
-    public boolean is_set_relation(HashSet s1, HashSet s2, String relation){
+    public boolean is_set_relation(Set s1, Set s2, String relation){
         SetRelation actual = set_relation(s1, s2);
         return SetRelation.is(relation, actual);
     }
@@ -169,7 +167,7 @@ public class Predicate {
         return m;
     }
 
-    public HashMap mset_diff(HashMap<Object,ArrayList> mset1, HashMap<Object,ArrayList> mset2){
+    public HashMap mset_diff(Map<Object,ArrayList> mset1, Map<Object,ArrayList> mset2){
         HashMap<Object,int[]> diff = new HashMap<>();
         for ( Object k : mset1.keySet() ){
             int[] v = new int[2];
@@ -191,7 +189,7 @@ public class Predicate {
         return diff;
     }
 
-    public boolean mset_equal(HashMap<Object,ArrayList> mset1, HashMap<Object,ArrayList> mset2){
+    public boolean mset_equal(Map<Object,ArrayList> mset1, Map<Object,ArrayList> mset2){
         HashMap<Object,int[]> d = mset_diff(mset1,mset2);
 
         for ( Object k : d.keySet() ){

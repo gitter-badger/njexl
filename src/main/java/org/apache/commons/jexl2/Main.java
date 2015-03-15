@@ -18,6 +18,7 @@
 package org.apache.commons.jexl2;
 
 import org.apache.commons.jexl2.extension.Predicate;
+import org.apache.commons.jexl2.extension.ReflectionUtility;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -53,6 +54,7 @@ public class Main {
         map.put("out", System.out);
         map.put("con", System.console());
         map.put("sys", System.class);
+        map.put("cls", new ReflectionUtility());
 
         return map;
     }
