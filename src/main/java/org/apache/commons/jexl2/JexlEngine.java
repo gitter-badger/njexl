@@ -27,13 +27,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.lang.ref.SoftReference;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -138,6 +132,9 @@ public class JexlEngine {
         private UberspectHolder() {
         }
     }
+
+    HashMap<String,Script> imports;
+
     /**
      * The Uberspect instance.
      */
@@ -207,6 +204,7 @@ public class JexlEngine {
         if (theFunctions != null) {
             this.functions = theFunctions;
         }
+        imports = new HashMap<>();
     }
 
     /**
@@ -526,9 +524,12 @@ public class JexlEngine {
         // now create script
         Script script = createScript(scriptText,null , null);
         if ( script instanceof  ExpressionImpl ){
-            ((ExpressionImpl) script).location = f.getAbsolutePath();
-            ((ExpressionImpl) script).importName = as;
+            ExpressionImpl ei = ((ExpressionImpl) script);
+            ei.location = f.getAbsolutePath();
+            ei.importName = as;
+            System.out.printf("Script imported : %s@%s\n", ei.importName, ei.location );
         }
+        imports.put(as,script);
         return script;
     }
 

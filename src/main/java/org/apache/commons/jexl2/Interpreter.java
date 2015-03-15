@@ -141,6 +141,7 @@ public class Interpreter implements ParserVisitor {
         this.context = aContext != null ? aContext : JexlEngine.EMPTY_CONTEXT;
         this.functors = null;
         imports = new HashMap<>();
+        imports.putAll(jexlEngine.imports);
     }
 
     /**
@@ -425,12 +426,12 @@ public class Interpreter implements ParserVisitor {
             }
             Script freshlyImported = jexlEngine.importScript(from, as);
             imports.put(as,freshlyImported);
+            return freshlyImported;
 
         }catch (Exception e){
             JexlException jexlException = new JexlException(node,"Import Failed!",e);
             return invocationFailed(jexlException);
         }
-        return data;
     }
 
     @Override
