@@ -1,5 +1,6 @@
 package org.apache.commons.jexl2.extension;
 
+import org.apache.commons.jexl2.JexlException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -35,6 +36,7 @@ public class TypeUtility {
     public static final String BOOL = "bool";
     public static final String BIGINT = "INT";
     public static final String BIGDECIMAL = "DEC";
+    public static final String BYE = "BYE";
 
     /**
      * ******* The Utility Calls  *********
@@ -473,7 +475,7 @@ public class TypeUtility {
 
     }
 
-    private static Object sqlmath(Object[] argv) {
+    public static Object sqlmath(Object[] argv) {
         Double[] math = new Double[]{null, null, null};
         ArrayList list = combine(argv);
         if (list.size() > 0) {
@@ -497,6 +499,19 @@ public class TypeUtility {
             }
         }
         return math;
+    }
+
+
+    public static void bye(Object...args){
+        System.err.println("BYE received, we will exit...");
+        for(Object arg : args) {
+            System.err.println(arg);
+        }
+        int exitStatus = 255;
+        if ( args.length > 1 && args[0] instanceof Number ){
+            exitStatus = ((Number)args[0]).intValue();
+        }
+        System.exit(exitStatus);
     }
 
     public static Object interceptCastingCall(String methodName, Object[] argv, Boolean[] success) throws Exception {
@@ -596,6 +611,9 @@ public class TypeUtility {
         }
         if (methodName.equals(WRITE)) {
             writeFile(argv);
+        }
+        if (methodName.equals(BYE)) {
+            bye(argv);
         }
         success[0] = false;
 

@@ -1047,16 +1047,38 @@ public class Interpreter implements ParserVisitor {
         return node.getLiteral();
     }
 
+    public static boolean __debug__ = false ;
+    final Debugger debugger = new Debugger();
+    void log(String prefix, String message){
+        if ( __debug__ ) {
+            System.out.printf("[%s] %s\n", prefix, message);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
     public Object visit(ASTJexlScript node, Object data) {
+        log("STARTED",new Date().toString());
         int numChildren = node.jjtGetNumChildren();
         Object result = null;
         for (int i = 0; i < numChildren; i++) {
             JexlNode child = node.jjtGetChild(i);
-            result = child.jjtAccept(this, data);
+            String info = debugger.data(child);
+            log("BEFORE",info);
+            try {
+                result = child.jjtAccept(this, data);
+                log("OK",info);
+            }catch (Throwable throwable){
+                if ( throwable instanceof JexlException.Return){
+                    log("OK",info);
+                }else {
+                    log("ERROR", info);
+                }
+                throw throwable;
+            }
         }
+        log("ENDED",new Date().toString());
         return result;
     }
 

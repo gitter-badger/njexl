@@ -1,0 +1,13 @@
+//loading the path from where all class jars will be loaded 
+cls:load_path('/Codes/Java/office/chaitin/core/target/lib') or bye('Could not load class path!')
+
+//import classes 
+import 'org.openqa.selenium.firefox.FirefoxDriver' as fdriver
+import 'java.lang.Thread' as thread 
+//init a web driver 
+driver = new (fdriver)
+driver.get("http://www.google.com/webhp?complete=1&hl=en")
+
+thread:sleep(3000)
+
+driver.quit()
