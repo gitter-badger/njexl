@@ -19,11 +19,7 @@ package org.apache.commons.jexl2.internal.introspection;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 
@@ -279,9 +275,17 @@ public class IntrospectorBase {
                         constructibleClasses.put(cname, clazz);
                     }
                     List<Constructor<?>> l = new LinkedList<Constructor<?>>();
-                    for (Constructor<?> ictor : clazz.getConstructors()) {
+                    Constructor[] constructors = clazz.getConstructors();
+                    HashSet<Constructor> set = new HashSet<>();
+                    set.addAll(Arrays.asList(constructors));
+                    constructors = clazz.getDeclaredConstructors();
+                    set.addAll(Arrays.asList(constructors));
+
+                    for (Constructor<?> ictor : set) {
+                        ictor.setAccessible(true);
                         l.add(ictor);
                     }
+
                     // try to find one
                     ctor = key.getMostSpecificConstructor(l);
                     if (ctor != null) {

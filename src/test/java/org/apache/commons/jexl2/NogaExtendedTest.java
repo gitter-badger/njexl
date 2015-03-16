@@ -92,25 +92,24 @@ public class NogaExtendedTest extends JexlTestCase {
 
     public void testSetFunctions() throws Exception {
         ListSet oe = TypeUtility.set(new int[]{});
-        Predicate predicate = new Predicate();
 
         ListSet a = TypeUtility.set(new int[]{0, 1, 2, 3});
         ListSet b = TypeUtility.set(new int[]{0, 1, 2, 3, 4});
         ListSet c = TypeUtility.set(new int[]{5, 6});
 
-        Assert.assertTrue(predicate.is_set_relation(oe, oe, "="));
+        Assert.assertTrue(Predicate.is_set_relation(oe, oe, "="));
 
-        Assert.assertTrue(predicate.is_set_relation(oe, a, "<"));
+        Assert.assertTrue(Predicate.is_set_relation(oe, a, "<"));
 
-        Assert.assertTrue(predicate.is_set_relation(a, oe, ">"));
+        Assert.assertTrue(Predicate.is_set_relation(a, oe, ">"));
 
-        Assert.assertTrue(predicate.is_set_relation(a, b, "<"));
+        Assert.assertTrue(Predicate.is_set_relation(a, b, "<"));
 
-        Assert.assertTrue(predicate.is_set_relation(b, a, ">"));
+        Assert.assertTrue(Predicate.is_set_relation(b, a, ">"));
 
-        Assert.assertTrue(predicate.is_set_relation(c, a, "><"));
+        Assert.assertTrue(Predicate.is_set_relation(c, a, "><"));
 
-        Assert.assertTrue(predicate.is_set_relation(c, c, "="));
+        Assert.assertTrue(Predicate.is_set_relation(c, c, "="));
 
     }
 
@@ -167,6 +166,14 @@ public class NogaExtendedTest extends JexlTestCase {
         private XClass() {
             i = 420;
         }
+
+        private void m(String message){
+            System.out.println(message);
+        }
+
+        public static void printHello(String message){
+            System.out.println(message);
+        }
     }
 
     public void testWithPrivateFields() throws Exception {
@@ -176,7 +183,19 @@ public class NogaExtendedTest extends JexlTestCase {
         Script e = JEXL.createScript(s);
         Object o = e.execute(jc);
         assertTrue(o.equals(204));
-
     }
 
+    public void testWithPrivateMethods() throws Exception {
+        JEXL.setFunctions(Main.getFunction());
+        JexlContext jc = new MapContext();
+        String s = String.format("y= new('%s'); z = y.class.forName('java.lang.System'); ", XClass.class.getName());
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue(o.equals(System.class));
+
+        s = String.format("import '%s' as zzz ; zzz:printHello('hi!'); xx = new(zzz) ; xx.i=42000", XClass.class.getName());
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o.equals(42000));
+    }
 }

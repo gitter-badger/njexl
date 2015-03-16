@@ -10,7 +10,7 @@ import java.net.URL;
  */
 public class ReflectionUtility {
 
-    public boolean load_jar(Object  arg){
+    public static boolean load_jar(Object  arg){
         try {
             if ( arg instanceof String) {
                 ClassLoaderUtil.addFileToClassPath(new File(arg.toString()), ClassLoaderUtil.getDefaultClassLoader());
@@ -31,7 +31,7 @@ public class ReflectionUtility {
         return false;
     }
 
-    public boolean load(Object... args){
+    public static boolean load(Object... args){
         boolean ret = true ;
         for ( Object o :args ){
             ret = ret && load_jar(o);
@@ -39,7 +39,7 @@ public class ReflectionUtility {
         return ret;
     }
 
-    public boolean load_path(Object...args){
+    public static boolean load_path(Object...args){
         if ( args.length == 0){
             return false;
         }
@@ -61,7 +61,7 @@ public class ReflectionUtility {
         return ret;
     }
 
-    public ClassLoader loader(Object...args){
+    public static ClassLoader loader(Object...args){
         if ( args.length > 0 ){
             if ( args[0].toString().equalsIgnoreCase("ctx")){
                 return Thread.currentThread().getContextClassLoader();
@@ -73,7 +73,7 @@ public class ReflectionUtility {
         return ClassLoaderUtil.getDefaultClassLoader();
     }
 
-    public boolean reload(Object... args){
+    public static boolean reload(Object... args){
         if ( args.length > 0 ){
             String className = args[0].toString();
             Object[] arr = TypeUtility.shiftArrayLeft(args,1);

@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * Created by noga on 10/03/15.
  */
-public class Predicate {
+public final class Predicate {
 
     public static enum SetRelation{
         INDEPENDENT,
@@ -46,7 +46,7 @@ public class Predicate {
         }
     }
 
-    public ListSet set_i(Set s1, Set s2){
+    public static ListSet set_i(Set s1, Set s2){
         ListSet i = new ListSet();
         Set b = s1;
         Set s = s2;
@@ -62,7 +62,7 @@ public class Predicate {
         return i;
     }
 
-    public ListSet set_u(Set s1, Set s2){
+    public static ListSet set_u(Set s1, Set s2){
         Set b = s1;
         Set s = s2;
         if ( s2.size() > s1.size() ){
@@ -78,7 +78,7 @@ public class Predicate {
         return u;
     }
 
-    public ListSet set_d(Set s1, Set s2){
+    public static ListSet set_d(Set s1, Set s2){
         ListSet d = new ListSet(s1);
         for ( Object o : s2 ){
             if ( s1.contains(o)){
@@ -88,14 +88,14 @@ public class Predicate {
         return d;
     }
 
-    public ListSet set_sym_d(Set s1, Set s2){
+    public static ListSet set_sym_d(Set s1, Set s2){
         ListSet d12 = set_d(s1,s2);
         ListSet d21 = set_d(s2,s1);
         ListSet ssd = set_u(d12,d21);
         return ssd;
     }
 
-    public SetRelation set_relation(Set s1, Set s2){
+    public static SetRelation set_relation(Set s1, Set s2){
 
         ListSet ssd = set_sym_d(s1,s2);
         if ( ssd.isEmpty() ){
@@ -125,12 +125,12 @@ public class Predicate {
         return SetRelation.OVERLAP ;
     }
 
-    public boolean is_set_relation(Set s1, Set s2, String relation){
+    public static boolean is_set_relation(Set s1, Set s2, String relation){
         SetRelation actual = set_relation(s1, s2);
         return SetRelation.is(relation, actual);
     }
 
-    public HashMap multiset(Object... args){
+    public static HashMap multiset(Object... args){
         Interpreter.AnonymousParam anon = null;
         ArrayList list = new ArrayList();
         if (args.length > 1) {
@@ -167,7 +167,7 @@ public class Predicate {
         return m;
     }
 
-    public HashMap mset_diff(Map<Object,ArrayList> mset1, Map<Object,ArrayList> mset2){
+    public static HashMap mset_diff(Map<Object,ArrayList> mset1, Map<Object,ArrayList> mset2){
         HashMap<Object,int[]> diff = new HashMap<>();
         for ( Object k : mset1.keySet() ){
             int[] v = new int[2];

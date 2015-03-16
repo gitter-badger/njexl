@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -424,8 +425,19 @@ public class Interpreter implements ParserVisitor {
             if ( functions.containsKey(as) || imports.containsKey(as)){
                 throw new Exception(String.format("[%s] is already taken as import name!",as));
             }
+            try{
+                Class<?> c = Class.forName(from);
+                functions.put(as,c);
+                context.set(as,c);
+                return c;
+            }catch (Exception e){
+                //ignore...
+            }
+
             Script freshlyImported = jexlEngine.importScript(from, as);
             imports.put(as,freshlyImported);
+            context.set(as,freshlyImported);
+
             return freshlyImported;
 
         }catch (Exception e){

@@ -48,13 +48,13 @@ public class Main {
 
     public static HashMap<String,Object> getFunction(){
         HashMap<String,Object> map = new HashMap<>();
-        map.put("lgc", new Predicate());
+        map.put("lgc", Predicate.class);
         map.put("str",String.class);
         map.put("math",Math.class);
         map.put("out", System.out);
         map.put("con", System.console());
         map.put("sys", System.class);
-        map.put("cls", new ReflectionUtility());
+        map.put("cls", ReflectionUtility.class);
 
         return map;
     }

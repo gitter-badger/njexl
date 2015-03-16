@@ -104,13 +104,17 @@ public final class MethodExecutor extends AbstractExecutor.Method {
             Object obj, String method, Object[] args) {
         final Class<?> clazz = obj.getClass();
         final MethodKey key = new MethodKey(method, args);
-        java.lang.reflect.Method m = is.getMethod(clazz, key);
+        java.lang.reflect.Method m = null;
+        // invert order...
+        if (obj instanceof Class<?>) {
+            m = is.getMethod((Class<?>) obj, key);
+        }
+        if (m == null) {
+           m = is.getMethod(clazz, key);
+        }
         if (m == null && clazz.isArray()) {
             // check for support via our array->list wrapper
             m = is.getMethod(ArrayListWrapper.class, key);
-        }
-        if (m == null && obj instanceof Class<?>) {
-            m = is.getMethod((Class<?>) obj, key);
         }
         return new Parameter(m, key);
     }

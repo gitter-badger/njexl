@@ -150,13 +150,13 @@ final class ClassMap {
         // Ah, the miracles of Java for(;;) ...
         MethodCache cache = new MethodCache();
         for (; classToReflect != null; classToReflect = classToReflect.getSuperclass()) {
-            if (Modifier.isPublic(classToReflect.getModifiers())) {
-                populateMethodCacheWith(cache, classToReflect, log);
-            }
+            populateMethodCacheWith(cache, classToReflect, log);
+            /**
             Class<?>[] interfaces = classToReflect.getInterfaces();
             for (int i = 0; i < interfaces.length; i++) {
                 populateMethodCacheWithInterface(cache, interfaces[i], log);
             }
+             */
         }
         return cache;
     }
