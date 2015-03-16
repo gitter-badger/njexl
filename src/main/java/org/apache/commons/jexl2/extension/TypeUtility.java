@@ -43,6 +43,7 @@ public class TypeUtility {
      */
 
     public static final String LIST = "list";
+    public static final String FILTER = "filter";
     public static final String LITERAL_LIST = "listLiteral";
     public static final String ARRAY = "array";
     public static final String ARRAY_FROM_LIST = "arrayFromList";
@@ -211,7 +212,7 @@ public class TypeUtility {
         return null;
     }
 
-    public static Object castBoolean(Object objectValue, Object defaultValue) {
+    public static Boolean castBoolean(Object objectValue, Boolean defaultValue) {
 
 
         if (defaultValue != null) {
@@ -223,7 +224,7 @@ public class TypeUtility {
         }
 
         if (objectValue instanceof Boolean) {
-            return objectValue;
+            return (Boolean)objectValue;
         }
 
         if (objectValue instanceof String) {
@@ -369,7 +370,35 @@ public class TypeUtility {
                 l.add(ret);
             }
             list = l;
-            anon.jexlContext.set(_ITEM_, null);
+            anon.jexlContext.remove(_ITEM_);
+        }
+        return list;
+    }
+
+    public static ArrayList filter(Object... args) {
+        AnonymousParam anon = null;
+        ArrayList list = new ArrayList();
+        if (args.length > 1) {
+            if (args[0] instanceof AnonymousParam) {
+                anon = (AnonymousParam) args[0];
+                args = shiftArrayLeft(args, 1);
+            }
+        }
+        for (int i = 0; i < args.length; i++) {
+            List l = from(args[i]);
+            list.addAll(l);
+        }
+        if (anon != null) {
+            ArrayList l = new ArrayList();
+            for (Object o : list) {
+                anon.jexlContext.set(_ITEM_, o);
+                Object ret = anon.block.jjtAccept(anon.pv, null);
+                if ( castBoolean(ret,false) ){
+                    l.add(o);
+                }
+            }
+            list = l;
+            anon.jexlContext.remove(_ITEM_);
         }
         return list;
     }
@@ -549,7 +578,7 @@ public class TypeUtility {
             }
             if (argv.length == 1)
                 return castBoolean(argv[0], null);
-            return castBoolean(argv[0], argv[1]);
+            return castBoolean(argv[0], (Boolean)argv[1]);
         }
         if (methodName.equals(STRING)) {
             if (argv.length == 0) {
@@ -580,6 +609,9 @@ public class TypeUtility {
         }
         if (methodName.equals(LIST)) {
             return combine(argv);
+        }
+        if (methodName.equals(FILTER)) {
+            return filter(argv);
         }
         if (methodName.equals(ARRAY)) {
             return argv;

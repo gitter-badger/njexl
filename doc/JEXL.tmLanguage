@@ -31,7 +31,14 @@
 					<string>\*/</string>
 					<key>name</key>
 					<string>comment.block.source.cs</string>
-				</dict>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>\b([+-])?\d+(\.)?\d*\b</string>
+			<key>name</key>
+			<string>constant.numeric</string>
+		</dict>
+
 		<dict>
 			<key>match</key>
 			<string>\bnew\b|\bif\b|\belse\b|\bwhile\b|\bfor\b|\breturn\b|\bvar\b</string>
@@ -46,7 +53,7 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>[a-zA-Z]+:[a-zA-Z_]+|\{\S+\}|\*\* \S+|^@@|^\$\$|\b&lt;\-|@_[a-z0-9_]+|\btrue\b|\bfalse\b|\bnull\b|\bint\b|\bdouble\b|\blong\b|\btime\b|\bbool\b|\bstr\b|\blist\b|\bset\b|\blistLiteral\b|\barray\b|\barrayFromList\b|\bsize\b|\bwithin\b|\bdict\b|\brange\b|\bempty\b|\bsqlmath\b|\btypeof\b|\bdefined\b|\b_\S+_\b</string>
+			<string>[a-zA-Z]+:[a-zA-Z_]+|\{\S+\}|\*\* \S+|^@@|^\$\$|\b&lt;\-|\$_[a-z0-9_]*|\btrue\b|\bfalse\b|\bnull\b|\bint\b|\bdouble\b|\blong\b|\btime\b|\bbool\b|\bstr\b|\blist\b|\bset\b|\blistLiteral\b|\barray\b|\barrayFromList\b|\bsize\b|\bwithin\b|\bdict\b|\brange\b|\bempty\b|\bsqlmath\b|\btypeof\b|\bfilter\b|\bdefined\b|\b_\S+_\b</string>
 			<key>name</key>
 			<string>support.language.jexl</string>
 		</dict>
@@ -61,12 +68,6 @@
 			<string>\b_.+_\b</string>
 			<key>name</key>
 			<string>keyword.other.jexl</string>
-		</dict>
-		<dict>
-			<key>match</key>
-			<string>[-+]?\\d+(\\.{0,1}(\\d+?))?</string>
-			<key>name</key>
-			<string>constant.numeric</string>
 		</dict>
 
 		<dict>
