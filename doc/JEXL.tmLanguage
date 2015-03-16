@@ -12,7 +12,7 @@
 	<array>
 		<dict>
 			<key>match</key>
-			<string>#.*|//.*</string>
+			<string>//.*</string>
 			<key>name</key>
 			<string>comment.line.jexl</string>
 		</dict>
@@ -34,25 +34,19 @@
 				</dict>
 		<dict>
 			<key>match</key>
-			<string>\bif\b|\belse\b|\bwhile\b|\bfor\b|\breturn\b|\bvar\b</string>
+			<string>\bnew\b|\bif\b|\belse\b|\bwhile\b|\bfor\b|\breturn\b|\bvar\b</string>
 			<key>name</key>
 			<string>keyword.control.jexl</string>
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>_.+_</string>
-			<key>name</key>
-			<string>keyword.other.jexl</string>
-		</dict>
-		<dict>
-			<key>match</key>
-			<string>\||\+|\-|\*|\/|\=|\(|\)|\{|\}|\[|\]|&amp;|&lt;|&gt;|~|!|\beq\b|\blt\b|\bgt\b|\ble\b|\bge\b|\band\b|\bor\b|\bnot\b</string>
+			<string>\bbye\b|\bdef\b|\bimport\b|\bas\b|\||\+|\-|\*|\/|\=|\(|\)|\{|\}|\[|\]|&amp;|&lt;|&gt;|~|!|\beq\b|\blt\b|\bgt\b|\ble\b|\bge\b|\band\b|\bor\b|\bnot\b</string>
 			<key>name</key>
 			<string>keyword.operator.jexl</string>
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>[a-zA-Z]+:[a-zA-Z]+|\{\S+\}|\*\* \S+|^@@|^\$\$|\b&lt;\-|@_[a-z0-9_]+|\btrue\b|\bfalse\b|\bnull\b|\bint\b|\bdouble\b|\blong\b|\btime\b|\bbool\b|\bstr\b|\blist\b|\bset\b|\blistLiteral\b|\barray\b|\barrayFromList\b|\bsize\b|\bwithin\b|\bdict\b|\brange\b|\bempty\b|\bsqlmath\b|\btypeof\b|\bdefined\b|\b_\S+_\b</string>
+			<string>[a-zA-Z]+:[a-zA-Z_]+|\{\S+\}|\*\* \S+|^@@|^\$\$|\b&lt;\-|@_[a-z0-9_]+|\btrue\b|\bfalse\b|\bnull\b|\bint\b|\bdouble\b|\blong\b|\btime\b|\bbool\b|\bstr\b|\blist\b|\bset\b|\blistLiteral\b|\barray\b|\barrayFromList\b|\bsize\b|\bwithin\b|\bdict\b|\brange\b|\bempty\b|\bsqlmath\b|\btypeof\b|\bdefined\b|\b_\S+_\b</string>
 			<key>name</key>
 			<string>support.language.jexl</string>
 		</dict>
@@ -64,11 +58,17 @@
 		</dict>
 		<dict>
 			<key>match</key>
+			<string>\b_.+_\b</string>
+			<key>name</key>
+			<string>keyword.other.jexl</string>
+		</dict>
+		<dict>
+			<key>match</key>
 			<string>[-+]?\\d+(\\.{0,1}(\\d+?))?</string>
 			<key>name</key>
 			<string>constant.numeric</string>
 		</dict>
-		
+
 		<dict>
 			<key>match</key>
 			<string>"(?:[^"\\]|\\.)*"</string>
