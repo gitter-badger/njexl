@@ -131,10 +131,14 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.execute(jc);
         assertTrue(((Map) o).size() == 4);
 
+        e = JEXL.createScript("a={1:2, 3:4};b=3 ; a[b]==4");
+        o = e.execute(jc);
+        assertTrue(o.equals(Boolean.TRUE));
+
         e = JEXL.createScript("x=set(1,2,2,3,3,3,4,4,4,4);x['y']");
         o = e.execute(jc);
         assertTrue(o.equals(Boolean.FALSE));
-        e = JEXL.createScript("x=set(1,2,10);x[2]==10");
+        e = JEXL.createScript("x=set(1,5,10);y=2; x[y]==10");
         o = e.execute(jc);
         assertTrue(o.equals(Boolean.TRUE));
     }
@@ -175,10 +179,4 @@ public class NogaExtendedTest extends JexlTestCase {
 
     }
 
-    public void testJarLoad() throws Exception {
-        JEXL.setFunctions(Main.getFunction());
-        JexlContext jc = new MapContext();
-        Script e = JEXL.importScript("_/samples/main.jexl","main");
-        Object o = e.execute(jc);
-    }
 }

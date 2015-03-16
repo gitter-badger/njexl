@@ -81,6 +81,15 @@ public class ListSet<T> extends HashSet<T> implements List<T> {
         return size != size();
     }
 
+    /***
+     * This is so that I can still index x['xxx'] and get a true false as if in contains
+     * @param o
+     * @return
+     */
+    public boolean get(Object o){
+        return super.contains(o);
+    }
+
     @Override
     public T get(int index) {
         return behind.get(index);

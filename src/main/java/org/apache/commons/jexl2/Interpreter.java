@@ -530,9 +530,6 @@ public class Interpreter implements ParserVisitor {
                 object = nindex.jjtAccept(this, object);
             } else {
                 Object index = nindex.jjtAccept(this, null);
-                if ( object instanceof Set){
-                    return ((Set)object).contains(index);
-                }
                 object = getAttribute(object, index, nindex);
             }
         }
