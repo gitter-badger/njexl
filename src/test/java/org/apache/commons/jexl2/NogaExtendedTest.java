@@ -18,14 +18,12 @@
 package org.apache.commons.jexl2;
 
 import org.apache.commons.jexl2.extension.ListSet;
-import org.apache.commons.jexl2.extension.Predicate;
+import org.apache.commons.jexl2.extension.SetOperations;
 import org.apache.commons.jexl2.extension.TypeUtility;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -97,28 +95,28 @@ public class NogaExtendedTest extends JexlTestCase {
         ListSet b = TypeUtility.set(new int[]{0, 1, 2, 3, 4});
         ListSet c = TypeUtility.set(new int[]{5, 6});
 
-        Assert.assertTrue(Predicate.is_set_relation(oe, oe, "="));
+        Assert.assertTrue(SetOperations.is_set_relation(oe, oe, "="));
 
-        Assert.assertTrue(Predicate.is_set_relation(oe, a, "<"));
+        Assert.assertTrue(SetOperations.is_set_relation(oe, a, "<"));
 
-        Assert.assertTrue(Predicate.is_set_relation(a, oe, ">"));
+        Assert.assertTrue(SetOperations.is_set_relation(a, oe, ">"));
 
-        Assert.assertTrue(Predicate.is_set_relation(a, b, "<"));
+        Assert.assertTrue(SetOperations.is_set_relation(a, b, "<"));
 
-        Assert.assertTrue(Predicate.is_set_relation(b, a, ">"));
+        Assert.assertTrue(SetOperations.is_set_relation(b, a, ">"));
 
-        Assert.assertTrue(Predicate.is_set_relation(c, a, "><"));
+        Assert.assertTrue(SetOperations.is_set_relation(c, a, "><"));
 
-        Assert.assertTrue(Predicate.is_set_relation(c, c, "="));
+        Assert.assertTrue(SetOperations.is_set_relation(c, c, "="));
 
     }
 
     @Test
     public void testAnonymousFunction() throws Exception {
 
-        JEXL.setFunctions(Main.getFunction());
-        Script e = JEXL.createScript("set{$_ * 10 }(y)");
         JexlContext jc = new MapContext();
+        JEXL.setFunctions(Main.getFunction(jc));
+        Script e = JEXL.createScript("set{$_ * 10 }(y)");
         jc.set("y", new int[]{1, 1, 2, 2, 3, 4});
 
         Object o = e.execute(jc);
@@ -126,7 +124,7 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript("set{$_ * 10 }(1,2,2,2,3,4)");
         o = e.execute(jc);
         assertTrue(((Set) o).size() == 4);
-        e = JEXL.createScript("lgc:multiset{$_ * 10} (1,2,2,3,3,3,4,4,4,4)");
+        e = JEXL.createScript("multiset{$_ * 10} (1,2,2,3,3,3,4,4,4,4)");
         o = e.execute(jc);
         assertTrue(((Map) o).size() == 4);
 
@@ -144,16 +142,16 @@ public class NogaExtendedTest extends JexlTestCase {
 
 
     public void testScriptWithMethods() throws Exception {
-        JEXL.setFunctions(Main.getFunction());
         JexlContext jc = new MapContext();
+        JEXL.setFunctions(Main.getFunction(jc));
         Script e = JEXL.createScript(new File("samples/dummy.jexl"));
         Object o = e.execute(jc);
         assertTrue(o != null);
     }
 
     public void testScriptWithImportedMethods() throws Exception {
-        JEXL.setFunctions(Main.getFunction());
         JexlContext jc = new MapContext();
+        JEXL.setFunctions(Main.getFunction(jc));
         Script e = JEXL.createScript(" import 'samples/dummy.jexl' as dummy ; some_func('Hello, World!') ");
         Object o = e.execute(jc);
         assertTrue(o != null);
@@ -177,8 +175,8 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     public void testWithPrivateFields() throws Exception {
-        JEXL.setFunctions(Main.getFunction());
         JexlContext jc = new MapContext();
+        JEXL.setFunctions(Main.getFunction(jc));
         String s = String.format("x = new('%s') ; x.i = 204 ; x.i", XClass.class.getName());
         Script e = JEXL.createScript(s);
         Object o = e.execute(jc);
@@ -186,8 +184,8 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     public void testWithPrivateMethods() throws Exception {
-        JEXL.setFunctions(Main.getFunction());
         JexlContext jc = new MapContext();
+        JEXL.setFunctions(Main.getFunction(jc));
         String s = String.format("y= new('%s'); z = y.class.forName('java.lang.System'); ", XClass.class.getName());
         Script e = JEXL.createScript(s);
         Object o = e.execute(jc);
@@ -197,5 +195,13 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertTrue(o.equals(42000));
+    }
+
+    public void testWithStaticFields() throws Exception{
+        JexlContext jc = new MapContext();
+        JEXL.setFunctions(Main.getFunction(jc));
+        String s = "sys.out.println('hi!');" ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
     }
 }

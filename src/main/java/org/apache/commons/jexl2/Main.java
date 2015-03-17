@@ -17,13 +17,10 @@
 
 package org.apache.commons.jexl2;
 
-import org.apache.commons.jexl2.extension.Predicate;
+import org.apache.commons.jexl2.extension.SetOperations;
 import org.apache.commons.jexl2.extension.ReflectionUtility;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,29 +43,28 @@ public class Main {
         return context;
     }
 
-    public static HashMap<String,Object> getFunction(){
+    public static HashMap<String,Object> getFunction(JexlContext context){
         HashMap<String,Object> map = new HashMap<>();
-        map.put("lgc", Predicate.class);
+        map.put("set", SetOperations.class);
         map.put("str",String.class);
         map.put("math",Math.class);
-        map.put("out", System.out);
-        map.put("con", System.console());
         map.put("sys", System.class);
+        context.set("sys",System.class);
         map.put("cls", ReflectionUtility.class);
 
         return map;
     }
 
-    public static JexlEngine getJexl(){
+    public static JexlEngine getJexl(JexlContext context){
         JexlEngine jexl = new JexlEngine();
-        HashMap<String,Object> map = getFunction();
+        HashMap<String,Object> map = getFunction(context);
         jexl.setFunctions(map);
         return jexl;
     }
 
     public static void interpret(){
-        JexlEngine JEXL = getJexl();
         JexlContext context = getContext();
+        JexlEngine JEXL = getJexl(context);
 
         while(true){
             System.out.print(PROMPT);
@@ -99,8 +95,8 @@ public class Main {
     }
 
     public static void executeScript(String[] args){
-        JexlEngine JEXL = getJexl();
         JexlContext jc = getContext();
+        JexlEngine JEXL = getJexl(jc);
         jc.set("args", args);
         try {
             Script sc = JEXL.createScript(new File(args[0]));

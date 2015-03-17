@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * Created by noga on 10/03/15.
  */
-public final class Predicate {
+public final class SetOperations {
 
     public static enum SetRelation{
         INDEPENDENT,
@@ -146,15 +146,15 @@ public final class Predicate {
         HashMap<Object,ArrayList> m = new HashMap();
         if (anon != null) {
             for (Object o : list) {
-                anon.jexlContext.set(TypeUtility._ITEM_, o);
-                Object ret = anon.block.jjtAccept(anon.pv, null);
+                anon.interpreter.getContext().set(TypeUtility._ITEM_, o);
+                Object ret = anon.block.jjtAccept(anon.interpreter, null);
                 if ( !m.containsKey(ret) ){
                     m.put(ret,new ArrayList());
                 }
                 ArrayList values = m.get(ret);
                 values.add(o);
             }
-            anon.jexlContext.set(TypeUtility._ITEM_, null);
+            anon.interpreter.getContext().remove(TypeUtility._ITEM_);
         }else{
             for (Object o : list) {
                 if ( !m.containsKey(o) ){

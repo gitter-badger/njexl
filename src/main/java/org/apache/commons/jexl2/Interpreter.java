@@ -243,7 +243,7 @@ public class Interpreter implements ParserVisitor {
      * @return the {@link JexlContext} used for evaluation.
      * @since 2.1
      */
-    protected JexlContext getContext() {
+    public JexlContext getContext() {
         return context;
     }
 
@@ -1133,13 +1133,11 @@ public class Interpreter implements ParserVisitor {
     }
 
     public static class AnonymousParam{
-        public ParserVisitor pv;
+        public Interpreter interpreter;
         public ASTBlock block;
-        public JexlContext jexlContext;
-        public AnonymousParam(ParserVisitor pv, ASTBlock block, JexlContext jexlContext){
-            this.pv = pv;
+        public AnonymousParam(Interpreter i, ASTBlock block){
+            this.interpreter = i;
             this.block = block;
-            this.jexlContext = jexlContext;
         }
     }
     /**
@@ -1173,7 +1171,7 @@ public class Interpreter implements ParserVisitor {
             /* the anonymous function is passed here.
                 Thus, we should pass this as argument
             */
-                argv[0] = new AnonymousParam(this, (ASTBlock) n, context);
+                argv[0] = new AnonymousParam(this, (ASTBlock)n);
             } else {
                 argv[0] = n.jjtAccept(this, null);
             }

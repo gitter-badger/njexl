@@ -1,10 +1,10 @@
 package org.apache.commons.jexl2.extension;
 
-import org.apache.commons.jexl2.JexlException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.beans.Statement;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -35,7 +35,11 @@ public class TypeUtility {
     public static final String STRING = "str";
     public static final String BOOL = "bool";
     public static final String BIGINT = "INT";
-    public static final String BIGDECIMAL = "DEC";
+    public static final String BIGDECIMAL1 = "DEC";
+    public static final String BIGDECIMAL2 = "NUM";
+
+    public static final String LOAD_PATH = "load";
+
     public static final String BYE = "BYE";
 
     /**
@@ -48,6 +52,11 @@ public class TypeUtility {
     public static final String ARRAY = "array";
     public static final String ARRAY_FROM_LIST = "arrayFromList";
     public static final String SET = "set";
+    public static final String MULTI_SET1 = "multiset";
+    public static final String MULTI_SET2 = "mset";
+    public static final String MULTI_SET3 = "setm";
+
+
     public static final String DICTIONARY = "dict";
     public static final String RANGE = "range";
     public static final String WITHIN = "within";
@@ -138,97 +147,95 @@ public class TypeUtility {
         return new BigDecimal(args[0].toString(), MathContext.UNLIMITED);
     }
 
-    public static Double castDouble(Object objectValue) {
+    public static Double castDouble(Object... args) {
+        if ( args.length == 0 ){
+            return 0.0;
+        }
         try {
+            if ( args[0] instanceof Double || args[0] instanceof Float){
+                return (Double)args[0];
+            }
+            Object objectValue = args[0];
             Double val = Double.valueOf(objectValue.toString());
             return val;
         } catch (Exception e) {
+            if ( args.length > 1 ){
+                return castDouble(args[1]);
+            }
             return null;
         }
     }
 
-    public static Integer castInteger(Object objectValue) {
-        Double doubleValue = castDouble(objectValue);
+    public static Integer castInteger(Object... args) {
+        Double doubleValue = castDouble(args);
         if (doubleValue != null) {
             int i = (int) Math.floor(doubleValue);
             return new Integer(i);
         }
         return null;
-
     }
 
-    public static Long castLong(Object objectValue) {
-        Double doubleValue = castDouble(objectValue);
+    public static Long castLong(Object... args) {
+        Double doubleValue = castDouble(args);
         if (doubleValue != null) {
             long l = (long) Math.floor(doubleValue);
             return new Long(l);
         }
         return null;
-
     }
 
-    public static DateTime castTime(Object objectValue, Object formatValue) {
-        if (objectValue == null) {
+    public static DateTime castTime(Object ... args) {
+        if (args.length == 0) {
             return new DateTime();
         }
-        if (objectValue instanceof Date) {
-            return new DateTime(objectValue);
+        if (args[0] instanceof Date || args[0] instanceof DateTime) {
+            return new DateTime(args[0]);
         }
-        if (objectValue instanceof DateTime) {
-            return (DateTime) objectValue;
-        }
-        DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd");
-        if (formatValue != null) {
-            dateTimeFormatter = DateTimeFormat.forPattern(formatValue.toString());
-        }
-        try {
-            return DateTime.parse(objectValue.toString(), dateTimeFormatter);
-        } catch (Exception e) {
 
+        DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd");
+        try {
+            if (args.length > 1) {
+                dateTimeFormatter = DateTimeFormat.forPattern(args[1].toString());
+            }
+            return DateTime.parse(args[0].toString(), dateTimeFormatter);
+        } catch (Exception e) {
         }
         return null;
     }
 
-    public static Date castDate(Object objectValue, Object formatValue) {
-        if (objectValue == null) {
+    public static Date castDate(Object ... args) {
+        if (args.length == 0) {
             return new Date();
         }
-        if (objectValue instanceof Date) {
-            return (Date) objectValue;
+        if (args[0] instanceof Date ) {
+            return (Date) args[0];
         }
-        if (objectValue instanceof DateTime) {
-            return ((DateTime) objectValue).toDate();
+        if (args[0] instanceof DateTime) {
+            return ((DateTime) args[0]).toDate();
         }
 
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyyMMdd");
-        if (formatValue != null) {
-            dateTimeFormatter = new SimpleDateFormat(formatValue.toString());
-        }
         try {
-            return dateTimeFormatter.parse(objectValue.toString());
+            if (args.length > 1) {
+                dateTimeFormatter = new SimpleDateFormat(args[1].toString());
+            }
+            return dateTimeFormatter.parse(args[0].toString());
         } catch (Exception e) {
-
         }
         return null;
     }
 
-    public static Boolean castBoolean(Object objectValue, Boolean defaultValue) {
-
-
-        if (defaultValue != null) {
-            defaultValue = Boolean.valueOf(defaultValue.toString());
-
-        }
-        if (objectValue == null) {
-            return defaultValue;
+    public static Boolean castBoolean(Object... args) {
+        if ( args.length == 0 ){
+            return Boolean.FALSE;
         }
 
-        if (objectValue instanceof Boolean) {
-            return (Boolean)objectValue;
+        if (args[0] instanceof Boolean) {
+            return (Boolean)args[0];
         }
 
-        if (objectValue instanceof String) {
-            String litValue = objectValue.toString();
+        if (args[0] instanceof String) {
+            String litValue = (String)args[0];
 
             litValue = litValue.toLowerCase();
             if (litValue.equals("true")) {
@@ -238,47 +245,68 @@ public class TypeUtility {
                 return Boolean.FALSE;
             }
         }
-        Double d = castDouble(objectValue);
+        Double d = castDouble(args);
         if (d != null) {
             return new Boolean(d != 0);
         }
-        return defaultValue;
+        if ( args.length > 1 ) {
+            return castBoolean(args[1]);
+        }
+        return null;
     }
 
-    public static String castString(Object objectValue, Object formatValue) {
-        if (objectValue == null) {
+    public static String castString(Object... args) {
+        if (args.length == 0) {
             return null;
         }
-        if (objectValue instanceof String) {
-            return (String) objectValue;
+        if ( args[0] instanceof AnonymousParam){
+            AnonymousParam anon = (AnonymousParam)args[0];
+            args = shiftArrayLeft(args, 1);
+            anon.interpreter.getContext().set(_ITEM_,args[0]);
+            Object ret = anon.block.jjtAccept(anon.interpreter, null);
+            anon.interpreter.getContext().remove(_ITEM_);
+            args[0] = ret; //set it up
+            return castString(args);
         }
-        if (objectValue instanceof DateTime) {
+
+        if (args[0] instanceof String) {
+            return (String) args[0];
+        }
+        if (args[0] instanceof DateTime) {
             DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd");
-            if (formatValue != null) {
-                dateTimeFormatter = DateTimeFormat.forPattern(formatValue.toString());
+            if (args.length > 1 && args[1]!=null) {
+                dateTimeFormatter = DateTimeFormat.forPattern(args[1].toString());
             }
             try {
-                return dateTimeFormatter.print((DateTime) objectValue);
+                return dateTimeFormatter.print((DateTime) args[0]);
             } catch (Exception e) {
-
             }
-        } else if (objectValue instanceof Date) {
+        } else if (args[0] instanceof Date) {
             SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyyMMdd");
-            if (formatValue != null) {
-                dateTimeFormatter = new SimpleDateFormat(formatValue.toString());
+            if (args.length > 1 && args[1]!=null) {
+                dateTimeFormatter = new SimpleDateFormat(args[1].toString());
             }
             try {
-                return dateTimeFormatter.format(objectValue);
+                return dateTimeFormatter.format(args[0]);
             } catch (Exception e) {
 
             }
         }
-        Class c = objectValue.getClass();
+        Class c = args[0].getClass();
         if (List.class.isAssignableFrom(c) || c.isArray()) {
-            List l = from(objectValue);
-
+            List l = from(args[0]);
+            StringBuffer buf = new StringBuffer();
+            String sep = ",";
+            if ( args.length> 1 && args[1] != null ){
+                sep = args[1].toString();
+            }
+            for(Object o : l){
+                buf.append(o).append(sep);
+            }
+            String ret = buf.substring(0, buf.lastIndexOf(sep));
+            return ret;
         }
-        return objectValue.toString();
+        return args[0].toString();
     }
 
     public static ArrayList makeLiteralList(Object... argv) {
@@ -365,12 +393,12 @@ public class TypeUtility {
         if (anon != null) {
             ArrayList l = new ArrayList();
             for (Object o : list) {
-                anon.jexlContext.set(_ITEM_, o);
-                Object ret = anon.block.jjtAccept(anon.pv, null);
+                anon.interpreter.getContext().set(_ITEM_, o);
+                Object ret = anon.block.jjtAccept(anon.interpreter, null);
                 l.add(ret);
             }
             list = l;
-            anon.jexlContext.remove(_ITEM_);
+            anon.interpreter.getContext().remove(_ITEM_);
         }
         return list;
     }
@@ -391,14 +419,14 @@ public class TypeUtility {
         if (anon != null) {
             ArrayList l = new ArrayList();
             for (Object o : list) {
-                anon.jexlContext.set(_ITEM_, o);
-                Object ret = anon.block.jjtAccept(anon.pv, null);
+                anon.interpreter.getContext().set(_ITEM_, o);
+                Object ret = anon.block.jjtAccept(anon.interpreter, null);
                 if ( castBoolean(ret,false) ){
                     l.add(o);
                 }
             }
             list = l;
-            anon.jexlContext.remove(_ITEM_);
+            anon.interpreter.getContext().remove(_ITEM_);
         }
         return list;
     }
@@ -546,109 +574,66 @@ public class TypeUtility {
     public static Object interceptCastingCall(String methodName, Object[] argv, Boolean[] success) throws Exception {
 
         success[0] = true;
-
-        if (methodName.equals(INT)) {
-
-            if (argv.length == 0) {
-                return null;
-            }
-            return castInteger(argv[0]);
+        switch (methodName){
+            case INT:
+                return castInteger(argv);
+            case LONG:
+                return castLong(argv);
+            case DOUBLE:
+                return castDouble(argv);
+            case BIGDECIMAL1:
+            case BIGDECIMAL2:
+                return castBigDecimal(argv);
+            case BIGINT:
+                return castBigInteger(argv);
+            case BOOL:
+                return castBoolean(argv);
+            case STRING:
+                return castString(argv);
+            case TIME:
+                return castTime(argv);
+            case DATE:
+                return castDate(argv);
+            case LITERAL_LIST:
+                return makeLiteralList(argv);
+            case LIST:
+                return combine(argv);
+            case FILTER:
+                return filter(argv);
+            case ARRAY:
+                return argv;
+            case SET:
+                return set(argv);
+            case DICTIONARY:
+                return makeDict(argv);
+            case RANGE:
+                return range(argv);
+            case ARRAY_FROM_LIST:
+                return getArray(makeLiteralList(argv));
+            case WITHIN:
+                return within(argv);
+            case SQLMATH:
+                return sqlmath(argv);
+            case READ :
+                return read(argv);
+            case READ_LINES:
+                return readLines(argv);
+            case WRITE:
+                writeFile(argv);
+                break;
+            case BYE:
+                bye(argv);
+                break;
+            case LOAD_PATH:
+                return ReflectionUtility.load_path(argv);
+            case MULTI_SET1:
+            case MULTI_SET2:
+            case MULTI_SET3:
+                return SetOperations.multiset(argv);
+            default:
+                success[0] = false;
+                break;
         }
-        if (methodName.equals(LONG)) {
-            if (argv.length == 0) {
-                return null;
-            }
-            return castLong(argv[0]);
-        }
-        if (methodName.equals(DOUBLE)) {
-            if (argv.length == 0) {
-                return null;
-            }
-            return castDouble(argv[0]);
-        }
-        if (methodName.equals(BIGDECIMAL)) {
-            return castBigDecimal(argv);
-        }
-        if (methodName.equals(BIGINT)) {
-            return castBigInteger(argv);
-        }
-        if (methodName.equals(BOOL)) {
-            if (argv.length == 0) {
-                return null;
-            }
-            if (argv.length == 1)
-                return castBoolean(argv[0], null);
-            return castBoolean(argv[0], (Boolean)argv[1]);
-        }
-        if (methodName.equals(STRING)) {
-            if (argv.length == 0) {
-                return null;
-            }
-            if (argv.length == 1)
-                return castString(argv[0], null);
-            return castString(argv[0], argv[1]);
-        }
-        if (methodName.equals(TIME)) {
-            if (argv.length == 0) {
-                return new DateTime();
-            }
-            if (argv.length == 1)
-                return castTime(argv[0], null);
-            return castTime(argv[0], argv[1]);
-        }
-        if (methodName.equals(DATE)) {
-            if (argv.length == 0) {
-                return new Date();
-            }
-            if (argv.length == 1)
-                return castDate(argv[0], null);
-            return castDate(argv[0], argv[1]);
-        }
-        if (methodName.equals(LITERAL_LIST)) {
-            return makeLiteralList(argv);
-        }
-        if (methodName.equals(LIST)) {
-            return combine(argv);
-        }
-        if (methodName.equals(FILTER)) {
-            return filter(argv);
-        }
-        if (methodName.equals(ARRAY)) {
-            return argv;
-        }
-        if (methodName.equals(SET)) {
-            return set(argv);
-        }
-        if (methodName.equals(DICTIONARY)) {
-            return makeDict(argv);
-        }
-        if (methodName.equals(RANGE)) {
-            return range(argv);
-        }
-        if (methodName.equals(ARRAY_FROM_LIST)) {
-            return getArray(makeLiteralList(argv));
-        }
-        if (methodName.equals(WITHIN)) {
-            return within(argv);
-        }
-        if (methodName.equals(SQLMATH)) {
-            return sqlmath(argv);
-        }
-
-        if (methodName.equals(READ)) {
-            return read(argv);
-        }
-        if (methodName.equals(READ_LINES)) {
-            return readLines(argv);
-        }
-        if (methodName.equals(WRITE)) {
-            writeFile(argv);
-        }
-        if (methodName.equals(BYE)) {
-            bye(argv);
-        }
-        success[0] = false;
-
         return methodName;
     }
 
