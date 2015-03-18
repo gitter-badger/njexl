@@ -533,6 +533,31 @@ public class JexlEngine {
         return script;
     }
 
+    public Script importScriptForJVM(String from, String as) throws Exception{
+        String scriptText = null;
+        if ( from.startsWith(Script.RELATIVE )){
+            from = System.getProperty("user.dir")  + from.substring(1) ;
+        }
+        if ( !from.endsWith(Script.DEFAULT_EXTENSION)){
+            from +=  Script.DEFAULT_EXTENSION;
+        }
+        File f = new File(from);
+        BufferedReader reader = new BufferedReader(new FileReader(f));
+        scriptText = readerToString(reader);
+        scriptText = scriptText.replaceAll(Script.SELF +":", as+".");
+
+        // now create script
+        Script script = createScript(scriptText,null , null);
+        if ( script instanceof  ExpressionImpl ){
+            ExpressionImpl ei = ((ExpressionImpl) script);
+            ei.location = f.getAbsolutePath();
+            ei.importName = as;
+            System.out.printf("Script imported : %s@%s\n", ei.importName, ei.location );
+        }
+        imports.put(as,script);
+        return script;
+    }
+
     /**
      * Creates a Script from a String containing valid JEXL syntax.
      * This method parses the script which validates the syntax.

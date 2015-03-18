@@ -16,6 +16,8 @@
  */
 package org.apache.commons.jexl2;
 
+import org.apache.commons.jexl2.parser.ASTImportStatement;
+import org.apache.commons.jexl2.parser.ASTJexlScript;
 import org.apache.commons.jexl2.parser.ASTMethodDef;
 
 import java.util.HashMap;
@@ -54,6 +56,10 @@ public interface Script {
      *      the last statement.
      */
     Object execute(JexlContext context);
+
+
+    Object executeJVM(HashMap<String,Object> context, Object... args);
+
 
     /**
      * Executes the script with the variables contained in the
@@ -123,6 +129,20 @@ public interface Script {
      * @return
      */
     HashMap<String,ASTMethodDef> methods();
+
+    /**
+     * The defined methods of the script
+     * @return
+     */
+    HashMap<String,ASTImportStatement> imports();
+
+    ASTJexlScript script();
+
+    /**
+     * This should return a JVM Class for the script
+     * @return
+     */
+    Class myClass(HashMap<String,Object> context);
 
     /**
      * The name under which it was imported

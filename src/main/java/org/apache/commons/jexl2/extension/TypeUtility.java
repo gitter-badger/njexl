@@ -431,10 +431,8 @@ public class TypeUtility {
         return list;
     }
 
-    public static ArrayList<Integer> range(Object[] args) throws Exception {
-        if (args == null) {
-            return range(new Object[]{42});
-        }
+    public static ArrayList<Integer> range(Object... args) throws Exception {
+
         if (args.length == 0) {
             return range(new Object[]{42});
         }

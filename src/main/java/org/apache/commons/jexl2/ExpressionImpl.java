@@ -17,11 +17,16 @@
 package org.apache.commons.jexl2;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import javassist.CtClass;
+import org.apache.commons.jexl2.extension.TypeUtility;
+import org.apache.commons.jexl2.jvm.ClassGen;
+import org.apache.commons.jexl2.jvm.DynaCallable;
 import org.apache.commons.jexl2.parser.*;
 
 /**
@@ -32,12 +37,18 @@ import org.apache.commons.jexl2.parser.*;
  */
 public class ExpressionImpl implements Expression, Script {
 
-
     String location;
 
     String importName;
 
+    ClassGen classGen ;
+
+    Class myself;
+
     HashMap<String,ASTMethodDef> methods;
+
+    HashMap<String,ASTImportStatement> imports;
+
 
     /** The engine for this expression. */
     protected final JexlEngine jexl;
@@ -49,6 +60,18 @@ public class ExpressionImpl implements Expression, Script {
      * The resulting AST we can interpret.
      */
     protected final ASTJexlScript script;
+
+    protected void findImports(JexlNode node){
+        if ( node instanceof ASTImportStatement ){
+            ASTImportStatement importDef = (ASTImportStatement)node;
+            imports.put( importDef.jjtGetChild(1).image, importDef );
+        }else {
+            int numChild = node.jjtGetNumChildren();
+            for ( int i =0; i < numChild; i++ ){
+                findImports(node.jjtGetChild(i));
+            }
+        }
+    }
 
     protected void findMethods(JexlNode node){
         if ( node instanceof ASTMethodDef ){
@@ -62,14 +85,30 @@ public class ExpressionImpl implements Expression, Script {
         }
     }
 
+    @Override
+    public Class myClass(HashMap<String,Object> context){
+        if ( myself == null ) {
+            try {
+               myself = classGen.createClass(context);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return myself;
+    }
+
     protected ExpressionImpl(String from, String as, JexlEngine engine, String expr, ASTJexlScript ref) {
         jexl = engine;
         expression = expr;
         script = ref;
         methods = new HashMap<>();
+        imports = new HashMap<>();
         location = from;
         importName = as;
+        findImports(script);
         findMethods(script);
+        classGen = new ClassGen(this);
     }
 
     /**
@@ -263,6 +302,13 @@ public class ExpressionImpl implements Expression, Script {
         return methods;
     }
 
+    @Override
+    public HashMap<String, ASTImportStatement> imports() {
+        return imports;
+    }
+
+    @Override
+    public ASTJexlScript script(){ return script; }
     /**
      * The name under which it was imported
      *
@@ -272,4 +318,32 @@ public class ExpressionImpl implements Expression, Script {
     public String name() {
         return importName;
     }
+
+    void initContext(Object o, HashMap<String,Object> context)throws Exception {
+        if ( context == null ){
+            return;
+        }
+        for ( String name : context.keySet()){
+            Field f = o.getClass().getDeclaredField(name);
+            f.set(o,context.get(name));
+        }
+    }
+
+    @Override
+    public Object executeJVM(HashMap<String,Object> context, Object... args){
+       Class c = myClass(context);
+       if ( c == null ){
+           return null;
+       }
+        try {
+            DynaCallable dynaCallable = (DynaCallable)c.newInstance();
+            initContext(dynaCallable,context);
+            Object r = dynaCallable.__call__(args);
+            return r;
+        }catch (Throwable throwable){
+            throwable.printStackTrace();
+        }
+        return null;
+    }
+
 }

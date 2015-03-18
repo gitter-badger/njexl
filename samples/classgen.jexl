@@ -1,0 +1,12 @@
+def void_func(){
+    return false
+}
+
+def some_func(s){
+    System.out.println(s)
+    my:void_func()
+    return true
+}
+
+for ( i : range(100000) );
+some_func("Hello, World!")
