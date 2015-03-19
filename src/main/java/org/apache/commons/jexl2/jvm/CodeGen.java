@@ -18,6 +18,7 @@ package org.apache.commons.jexl2.jvm;
 
 import java.util.regex.Pattern;
 
+import org.apache.commons.jexl2.extension.TypeUtility;
 import org.apache.commons.jexl2.parser.*;
 
 /**
@@ -30,7 +31,7 @@ import org.apache.commons.jexl2.parser.*;
  * the error.
  * @since 2.0
  */
-final class CodeGen implements ParserVisitor {
+public final class CodeGen implements ParserVisitor {
     ClassGen classGen;
     boolean bodyOnly ;
 
@@ -405,7 +406,7 @@ final class CodeGen implements ParserVisitor {
         builder.append("for(java.util.Iterator iter = ");
 
         String var = node.jjtGetChild(0).jjtGetChild(0).image;
-        builder.append("(");
+        builder.append("((java.util.Collection)");
         accept(node.jjtGetChild(1), data);
         builder.append(").iterator() ; iter.hasNext() ; )");
 
@@ -559,27 +560,53 @@ final class CodeGen implements ParserVisitor {
         return data;
     }
 
+    public static final String ANON_MARKER = "@non#";
+
     /** {@inheritDoc} */
     public Object visit(ASTMethodNode node, Object data) {
+        String method = node.jjtGetChild(0).image ;
+
+        boolean standard = TypeUtility.methods.contains(method) ;
+
         int num = node.jjtGetNumChildren();
-        accept(node.jjtGetChild(0), data);
+
+        if ( standard ){
+            builder.append("org.apache.commons.jexl2.extension.TypeUtility.standardCall");
+        }
+        else{
+            builder.append(method);
+        }
         JexlNode n ;
+        String anonBody = "";
         int start = 1;
         if ( num > 1 ) {
             n = node.jjtGetChild(1);
             if (n instanceof ASTBlock) {
-                accept(n,data);
+                // do something here?
+                //create a method...
+                //anonBody = this.classGen.createAnonymousMethod((ASTBlock)n);
                 start = 2;
             }
         }
 
         builder.append("(");
+        if ( standard ){
+            builder.append( "\"" + method + "\" , ");
+            builder.append( "new Object[]{ ");
+        }
+        if ( !anonBody.isEmpty()){
+            builder.append( "\"" + ANON_MARKER + anonBody + "\"" ).append(",");
+        }
+
         for (int i = start; i < num; ++i) {
             if (i > start ) {
                 builder.append(", ");
             }
             n = node.jjtGetChild(i);
             accept(n, data);
+        }
+        if(standard){
+            builder.append("}");
         }
         builder.append(")");
 

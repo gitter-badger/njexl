@@ -8,5 +8,5 @@ def some_func(s){
     return true
 }
 
-for ( i : range(100000) );
+//for ( i : range(100000) );
 some_func("Hello, World!")

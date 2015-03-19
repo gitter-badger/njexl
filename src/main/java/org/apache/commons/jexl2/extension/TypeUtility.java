@@ -1,12 +1,13 @@
 package org.apache.commons.jexl2.extension;
 
+import org.apache.commons.jexl2.jvm.CodeGen;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.beans.Statement;
 import java.io.File;
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -71,6 +72,31 @@ public class TypeUtility {
     public static final String WRITE = "write";
 
     public static final String _ITEM_ = "$_";
+
+    public static  HashSet<String> methods;
+
+    static {
+        methods = new HashSet<>();
+        methods.add(LIST);
+        methods.add(FILTER);
+        methods.add(LITERAL_LIST);
+        methods.add(ARRAY);
+        methods.add(ARRAY_FROM_LIST);
+        methods.add(SET);
+        methods.add(MULTI_SET1);
+        methods.add(MULTI_SET2);
+        methods.add(MULTI_SET3);
+
+        methods.add(DICTIONARY);
+        methods.add(RANGE);
+        methods.add(WITHIN);
+        methods.add(SQLMATH);
+
+        methods.add(READ);
+        methods.add(READ_LINES);
+        methods.add(WRITE);
+
+    }
 
     /**
      * <pre>
@@ -366,6 +392,31 @@ public class TypeUtility {
         return list;
     }
 
+    public static HashMap<String,Method> methodHashMap = new HashMap<>();
+
+    public static Object callAnonMethod(String name,Object val){
+        if( !methodHashMap.containsKey(name)){
+            String[] arr = name.split("__");
+            String className = arr[0];
+            String methodName = name;
+            try {
+                Class c = Class.forName(className);
+                Method method = c.getMethod(methodName);
+                methodHashMap.put(name,method);
+            }catch (Exception e){
+                System.err.println(e);
+            }
+        }
+        Method m = methodHashMap.get(name);
+        Object o = null;
+        try {
+            o = m.invoke(null, val);
+        }catch (Exception e){
+            System.err.println(e);
+        }
+        return o;
+    }
+
     /**
      * <pre>
      *     Very important list combine routine
@@ -379,18 +430,35 @@ public class TypeUtility {
      */
     public static ArrayList combine(Object... args) {
         AnonymousParam anon = null;
+        String  anonCall = null ;
         ArrayList list = new ArrayList();
         if (args.length > 1) {
             if (args[0] instanceof AnonymousParam) {
                 anon = (AnonymousParam) args[0];
                 args = shiftArrayLeft(args, 1);
             }
+            if (args[0] instanceof String) {
+                String b = (String)args[0];
+                if ( b.startsWith(CodeGen.ANON_MARKER )){
+                    String[] arr = b.split(CodeGen.ANON_MARKER);
+                    args = shiftArrayLeft(args, 1);
+                    anonCall = arr[0];
+                }
+            }
         }
         for (int i = 0; i < args.length; i++) {
             List l = from(args[i]);
             list.addAll(l);
         }
-        if (anon != null) {
+        if ( anonCall != null ){
+            ArrayList l = new ArrayList();
+            for (Object o : list) {
+                Object ret = callAnonMethod(anonCall,o);
+                l.add(ret);
+            }
+            list = l;
+        }
+        else if (anon != null) {
             ArrayList l = new ArrayList();
             for (Object o : list) {
                 anon.interpreter.getContext().set(_ITEM_, o);
@@ -400,6 +468,7 @@ public class TypeUtility {
             list = l;
             anon.interpreter.getContext().remove(_ITEM_);
         }
+
         return list;
     }
 
@@ -571,7 +640,9 @@ public class TypeUtility {
 
     public static Object interceptCastingCall(String methodName, Object[] argv, Boolean[] success) throws Exception {
 
-        success[0] = true;
+        if ( success != null ) {
+            success[0] = true;
+        }
         switch (methodName){
             case INT:
                 return castInteger(argv);
@@ -629,10 +700,16 @@ public class TypeUtility {
             case MULTI_SET3:
                 return SetOperations.multiset(argv);
             default:
-                success[0] = false;
+                if ( success != null ) {
+                    success[0] = false;
+                }
                 break;
         }
         return methodName;
+    }
+
+    public static Object standardCall(String methodName, Object[] argv) throws Exception{
+        return interceptCastingCall(methodName,argv,null);
     }
 
     public static class XNumber extends Number implements Comparable {

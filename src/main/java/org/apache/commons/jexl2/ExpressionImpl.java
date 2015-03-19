@@ -19,6 +19,7 @@ package org.apache.commons.jexl2;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -61,10 +62,17 @@ public class ExpressionImpl implements Expression, Script {
      */
     protected final ASTJexlScript script;
 
+
+    protected HashSet<String> excludeSet;
+
+    public HashSet<String> excludeSet(){ return  excludeSet ; }
+
     protected void findImports(JexlNode node){
         if ( node instanceof ASTImportStatement ){
             ASTImportStatement importDef = (ASTImportStatement)node;
-            imports.put( importDef.jjtGetChild(1).image, importDef );
+            String as = importDef.jjtGetChild(1).image ;
+            excludeSet.add(as);
+            imports.put( as , importDef );
         }else {
             int numChild = node.jjtGetNumChildren();
             for ( int i =0; i < numChild; i++ ){
@@ -77,6 +85,11 @@ public class ExpressionImpl implements Expression, Script {
         if ( node instanceof ASTMethodDef ){
             ASTMethodDef methodDef = (ASTMethodDef)node;
             methods.put( methodDef.jjtGetChild(0).image, methodDef );
+            int numChild = methodDef.jjtGetNumChildren();
+            for ( int i = 1; i < numChild-1;i++ ){
+                String paramName = methodDef.jjtGetChild(i).image;
+                excludeSet.add(paramName);
+            }
         }else {
             int numChild = node.jjtGetNumChildren();
             for ( int i =0; i < numChild; i++ ){
@@ -89,7 +102,7 @@ public class ExpressionImpl implements Expression, Script {
     public Class myClass(HashMap<String,Object> context){
         if ( myself == null ) {
             try {
-               myself = classGen.createClass(context);
+                myself = classGen.createClass(context);
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -106,6 +119,9 @@ public class ExpressionImpl implements Expression, Script {
         imports = new HashMap<>();
         location = from;
         importName = as;
+        excludeSet = new HashSet<>();
+        excludeSet.add(as);
+        excludeSet.add("$_");
         findImports(script);
         findMethods(script);
         classGen = new ClassGen(this);
@@ -331,10 +347,10 @@ public class ExpressionImpl implements Expression, Script {
 
     @Override
     public Object executeJVM(HashMap<String,Object> context, Object... args){
-       Class c = myClass(context);
-       if ( c == null ){
-           return null;
-       }
+        Class c = myClass(context);
+        if ( c == null ){
+            return null;
+        }
         try {
             DynaCallable dynaCallable = (DynaCallable)c.newInstance();
             initContext(dynaCallable,context);

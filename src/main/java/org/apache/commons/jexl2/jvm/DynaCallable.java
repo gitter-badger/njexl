@@ -66,28 +66,5 @@ public interface DynaCallable {
             }
             return __return__;
         }
-
-         /*
-        * Other Utility functions
-        * */
-
-        public static ArrayList range(Object args) throws Exception {
-            return TypeUtility.range(args);
-        }
-
-        public static ArrayList range(Object arg1, Object arg2) throws Exception {
-            return TypeUtility.range(arg1,arg2);
-        }
-        public static ArrayList range(Object arg1, Object arg2,Object arg3) throws Exception {
-            return TypeUtility.range(arg1,arg2,arg3);
-        }
-
-        public static ArrayList list(Object... args) {
-            return TypeUtility.combine(args);
-        }
-
     }
-
-
-
 }
