@@ -8,5 +8,9 @@ def some_func(s){
     return true
 }
 
-//for ( i : range(100000) );
-some_func("Hello, World!")
+for ( i : range(100000) );
+
+s = set{ return $_ } ( 1 , 1, 2, 3, 3, 4 )
+some_func(s)
+s = mset{ return $_ } ( 1 , 1, 2, 3, 3, 4 )
+some_func(s)

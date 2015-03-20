@@ -325,8 +325,27 @@ public final class CodeGen implements ParserVisitor {
         return data;
     }
 
+    String checkForVariables(ASTAssignment node){
+        JexlNode n = node.jjtGetChild(0);
+        if ( n instanceof ASTReference ){
+            n = n.jjtGetChild(0);
+            if ( n instanceof ASTIdentifier ){
+                return n.image ;
+            }
+        }
+        return null;
+    }
+
     /** {@inheritDoc} */
     public Object visit(ASTAssignment node, Object data) {
+        String name = checkForVariables(node);
+        if ( name != null ){
+            try {
+                this.classGen.createVariable(name);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
         return infixChildren(node, " = ", false, data);
     }
 
@@ -584,7 +603,7 @@ public final class CodeGen implements ParserVisitor {
             if (n instanceof ASTBlock) {
                 // do something here?
                 //create a method...
-                //anonBody = this.classGen.createAnonymousMethod((ASTBlock)n);
+                anonBody = this.classGen.createAnonymousMethod((ASTBlock)n);
                 start = 2;
             }
         }

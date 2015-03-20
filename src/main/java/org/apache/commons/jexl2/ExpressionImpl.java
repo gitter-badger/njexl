@@ -62,16 +62,10 @@ public class ExpressionImpl implements Expression, Script {
      */
     protected final ASTJexlScript script;
 
-
-    protected HashSet<String> excludeSet;
-
-    public HashSet<String> excludeSet(){ return  excludeSet ; }
-
     protected void findImports(JexlNode node){
         if ( node instanceof ASTImportStatement ){
             ASTImportStatement importDef = (ASTImportStatement)node;
             String as = importDef.jjtGetChild(1).image ;
-            excludeSet.add(as);
             imports.put( as , importDef );
         }else {
             int numChild = node.jjtGetNumChildren();
@@ -88,7 +82,6 @@ public class ExpressionImpl implements Expression, Script {
             int numChild = methodDef.jjtGetNumChildren();
             for ( int i = 1; i < numChild-1;i++ ){
                 String paramName = methodDef.jjtGetChild(i).image;
-                excludeSet.add(paramName);
             }
         }else {
             int numChild = node.jjtGetNumChildren();
@@ -119,9 +112,6 @@ public class ExpressionImpl implements Expression, Script {
         imports = new HashMap<>();
         location = from;
         importName = as;
-        excludeSet = new HashSet<>();
-        excludeSet.add(as);
-        excludeSet.add("$_");
         findImports(script);
         findMethods(script);
         classGen = new ClassGen(this);

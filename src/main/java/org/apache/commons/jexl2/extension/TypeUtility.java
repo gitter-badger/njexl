@@ -398,11 +398,15 @@ public class TypeUtility {
         if( !methodHashMap.containsKey(name)){
             String[] arr = name.split("__");
             String className = arr[0];
-            String methodName = name;
             try {
                 Class c = Class.forName(className);
-                Method method = c.getMethod(methodName);
-                methodHashMap.put(name,method);
+                Method[] methods = c.getDeclaredMethods();
+                for ( Method m : methods ) {
+                    if ( m.getName().equals(name)) {
+                        methodHashMap.put(name, m);
+                        break;
+                    }
+                }
             }catch (Exception e){
                 System.err.println(e);
             }
@@ -442,7 +446,7 @@ public class TypeUtility {
                 if ( b.startsWith(CodeGen.ANON_MARKER )){
                     String[] arr = b.split(CodeGen.ANON_MARKER);
                     args = shiftArrayLeft(args, 1);
-                    anonCall = arr[0];
+                    anonCall = arr[1];
                 }
             }
         }
@@ -624,7 +628,6 @@ public class TypeUtility {
         }
         return math;
     }
-
 
     public static void bye(Object...args){
         System.err.println("BYE received, we will exit...");
