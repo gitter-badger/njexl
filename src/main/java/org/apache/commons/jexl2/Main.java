@@ -94,14 +94,27 @@ public class Main {
         System.exit(0);
     }
 
+    public static final boolean __USE_JVM__ = true ;
+
     public static void executeScript(String[] args){
         JexlContext jc = getContext();
         JexlEngine JEXL = getJexl(jc);
         jc.set("args", args);
         try {
-            Script sc = JEXL.createScript(new File(args[0]));
-            Object o = sc.execute(jc);
-            System.out.printf("======\n%s\n=====\n", o);
+            Script sc = null;
+            Object o ;
+            if ( __USE_JVM__ ){
+                JEXL = new JexlEngine();
+                JEXL.setFunctions(getFunction(jc));
+                HashMap<String,Object> map = new HashMap<>();
+                map.put("args",args);
+                sc = JEXL.importScriptForJVM(args[0], Script.DEFAULT_IMPORT_NAME );
+                o = sc.executeJVM( map );
+            }else {
+                sc = JEXL.createScript(new File(args[0]));
+                o = sc.execute(jc);
+                System.out.printf("======\n%s\n=====\n", o);
+            }
             System.exit(0);
         }catch (Exception e){
             e.printStackTrace();

@@ -132,7 +132,7 @@ public class ClassGen {
         CodeGen codeGen = new CodeGen(this,false);
         String body = codeGen.data(block);
 
-        String methodName = expression.name() + "__" + Long.toString( System.currentTimeMillis() );
+        String methodName = expression.name() + "__" + Long.toString( System.nanoTime() );
         String methodBody = "public static Object " + methodName + "(Object _item_)" ;
         body = body.replaceAll("\\$_", "_item_");
         methodBody+= body ;

@@ -341,13 +341,18 @@ public class ExpressionImpl implements Expression, Script {
         if ( c == null ){
             return null;
         }
+        DynaCallable dynaCallable = null;
         try {
-            DynaCallable dynaCallable = (DynaCallable)c.newInstance();
+            dynaCallable = (DynaCallable)c.newInstance();
             initContext(dynaCallable,context);
             Object r = dynaCallable.__call__(args);
             return r;
         }catch (Throwable throwable){
             throwable.printStackTrace();
+        }finally {
+            if ( dynaCallable != null ) {
+                context.putAll(dynaCallable.__context__());
+            }
         }
         return null;
     }

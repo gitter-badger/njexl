@@ -3,8 +3,10 @@ package org.apache.commons.jexl2.jvm;
 import org.apache.commons.jexl2.extension.TypeUtility;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * Created by noga on 17/03/15.
@@ -16,6 +18,8 @@ public interface DynaCallable {
     Object __call__(Object[] args);
 
     Object __script_body__(Object[] args) throws Exception;
+
+    HashMap<String,Object>  __context__() ;
 
     public static class TemplateClass implements DynaCallable {
 
@@ -45,10 +49,26 @@ public interface DynaCallable {
             return null;
         }
 
-
         public static Object __return__ = null;
 
         public static Object __error__ = null;
+
+        @Override
+        public HashMap<String,Object>  __context__() {
+            HashMap<String,Object> context = new HashMap<>();
+            Field[] fields = this.getClass().getDeclaredFields();
+            for ( int i = 0 ; i < fields.length;i++ ){
+                String name = fields[i].getName();
+                Object value = null ;
+                try {
+                    value = fields[i].get(this);
+                }catch (Exception e){
+
+                }
+                context.put(name,value);
+            }
+            return context;
+        }
 
         @Override
         public Object __script_body__(Object[] args) throws Exception {

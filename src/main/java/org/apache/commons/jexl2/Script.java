@@ -40,7 +40,7 @@ public interface Script {
 
     public static final String SELF = "my" ;
 
-    public static final String DEFAULT_IMPORT_NAME = "_jexl_" ;
+    public static final String DEFAULT_IMPORT_NAME = "JexlMain" ;
 
     public static final String DEFAULT_EXTENSION = ".jexl" ;
 
