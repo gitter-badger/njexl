@@ -351,7 +351,10 @@ public class ExpressionImpl implements Expression, Script {
             throwable.printStackTrace();
         }finally {
             if ( dynaCallable != null ) {
-                context.putAll(dynaCallable.__context__());
+                HashMap map = dynaCallable.__context__() ;
+                if ( map != null && context != null ) {
+                    context.putAll(map);
+                }
             }
         }
         return null;

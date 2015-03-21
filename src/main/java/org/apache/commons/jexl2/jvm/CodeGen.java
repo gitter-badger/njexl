@@ -541,13 +541,30 @@ public final class CodeGen implements ParserVisitor {
     public Object visit(ASTConstructorNode node, Object data) {
         int num = node.jjtGetNumChildren();
         builder.append("new ");
-        builder.append("(");
-        accept(node.jjtGetChild(0), data);
-        for (int i = 1; i < num; ++i) {
-            builder.append(", ");
-            accept(node.jjtGetChild(i), data);
+        JexlNode n = node.jjtGetChild(0).jjtGetChild(0) ;
+        if ( n instanceof ASTIdentifier ){
+            if (  classGen.imports.containsKey(n.image)){
+                Object obj = classGen.imports.get(n.image);
+                if ( obj instanceof String ){
+                    builder.append(obj);
+                }else{
+                    System.err.println("Sorry, can not *new* JEXL Scripts!");
+                }
+            }else{
+                System.err.println("Sorry, can not new NOT imported Objects!");
+            }
         }
-        builder.append(")");
+        else if ( n instanceof ASTStringLiteral ){
+            builder.append(n.image);
+        }
+        builder.append("(");
+        for (int i = 1; i < num; ++i) {
+            accept(node.jjtGetChild(i), data);
+            if ( i != num -1) {
+                builder.append(", ");
+            }
+        }
+        builder.append(");");
         return data;
     }
 
