@@ -31,3 +31,10 @@ s = [ 1 , 2, 3, 4, 5]
 for ( x : s ){
    print(x)
 }
+
+A = 'a'
+B = 'b'
+s = { A : 1, B : 2 }
+print(s)
+s = {:}
+print(s)

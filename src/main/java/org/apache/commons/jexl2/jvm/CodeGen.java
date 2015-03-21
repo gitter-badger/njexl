@@ -513,26 +513,30 @@ public final class CodeGen implements ParserVisitor {
 
     /** {@inheritDoc} */
     public Object visit(ASTMapEntry node, Object data) {
+        builder.append("new org.apache.commons.jexl2.extension.PairHashMap.Pair(O(");
         accept(node.jjtGetChild(0), data);
-        builder.append(" : ");
+        builder.append("),O(");
         accept(node.jjtGetChild(1), data);
+        builder.append("))");
         return data;
     }
 
     /** {@inheritDoc} */
     public Object visit(ASTMapLiteral node, Object data) {
         int num = node.jjtGetNumChildren();
-        builder.append("{ ");
+        builder.append("new org.apache.commons.jexl2.extension.PairHashMap( ");
+
         if (num > 0) {
+            builder.append("new org.apache.commons.jexl2.extension.PairHashMap.Pair[]{ ");
             accept(node.jjtGetChild(0), data);
             for (int i = 1; i < num; ++i) {
                 builder.append(", ");
                 accept(node.jjtGetChild(i), data);
             }
-        } else {
-            builder.append(':');
+            builder.append(" }");
+
         }
-        builder.append(" }");
+        builder.append(" )");
         return data;
     }
 

@@ -74,7 +74,6 @@ public class ClassGen {
         }
     }
 
-
     protected void createMethods() throws Exception{
 
         HashSet<String> notDoneYet = new HashSet<>();
