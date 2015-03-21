@@ -313,15 +313,20 @@ public final class CodeGen implements ParserVisitor {
     /** {@inheritDoc} */
     public Object visit(ASTArrayLiteral node, Object data) {
         int num = node.jjtGetNumChildren();
-        builder.append("[ ");
+        builder.append("new Object[]{ ");
+
         if (num > 0) {
+            builder.append("O(");
             accept(node.jjtGetChild(0), data);
+            builder.append(")");
             for (int i = 1; i < num; ++i) {
                 builder.append(", ");
+                builder.append("O(");
                 accept(node.jjtGetChild(i), data);
+                builder.append(")");
             }
         }
-        builder.append(" ]");
+        builder.append("}");
         return data;
     }
 
@@ -425,7 +430,7 @@ public final class CodeGen implements ParserVisitor {
         builder.append("for(java.util.Iterator iter = ");
 
         String var = node.jjtGetChild(0).jjtGetChild(0).image;
-        builder.append("((java.util.Collection)");
+        builder.append("l(");
         accept(node.jjtGetChild(1), data);
         builder.append(").iterator() ; iter.hasNext() ; )");
 
@@ -483,12 +488,6 @@ public final class CodeGen implements ParserVisitor {
 
     /** {@inheritDoc} */
     public Object visit(ASTNumberLiteral node, Object data) {
-        if ( node.isInteger() ){
-            node.image = "Integer.valueOf(" + node.image +")";
-        }
-        else {
-            node.image = "Double.valueOf(" + node.image +")";
-        }
         return check(node, node.image, data);
     }
 
@@ -639,7 +638,13 @@ public final class CodeGen implements ParserVisitor {
                 builder.append(", ");
             }
             n = node.jjtGetChild(i);
+            if ( standard ) {
+                builder.append("O(");
+            }
             accept(n, data);
+            if ( standard ) {
+                builder.append(")");
+            }
         }
         if(standard){
             builder.append("}");
@@ -715,10 +720,18 @@ public final class CodeGen implements ParserVisitor {
         return data;
     }
 
+    public boolean anonymousReturn = false ;
+
     /** {@inheritDoc} */
     public Object visit(ASTReturnStatement node, Object data) {
         builder.append("return ");
+        if ( anonymousReturn ){
+            builder.append("O(");
+        }
         accept(node.jjtGetChild(0), data);
+        if ( anonymousReturn ){
+            builder.append(")");
+        }
         return data;
     }
 

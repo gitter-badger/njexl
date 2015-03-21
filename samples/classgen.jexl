@@ -1,23 +1,33 @@
-/*
+/***
+  Showcasing the new Jexl Syntax
+*/
 def void_func(){
+    // define function and return
     return false
 }
 
-def some_func(s){
+def print(s){
+    // directly called standard java folks
     System.out.println(s)
     my:void_func()
     return true
 }
 
-for ( i : range(100000) );
+// The anonymous functions : { } issue : needs to have physical return as of now
+s = set{ return i($_) *10 } ( 1 , 1, 2, 3, 3, 4 )
+print(s)
 
-s = set{ return $_ } ( 1 , 1, 2, 3, 3, 4 )
-some_func(s)
+// another of such example
 s = mset{ return $_ } ( 1 , 1, 2, 3, 3, 4 )
-some_func(s)
-*/
+print(s)
 
+// import any java class as namespace !
 import 'java.lang.String' as str
+// call new on Java objects : rather much easily
 s = new (str, 'Hello, World' )
 System.out.println(s)
 
+s = [ 1 , 2, 3, 4, 5]
+for ( x : s ){
+   print(x)
+}

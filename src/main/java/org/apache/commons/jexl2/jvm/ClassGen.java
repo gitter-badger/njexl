@@ -7,10 +7,7 @@ import org.apache.commons.jexl2.parser.ASTBlock;
 import org.apache.commons.jexl2.parser.ASTImportStatement;
 import org.apache.commons.jexl2.parser.ASTMethodDef;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,14 +76,38 @@ public class ClassGen {
 
 
     protected void createMethods() throws Exception{
-        HashMap<String,ASTMethodDef> methods = expression.methods();
-        for ( String name : methods.keySet() ){
-            ASTMethodDef methodDef = methods.get(name);
+
+        HashSet<String> notDoneYet = new HashSet<>();
+        HashMap<String,String> methodMap = new HashMap<>();
+
+        notDoneYet.addAll(expression.methods().keySet());
+
+        for ( String name : notDoneYet ) {
+            ASTMethodDef methodDef = expression.methods().get(name);
             CodeGen codeGen = new CodeGen(this,false);
             String methodBody = codeGen.data(methodDef);
             methodBody = replaceNamespace(methodBody);
-            CtMethod method = CtNewMethod.make(methodBody, ctClass);
-            ctClass.addMethod(method);
+            methodMap.put(name,methodBody);
+        }
+        // amazingly stupid resolving dependency - thus...
+        while ( !notDoneYet.isEmpty() ){
+            int size = notDoneYet.size();
+            Exception ex = null;
+            for (String name : methodMap.keySet() ){
+                if (notDoneYet.contains(name)){
+                    String methodBody = methodMap.get(name);
+                    try {
+                        CtMethod method = CtNewMethod.make(methodBody, ctClass);
+                        ctClass.addMethod(method);
+                        notDoneYet.remove(name);
+                    }catch (Exception e){
+                        ex = e;
+                    }
+                }
+            }
+            if ( size == notDoneYet.size() ){
+                throw ex ;
+            }
         }
     }
 
@@ -130,8 +151,8 @@ public class ClassGen {
 
     public String createAnonymousMethod(ASTBlock block){
         CodeGen codeGen = new CodeGen(this,false);
+        codeGen.anonymousReturn = true ;
         String body = codeGen.data(block);
-
         String methodName = expression.name() + "__" + Long.toString( System.nanoTime() );
         String methodBody = "public static Object " + methodName + "(Object _item_)" ;
         body = body.replaceAll("\\$_", "_item_");

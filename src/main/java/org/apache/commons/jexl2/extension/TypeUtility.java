@@ -77,6 +77,18 @@ public class TypeUtility {
 
     static {
         methods = new HashSet<>();
+        methods.add(INT);
+        methods.add(LONG);
+        methods.add(BIGINT);
+        methods.add(BOOL);
+        methods.add(BIGDECIMAL1);
+        methods.add(BIGDECIMAL2);
+        methods.add(STRING);
+        methods.add(DATE);
+        methods.add(TIME);
+        methods.add(LOAD_PATH);
+        methods.add(BYE);
+
         methods.add(LIST);
         methods.add(FILTER);
         methods.add(LITERAL_LIST);

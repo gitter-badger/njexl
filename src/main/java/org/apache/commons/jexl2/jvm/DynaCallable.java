@@ -4,9 +4,7 @@ import org.apache.commons.jexl2.extension.TypeUtility;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Created by noga on 17/03/15.
@@ -48,6 +46,44 @@ public interface DynaCallable {
             }
             return null;
         }
+
+        public static boolean b(boolean b){ return b; }
+
+        public static boolean b(Object o){ return TypeUtility.castBoolean(o,false); }
+
+        public static boolean B(Object o){ return TypeUtility.castBoolean(o,null); }
+
+        public static int i(int i){ return i ; }
+
+        public static int i(Object o){ return TypeUtility.castInteger(o,0); }
+
+        public static int I(Object o){ return TypeUtility.castInteger(o,null); }
+
+        public static double D(Object o){ return TypeUtility.castDouble(o,null); }
+
+        public static double r(Object o){ return TypeUtility.castDouble(o, 0); }
+
+        public static double r(double d){ return d; }
+
+        public static double r(float f){ return f; }
+
+        public static double d(Object o){ return TypeUtility.castDouble(o, 0); }
+
+        public static double d(double d){ return d; }
+
+        public static double d(float f){ return f; }
+
+        public static Object O(char c){ return Character.valueOf(c) ;}
+        public static Object O(int i){ return Integer.valueOf(i) ;}
+        public static Object O(short s){ return Short.valueOf(s) ;}
+        public static Object O(double d){ return Double.valueOf(d) ;}
+        public static Object O(long l){ return Long.valueOf(l) ;}
+        public static Object O(boolean b){ return Boolean.valueOf(b) ;}
+        public static Object O(Object o){ return o ;}
+
+        public static List l(Object args){  return TypeUtility.combine(args); }
+
+        public static Set s(Object args){  return TypeUtility.set(args); }
 
         public static Object __return__ = null;
 
