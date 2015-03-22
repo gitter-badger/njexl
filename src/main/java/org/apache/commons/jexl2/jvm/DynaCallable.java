@@ -34,9 +34,9 @@ public interface DynaCallable {
             return false;
         }
 
-        public static Integer size(Object o) {
+        public static int size(Object o) {
             if (o == null) {
-                return null;
+                return -1;
             }
             if (o instanceof Collection) {
                 return ((Collection) o).size();
@@ -44,7 +44,7 @@ public interface DynaCallable {
             if (o.getClass().isArray()) {
                 return Array.getLength(o);
             }
-            return null;
+            return -1;
         }
 
         public static boolean b(boolean b){ return b; }

@@ -15,7 +15,7 @@ public class JVMTest {
 
     @Test
     public void testJavaClassCreation() throws Exception{
-            Script e = jexlEngine.importScriptForJVM("samples/classgen.jexl", "dummy");
+            Script e = jexlEngine.importScriptForJVM("samples/jvmExample.jexl", "dummy");
             e.executeJVM(null);
     }
 }
