@@ -153,8 +153,7 @@ public class ClassGen {
         codeGen.anonymousReturn = true ;
         String body = codeGen.data(block);
         String methodName = expression.name() + "__" + Long.toString( System.nanoTime() );
-        String methodBody = "public static Object " + methodName + "(Object _item_)" ;
-        body = body.replaceAll("\\$_", "_item_");
+        String methodBody = "public static Object " + methodName + "(Object $_)" ;
         methodBody+= body ;
         try {
             CtMethod method = CtNewMethod.make(methodBody, ctClass);
