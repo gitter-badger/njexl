@@ -29,6 +29,8 @@ s = new (str, 'Hello, World' )
 System.out.println(s)
 // for loop
 s = [ 1 , 2, 3, 4, 5]
+print(str(s))
+s = sub(s,1,3)
 for ( x : s ){
    print(x)
 }

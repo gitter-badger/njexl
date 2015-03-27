@@ -49,6 +49,8 @@ public class TypeUtility {
 
     public static final String LIST = "list";
     public static final String FILTER = "filter";
+    public static final String SUBLIST = "sub";
+
     public static final String LITERAL_LIST = "listLiteral";
     public static final String ARRAY = "array";
     public static final String ARRAY_FROM_LIST = "arrayFromList";
@@ -90,6 +92,7 @@ public class TypeUtility {
         methods.add(BYE);
 
         methods.add(LIST);
+        methods.add(SUBLIST);
         methods.add(FILTER);
         methods.add(LITERAL_LIST);
         methods.add(ARRAY);
@@ -682,6 +685,8 @@ public class TypeUtility {
                 return makeLiteralList(argv);
             case LIST:
                 return combine(argv);
+            case SUBLIST:
+                return sublist(argv);
             case FILTER:
                 return filter(argv);
             case ARRAY:
@@ -721,6 +726,26 @@ public class TypeUtility {
                 break;
         }
         return methodName;
+    }
+
+    private static Object sublist(Object... args) {
+        if ( args.length == 0 ){
+            return null;
+        }
+        List l = from(args[0]);
+        int start = 0 ;
+        int end = l.size()-1;
+        if ( args.length > 1 ){
+            start = castInteger(args[1],start);
+            if ( args.length > 2 ){
+                end = castInteger(args[2],end);
+            }
+        }
+        ArrayList r = new ArrayList();
+        for(int i = start; i<=end;i++){
+            r.add(l.get(i));
+        }
+        return r;
     }
 
     public static Object standardCall(String methodName, Object[] argv) throws Exception{
