@@ -379,10 +379,19 @@ public final class CodeGen implements ParserVisitor {
     /** {@inheritDoc} */
     public Object visit(ASTBlock node, Object data) {
         builder.append("{ ");
+        int builderLen = 0 ;
         int num = node.jjtGetNumChildren();
         for (int i = 0; i < num; ++i) {
             JexlNode child = node.jjtGetChild(i);
+            builderLen = builder.length();
             acceptStatement(child, data);
+        }
+        if ( this.anonymousReturn ){
+            if ( !builder.toString().contains(RETURN_STRING)){
+                builder.insert( builderLen , RETURN_STRING + "O(" );
+                int last = builder.lastIndexOf(";");
+                builder.insert( last , ")" );
+            }
         }
         builder.append(" }");
         return data;
@@ -726,9 +735,11 @@ public final class CodeGen implements ParserVisitor {
 
     public boolean anonymousReturn = false ;
 
+    public static final String RETURN_STRING = " return " ;
+
     /** {@inheritDoc} */
     public Object visit(ASTReturnStatement node, Object data) {
-        builder.append("return ");
+        builder.append(RETURN_STRING);
         if ( anonymousReturn ){
             builder.append("O(");
         }

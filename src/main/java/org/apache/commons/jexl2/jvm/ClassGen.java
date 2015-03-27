@@ -152,6 +152,7 @@ public class ClassGen {
         CodeGen codeGen = new CodeGen(this,false);
         codeGen.anonymousReturn = true ;
         String body = codeGen.data(block);
+
         String methodName = expression.name() + "__" + Long.toString( System.nanoTime() );
         String methodBody = "public static Object " + methodName + "(Object $_)" ;
         methodBody+= body ;

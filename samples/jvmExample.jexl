@@ -15,11 +15,11 @@ def print(s){
 
 // The anonymous functions : { } issue : needs to have physical return as of now
 // can not use int() because it dumps to Object, use i() instead
-s = set{ return i($_) *10 } ( 1 , 1, 2, 3, 3, 4 )
+s = set{ i($_) *10 } ( 1 , 1, 2, 3, 3, 4 )
 print(s)
 
 // another of such example
-s = mset{ return $_ } ( 1 , 1, 2, 3, 3, 4 )
+s = mset{ $_ } ( 1 , 1, 2, 3, 3, 4 )
 print(s)
 
 // import any java class as namespace !
