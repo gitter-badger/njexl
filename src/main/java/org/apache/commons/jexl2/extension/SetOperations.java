@@ -1,6 +1,8 @@
 package org.apache.commons.jexl2.extension;
 
 import org.apache.commons.jexl2.Interpreter;
+
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -202,14 +204,17 @@ public final class SetOperations {
     }
 
     public static boolean in(Object c1, Object c2){
+        if ( c2 == null ){
+            return false ;
+        }
         if (  c2 instanceof Set ){
             if ( c1 instanceof Set ) {
                 return is_set_relation( (Set)c1, (Set)c2, "<=");
             }
             return ((Set)c2).contains(c1);
         }
-        if (  c2 instanceof Collection ){
-            if ( c1 instanceof  Collection ) {
+        if (  c2 instanceof Collection || c2.getClass().isArray()){
+            if ( c1 != null && ( c1 instanceof  Collection || c1.getClass().isArray() ) ) {
                 Map m1 = multiset(c1);
                 Map m2 = multiset(c2);
                 Map diff = mset_diff(m2, m1);
@@ -221,7 +226,17 @@ public final class SetOperations {
                 }
                 return true;
             }
-            return ((Collection)c2).contains(c1);
+            if ( c2 instanceof Collection ) {
+                return ((Collection) c2).contains(c1);
+            }else{
+                int len = Array.getLength(c2);
+                for ( int i = 0 ; i < len; i++ ){
+                    Object o = Array.get(c2,i);
+                    if ( Objects.equals(o,c1)){
+                        return true;
+                    }
+                }
+            }
         }
         return false ;
     }

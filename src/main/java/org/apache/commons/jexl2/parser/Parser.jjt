@@ -80,7 +80,7 @@ PARSER_END(Parser)
       < IF : "if" >
     | < ELSE : "else" >
     | < FOR : "for" >
-    | < FOREACH : "foreach" > : FOR_EACH_IN
+    | < FOREACH : "foreach" >
     | < WHILE : "while" >
     | < NEW : "new" >
     | < VAR : "var" >
@@ -96,10 +96,6 @@ PARSER_END(Parser)
     | < AS : "as" >
 }
 
-<FOR_EACH_IN> TOKEN : /* foreach in */
-{
-    < IN : "in" > : DEFAULT
-}
 
 <*> TOKEN : { /* SEPARATORS */
       < LPAREN : "(" >
@@ -132,6 +128,7 @@ PARSER_END(Parser)
     | < ge : ">=" | "ge" >
     | < lt : "<" | "lt" >
     | < le : "<=" | "le" >
+    | < in : "@" >
 }
 
 <*> TOKEN : { /* OPERATORS */
@@ -250,7 +247,7 @@ void ForeachStatement() : {}
 {  
     <FOR> <LPAREN> LValueVar() <COLON>  Expression() <RPAREN> Statement()
 |
-    <FOREACH> <LPAREN> LValueVar() <IN>  Expression() <RPAREN> Statement()
+    <FOREACH> <LPAREN> LValueVar() <COLON>  Expression() <RPAREN> Statement()
 }
 
 void ReturnStatement() : {}
@@ -351,11 +348,11 @@ void EqualityExpression() #void :
 {
   RelationalExpression()
   (
+   <in> AdditiveExpression() #INNode(2)
+   |
      <eq> RelationalExpression() #EQNode(2)
    |
      <ne> RelationalExpression() #NENode(2)
-   |
-     <IN> RelationalExpression() #INNode(2)
   )?
 }
 

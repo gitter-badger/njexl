@@ -2,7 +2,9 @@ import  'java.lang.System.out' as out
  
 dummy_list = [ "1", 1, 2, 3, "4" , 4 ] 
 
-//1 == dummy_list 
+out:println(1 @ dummy_list)
+out:println("1" @ dummy_list)
+out:println(1.0 @ dummy_list)
 
 
 // how to filter based on condition?

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 package org.apache.commons.jexl2;
+import org.apache.commons.jexl2.extension.SetOperations;
 import org.apache.commons.jexl2.extension.TypeUtility;
 import org.apache.commons.jexl2.introspection.JexlMethod;
 import org.apache.commons.jexl2.introspection.JexlPropertyGet;
@@ -830,7 +831,13 @@ public class Interpreter implements ParserVisitor {
     }
 
     public Object visit(ASTINNode node, Object data) {
-        return false;
+        Object left = node.jjtGetChild(0).jjtAccept(this, data);
+        Object right = node.jjtGetChild(1).jjtAccept(this, data);
+        try {
+            return SetOperations.in(left, right) ? Boolean.TRUE : Boolean.FALSE;
+        } catch (ArithmeticException xrt) {
+            throw new JexlException(node, "in error", xrt);
+        }
     }
 
     /**
