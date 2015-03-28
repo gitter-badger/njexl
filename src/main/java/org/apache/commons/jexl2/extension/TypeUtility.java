@@ -73,7 +73,7 @@ public class TypeUtility {
     public static final String READ_LINES = "lines";
     public static final String WRITE = "write";
 
-    public static final String _ITEM_ = "$_";
+    public static final String _ITEM_ = "$";
 
     /**
      * <pre>

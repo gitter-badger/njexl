@@ -8,13 +8,13 @@ out:println(1.0 @ dummy_list)
 
 
 // how to filter based on condition?
-filter_list = filter{ int($_) >= 3 }(dummy_list)
+filter_list = filter{ int($) >= 3 }(dummy_list)
 out:println(filter_list)
 
 // how to create a set ?
-s1 = set { int($_) } ( dummy_list )
+s1 = set { int($) } ( dummy_list )
 out:println(s1)
-s2 = set{ int($_) } ( 3,4,5,6,7,8,9)
+s2 = set{ int($) } ( 3,4,5,6,7,8,9)
 out:println(s2)
 
 // Union 

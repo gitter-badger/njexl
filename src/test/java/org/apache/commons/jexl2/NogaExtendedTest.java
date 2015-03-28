@@ -116,15 +116,15 @@ public class NogaExtendedTest extends JexlTestCase {
 
         JexlContext jc = new MapContext();
         JEXL.setFunctions(Main.getFunction(jc));
-        Script e = JEXL.createScript("set{$_ * 10 }(y)");
+        Script e = JEXL.createScript("set{$ * 10 }(y)");
         jc.set("y", new int[]{1, 1, 2, 2, 3, 4});
 
         Object o = e.execute(jc);
         assertTrue(((Set) o).size() == 4);
-        e = JEXL.createScript("set{$_ * 10 }(1,2,2,2,3,4)");
+        e = JEXL.createScript("set{$ * 10 }(1,2,2,2,3,4)");
         o = e.execute(jc);
         assertTrue(((Set) o).size() == 4);
-        e = JEXL.createScript("multiset{$_ * 10} (1,2,2,3,3,3,4,4,4,4)");
+        e = JEXL.createScript("multiset{$ * 10} (1,2,2,3,3,3,4,4,4,4)");
         o = e.execute(jc);
         assertTrue(((Map) o).size() == 4);
 
