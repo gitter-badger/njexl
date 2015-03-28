@@ -16,11 +16,15 @@
  */
 package org.apache.commons.jexl2;
 
+import org.apache.commons.jexl2.extension.SetOperations;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Perform arithmetic.
@@ -556,7 +560,9 @@ public class JexlArithmetic {
             BigDecimal result = l.subtract(r, getMathContext());
             return narrowBigDecimal(left, right, result);
         }
-
+        if ( left instanceof Set && right instanceof Set){
+            return SetOperations.set_d((Set) left, (Set) right);
+        }
         // otherwise treat as integers
         BigInteger l = toBigInteger(left);
         BigInteger r = toBigInteger(right);
@@ -634,6 +640,9 @@ public class JexlArithmetic {
      * @since 2.1
      */
     public Object bitwiseAnd(Object left, Object right) {
+        if ( left instanceof Set && right instanceof Set){
+            return SetOperations.set_i((Set)left,(Set)right);
+        }
         long l = toLong(left);
         long r = toLong(right);
         return Long.valueOf(l & r);
@@ -647,6 +656,9 @@ public class JexlArithmetic {
      * @since 2.1
      */
     public Object bitwiseOr(Object left, Object right) {
+        if ( left instanceof Set && right instanceof Set){
+            return SetOperations.set_u((Set) left, (Set) right);
+        }
         long l = toLong(left);
         long r = toLong(right);
         return Long.valueOf(l | r);
@@ -660,6 +672,10 @@ public class JexlArithmetic {
      * @since 2.1
      */
     public Object bitwiseXor(Object left, Object right) {
+        if ( left instanceof Set && right instanceof Set){
+            return SetOperations.set_sym_d((Set)left,(Set)right);
+        }
+
         long l = toLong(left);
         long r = toLong(right);
         return Long.valueOf(l ^ r);
@@ -728,7 +744,24 @@ public class JexlArithmetic {
                 return toString(left).compareTo(toString(right));
             } else if ("==".equals(operator)) {
                 return left.equals(right) ? 0 : -1;
-            } else if (left instanceof Comparable<?>) {
+            } else if ( left instanceof Set && right instanceof Set ){
+                Set l = (Set)left;
+                Set r = (Set)right;
+                SetOperations.SetRelation sr = SetOperations.set_relation(l,r);
+                switch (sr){
+                    case SUBSET:
+                        return -1;
+                    case SUPERSET:
+                        return 1 ;
+                    case EQUAL:
+                        return 0 ;
+                    case OVERLAP:
+                        return Integer.MAX_VALUE  ;
+                    case INDEPENDENT:
+                        return Integer.MIN_VALUE ;
+                }
+            }
+            else if (left instanceof Comparable<?>) {
                 @SuppressWarnings("unchecked") // OK because of instanceof check above
                 final Comparable<Object> comparable = (Comparable<Object>) left;
                 return comparable.compareTo(right);

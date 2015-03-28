@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 package org.apache.commons.jexl2;
-
-import org.apache.commons.jexl2.extension.SetOperations;
 import org.apache.commons.jexl2.extension.TypeUtility;
 import org.apache.commons.jexl2.introspection.JexlMethod;
 import org.apache.commons.jexl2.introspection.JexlPropertyGet;
@@ -486,21 +484,11 @@ public class Interpreter implements ParserVisitor {
                 if (op instanceof ASTAdditiveOperator) {
                     String which = op.image;
                     if ("+".equals(which)) {
-                        if (left instanceof Set && right instanceof Set) {
-                            // do something meaningful
-                            left = SetOperations.set_u((Set) left, (Set) right);
-                        } else {
-                            left = arithmetic.add(left, right);
-                        }
+                        left = arithmetic.add(left, right);
                         continue;
                     }
                     if ("-".equals(which)) {
-                        if (left instanceof Set && right instanceof Set) {
-                            // do something meaningful
-                            left = SetOperations.set_d((Set) left, (Set) right);
-                        } else {
-                            left = arithmetic.subtract(left, right);
-                        }
+                        left = arithmetic.subtract(left, right);
                         continue;
                     }
                     throw new UnsupportedOperationException("unknown operator " + which);
@@ -734,10 +722,6 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTBitwiseAndNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
-        if (left instanceof Set && right instanceof Set) {
-            // do something meaningful
-            return SetOperations.set_i((Set) left, (Set) right);
-        }
         try {
             return arithmetic.bitwiseAnd(left, right);
         } catch (ArithmeticException xrt) {
@@ -763,10 +747,6 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTBitwiseOrNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
-        if (left instanceof Set && right instanceof Set) {
-            // do something meaningful
-            return SetOperations.set_u((Set) left, (Set) right);
-        }
         try {
             return arithmetic.bitwiseOr(left, right);
         } catch (ArithmeticException xrt) {
@@ -780,10 +760,6 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTBitwiseXorNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
-        if (left instanceof Set && right instanceof Set) {
-            // do something meaningful
-            return SetOperations.set_sym_d((Set) left, (Set) right);
-        }
         try {
             return arithmetic.bitwiseXor(left, right);
         } catch (ArithmeticException xrt) {
@@ -863,10 +839,6 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTEQNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
-        if (left instanceof Set && right instanceof Set) {
-            // do something meaningful
-            return SetOperations.is_set_relation((Set) left, (Set) right, "==");
-        }
         try {
             return arithmetic.equals(left, right) ? Boolean.TRUE : Boolean.FALSE;
         } catch (ArithmeticException xrt) {
@@ -1154,10 +1126,6 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTLENode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
-        if (left instanceof Set && right instanceof Set) {
-            // do something meaningful
-            return SetOperations.is_set_relation((Set) left, (Set) right, "<=");
-        }
         try {
             return arithmetic.lessThanOrEqual(left, right) ? Boolean.TRUE : Boolean.FALSE;
         } catch (ArithmeticException xrt) {
@@ -1171,10 +1139,6 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTLTNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
-        if (left instanceof Set && right instanceof Set) {
-            // do something meaningful
-            return SetOperations.is_set_relation((Set) left, (Set) right, "<");
-        }
         try {
             return arithmetic.lessThan(left, right) ? Boolean.TRUE : Boolean.FALSE;
         } catch (ArithmeticException xrt) {
