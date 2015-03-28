@@ -850,6 +850,25 @@ public class Interpreter implements ParserVisitor {
         if (iterableValue != null && node.jjtGetNumChildren() >= 3) {
             /* third objectNode is the statement to execute */
             JexlNode statement = node.jjtGetChild(2);
+            // if this is an array?
+            if ( iterableValue.getClass().isArray()){
+                int len  = Array.getLength(iterableValue);
+                for ( int i = 0 ; i < len; i++ ){
+                    if (isCancelled()) {
+                        throw new JexlException.Cancel(node);
+                    }
+                    Object value = Array.get(iterableValue,i);
+                    if (register < 0) {
+                        context.set(loopVariable.image, value);
+                    } else {
+                        registers[register] = value;
+                    }
+                    // execute statement
+                    result = statement.jjtAccept(this, data);
+                }
+                return result;
+            }
+            // this is not an array : thus
             // get an iterator for the collection/array etc via the
             // introspector.
             Iterator<?> itemsIterator = uberspect.getIterator(iterableValue, node);

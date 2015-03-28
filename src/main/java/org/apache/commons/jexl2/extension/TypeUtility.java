@@ -13,6 +13,7 @@ import java.math.MathContext;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Consumer;
 
 import org.apache.commons.jexl2.Interpreter.AnonymousParam;
 
@@ -465,34 +466,77 @@ public class TypeUtility {
         return list;
     }
 
-    public static ArrayList<Integer> range(Object... args) throws Exception {
+    public static class RangeIterator implements Iterator{
+        protected long e;
+        protected long b;
+        protected long s;
+
+        private long cur ;
+
+        public RangeIterator(long end, long begin, long step){
+            e = end;
+            b = begin;
+            s = step;
+            cur = b;
+        }
+
+        public RangeIterator(long end, long begin){
+            this(end,begin,1);
+        }
+
+        public RangeIterator(long end){
+            this(end,0);
+        }
+
+        public RangeIterator(){
+            this(42);
+        }
+
+        @Override
+        public void forEachRemaining(Consumer action) {
+
+        }
+
+        @Override
+        public boolean hasNext() {
+            return cur < e - 1 ;
+        }
+
+        @Override
+        public Object next() {
+            return cur++;
+        }
+
+        @Override
+        public void remove() {
+
+        }
+    }
+
+    public static Iterator range(Object... args) throws Exception {
 
         if (args.length == 0) {
-            return range(new Object[]{42});
+            return new RangeIterator();
         }
 
-        int end = 42;
-        int start = 1;
-        int space = 1;
+        long end = 42;
+        long start = 1;
+        long space = 1;
 
         if (args.length > 0) {
-            end = Integer.valueOf(args[args.length - 1].toString());
-        }
-        if (args.length > 1) {
-            start = Integer.valueOf(args[0].toString());
-        }
-        if (args.length > 2) {
-            space = Integer.valueOf(args[args.length - 2].toString());
-        }
-        if (space <= 0) {
-            space = 1;
-        }
-        ArrayList<Integer> r = new ArrayList<Integer>();
-        for (int i = start; i <= end; i += space) {
-            r.add(i);
+            end = Long.valueOf(args[0].toString());
+            if (args.length > 1) {
+                start = Long.valueOf(args[1].toString());
+                if (args.length > 2) {
+                    space = Long.valueOf(args[2].toString());
+                }
+                if (space <= 0) {
+                    space = 1;
+                }
+            }
         }
 
-        return r;
+        return new RangeIterator(end,start,space);
     }
 
     public static Object[] shiftArrayLeft(Object[] args, int shift) {
