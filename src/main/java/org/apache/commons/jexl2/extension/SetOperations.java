@@ -1,8 +1,6 @@
 package org.apache.commons.jexl2.extension;
 
 import org.apache.commons.jexl2.Interpreter;
-import org.apache.commons.jexl2.jvm.CodeGen;
-
 import java.util.*;
 
 /**
@@ -140,14 +138,6 @@ public final class SetOperations {
                 anon = (Interpreter.AnonymousParam) args[0];
                 args = TypeUtility.shiftArrayLeft(args, 1);
             }
-            if (args[0] instanceof String) {
-                String b = (String)args[0];
-                if ( b.startsWith(CodeGen.ANON_MARKER )){
-                    String[] arr = b.split(CodeGen.ANON_MARKER);
-                    args = TypeUtility.shiftArrayLeft(args, 1);
-                    anonCall = arr[1];
-                }
-            }
         }
 
         for (int i = 0; i < args.length; i++) {
@@ -155,17 +145,7 @@ public final class SetOperations {
             list.addAll(l);
         }
         HashMap<Object,ArrayList> m = new HashMap();
-        if ( anonCall != null ){
-            for (Object o : list) {
-                Object ret = TypeUtility.callAnonMethod(anonCall,o);
-                if ( !m.containsKey(ret) ){
-                    m.put(ret,new ArrayList());
-                }
-                ArrayList values = m.get(ret);
-                values.add(o);
-            }
-        }
-        else if (anon != null) {
+        if (anon != null) {
             for (Object o : list) {
                 anon.interpreter.getContext().set(TypeUtility._ITEM_, o);
                 Object ret = anon.block.jjtAccept(anon.interpreter, null);

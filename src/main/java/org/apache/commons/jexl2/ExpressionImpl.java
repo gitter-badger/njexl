@@ -16,18 +16,11 @@
  */
 package org.apache.commons.jexl2;
 
-import java.io.File;
-import java.lang.reflect.Field;
+
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
-
-import javassist.CtClass;
-import org.apache.commons.jexl2.extension.TypeUtility;
-import org.apache.commons.jexl2.jvm.ClassGen;
-import org.apache.commons.jexl2.jvm.DynaCallable;
 import org.apache.commons.jexl2.parser.*;
 
 /**
@@ -42,14 +35,9 @@ public class ExpressionImpl implements Expression, Script {
 
     String importName;
 
-    ClassGen classGen ;
-
-    Class myself;
-
     HashMap<String,ASTMethodDef> methods;
 
     HashMap<String,ASTImportStatement> imports;
-
 
     /** The engine for this expression. */
     protected final JexlEngine jexl;
@@ -91,18 +79,6 @@ public class ExpressionImpl implements Expression, Script {
         }
     }
 
-    @Override
-    public Class myClass(HashMap<String,Object> context){
-        if ( myself == null ) {
-            try {
-                myself = classGen.createClass(context);
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        return myself;
-    }
 
     protected ExpressionImpl(String from, String as, JexlEngine engine, String expr, ASTJexlScript ref) {
         jexl = engine;
@@ -114,7 +90,6 @@ public class ExpressionImpl implements Expression, Script {
         importName = as;
         findImports(script);
         findMethods(script);
-        classGen = new ClassGen(this);
     }
 
     /**
@@ -323,41 +298,6 @@ public class ExpressionImpl implements Expression, Script {
     @Override
     public String name() {
         return importName;
-    }
-
-    void initContext(Object o, HashMap<String,Object> context)throws Exception {
-        if ( context == null ){
-            return;
-        }
-        for ( String name : context.keySet()){
-            Field f = o.getClass().getDeclaredField(name);
-            f.set(o,context.get(name));
-        }
-    }
-
-    @Override
-    public Object executeJVM(HashMap<String,Object> context, Object... args){
-        Class c = myClass(context);
-        if ( c == null ){
-            return null;
-        }
-        DynaCallable dynaCallable = null;
-        try {
-            dynaCallable = (DynaCallable)c.newInstance();
-            initContext(dynaCallable,context);
-            Object r = dynaCallable.__call__(args);
-            return r;
-        }catch (Throwable throwable){
-            throwable.printStackTrace();
-        }finally {
-            if ( dynaCallable != null ) {
-                HashMap map = dynaCallable.__context__() ;
-                if ( map != null && context != null ) {
-                    context.putAll(map);
-                }
-            }
-        }
-        return null;
     }
 
 }

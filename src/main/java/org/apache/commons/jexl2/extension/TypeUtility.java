@@ -1,6 +1,5 @@
 package org.apache.commons.jexl2.extension;
 
-import org.apache.commons.jexl2.jvm.CodeGen;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -41,7 +40,7 @@ public class TypeUtility {
 
     public static final String LOAD_PATH = "load";
 
-    public static final String BYE = "BYE";
+    public static final String BYE = "bye";
 
     /**
      * ******* The Utility Calls  *********
@@ -74,44 +73,6 @@ public class TypeUtility {
     public static final String WRITE = "write";
 
     public static final String _ITEM_ = "$_";
-
-    public static  HashSet<String> methods;
-
-    static {
-        methods = new HashSet<>();
-        methods.add(INT);
-        methods.add(LONG);
-        methods.add(BIGINT);
-        methods.add(BOOL);
-        methods.add(BIGDECIMAL1);
-        methods.add(BIGDECIMAL2);
-        methods.add(STRING);
-        methods.add(DATE);
-        methods.add(TIME);
-        methods.add(LOAD_PATH);
-        methods.add(BYE);
-
-        methods.add(LIST);
-        methods.add(SUBLIST);
-        methods.add(FILTER);
-        methods.add(LITERAL_LIST);
-        methods.add(ARRAY);
-        methods.add(ARRAY_FROM_LIST);
-        methods.add(SET);
-        methods.add(MULTI_SET1);
-        methods.add(MULTI_SET2);
-        methods.add(MULTI_SET3);
-
-        methods.add(DICTIONARY);
-        methods.add(RANGE);
-        methods.add(WITHIN);
-        methods.add(SQLMATH);
-
-        methods.add(READ);
-        methods.add(READ_LINES);
-        methods.add(WRITE);
-
-    }
 
     /**
      * <pre>
@@ -449,35 +410,20 @@ public class TypeUtility {
      */
     public static ArrayList combine(Object... args) {
         AnonymousParam anon = null;
-        String  anonCall = null ;
         ArrayList list = new ArrayList();
         if (args.length > 1) {
             if (args[0] instanceof AnonymousParam) {
                 anon = (AnonymousParam) args[0];
                 args = shiftArrayLeft(args, 1);
             }
-            if (args[0] instanceof String) {
-                String b = (String)args[0];
-                if ( b.startsWith(CodeGen.ANON_MARKER )){
-                    String[] arr = b.split(CodeGen.ANON_MARKER);
-                    args = shiftArrayLeft(args, 1);
-                    anonCall = arr[1];
-                }
-            }
+
         }
         for (int i = 0; i < args.length; i++) {
             List l = from(args[i]);
             list.addAll(l);
         }
-        if ( anonCall != null ){
-            ArrayList l = new ArrayList();
-            for (Object o : list) {
-                Object ret = callAnonMethod(anonCall,o);
-                l.add(ret);
-            }
-            list = l;
-        }
-        else if (anon != null) {
+
+        if (anon != null) {
             ArrayList l = new ArrayList();
             for (Object o : list) {
                 anon.interpreter.getContext().set(_ITEM_, o);
@@ -746,10 +692,6 @@ public class TypeUtility {
             r.add(l.get(i));
         }
         return r;
-    }
-
-    public static Object standardCall(String methodName, Object[] argv) throws Exception{
-        return interceptCastingCall(methodName,argv,null);
     }
 
     public static class XNumber extends Number implements Comparable {

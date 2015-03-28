@@ -2,13 +2,17 @@
 load('/Codes/Java/office/chaitin/core/target/lib') or bye('Could not load class path!')
 //import classes 
 import 'org.openqa.selenium.firefox.FirefoxDriver' as fdriver
+import 'org.openqa.selenium.firefox.internal.ProfilesIni' as profile 
 import 'java.lang.Thread' as thread 
+//
+allProfiles = new ( profile )
+p = allProfiles.getProfile("auto")
 //init a web driver 
-driver = new (fdriver)
+driver = new (fdriver,p)
 // go to the url 
 driver.get("http://www.google.com/webhp?complete=1&hl=en")
 // call java thread as if in a namespace 
-thread:sleep(3000)
+thread:sleep(30000)
 // exit 
 driver.quit()
 // return if needed 

@@ -29,6 +29,7 @@ import java.lang.ref.SoftReference;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,10 +51,10 @@ import org.apache.commons.jexl2.parser.ASTReference;
  * Creates and evaluates Expression and Script objects.
  * Determines the behavior of Expressions & Scripts during their evaluation with respect to:
  * <ul>
- *  <li>Introspection, see {@link Uberspect}</li>
- *  <li>Arithmetic & comparison, see {@link JexlArithmetic}</li>
- *  <li>Error reporting</li>
- *  <li>Logging</li>
+ * <li>Introspection, see {@link Uberspect}</li>
+ * <li>Arithmetic & comparison, see {@link JexlArithmetic}</li>
+ * <li>Error reporting</li>
+ * <li>Logging</li>
  * </ul>
  * </p>
  * <p>The <code>setSilent</code> and <code>setLenient</code> methods allow to fine-tune an engine instance behavior
@@ -88,6 +89,7 @@ import org.apache.commons.jexl2.parser.ASTReference;
  * The {@link JexlException} are thrown in "non-silent" mode but since these are
  * RuntimeException, user-code <em>should</em> catch them wherever most appropriate.
  * </p>
+ *
  * @since 2.0
  */
 public class JexlEngine {
@@ -117,7 +119,7 @@ public class JexlEngine {
     };
 
     /**
-     *  Gets the default instance of Uberspect.
+     * Gets the default instance of Uberspect.
      * <p>This is lazily initialized to avoid building a default instance if there
      * is no use for it. The main reason for not using the default Uberspect instance is to
      * be able to use a (low level) introspector created with a given logger
@@ -125,15 +127,19 @@ public class JexlEngine {
      * <p>Implemented as on demand holder idiom.</p>
      */
     private static final class UberspectHolder {
-        /** The default uberspector that handles all introspection patterns. */
+        /**
+         * The default uberspector that handles all introspection patterns.
+         */
         private static final Uberspect UBERSPECT = new UberspectImpl(LogFactory.getLog(JexlEngine.class));
 
-        /** Non-instantiable. */
+        /**
+         * Non-instantiable.
+         */
         private UberspectHolder() {
         }
     }
 
-    HashMap<String,Script> imports;
+    HashMap<String, Script> imports;
 
     /**
      * The Uberspect instance.
@@ -154,7 +160,7 @@ public class JexlEngine {
      */
     protected final Parser parser = new Parser(new StringReader(";")); //$NON-NLS-1$
     /**
-     * Whether expressions evaluated by this engine will throw exceptions (false) or 
+     * Whether expressions evaluated by this engine will throw exceptions (false) or
      * return null (true) on errors. Default is false.
      */
     // TODO could this be private?
@@ -165,7 +171,7 @@ public class JexlEngine {
     // TODO could this be private?
     protected volatile boolean debug = true;
     /**
-     *  The map of 'prefix:function' to object implementing the functions.
+     * The map of 'prefix:function' to object implementing the functions.
      */
     // TODO this could probably be private; is it threadsafe?
     protected Map<String, Object> functions = Collections.emptyMap();
@@ -189,10 +195,11 @@ public class JexlEngine {
     /**
      * Creates a JEXL engine using the provided {@link Uberspect}, (@link JexlArithmetic),
      * a function map and logger.
-     * @param anUberspect to allow different introspection behaviour
+     *
+     * @param anUberspect  to allow different introspection behaviour
      * @param anArithmetic to allow different arithmetic behaviour
      * @param theFunctions an optional map of functions (@link setFunctions)
-     * @param log the logger for various messages
+     * @param log          the logger for various messages
      */
     public JexlEngine(Uberspect anUberspect, JexlArithmetic anArithmetic, Map<String, Object> theFunctions, Log log) {
         this.uberspect = anUberspect == null ? getUberspect(log) : anUberspect;
@@ -208,11 +215,12 @@ public class JexlEngine {
     }
 
     /**
-     *  Gets the default instance of Uberspect.
+     * Gets the default instance of Uberspect.
      * <p>This is lazily initialized to avoid building a default instance if there
      * is no use for it. The main reason for not using the default Uberspect instance is to
      * be able to use a (low level) introspector created with a given logger
      * instead of the default one.</p>
+     *
      * @param logger the logger to use for the underlying Uberspect
      * @return Uberspect the default uberspector instance.
      */
@@ -225,6 +233,7 @@ public class JexlEngine {
 
     /**
      * Gets this engine underlying uberspect.
+     *
      * @return the uberspect
      */
     public Uberspect getUberspect() {
@@ -233,6 +242,7 @@ public class JexlEngine {
 
     /**
      * Gets this engine underlying arithmetic.
+     *
      * @return the arithmetic
      * @since 2.1
      */
@@ -244,9 +254,10 @@ public class JexlEngine {
      * Sets whether this engine reports debugging information when error occurs.
      * <p>This method is <em>not</em> thread safe; it should be called as an optional step of the JexlEngine
      * initialization code before expression creation &amp; evaluation.</p>
+     *
+     * @param flag true implies debug is on, false implies debug is off.
      * @see JexlEngine#setSilent
      * @see JexlEngine#setLenient
-     * @param flag true implies debug is on, false implies debug is off.
      */
     public void setDebug(boolean flag) {
         this.debug = flag;
@@ -254,6 +265,7 @@ public class JexlEngine {
 
     /**
      * Checks whether this engine is in debug mode.
+     *
      * @return true if debug is on, false otherwise
      */
     public boolean isDebug() {
@@ -264,9 +276,10 @@ public class JexlEngine {
      * Sets whether this engine throws JexlException during evaluation when an error is triggered.
      * <p>This method is <em>not</em> thread safe; it should be called as an optional step of the JexlEngine
      * initialization code before expression creation &amp; evaluation.</p>
+     *
+     * @param flag true means no JexlException will occur, false allows them
      * @see JexlEngine#setDebug
      * @see JexlEngine#setLenient
-     * @param flag true means no JexlException will occur, false allows them
      */
     public void setSilent(boolean flag) {
         this.silent = flag;
@@ -274,6 +287,7 @@ public class JexlEngine {
 
     /**
      * Checks whether this engine throws JexlException during evaluation.
+     *
      * @return true if silent, false (default) otherwise
      */
     public boolean isSilent() {
@@ -287,9 +301,10 @@ public class JexlEngine {
      * initialization code before expression creation &amp; evaluation.</p>
      * <p>As of 2.1, you can use a JexlThreadedArithmetic instance to allow the JexlArithmetic
      * leniency behavior to be independently specified per thread, whilst still using a single engine.</p>
+     *
+     * @param flag true means no JexlException will occur, false allows them
      * @see JexlEngine#setSilent
      * @see JexlEngine#setDebug
-     * @param flag true means no JexlException will occur, false allows them
      */
     @SuppressWarnings("deprecation")
     public void setLenient(boolean flag) {
@@ -302,6 +317,7 @@ public class JexlEngine {
 
     /**
      * Checks whether this engine considers unknown variables, methods and constructors as errors.
+     *
      * @return true if lenient, false if strict
      */
     public boolean isLenient() {
@@ -311,13 +327,14 @@ public class JexlEngine {
     /**
      * Should we throw error in case of undefined variables?
      */
-    protected boolean errorOnUndefinedVariable = true ;
+    protected boolean errorOnUndefinedVariable = true;
 
-    public boolean isErrorOnUndefinedVariable(){
+    public boolean isErrorOnUndefinedVariable() {
         return errorOnUndefinedVariable;
     }
-    public void errorOnUndefinedVariable(boolean throwError){
-        errorOnUndefinedVariable = throwError ;
+
+    public void errorOnUndefinedVariable(boolean throwError) {
+        errorOnUndefinedVariable = throwError;
     }
 
     /**
@@ -325,6 +342,7 @@ public class JexlEngine {
      * Equivalent to setLenient(!flag).
      * <p>This method is <em>not</em> thread safe; it should be called as an optional step of the JexlEngine
      * initialization code before expression creation &amp; evaluation.</p>
+     *
      * @param flag true for strict, false for lenient
      * @since 2.1
      */
@@ -335,6 +353,7 @@ public class JexlEngine {
     /**
      * Checks whether this engine behaves in strict or lenient mode.
      * Equivalent to !isLenient().
+     *
      * @return true for strict, false for lenient
      * @since 2.1
      */
@@ -346,6 +365,7 @@ public class JexlEngine {
      * Sets the class loader used to discover classes in 'new' expressions.
      * <p>This method should be called as an optional step of the JexlEngine
      * initialization code before expression creation &amp; evaluation.</p>
+     *
      * @param loader the class loader to use
      */
     public void setClassLoader(ClassLoader loader) {
@@ -356,6 +376,7 @@ public class JexlEngine {
      * Sets a cache for expressions of the defined size.
      * <p>The cache will contain at most <code>size</code> expressions. Note that
      * all JEXL caches are held through SoftReferences and may be garbage-collected.</p>
+     *
      * @param size if not strictly positive, no cache is used.
      */
     public void setCache(int size) {
@@ -394,8 +415,9 @@ public class JexlEngine {
      * </p>
      * <p>Note that the JexlContext is also used to try to solve top-level functions. This allows ObjectContext
      * derived instances to call methods on the wrapped object.</p>
+     *
      * @param funcs the map of functions that should not mutate after the call; if null
-     * is passed, the empty collection is used.
+     *              is passed, the empty collection is used.
      */
     public void setFunctions(Map<String, Object> funcs) {
         functions = funcs != null ? funcs : Collections.<String, Object>emptyMap();
@@ -413,6 +435,7 @@ public class JexlEngine {
 
     /**
      * An overridable through covariant return Expression creator.
+     *
      * @param text the script text
      * @param tree the parse AST tree
      * @return the script instance
@@ -425,11 +448,12 @@ public class JexlEngine {
      * Creates an Expression from a String containing valid
      * JEXL syntax.  This method parses the expression which
      * must contain either a reference or an expression.
+     *
      * @param expression A String containing valid JEXL syntax
      * @return An Expression object which can be evaluated with a JexlContext
      * @throws JexlException An exception can be thrown if there is a problem
-     *      parsing this expression, or if the expression is neither an
-     *      expression nor a reference.
+     *                       parsing this expression, or if the expression is neither an
+     *                       expression nor a reference.
      */
     public Expression createExpression(String expression) {
         return createExpression(expression, null);
@@ -439,12 +463,13 @@ public class JexlEngine {
      * Creates an Expression from a String containing valid
      * JEXL syntax.  This method parses the expression which
      * must contain either a reference or an expression.
+     *
      * @param expression A String containing valid JEXL syntax
+     * @param info       An info structure to carry debugging information if needed
      * @return An Expression object which can be evaluated with a JexlContext
-     * @param info An info structure to carry debugging information if needed
      * @throws JexlException An exception can be thrown if there is a problem
-     *      parsing this expression, or if the expression is neither an
-     *      expression or a reference.
+     *                       parsing this expression, or if the expression is neither an
+     *                       expression or a reference.
      */
     public Expression createExpression(String expression, JexlInfo info) {
         // Parse the expression
@@ -473,7 +498,7 @@ public class JexlEngine {
      * This method parses the script which validates the syntax.
      *
      * @param scriptText A String containing valid JEXL syntax
-     * @param info An info structure to carry debugging information if needed
+     * @param info       An info structure to carry debugging information if needed
      * @return A {@link Script} which can be executed using a {@link JexlContext}.
      * @throws JexlException if there is a problem parsing the script.
      * @deprecated Use {@link #createScript(String, JexlInfo, String[])}
@@ -493,7 +518,7 @@ public class JexlEngine {
      * This method parses the script which validates the syntax.
      *
      * @param scriptText A String containing valid JEXL syntax
-     * @param names the script parameter names
+     * @param names      the script parameter names
      * @return A {@link Script} which can be executed using a {@link JexlContext}.
      * @throws JexlException if there is a problem parsing the script.
      */
@@ -501,60 +526,40 @@ public class JexlEngine {
         return createScript(scriptText, null, names);
     }
 
+    public Script importScript(String from) throws Exception {
+        return importScript(from, Script.DEFAULT_IMPORT_NAME);
+    }
+
     /**
      * Import a script from a location
+     *
      * @param from
      * @param as
      * @return
      * @throws Exception
      */
-    public Script importScript(String from, String as) throws Exception{
+    public Script importScript(String from, String as) throws Exception {
         String scriptText = null;
-        if ( from.startsWith(Script.RELATIVE )){
-            from = System.getProperty("user.dir")  + from.substring(1) ;
+        if (from.startsWith(Script.RELATIVE)) {
+            from = System.getProperty("user.dir") + from.substring(1);
         }
-        if ( !from.endsWith(Script.DEFAULT_EXTENSION)){
-            from +=  Script.DEFAULT_EXTENSION;
+        if (!from.endsWith(Script.DEFAULT_EXTENSION)) {
+            from += Script.DEFAULT_EXTENSION;
         }
         File f = new File(from);
         BufferedReader reader = new BufferedReader(new FileReader(f));
         scriptText = readerToString(reader);
         // name mangling for linking
-        scriptText = scriptText.replaceAll(Script.SELF +":", as+":");
+        scriptText = scriptText.replaceAll(Script.SELF + ":", as + ":");
         // now create script
-        Script script = createScript(scriptText,null , null);
-        if ( script instanceof  ExpressionImpl ){
+        Script script = createScript(scriptText, null, null);
+        if (script instanceof ExpressionImpl) {
             ExpressionImpl ei = ((ExpressionImpl) script);
             ei.location = f.getAbsolutePath();
             ei.importName = as;
-            System.out.printf("Script imported : %s@%s\n", ei.importName, ei.location );
+            System.out.printf("Script imported : %s@%s\n", ei.importName, ei.location);
         }
-        imports.put(as,script);
-        return script;
-    }
-
-    public Script importScriptForJVM(String from, String as) throws Exception{
-        String scriptText = null;
-        if ( from.startsWith(Script.RELATIVE )){
-            from = System.getProperty("user.dir")  + from.substring(1) ;
-        }
-        if ( !from.endsWith(Script.DEFAULT_EXTENSION)){
-            from +=  Script.DEFAULT_EXTENSION;
-        }
-        File f = new File(from);
-        BufferedReader reader = new BufferedReader(new FileReader(f));
-        scriptText = readerToString(reader);
-        scriptText = scriptText.replaceAll(Script.SELF +":", as+".");
-
-        // now create script
-        Script script = createScript(scriptText,null , null);
-        if ( script instanceof  ExpressionImpl ){
-            ExpressionImpl ei = ((ExpressionImpl) script);
-            ei.location = f.getAbsolutePath();
-            ei.importName = as;
-            System.out.printf("Script imported : %s@%s\n", ei.importName, ei.location );
-        }
-        imports.put(as,script);
+        imports.put(as, script);
         return script;
     }
 
@@ -565,8 +570,8 @@ public class JexlEngine {
      * a corresponding array of arguments containing values should be used during evaluation.
      *
      * @param scriptText A String containing valid JEXL syntax
-     * @param info An info structure to carry debugging information if needed
-     * @param names the script parameter names
+     * @param info       An info structure to carry debugging information if needed
+     * @param names      the script parameter names
      * @return A {@link Script} which can be executed using a {@link JexlContext}.
      * @throws JexlException if there is a problem parsing the script.
      * @since 2.1
@@ -585,6 +590,7 @@ public class JexlEngine {
 
     /**
      * An overridable through covariant return Script creator.
+     *
      * @param text the script text
      * @param tree the parse AST tree
      * @return the script instance
@@ -598,10 +604,10 @@ public class JexlEngine {
      * This method parses the script and validates the syntax.
      *
      * @param scriptFile A {@link File} containing valid JEXL syntax.
-     *      Must not be null. Must be a readable file.
+     *                   Must not be null. Must be a readable file.
      * @return A {@link Script} which can be executed with a
-     *      {@link JexlContext}.
-     * @throws IOException if there is a problem reading the script.
+     * {@link JexlContext}.
+     * @throws IOException   if there is a problem reading the script.
      * @throws JexlException if there is a problem parsing the script.
      */
     public Script createScript(File scriptFile) throws IOException {
@@ -624,10 +630,10 @@ public class JexlEngine {
      * This method parses the script and validates the syntax.
      *
      * @param scriptUrl A {@link URL} containing valid JEXL syntax.
-     *      Must not be null. Must be a readable file.
+     *                  Must not be null. Must be a readable file.
      * @return A {@link Script} which can be executed with a
-     *      {@link JexlContext}.
-     * @throws IOException if there is a problem reading the script.
+     * {@link JexlContext}.
+     * @throws IOException   if there is a problem reading the script.
      * @throws JexlException if there is a problem parsing the script.
      */
     public Script createScript(URL scriptUrl) throws IOException {
@@ -654,6 +660,7 @@ public class JexlEngine {
      * <p>
      * If the JEXL engine is silent, errors will be logged through its logger as warning.
      * </p>
+     *
      * @param bean the bean to get properties from
      * @param expr the property expression
      * @return the value of the property
@@ -668,9 +675,10 @@ public class JexlEngine {
      * <p>
      * If the JEXL engine is silent, errors will be logged through its logger as warning.
      * </p>
+     *
      * @param context the evaluation context
-     * @param bean the bean to get properties from
-     * @param expr the property expression
+     * @param bean    the bean to get properties from
+     * @param expr    the property expression
      * @return the value of the property
      * @throws JexlException if there is an error parsing the expression or during evaluation
      */
@@ -709,8 +717,9 @@ public class JexlEngine {
      * <p>
      * If the JEXL engine is silent, errors will be logged through its logger as warning.
      * </p>
-     * @param bean the bean to set properties in
-     * @param expr the property expression
+     *
+     * @param bean  the bean to set properties in
+     * @param expr  the property expression
      * @param value the value of the property
      * @throws JexlException if there is an error parsing the expression or during evaluation
      */
@@ -723,10 +732,11 @@ public class JexlEngine {
      * <p>
      * If the JEXL engine is silent, errors will be logged through its logger as warning.
      * </p>
+     *
      * @param context the evaluation context
-     * @param bean the bean to set properties in
-     * @param expr the property expression
-     * @param value the value of the property
+     * @param bean    the bean to set properties in
+     * @param expr    the property expression
+     * @param value   the value of the property
      * @throws JexlException if there is an error parsing the expression or during evaluation
      */
     public void setProperty(JexlContext context, Object bean, String expr, Object value) {
@@ -757,7 +767,8 @@ public class JexlEngine {
 
     /**
      * Invokes an object's method by name and arguments.
-     * @param obj the method's invoker object
+     *
+     * @param obj  the method's invoker object
      * @param meth the method's name
      * @param args the method's arguments
      * @return the method returned value or null if it failed and engine is silent
@@ -794,9 +805,10 @@ public class JexlEngine {
     /**
      * Creates a new instance of an object using the most appropriate constructor
      * based on the arguments.
-     * @param <T> the type of object
+     *
+     * @param <T>   the type of object
      * @param clazz the class to instantiate
-     * @param args the constructor arguments
+     * @param args  the constructor arguments
      * @return the created object instance or null on failure when silent
      */
     public <T> T newInstance(Class<? extends T> clazz, Object... args) {
@@ -806,8 +818,9 @@ public class JexlEngine {
     /**
      * Creates a new instance of an object using the most appropriate constructor
      * based on the arguments.
+     *
      * @param clazz the name of the class to instantiate resolved through this engine's class loader
-     * @param args the constructor arguments
+     * @param args  the constructor arguments
      * @return the created object instance or null on failure when silent
      */
     public Object newInstance(String clazz, Object... args) {
@@ -817,8 +830,9 @@ public class JexlEngine {
     /**
      * Creates a new instance of an object using the most appropriate constructor
      * based on the arguments.
+     *
      * @param clazz the class to instantiate
-     * @param args the constructor arguments
+     * @param args  the constructor arguments
      * @return the created object instance or null on failure when silent
      */
     protected Object doCreateInstance(Object clazz, Object... args) {
@@ -851,6 +865,7 @@ public class JexlEngine {
 
     /**
      * Creates an interpreter.
+     *
      * @param context a JexlContext; if null, the EMPTY_CONTEXT is used instead.
      * @return an Interpreter
      */
@@ -860,7 +875,8 @@ public class JexlEngine {
 
     /**
      * Creates an interpreter.
-     * @param context a JexlContext; if null, the EMPTY_CONTEXT is used instead.
+     *
+     * @param context    a JexlContext; if null, the EMPTY_CONTEXT is used instead.
      * @param strictFlag whether the interpreter runs in strict mode
      * @param silentFlag whether the interpreter runs in silent mode
      * @return an Interpreter
@@ -868,14 +884,15 @@ public class JexlEngine {
      */
     protected Interpreter createInterpreter(JexlContext context, boolean strictFlag, boolean silentFlag) {
         Interpreter interpreter = new Interpreter(this, context == null ? EMPTY_CONTEXT : context, strictFlag, silentFlag);
-        interpreter.errorOnUndefinedVariable = this.errorOnUndefinedVariable ;
-        return  interpreter ;
+        interpreter.errorOnUndefinedVariable = this.errorOnUndefinedVariable;
+        return interpreter;
     }
 
     /**
      * A soft reference on cache.
      * <p>The cache is held through a soft reference, allowing it to be GCed under
      * memory pressure.</p>
+     *
      * @param <K> the cache key entry type
      * @param <V> the cache key value type
      */
@@ -891,6 +908,7 @@ public class JexlEngine {
 
         /**
          * Creates a new instance of a soft cache.
+         *
          * @param theSize the cache size
          */
         SoftCache(int theSize) {
@@ -899,6 +917,7 @@ public class JexlEngine {
 
         /**
          * Returns the cache size.
+         *
          * @return the cache size
          */
         int size() {
@@ -914,6 +933,7 @@ public class JexlEngine {
 
         /**
          * Produces the cache entry set.
+         *
          * @return the cache entry set
          */
         Set<Entry<K, V>> entrySet() {
@@ -923,6 +943,7 @@ public class JexlEngine {
 
         /**
          * Gets a value from cache.
+         *
          * @param key the cache entry key
          * @return the cache entry value
          */
@@ -933,7 +954,8 @@ public class JexlEngine {
 
         /**
          * Puts a value in cache.
-         * @param key the cache entry key
+         *
+         * @param key    the cache entry key
          * @param script the cache entry value
          */
         void put(K key, V script) {
@@ -948,8 +970,9 @@ public class JexlEngine {
 
     /**
      * Creates a cache.
-     * @param <K> the key type
-     * @param <V> the value type
+     *
+     * @param <K>       the key type
+     * @param <V>       the value type
      * @param cacheSize the cache size, must be > 0
      * @return a Map usable as a cache bounded to the given size
      */
@@ -967,6 +990,7 @@ public class JexlEngine {
 
     /**
      * Clears the expression cache.
+     *
      * @since 2.1
      */
     public void clearCache() {
@@ -979,9 +1003,10 @@ public class JexlEngine {
      * Gets the list of variables accessed by a script.
      * <p>This method will visit all nodes of a script and extract all variables whether they
      * are written in 'dot' or 'bracketed' notation. (a.b is equivalent to a['b']).</p>
+     *
      * @param script the script
      * @return the set of variables, each as a list of strings (ant-ish variables use more than 1 string)
-     *         or the empty set if no variables are used
+     * or the empty set if no variables are used
      * @since 2.1
      */
     public Set<List<String>> getVariables(Script script) {
@@ -996,9 +1021,10 @@ public class JexlEngine {
 
     /**
      * Fills up the list of variables accessed by a node.
+     *
      * @param node the node
      * @param refs the set of variable being filled
-     * @param ref the current variable being filled
+     * @param ref  the current variable being filled
      * @since 2.1
      */
     protected void getVariables(JexlNode node, Set<List<String>> refs, List<String> ref) {
@@ -1058,6 +1084,7 @@ public class JexlEngine {
 
     /**
      * Gets the array of parameters from a script.
+     *
      * @param script the script
      * @return the parameters which may be empty (but not null) if no parameters were defined
      * @since 2.1
@@ -1072,6 +1099,7 @@ public class JexlEngine {
 
     /**
      * Gets the array of local variable from a script.
+     *
      * @param script the script
      * @return the local variables array which may be empty (but not null) if no local variables were defined
      * @since 2.1
@@ -1086,6 +1114,7 @@ public class JexlEngine {
 
     /**
      * A script scope, stores the declaration of parameters and local variables.
+     *
      * @since 2.1
      */
     public static final class Scope {
@@ -1102,6 +1131,7 @@ public class JexlEngine {
 
         /**
          * Creates a new scope with a list of parameters.
+         *
          * @param parameters the list of parameters
          */
         public Scope(String... parameters) {
@@ -1128,6 +1158,7 @@ public class JexlEngine {
 
         /**
          * Whether this frame is equal to another.
+         *
          * @param frame the frame to compare to
          * @return true if equal, false otherwise
          */
@@ -1144,7 +1175,8 @@ public class JexlEngine {
         }
 
         /**
-         * Checks whether an identifier is a local variable or argument, ie stored in a register. 
+         * Checks whether an identifier is a local variable or argument, ie stored in a register.
+         *
          * @param name the register name
          * @return the register index
          */
@@ -1157,6 +1189,7 @@ public class JexlEngine {
          * <p>
          * This method creates an new entry in the named register map.
          * </p>
+         *
          * @param name the variable name
          * @return the register index storing this variable
          */
@@ -1174,6 +1207,7 @@ public class JexlEngine {
 
         /**
          * Creates a frame by copying values up to the number of parameters.
+         *
          * @param values the argument values
          * @return the arguments array
          */
@@ -1191,6 +1225,7 @@ public class JexlEngine {
 
         /**
          * Gets the (maximum) number of arguments this script expects.
+         *
          * @return the number of parameters
          */
         public int getArgCount() {
@@ -1199,6 +1234,7 @@ public class JexlEngine {
 
         /**
          * Gets this script registers, i.e. parameters and local variables.
+         *
          * @return the register names
          */
         public String[] getRegisters() {
@@ -1207,6 +1243,7 @@ public class JexlEngine {
 
         /**
          * Gets this script parameters, i.e. registers assigned before creating local variables.
+         *
          * @return the parameter names
          */
         public String[] getParameters() {
@@ -1226,6 +1263,7 @@ public class JexlEngine {
 
         /**
          * Gets this script local variable, i.e. registers assigned to local variables.
+         *
          * @return the parameter names
          */
         public String[] getLocalVariables() {
@@ -1246,16 +1284,22 @@ public class JexlEngine {
 
     /**
      * A call frame, created from a scope, stores the arguments and local variables as "registers".
+     *
      * @since 2.1
      */
     public static final class Frame {
-        /** Registers or arguments. */
+        /**
+         * Registers or arguments.
+         */
         private Object[] registers = null;
-        /** Parameter and argument names if any. */
+        /**
+         * Parameter and argument names if any.
+         */
         private String[] parameters = null;
 
         /**
          * Creates a new frame.
+         *
          * @param r the registers
          * @param p the parameters
          */
@@ -1281,8 +1325,9 @@ public class JexlEngine {
 
     /**
      * Parses an expression.
+     *
      * @param expression the expression to parse
-     * @param info debug information structure
+     * @param info       debug information structure
      * @return the parsed tree
      * @throws JexlException if any error occured during parsing
      * @deprecated Use {@link #parse(CharSequence, JexlInfo, Scope)} instead
@@ -1294,9 +1339,10 @@ public class JexlEngine {
 
     /**
      * Parses an expression.
+     *
      * @param expression the expression to parse
-     * @param info debug information structure
-     * @param frame the script frame to use
+     * @param info       debug information structure
+     * @param frame      the script frame to use
      * @return the parsed tree
      * @throws JexlException if any error occured during parsing
      */
@@ -1345,9 +1391,10 @@ public class JexlEngine {
 
     /**
      * Creates a JexlInfo instance.
+     *
      * @param fn url/file name
-     * @param l line number
-     * @param c column number
+     * @param l  line number
+     * @param c  column number
      * @return a JexlInfo instance
      */
     protected JexlInfo createInfo(String fn, int l, int c) {
@@ -1358,6 +1405,7 @@ public class JexlEngine {
      * Creates and fills up debugging information.
      * <p>This gathers the class, method and line number of the first calling method
      * not owned by JexlEngine, UnifiedJEXL or {Script,Expression}Factory.</p>
+     *
      * @return an Info if debug is set, null otherwise
      */
     protected JexlInfo debugInfo() {
@@ -1391,6 +1439,7 @@ public class JexlEngine {
 
     /**
      * Trims the expression from front & ending spaces.
+     *
      * @param str expression to clean
      * @return trimmed expression ending in a semi-colon
      */
@@ -1417,6 +1466,7 @@ public class JexlEngine {
     /**
      * Read from a reader into a local buffer and return a String with
      * the contents of the reader.
+     *
      * @param scriptReader to be read.
      * @return the contents of the reader as a String.
      * @throws IOException on any error reading the reader.

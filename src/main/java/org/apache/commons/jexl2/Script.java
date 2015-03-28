@@ -57,10 +57,6 @@ public interface Script {
      */
     Object execute(JexlContext context);
 
-
-    Object executeJVM(HashMap<String,Object> context, Object... args);
-
-
     /**
      * Executes the script with the variables contained in the
      * supplied {@link JexlContext} and a set of arguments corresponding to the
@@ -137,12 +133,6 @@ public interface Script {
     HashMap<String,ASTImportStatement> imports();
 
     ASTJexlScript script();
-
-    /**
-     * This should return a JVM Class for the script
-     * @return
-     */
-    Class myClass(HashMap<String,Object> context);
 
     /**
      * The name under which it was imported

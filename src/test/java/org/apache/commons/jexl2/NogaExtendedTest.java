@@ -140,7 +140,7 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue(o.equals(Boolean.TRUE));
     }
 
-
+    @Test
     public void testScriptWithMethods() throws Exception {
         JexlContext jc = new MapContext();
         JEXL.setFunctions(Main.getFunction(jc));
@@ -149,6 +149,7 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue(o != null);
     }
 
+    @Test
     public void testScriptWithImportedMethods() throws Exception {
         JexlContext jc = new MapContext();
         JEXL.setFunctions(Main.getFunction(jc));
@@ -174,6 +175,7 @@ public class NogaExtendedTest extends JexlTestCase {
         }
     }
 
+    @Test
     public void testWithPrivateFields() throws Exception {
         JexlContext jc = new MapContext();
         JEXL.setFunctions(Main.getFunction(jc));
@@ -183,6 +185,7 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue(o.equals(204));
     }
 
+    @Test
     public void testWithPrivateMethods() throws Exception {
         JexlContext jc = new MapContext();
         JEXL.setFunctions(Main.getFunction(jc));
@@ -197,6 +200,7 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue(o.equals(42000));
     }
 
+    @Test
     public void testWithStaticFields() throws Exception{
         JexlContext jc = new MapContext();
         JEXL.setFunctions(Main.getFunction(jc));
