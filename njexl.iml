@@ -10,6 +10,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/java" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/jjtree" isTestSource="false" generated="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target/javacc-1427535601922" />
+      <excludeFolder url="file://$MODULE_DIR$/target/javacc-1427535633482" />
+      <excludeFolder url="file://$MODULE_DIR$/target/javacc-1427545881779" />
+      <excludeFolder url="file://$MODULE_DIR$/target/javacc-1427545910328" />
+      <excludeFolder url="file://$MODULE_DIR$/target/javacc-1427547023537" />
+      <excludeFolder url="file://$MODULE_DIR$/target/javacc-1427547052234" />
+      <excludeFolder url="file://$MODULE_DIR$/target/javacc-1427547163600" />
       <excludeFolder url="file://$MODULE_DIR$/target/lib" />
       <excludeFolder url="file://$MODULE_DIR$/target/maven-archiver" />
       <excludeFolder url="file://$MODULE_DIR$/target/maven-status" />

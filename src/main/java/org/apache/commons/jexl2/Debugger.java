@@ -370,6 +370,10 @@ final class Debugger implements ParserVisitor {
         return data;
     }
 
+    public Object visit(ASTINNode node, Object data) {
+        return infixChildren(node, " in ", false, data);
+    }
+
     /** {@inheritDoc} */
     public Object visit(ASTEQNode node, Object data) {
         return infixChildren(node, " == ", false, data);

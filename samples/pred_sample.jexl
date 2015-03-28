@@ -1,7 +1,42 @@
+import  'java.lang.System.out' as out 
+
 dummy_list = [ "1", 1, 2, 3, "4" , 4 ]
-// how to create a set ?
-my_set = set { int($_) } ( dummy_list )
-out:println(my_set)
+
 // how to filter based on condition?
 filter_list = filter{ int($_) >= 3 }(dummy_list)
 out:println(filter_list)
+
+// how to create a set ?
+s1 = set { int($_) } ( dummy_list )
+out:println(s1)
+s2 = set{ int($_) } ( 3,4,5,6,7,8,9)
+out:println(s2)
+
+// Multiset  
+out:println(s1+s2)
+// Union 
+out:println(s1 | s2)
+// Intersection 
+out:println(s1 & s2)
+// Difference 
+out:println(s1 - s2)
+// Symmetric Delta 
+out:println(s1 ^ s2)
+
+// now the set relations
+
+// s1 proper subset of s2 ?
+out:println(s1 < s2)
+
+// s1 subset of s2 ?
+out:println(s1 <= s2)
+
+// s1 proper subset of s1 ?
+out:println(s1 < s1)
+
+// s2  subset of s2 ?
+out:println(s2 <= s2)
+
+// s2 == s2 ?
+out:println(s2 == s2)
+

@@ -7,7 +7,7 @@ import org.junit.Test;
  */
 public class ExtendedScriptTest extends JexlTestCase {
 
-    @Test
+    /*@Test*/
     public void testFullScript() throws Exception {
         JexlContext jc = new MapContext();
         JEXL.setFunctions(Main.getFunction(jc));
@@ -24,5 +24,12 @@ public class ExtendedScriptTest extends JexlTestCase {
         t = System.currentTimeMillis() - t ;
         System.out.println("Time Taken (ms): " + t);
         assertTrue(10000 > t );
+    }
+    @Test
+    public void testPredicateScript() throws Exception {
+        JexlContext jc = new MapContext();
+        JEXL.setFunctions(Main.getFunction(jc));
+        Script e = JEXL.importScript("samples/pred_sample.jexl");
+        e.execute(jc);
     }
 }

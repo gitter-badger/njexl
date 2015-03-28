@@ -16,6 +16,7 @@
  */
 package org.apache.commons.jexl2;
 
+import org.apache.commons.jexl2.extension.SetOperations;
 import org.apache.commons.jexl2.extension.TypeUtility;
 import org.apache.commons.jexl2.introspection.JexlMethod;
 import org.apache.commons.jexl2.introspection.JexlPropertyGet;
@@ -36,21 +37,23 @@ import java.util.*;
  */
 public class Interpreter implements ParserVisitor {
 
-    HashMap<String,Script> imports;
+    HashMap<String, Script> imports;
 
-    public HashMap<String,Script> imports(){ return  imports; }
+    public HashMap<String, Script> imports() {
+        return imports;
+    }
 
-    protected Script resolveScriptForFunction(String prefix, String name){
+    protected Script resolveScriptForFunction(String prefix, String name) {
         Script script = imports.get(prefix);
-        if ( script != null && script.methods().containsKey(name)){
-            return script ;
+        if (script != null && script.methods().containsKey(name)) {
+            return script;
         }
 
         // else do some more
-        for ( String key : imports.keySet() ){
+        for (String key : imports.keySet()) {
             script = imports.get(key);
-            HashMap<String,ASTMethodDef> methods = script.methods();
-            if ( methods.containsKey(name)){
+            HashMap<String, ASTMethodDef> methods = script.methods();
+            if (methods.containsKey(name)) {
                 return script;
             }
         }
@@ -162,7 +165,7 @@ public class Interpreter implements ParserVisitor {
         this.cache = base.cache;
         this.context = base.context;
         this.functors = base.functors;
-        this.imports = base.imports ;
+        this.imports = base.imports;
     }
 
     /**
@@ -312,7 +315,7 @@ public class Interpreter implements ParserVisitor {
         return node;
     }
 
-    public boolean errorOnUndefinedVariable = true ;
+    public boolean errorOnUndefinedVariable = true;
 
     /**
      * Triggered when variable can not be resolved.
@@ -382,13 +385,13 @@ public class Interpreter implements ParserVisitor {
         }
         if (namespace == null) {
             String methodName = "";
-            if ( prefix == null ) {
+            if (prefix == null) {
                 methodName = node.jjtGetChild(0).image;
-            }else{
+            } else {
                 methodName = node.jjtGetChild(1).image;
             }
-            namespace = resolveScriptForFunction(prefix,methodName);
-            if ( namespace != null){
+            namespace = resolveScriptForFunction(prefix, methodName);
+            if (namespace != null) {
                 return namespace;
             }
 
@@ -419,29 +422,42 @@ public class Interpreter implements ParserVisitor {
 
     @Override
     public Object visit(ASTImportStatement node, Object data) {
-        String from = node.jjtGetChild(0).image ;
-        String as = node.jjtGetChild(1).image ;
-        try{
-            if ( functions.containsKey(as) || imports.containsKey(as)){
-                throw new Exception(String.format("[%s] is already taken as import name!",as));
+        String from = node.jjtGetChild(0).image;
+        String as = node.jjtGetChild(1).image;
+        try {
+            if (functions.containsKey(as) || imports.containsKey(as)) {
+                throw new Exception(String.format("[%s] is already taken as import name!", as));
             }
-            try{
+            try {
                 Class<?> c = Class.forName(from);
-                functions.put(as,c);
-                context.set(as,c);
+                functions.put(as, c);
+                context.set(as, c);
                 return c;
-            }catch (Exception e){
-                //ignore...
+            } catch (Exception e) {
+                try {
+                    //perhaps a field ?
+                    String actClass = from.substring(0, from.lastIndexOf("."));
+                    Class<?> c = Class.forName(actClass);
+                    String fieldName = from.substring(from.lastIndexOf(".") + 1);
+                    JexlPropertyGet pg = uberspect.getPropertyGet(c, fieldName, null);
+                    Object o = pg.invoke(null);
+                    functions.put(as, o);
+                    context.set(as, o);
+                    return c;
+
+                } catch (Exception ee) {
+
+                }
             }
 
             Script freshlyImported = jexlEngine.importScript(from, as);
-            imports.put(as,freshlyImported);
-            context.set(as,freshlyImported);
+            imports.put(as, freshlyImported);
+            context.set(as, freshlyImported);
 
             return freshlyImported;
 
-        }catch (Exception e){
-            JexlException jexlException = new JexlException(node,"Import Failed!",e);
+        } catch (Exception e) {
+            JexlException jexlException = new JexlException(node, "Import Failed!", e);
             return invocationFailed(jexlException);
         }
     }
@@ -470,11 +486,21 @@ public class Interpreter implements ParserVisitor {
                 if (op instanceof ASTAdditiveOperator) {
                     String which = op.image;
                     if ("+".equals(which)) {
-                        left = arithmetic.add(left, right);
+                        if (left instanceof Set && right instanceof Set) {
+                            // do something meaningful
+                            left = SetOperations.set_u((Set) left, (Set) right);
+                        } else {
+                            left = arithmetic.add(left, right);
+                        }
                         continue;
                     }
                     if ("-".equals(which)) {
-                        left = arithmetic.subtract(left, right);
+                        if (left instanceof Set && right instanceof Set) {
+                            // do something meaningful
+                            left = SetOperations.set_d((Set) left, (Set) right);
+                        } else {
+                            left = arithmetic.subtract(left, right);
+                        }
                         continue;
                     }
                     throw new UnsupportedOperationException("unknown operator " + which);
@@ -492,7 +518,7 @@ public class Interpreter implements ParserVisitor {
      * {@inheritDoc}
      */
     public Object visit(ASTAdditiveOperator node, Object data) {
-        throw new UnsupportedOperationException("Shoud not be called.");
+        throw new UnsupportedOperationException("Should not be called.");
     }
 
     /**
@@ -708,6 +734,10 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTBitwiseAndNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
+        if (left instanceof Set && right instanceof Set) {
+            // do something meaningful
+            return SetOperations.set_i((Set) left, (Set) right);
+        }
         try {
             return arithmetic.bitwiseAnd(left, right);
         } catch (ArithmeticException xrt) {
@@ -733,6 +763,10 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTBitwiseOrNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
+        if (left instanceof Set && right instanceof Set) {
+            // do something meaningful
+            return SetOperations.set_u((Set) left, (Set) right);
+        }
         try {
             return arithmetic.bitwiseOr(left, right);
         } catch (ArithmeticException xrt) {
@@ -746,6 +780,10 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTBitwiseXorNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
+        if (left instanceof Set && right instanceof Set) {
+            // do something meaningful
+            return SetOperations.set_sym_d((Set) left, (Set) right);
+        }
         try {
             return arithmetic.bitwiseXor(left, right);
         } catch (ArithmeticException xrt) {
@@ -811,8 +849,12 @@ public class Interpreter implements ParserVisitor {
      */
     public Object visit(ASTDefinedFunction node, Object data) {
         String varName =
-                node.jjtGetChild(0).jjtGetChild(0).image ;
-        return context.has( varName );
+                node.jjtGetChild(0).jjtGetChild(0).image;
+        return context.has(varName);
+    }
+
+    public Object visit(ASTINNode node, Object data) {
+        return false;
     }
 
     /**
@@ -821,6 +863,10 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTEQNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
+        if (left instanceof Set && right instanceof Set) {
+            // do something meaningful
+            return SetOperations.is_set_relation((Set) left, (Set) right, "==");
+        }
         try {
             return arithmetic.equals(left, right) ? Boolean.TRUE : Boolean.FALSE;
         } catch (ArithmeticException xrt) {
@@ -851,13 +897,13 @@ public class Interpreter implements ParserVisitor {
             /* third objectNode is the statement to execute */
             JexlNode statement = node.jjtGetChild(2);
             // if this is an array?
-            if ( iterableValue.getClass().isArray()){
-                int len  = Array.getLength(iterableValue);
-                for ( int i = 0 ; i < len; i++ ){
+            if (iterableValue.getClass().isArray()) {
+                int len = Array.getLength(iterableValue);
+                for (int i = 0; i < len; i++) {
                     if (isCancelled()) {
                         throw new JexlException.Cancel(node);
                     }
-                    Object value = Array.get(iterableValue,i);
+                    Object value = Array.get(iterableValue, i);
                     if (register < 0) {
                         context.set(loopVariable.image, value);
                     } else {
@@ -1066,10 +1112,11 @@ public class Interpreter implements ParserVisitor {
         return node.getLiteral();
     }
 
-    public static boolean __debug__ = false ;
+    public static boolean __debug__ = false;
     final Debugger debugger = new Debugger();
-    void log(String prefix, String message){
-        if ( __debug__ ) {
+
+    void log(String prefix, String message) {
+        if (__debug__) {
             System.out.printf("[%s] %s\n", prefix, message);
         }
     }
@@ -1078,26 +1125,26 @@ public class Interpreter implements ParserVisitor {
      * {@inheritDoc}
      */
     public Object visit(ASTJexlScript node, Object data) {
-        log("STARTED",new Date().toString());
+        log("STARTED", new Date().toString());
         int numChildren = node.jjtGetNumChildren();
         Object result = null;
         for (int i = 0; i < numChildren; i++) {
             JexlNode child = node.jjtGetChild(i);
             String info = debugger.data(child);
-            log("BEFORE",info);
+            log("BEFORE", info);
             try {
                 result = child.jjtAccept(this, data);
-                log("OK",info);
-            }catch (Throwable throwable){
-                if ( throwable instanceof JexlException.Return){
-                    log("OK",info);
-                }else {
+                log("OK", info);
+            } catch (Throwable throwable) {
+                if (throwable instanceof JexlException.Return) {
+                    log("OK", info);
+                } else {
                     log("ERROR", info);
                 }
                 throw throwable;
             }
         }
-        log("ENDED",new Date().toString());
+        log("ENDED", new Date().toString());
         return result;
     }
 
@@ -1107,6 +1154,10 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTLENode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
+        if (left instanceof Set && right instanceof Set) {
+            // do something meaningful
+            return SetOperations.is_set_relation((Set) left, (Set) right, "<=");
+        }
         try {
             return arithmetic.lessThanOrEqual(left, right) ? Boolean.TRUE : Boolean.FALSE;
         } catch (ArithmeticException xrt) {
@@ -1120,6 +1171,10 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTLTNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
+        if (left instanceof Set && right instanceof Set) {
+            // do something meaningful
+            return SetOperations.is_set_relation((Set) left, (Set) right, "<");
+        }
         try {
             return arithmetic.lessThan(left, right) ? Boolean.TRUE : Boolean.FALSE;
         } catch (ArithmeticException xrt) {
@@ -1151,14 +1206,16 @@ public class Interpreter implements ParserVisitor {
         return map;
     }
 
-    public static class AnonymousParam{
+    public static class AnonymousParam {
         public Interpreter interpreter;
         public ASTBlock block;
-        public AnonymousParam(Interpreter i, ASTBlock block){
+
+        public AnonymousParam(Interpreter i, ASTBlock block) {
             this.interpreter = i;
             this.block = block;
         }
     }
+
     /**
      * Calls a method (or function).
      * <p>
@@ -1184,13 +1241,13 @@ public class Interpreter implements ParserVisitor {
         int argc = node.jjtGetNumChildren() - argb;
         Object[] argv = new Object[argc];
 
-        if ( argc >0  ) {
+        if (argc > 0) {
             SimpleNode n = node.jjtGetChild(argb);
             if (n instanceof ASTBlock) {
             /* the anonymous function is passed here.
                 Thus, we should pass this as argument
             */
-                argv[0] = new AnonymousParam(this, (ASTBlock)n);
+                argv[0] = new AnonymousParam(this, (ASTBlock) n);
             } else {
                 argv[0] = n.jjtAccept(this, null);
             }
@@ -1212,8 +1269,8 @@ public class Interpreter implements ParserVisitor {
                 }
             }
             boolean cacheable = cache;
-            if ( bean instanceof Script ){
-                 return ((Script)bean).execMethod( methodName, this, argv);
+            if (bean instanceof Script) {
+                return ((Script) bean).execMethod(methodName, this, argv);
             }
 
             JexlMethod vm = uberspect.getMethod(bean, methodName, argv, node);
@@ -1250,8 +1307,8 @@ public class Interpreter implements ParserVisitor {
                          */
                         Boolean[] success = new Boolean[1];
                         Object ret = TypeUtility.interceptCastingCall(methodName, argv, success);
-                        if ( success[0] ){
-                            return ret ;
+                        if (success[0]) {
+                            return ret;
                         }
                         xjexl = new JexlException.Method(node, methodName);
                     }
@@ -1790,10 +1847,10 @@ public class Interpreter implements ParserVisitor {
                     }
                 }
             }
-        }  else {
+        } else {
             // Special casing for 'length' for Array.
-            if ( object.getClass().isArray() && attribute.equals("length") ){
-                return  Array.getLength(object);
+            if (object.getClass().isArray() && attribute.equals("length")) {
+                return Array.getLength(object);
             }
         }
         return null;

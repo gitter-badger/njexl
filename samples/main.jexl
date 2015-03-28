@@ -12,7 +12,7 @@ driver = new (fdriver,p)
 // go to the url 
 driver.get("http://www.google.com/webhp?complete=1&hl=en")
 // call java thread as if in a namespace 
-thread:sleep(30000)
+thread:sleep(1000)
 // exit 
 driver.quit()
 // return if needed 

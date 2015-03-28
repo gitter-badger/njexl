@@ -131,7 +131,6 @@ public final class SetOperations {
 
     public static HashMap multiset(Object... args){
         Interpreter.AnonymousParam anon = null;
-        String  anonCall = null ;
         ArrayList list = new ArrayList();
         if (args.length > 1) {
             if (args[0] instanceof Interpreter.AnonymousParam) {
@@ -190,7 +189,7 @@ public final class SetOperations {
         return diff;
     }
 
-    public boolean mset_equal(Map<Object,ArrayList> mset1, Map<Object,ArrayList> mset2){
+    public static boolean mset_equal(Map<Object,ArrayList> mset1, Map<Object,ArrayList> mset2){
         HashMap<Object,int[]> d = mset_diff(mset1,mset2);
 
         for ( Object k : d.keySet() ){
@@ -202,4 +201,28 @@ public final class SetOperations {
         return true ;
     }
 
+    public static boolean in(Object c1, Object c2){
+        if (  c2 instanceof Set ){
+            if ( c1 instanceof Set ) {
+                return is_set_relation( (Set)c1, (Set)c2, "<=");
+            }
+            return ((Set)c2).contains(c1);
+        }
+        if (  c2 instanceof Collection ){
+            if ( c1 instanceof  Collection ) {
+                Map m1 = multiset(c1);
+                Map m2 = multiset(c2);
+                Map diff = mset_diff(m2, m1);
+                for (Object key : diff.keySet()) {
+                    int[] val = (int[]) diff.get(key);
+                    if (val[0] == 0) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return ((Collection)c2).contains(c1);
+        }
+        return false ;
+    }
 }
