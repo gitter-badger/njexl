@@ -395,7 +395,9 @@ void MultiplicativeExpression() #void : {}
 {
   UnaryExpression()
   (
-    <mult> UnaryExpression() #MulNode(2)
+    LOOKAHEAD(2) <mult> <mult> UnaryExpression() #PowNode(2)
+   |
+   <mult> UnaryExpression() #MulNode(2)
    |
     <div> UnaryExpression() #DivNode(2)
    |

@@ -552,6 +552,67 @@ public class JexlArithmetic {
     }
 
     /**
+     * Power of the left value by the right.
+     * @param left first value
+     * @param right second value
+     * @return power(lef, right).
+     */
+    public Object power(Object left, Object right) {
+        if (left == null && right == null) {
+            return controlNullNullOperands();
+        }
+
+        // if all are numbers use double
+        if (isNumberable(left) && isNumberable(right)) {
+            double l = toDouble(left);
+            double r = toDouble(right);
+            return Math.pow(l , r);
+        }
+        // if either are bigdecimal use that type
+        if (left instanceof BigDecimal || right instanceof BigDecimal) {
+            BigDecimal l = toBigDecimal(left);
+            BigDecimal r = toBigDecimal(right);
+            BigDecimal result = l.pow(r.intValue(), getMathContext());
+            return narrowBigDecimal(left, right, result);
+        }
+        if ( left instanceof String ){
+            if ( right instanceof Integer ) {
+                int r = (int) right;
+                if ( r >= 0 ) {
+                    StringBuffer buf = new StringBuffer();
+                    if ( r> 0 ){
+                        buf.append(left);
+                    }
+                    for (int i = 1; i < r; i++) {
+                        buf.append(left);
+                    }
+                    return buf.toString();
+                }
+                else{
+                    StringBuilder sb = new StringBuilder(left.toString());
+                    sb.reverse();
+                    r = -r;
+                    StringBuffer buf = new StringBuffer(sb);
+                    for (int i = 1; i < r; i++) {
+                        buf.append(sb);
+                    }
+                    return buf.toString();
+                }
+            }
+        }
+        if ( left instanceof List && right instanceof Integer ){
+            int n = (int)right;
+            List l = new ArrayList((List)left);
+            while ( --n > 0 ){
+                l = SetOperations.join(l,(List)left);
+            }
+            return l;
+        }
+        throw new ArithmeticException("Power can not be computed!");
+
+    }
+
+    /**
      * Subtract the right value from the left.
      * @param left first value
      * @param right second value

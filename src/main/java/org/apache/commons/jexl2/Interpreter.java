@@ -1411,6 +1411,20 @@ public class Interpreter implements ParserVisitor {
     /**
      * {@inheritDoc}
      */
+    public Object visit(ASTPowNode node, Object data) {
+        Object left = node.jjtGetChild(0).jjtAccept(this, data);
+        Object right = node.jjtGetChild(1).jjtAccept(this, data);
+        try {
+            return arithmetic.power(left, right);
+        } catch (ArithmeticException xrt) {
+            JexlNode xnode = findNullOperand(xrt, node, left, right);
+            throw new JexlException(xnode, "** error", xrt);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Object visit(ASTMulNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);

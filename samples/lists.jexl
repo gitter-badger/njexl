@@ -12,3 +12,14 @@ out:println(s)
 // the list join operation 
 j = l * r * r 
 out:println(j)
+
+// general power arithmatic
+out:println( 10**2 ) 
+// abnormal stuff 
+out:println ( "abcdef" ** 2 )
+// purely abnormal stuff 
+out:println ( "abcdef"**-1 )
+// List stuff 
+out:println( l ** 2 )
+
+
