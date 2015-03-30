@@ -499,9 +499,16 @@ void StringLiteral() :
   { jjtThis.image = Parser.buildString(t.image, true); }
 }
 
+void ArrayRange() : {}
+{
+   <LBRACKET>  MapEntry()  <RBRACKET>
+}
+
 void ArrayLiteral() : {}
 {
-  <LBRACKET> (Expression() ( <COMMA> Expression() )*)? <RBRACKET>
+  LOOKAHEAD(3) <LBRACKET> (Expression() ( <COMMA> Expression() )*)? <RBRACKET>
+  |
+   ArrayRange()
 }
 
 void MapLiteral() : {}

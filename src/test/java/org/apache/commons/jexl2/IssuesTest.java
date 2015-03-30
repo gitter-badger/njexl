@@ -485,7 +485,7 @@ public class IssuesTest extends JexlTestCase {
 
     public void test105() throws Exception {
         JexlContext context = new MapContext();
-        Expression selectExp = new JexlEngine().createExpression("[a.propA]");
+        Expression selectExp = new JexlEngine().createExpression("[ a.propA ]");
         context.set("a", new A105("a1", "p1"));
         Object[] r = (Object[]) selectExp.evaluate(context);
         assertEquals("p1", r[0]);

@@ -564,6 +564,17 @@ public class Interpreter implements ParserVisitor {
         return object;
     }
 
+    public Object visit(ASTArrayRange node, Object data) {
+        // There should be a single map entry hence :
+        Object start = node.jjtGetChild(0).jjtGetChild(0).jjtAccept(this, data);
+        Object end = node.jjtGetChild(0).jjtGetChild(1).jjtAccept(this, data);
+        try {
+            return TypeUtility.range(end, start);
+        }catch (Exception e){
+            throw new JexlException(node, "Invalid Range!", e);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
