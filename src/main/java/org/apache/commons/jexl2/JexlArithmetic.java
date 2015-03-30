@@ -639,9 +639,7 @@ public class JexlArithmetic {
             return r;
         }
         if ( left instanceof List && right instanceof List){
-            ArrayList r = (ArrayList)((ArrayList)left).clone();
-            r.removeAll((List)right);
-            return r;
+            return SetOperations.list_d((List)left,(List)right);
         }
 
         // if either are bigdecimal use that type 
@@ -732,6 +730,9 @@ public class JexlArithmetic {
         if ( left instanceof Set && right instanceof Set){
             return SetOperations.set_i((Set)left,(Set)right);
         }
+        if ( left instanceof List && right instanceof List){
+            return SetOperations.list_i((List) left, (List) right);
+        }
         long l = toLong(left);
         long r = toLong(right);
         return Long.valueOf(l & r);
@@ -747,6 +748,9 @@ public class JexlArithmetic {
     public Object bitwiseOr(Object left, Object right) {
         if ( left instanceof Set && right instanceof Set){
             return SetOperations.set_u((Set) left, (Set) right);
+        }
+        if ( left instanceof List && right instanceof List){
+            return SetOperations.list_u((List) left, (List) right);
         }
         long l = toLong(left);
         long r = toLong(right);
@@ -765,10 +769,8 @@ public class JexlArithmetic {
             return SetOperations.set_sym_d((Set)left,(Set)right);
         }
 
-        if ( left instanceof Collection && right instanceof Collection){
-            HashMap l = SetOperations.multiset(left);
-            HashMap r = SetOperations.multiset(right);
-            return SetOperations.mset_diff( l, r);
+        if ( left instanceof List && right instanceof List){
+            return SetOperations.list_sym_d((List)left,(List)right);
         }
 
         long l = toLong(left);

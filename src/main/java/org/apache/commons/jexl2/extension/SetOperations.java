@@ -241,6 +241,58 @@ public final class SetOperations {
         return SetRelation.is(relation, actual);
     }
 
+    public static List list_i(List l1, List l2){
+        HashMap m1 = multiset(l1);
+        HashMap m2 = multiset(l2);
+        HashMap<Object,int[]> d = mset_diff(m1,m2);
+        ArrayList l = new ArrayList();
+        for ( Object o : d.keySet() ){
+            int[] var = d.get(o);
+            int t = Math.min( var[0],var[1]);
+            for ( int i = 0 ; i < t; i++ ){
+                l.add(o);
+            }
+        }
+        return l;
+    }
+
+    public static List list_u(List l1, List l2){
+        HashMap m1 = multiset(l1);
+        HashMap m2 = multiset(l2);
+        HashMap<Object,int[]> d = mset_diff(m1,m2);
+        ArrayList l = new ArrayList();
+        for ( Object o : d.keySet() ){
+            int[] var = d.get(o);
+            int t = Math.max( var[0],var[1]);
+            for ( int i = 0 ; i < t; i++ ){
+                l.add(o);
+            }
+        }
+        return l;
+    }
+
+    public static List list_d(List l1, List l2){
+        HashMap m1 = multiset(l1);
+        HashMap m2 = multiset(l2);
+        HashMap<Object,int[]> d = mset_diff(m1,m2);
+        ArrayList l = new ArrayList();
+        for ( Object o : d.keySet() ){
+            int[] var = d.get(o);
+            int t = var[0] - var[1];
+            for ( int i = 0 ; i < t; i++ ){
+                l.add(o);
+            }
+        }
+        return l;
+    }
+
+    public static List list_sym_d(List l1, List l2){
+        List i = list_i(l1,l2);
+        List u = list_u(l1,l2);
+        return list_d(u,i);
+    }
+
+
     public static List join(List left, List right){
         if ( left == null || right == null ){
             return null;

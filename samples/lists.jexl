@@ -1,25 +1,35 @@
 import 'java.lang.System.out' as out
 
-l = list( 1, 2, 3, 4 )
+l = list( 1, 2, 2, 3, 4 )
 r = list( "hi", "hello" )
 l1 = list(1,2)
+
 // list catenation 
-a = l + r 
-out:println(a)
+out:println(l + r)
+
 // list subtraction 
-s = l - l1 
-out:println(s)
+out:println(l - l1)
+
 // the list join operation 
-j = l * r * r 
-out:println(j)
+out:println(l * r * r)
+
+// List intersection 
+out:println(l & l1)
+
+// list union 
+out:println(l | l1)
+
 
 // general power arithmatic
 out:println( 10**2 ) 
-// abnormal stuff 
+
+// abnormal stuff : pythonic catenation
 out:println ( "abcdef" ** 2 )
-// purely abnormal stuff 
+
+// purely abnormal stuff -ve means reverse it 
 out:println ( "abcdef"**-1 )
-// List stuff 
+
+// List power stuff : l * l 
 out:println( l ** 2 )
 
 
