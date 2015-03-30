@@ -24,6 +24,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -88,6 +90,7 @@ public class NogaExtendedTest extends JexlTestCase {
         assertEquals(100, o);
     }
 
+    @Test
     public void testSetFunctions() throws Exception {
         ListSet oe = TypeUtility.set(new int[]{});
 
@@ -109,6 +112,37 @@ public class NogaExtendedTest extends JexlTestCase {
 
         Assert.assertTrue(SetOperations.is_set_relation(c, c, "="));
 
+    }
+
+    @Test
+    public void testMultiSetFunctions() throws Exception {
+        HashMap oe = SetOperations.multiset(new int[]{});
+
+        HashMap a = SetOperations.multiset(new int[]{0, 1, 2, 3,3,3,3});
+        HashMap b = SetOperations.multiset(new int[]{0, 1, 2, 3,3,3,3, 4,5});
+        HashMap c = SetOperations.multiset(new int[]{5, 6,6,7,8});
+
+        Assert.assertTrue(SetOperations.is_mset_relation(oe, oe, "="));
+
+        Assert.assertTrue(SetOperations.is_mset_relation(oe, a, "<"));
+
+        Assert.assertTrue(SetOperations.is_mset_relation(a, oe, ">"));
+
+        Assert.assertTrue(SetOperations.is_mset_relation(a, b, "<"));
+
+        Assert.assertTrue(SetOperations.is_mset_relation(b, a, ">"));
+
+        Assert.assertTrue(SetOperations.is_mset_relation(c, a, "><"));
+
+        Assert.assertTrue(SetOperations.is_mset_relation(c, c, "="));
+
+    }
+    @Test
+    public void testJoin() throws Exception{
+        List l = TypeUtility.from(new int[]{0, 1, 2, 3});
+        List r = TypeUtility.from(new String[]{"hi","hello"});
+        List ret = SetOperations.join(l,r);
+        Assert.assertTrue(ret.size() == l.size() * r.size());
     }
 
     @Test

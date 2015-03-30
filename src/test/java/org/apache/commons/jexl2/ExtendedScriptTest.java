@@ -7,29 +7,30 @@ import org.junit.Test;
  */
 public class ExtendedScriptTest extends JexlTestCase {
 
-    /*@Test*/
-    public void testFullScript() throws Exception {
+    private static Object runScript(JexlEngine JEXL, String path)throws Exception{
         JexlContext jc = new MapContext();
         JEXL.setFunctions(Main.getFunction(jc));
-        Script e = JEXL.importScript("samples/main.jexl");
-        e.execute(jc);
+        Script e = JEXL.importScript(path);
+        return e.execute(jc);
+    }
+    @Test
+    public void testFullScript() throws Exception {
+        runScript(JEXL,"samples/main.jexl");
     }
     @Test
     public void testPerfScript() throws Exception {
-        JexlContext jc = new MapContext();
-        JEXL.setFunctions(Main.getFunction(jc));
-        Script e = JEXL.importScript("samples/perf.jexl");
         long t = System.currentTimeMillis();
-        e.execute(jc);
+        runScript(JEXL,"samples/perf.jexl");
         t = System.currentTimeMillis() - t ;
         System.out.println("Time Taken (ms): " + t);
         assertTrue(10000 > t );
     }
     @Test
     public void testPredicateScript() throws Exception {
-        JexlContext jc = new MapContext();
-        JEXL.setFunctions(Main.getFunction(jc));
-        Script e = JEXL.importScript("samples/pred_sample.jexl");
-        e.execute(jc);
+       runScript(JEXL, "samples/pred_sample.jexl");
+    }
+    @Test
+    public void testListScript() throws Exception {
+        runScript(JEXL,"samples/lists.jexl");
     }
 }

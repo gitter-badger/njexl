@@ -1,0 +1,14 @@
+import 'java.lang.System.out' as out
+
+l = list( 1, 2, 3, 4 )
+r = list( "hi", "hello" )
+l1 = list(1,2)
+// list catenation 
+a = l + r 
+out:println(a)
+// list subtraction 
+s = l - l1 
+out:println(s)
+// the list join operation 
+j = l * r * r 
+out:println(j)

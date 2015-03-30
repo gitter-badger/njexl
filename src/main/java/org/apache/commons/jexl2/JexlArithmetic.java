@@ -16,6 +16,7 @@
  */
 package org.apache.commons.jexl2;
 
+import org.apache.commons.jexl2.extension.ListSet;
 import org.apache.commons.jexl2.extension.SetOperations;
 
 import java.lang.reflect.Array;
@@ -23,8 +24,7 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Perform arithmetic.
@@ -396,6 +396,21 @@ public class JexlArithmetic {
                 double r = toDouble(right);
                 return new Double(l + r);
             }
+            if ( left instanceof Set && right instanceof Set){
+                ListSet r = new ListSet((List)left);
+                r.addAll((List)right);
+                return r;
+            }
+            if ( left instanceof List && right instanceof List){
+                ArrayList r = new ArrayList((List)left);
+                r.addAll((List)right);
+                return r;
+            }
+            if ( left instanceof Map && right instanceof Map){
+                HashMap r = new HashMap((Map)left);
+                r.putAll((Map)right);
+                return r;
+            }
 
             // if either are bigdecimal use that type 
             if (left instanceof BigDecimal || right instanceof BigDecimal) {
@@ -519,7 +534,9 @@ public class JexlArithmetic {
             double r = toDouble(right);
             return new Double(l * r);
         }
-
+        if ( left instanceof  List && right instanceof List ){
+            return SetOperations.join((List)left,(List)right);
+        }
         // if either are bigdecimal use that type 
         if (left instanceof BigDecimal || right instanceof BigDecimal) {
             BigDecimal l = toBigDecimal(left);
@@ -527,7 +544,6 @@ public class JexlArithmetic {
             BigDecimal result = l.multiply(r, getMathContext());
             return narrowBigDecimal(left, right, result);
         }
-
         // otherwise treat as integers
         BigInteger l = toBigInteger(left);
         BigInteger r = toBigInteger(right);
@@ -553,6 +569,20 @@ public class JexlArithmetic {
             return new Double(l - r);
         }
 
+        if ( left instanceof Set && right instanceof Set){
+            return SetOperations.set_d((Set) left, (Set) right);
+        }
+        if ( left instanceof List && !(right instanceof List)){
+            ArrayList r = new ArrayList((List)left);
+            r.remove(right);
+            return r;
+        }
+        if ( left instanceof List && right instanceof List){
+            ArrayList r = (ArrayList)((ArrayList)left).clone();
+            r.removeAll((List)right);
+            return r;
+        }
+
         // if either are bigdecimal use that type 
         if (left instanceof BigDecimal || right instanceof BigDecimal) {
             BigDecimal l = toBigDecimal(left);
@@ -560,9 +590,7 @@ public class JexlArithmetic {
             BigDecimal result = l.subtract(r, getMathContext());
             return narrowBigDecimal(left, right, result);
         }
-        if ( left instanceof Set && right instanceof Set){
-            return SetOperations.set_d((Set) left, (Set) right);
-        }
+
         // otherwise treat as integers
         BigInteger l = toBigInteger(left);
         BigInteger r = toBigInteger(right);
@@ -676,6 +704,12 @@ public class JexlArithmetic {
             return SetOperations.set_sym_d((Set)left,(Set)right);
         }
 
+        if ( left instanceof Collection && right instanceof Collection){
+            HashMap l = SetOperations.multiset(left);
+            HashMap r = SetOperations.multiset(right);
+            return SetOperations.mset_diff( l, r);
+        }
+
         long l = toLong(left);
         long r = toLong(right);
         return Long.valueOf(l ^ r);
@@ -748,6 +782,22 @@ public class JexlArithmetic {
                 Set l = (Set)left;
                 Set r = (Set)right;
                 SetOperations.SetRelation sr = SetOperations.set_relation(l,r);
+                switch (sr){
+                    case SUBSET:
+                        return -1;
+                    case SUPERSET:
+                        return 1 ;
+                    case EQUAL:
+                        return 0 ;
+                    case OVERLAP:
+                        return Integer.MAX_VALUE  ;
+                    case INDEPENDENT:
+                        return Integer.MIN_VALUE ;
+                }
+            }else if ( left instanceof Collection && right instanceof Collection ){
+                HashMap l = SetOperations.multiset(left);
+                HashMap r = SetOperations.multiset(right);
+                SetOperations.SetRelation sr = SetOperations.mset_relation(l, r);
                 switch (sr){
                     case SUBSET:
                         return -1;

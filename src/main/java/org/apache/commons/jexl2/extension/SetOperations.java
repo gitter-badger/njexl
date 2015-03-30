@@ -131,7 +131,7 @@ public final class SetOperations {
         return SetRelation.is(relation, actual);
     }
 
-    public static HashMap multiset(Object... args){
+    public static HashMap<Object,ArrayList> multiset(Object... args){
         Interpreter.AnonymousParam anon = null;
         ArrayList list = new ArrayList();
         if (args.length > 1) {
@@ -169,7 +169,7 @@ public final class SetOperations {
         return m;
     }
 
-    public static HashMap mset_diff(Map<Object,ArrayList> mset1, Map<Object,ArrayList> mset2){
+    public static HashMap<Object,int[]> mset_diff(Map<Object,ArrayList> mset1, Map<Object,ArrayList> mset2){
         HashMap<Object,int[]> diff = new HashMap<>();
         for ( Object k : mset1.keySet() ){
             int[] v = new int[2];
@@ -191,16 +191,79 @@ public final class SetOperations {
         return diff;
     }
 
-    public static boolean mset_equal(Map<Object,ArrayList> mset1, Map<Object,ArrayList> mset2){
+    public static SetRelation mset_relation(Map<Object,ArrayList> mset1, Map<Object,ArrayList> mset2){
         HashMap<Object,int[]> d = mset_diff(mset1,mset2);
-
-        for ( Object k : d.keySet() ){
-            int[] v = d.get(k);
-            if ( v[0] != v[1] ){
-                return false ;
+        if ( d.isEmpty()){
+            return SetRelation.EQUAL ;
+        }
+        if ( mset1.isEmpty() ){
+            return SetRelation.SUBSET ;
+        }
+        if ( mset2.isEmpty() ){
+            return SetRelation.SUPERSET ;
+        }
+        boolean eq = true ;
+        boolean sub = true ;
+        boolean sup = true ;
+        boolean overlap = false ;
+        for ( Object o : d.keySet() ){
+            int[] values = d.get(o);
+            if ( values[0] != 0 && values[1] != 0 ){
+                overlap = true ;
+            }
+            if ( values[0] != values[1]){
+                eq = false ;
+            }
+            if ( values[0] > values[1]){
+                sub = false ;
+            }
+            if ( values[0] < values[1]){
+                sup = false ;
             }
         }
-        return true ;
+        if ( !overlap ){
+            return SetRelation.INDEPENDENT ;
+        }
+        if ( eq ){
+            return SetRelation.EQUAL ;
+        }
+        if ( sub ){
+            return SetRelation.SUBSET ;
+        }
+        if ( sup ){
+            return SetRelation.SUPERSET ;
+        }
+        return SetRelation.OVERLAP ;
+    }
+
+    public static boolean is_mset_relation(Map<Object,ArrayList> mset1, Map<Object,ArrayList> mset2, String relation){
+        SetRelation actual = mset_relation(mset1, mset2);
+        return SetRelation.is(relation, actual);
+    }
+
+    public static List join(List left, List right){
+        if ( left == null || right == null ){
+            return null;
+        }
+
+        int ls = left.size() ;
+        int rs = right.size();
+        if ( ls == 0 ){
+            return right ;
+        }
+        if ( rs == 0 ){
+            return left ;
+        }
+        ArrayList r = new ArrayList();
+        for ( int i = 0 ; i < ls; i++ ){
+            ArrayList item = TypeUtility.from(left.get(i));
+            for ( int j = 0 ; j < rs; j++ ){
+                ArrayList l = new ArrayList(item);
+                l.add(right.get(j));
+                r.add(l);
+            }
+        }
+        return r;
     }
 
     public static boolean in(Object c1, Object c2){
