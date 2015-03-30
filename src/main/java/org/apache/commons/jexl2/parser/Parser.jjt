@@ -501,7 +501,7 @@ void StringLiteral() :
 
 void ArrayRange() : {}
 {
-   <LBRACKET>  MapEntry()  <RBRACKET>
+   <LBRACKET>  Expression() <COLON> Expression() ( <COLON> Expression() )? <RBRACKET>
 }
 
 void ArrayLiteral() : {}

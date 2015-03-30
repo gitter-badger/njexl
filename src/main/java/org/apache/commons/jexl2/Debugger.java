@@ -474,6 +474,12 @@ final class Debugger implements ParserVisitor {
 
     public Object visit(ASTArrayRange node, Object data) {
         accept(node.jjtGetChild(0), data);
+        builder.append(":");
+        accept(node.jjtGetChild(1), data);
+        if ( node.jjtGetNumChildren() == 3 ){
+            builder.append(":");
+            accept(node.jjtGetChild(2), data);
+        }
         return data ;
     }
     /** {@inheritDoc} */
