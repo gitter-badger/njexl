@@ -1,5 +1,7 @@
 package org.apache.commons.jexl2.extension;
 
+import org.apache.commons.jexl2.JexlException;
+import org.apache.commons.jexl2.parser.*;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -42,6 +44,8 @@ public class TypeUtility {
     public static final String LOAD_PATH = "load";
 
     public static final String BYE = "bye";
+
+    public static final String TEST = "test";
 
     /**
      * ******* The Utility Calls  *********
@@ -635,15 +639,24 @@ public class TypeUtility {
     }
 
     public static void bye(Object...args){
-        System.err.println("BYE received, we will exit...");
-        for(Object arg : args) {
-            System.err.println(arg);
-        }
-        int exitStatus = 255;
+        String msg = "BYE received, we will exit this script..." ;
+        Integer exitStatus = null;
         if ( args.length > 1 && args[0] instanceof Number ){
             exitStatus = ((Number)args[0]).intValue();
         }
-        System.exit(exitStatus);
+        if ( exitStatus != null ) {
+            System.exit(exitStatus);
+        }
+        throw new JexlException.Return(new ASTReturnStatement(ParserConstants.RETURN), msg, args);
+    }
+
+    public static boolean test(Object... args){
+        if ( args.length == 0  ){
+            return true ;
+        }
+        boolean ret = castBoolean(args[0],false);
+        // log it - later problem - not now
+        return ret ;
     }
 
     public static Object interceptCastingCall(String methodName, Object[] argv, Boolean[] success) throws Exception {
@@ -703,6 +716,8 @@ public class TypeUtility {
             case BYE:
                 bye(argv);
                 break;
+            case TEST:
+                return  test(argv);
             case LOAD_PATH:
                 return ReflectionUtility.load_path(argv);
             case MULTI_SET1:

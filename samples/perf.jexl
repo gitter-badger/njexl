@@ -1,3 +1,8 @@
+/***************************
+It's loops are 2 times faster than Python at minimum
+Finally we have a better than python JVM language 
+With all the stupidity of OOP taken off 
+***************************/
 for( i : range(100000000) ){
 	x = 0
 }

@@ -309,7 +309,7 @@ public class JexlException extends RuntimeException {
      * Thrown to return a value.
      * @since 2.1
      */
-    protected static class Return extends JexlException {
+    public static class Return extends JexlException {
         /** The returned value. */
         private final Object result;
 
@@ -319,7 +319,7 @@ public class JexlException extends RuntimeException {
          * @param msg the message
          * @param value the returned value
          */
-        protected Return(JexlNode node, String msg, Object value) {
+        public Return(JexlNode node, String msg, Object value) {
             super(node, msg);
             this.result = value;
         }
@@ -336,12 +336,12 @@ public class JexlException extends RuntimeException {
      * Thrown to cancel a script execution.
      * @since 2.1
      */
-    protected static class Cancel extends JexlException {
+    public static class Cancel extends JexlException {
         /**
          * Creates a new instance of Cancel.
          * @param node the node where the interruption was detected
          */
-        protected Cancel(JexlNode node) {
+        public Cancel(JexlNode node) {
             super(node, "execution cancelled", null);
         }
     }
