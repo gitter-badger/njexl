@@ -401,9 +401,13 @@ public class JexlArithmetic {
                 r.addAll((List)right);
                 return r;
             }
-            if ( left instanceof List && right instanceof List){
+            if ( left instanceof List ){
                 ArrayList r = new ArrayList((List)left);
-                r.addAll((List)right);
+                if (right instanceof List) {
+                    r.addAll((List)right) ;
+                }else{
+                    r.add(right);
+                }
                 return r;
             }
             if ( left instanceof Map && right instanceof Map){
@@ -633,13 +637,15 @@ public class JexlArithmetic {
         if ( left instanceof Set && right instanceof Set){
             return SetOperations.set_d((Set) left, (Set) right);
         }
-        if ( left instanceof List && !(right instanceof List)){
-            ArrayList r = new ArrayList((List)left);
-            r.remove(right);
-            return r;
-        }
-        if ( left instanceof List && right instanceof List){
-            return SetOperations.list_d((List)left,(List)right);
+
+        if ( left instanceof List ){
+            if ( right instanceof List ) {
+                return SetOperations.list_d((List) left, (List) right);
+            }else{
+                ArrayList r = new ArrayList((List)left);
+                r.remove(right);
+                return r;
+            }
         }
 
         // if either are bigdecimal use that type 

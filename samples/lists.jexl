@@ -19,7 +19,6 @@ out:println(l & l1)
 // list union 
 out:println(l | l1)
 
-
 // general power arithmatic
 out:println( 10**2 ) 
 
@@ -35,3 +34,13 @@ out:println( l ** 2 )
 // use some trick to test sorted array? 
 y = select{ _ > 0 and l[_-1] > $ }(l)
 out:println( empty(y) ? "Sorted array" : "Not sorted." )
+
+// classic sql --> this way. 
+y = select{ where ( $ > 2 ) { $=$*10 } }( 1, 2, 3 ) 
+out:println(y)
+
+// standard addition 
+out:println( l + l1 )
+
+// failry interesting 
+out:println( (l + 400) + 420  )

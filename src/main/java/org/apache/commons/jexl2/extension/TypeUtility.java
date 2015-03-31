@@ -277,7 +277,7 @@ public class TypeUtility {
             AnonymousParam anon = (AnonymousParam)args[0];
             args = shiftArrayLeft(args, 1);
             anon.setIterationContext(args[0],-1);
-            Object ret = anon.block.jjtAccept(anon.interpreter, null);
+            Object ret = anon.execute();
             anon.removeIterationContext();
             args[0] = ret; //set it up
             return castString(args);
@@ -440,7 +440,7 @@ public class TypeUtility {
             int i = 0 ;
             for (Object o : list) {
                 anon.setIterationContext( o,i);
-                Object ret = anon.block.jjtAccept(anon.interpreter, null);
+                Object ret = anon.execute();
                 l.add(ret);
                 i++;
             }
@@ -469,7 +469,7 @@ public class TypeUtility {
             int i = 0 ;
             for (Object o : list) {
                 anon.setIterationContext(o,i);
-                Object ret = anon.block.jjtAccept(anon.interpreter, null);
+                Object ret = anon.execute();
                 if ( castBoolean(ret,false) ){
                     //should add _ITEM_ 's value, if anyone modified it
                     l.add(anon.interpreter.getContext().get(_ITEM_));

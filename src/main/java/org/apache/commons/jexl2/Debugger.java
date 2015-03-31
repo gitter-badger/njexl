@@ -141,6 +141,7 @@ final class Debugger implements ParserVisitor {
                 || child instanceof ASTIfStatement
                 || child instanceof ASTForeachStatement
                 || child instanceof ASTWhileStatement
+                || child instanceof ASTWhereStatement
                 || child instanceof ASTMethodDef) {
             return value;
         }
@@ -715,6 +716,19 @@ final class Debugger implements ParserVisitor {
     /** {@inheritDoc} */
     public Object visit(ASTWhileStatement node, Object data) {
         builder.append("while (");
+        accept(node.jjtGetChild(0), data);
+        builder.append(") ");
+        if (node.jjtGetNumChildren() > 1) {
+            acceptStatement(node.jjtGetChild(1), data);
+        } else {
+            builder.append(';');
+        }
+        return data;
+    }
+
+    /** {@inheritDoc} */
+    public Object visit(ASTWhereStatement node, Object data) {
+        builder.append("where (");
         accept(node.jjtGetChild(0), data);
         builder.append(") ");
         if (node.jjtGetNumChildren() > 1) {

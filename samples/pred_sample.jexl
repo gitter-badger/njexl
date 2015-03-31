@@ -47,4 +47,3 @@ out:println(s2 <= s2)
 
 // s2 == s2 ?
 out:println(s2 == s2)
-

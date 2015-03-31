@@ -150,7 +150,7 @@ public final class SetOperations {
             int i = 0 ;
             for (Object o : list) {
                 anon.setIterationContext(o, i);
-                Object ret = anon.block.jjtAccept(anon.interpreter, null);
+                Object ret = anon.execute();
                 if ( !m.containsKey(ret) ){
                     m.put(ret,new ArrayList());
                 }

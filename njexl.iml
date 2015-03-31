@@ -19,6 +19,8 @@
       <excludeFolder url="file://$MODULE_DIR$/target/javacc-1427547163600" />
       <excludeFolder url="file://$MODULE_DIR$/target/javacc-1427552863211" />
       <excludeFolder url="file://$MODULE_DIR$/target/javacc-1427552904059" />
+      <excludeFolder url="file://$MODULE_DIR$/target/javacc-1427801540780" />
+      <excludeFolder url="file://$MODULE_DIR$/target/javacc-1427801555086" />
       <excludeFolder url="file://$MODULE_DIR$/target/lib" />
       <excludeFolder url="file://$MODULE_DIR$/target/maven-archiver" />
       <excludeFolder url="file://$MODULE_DIR$/target/maven-status" />

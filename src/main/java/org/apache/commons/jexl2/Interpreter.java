@@ -1174,7 +1174,9 @@ public class Interpreter implements ParserVisitor {
     }
 
     public static class AnonymousParam {
+
         public Interpreter interpreter;
+
         public ASTBlock block;
 
         public AnonymousParam(Interpreter i, ASTBlock block) {
@@ -1186,9 +1188,19 @@ public class Interpreter implements ParserVisitor {
             interpreter.context.set(TypeUtility._ITEM_, o);
             interpreter.context.set(TypeUtility._INDEX_, i);
         }
+
         public void removeIterationContext(){
             interpreter.context.remove(TypeUtility._ITEM_);
             interpreter.context.remove(TypeUtility._INDEX_);
+        }
+
+        public Object execute(){
+            try {
+                Object ret = block.jjtAccept(interpreter, null);
+                return ret;
+            }catch (JexlException.Return r){
+                return r.getValue();
+            }
         }
     }
 
@@ -1739,6 +1751,25 @@ public class Interpreter implements ParserVisitor {
             }
         }
         return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object visit(ASTWhereStatement node, Object data) {
+        /* first objectNode is the expression */
+        Node expressionNode = node.jjtGetChild(0);
+        if (arithmetic.toBoolean(expressionNode.jjtAccept(this, data))) {
+            if (isCancelled()) {
+                throw new JexlException.Cancel(node);
+            }
+            // execute statement
+            if (node.jjtGetNumChildren() > 1) {
+                node.jjtGetChild(1).jjtAccept(this, data);
+            }
+            return true ;
+        }
+        return false ;
     }
 
     /**

@@ -202,6 +202,7 @@ void Statement() #void : {}
     | IfStatement()
     | ForeachStatement()
     | WhileStatement()
+    | WhereStatement()
     | ExpressionStatement()
     | ReturnStatement()
     | Var()
@@ -243,6 +244,10 @@ void WhileStatement() : {}
     <WHILE> <LPAREN> Expression() <RPAREN> Statement()
 }
 
+void WhereStatement() : {}
+{
+    <WHERE> <LPAREN> Expression() <RPAREN> Statement()
+}
 
 void ForeachStatement() : {}
 {  
