@@ -54,6 +54,9 @@ public class TypeUtility {
 
     public static final String LIST = "list";
     public static final String FILTER = "filter";
+    public static final String SELECT = "select";
+
+    public static final String PROJECT = "project";
     public static final String SUBLIST = "sub";
 
     public static final String LITERAL_LIST = "listLiteral";
@@ -468,7 +471,8 @@ public class TypeUtility {
                 anon.setIterationContext(o,i);
                 Object ret = anon.block.jjtAccept(anon.interpreter, null);
                 if ( castBoolean(ret,false) ){
-                    l.add(o);
+                    //should add _ITEM_ 's value, if anyone modified it
+                    l.add(anon.interpreter.getContext().get(_ITEM_));
                 }
                 i++;
             }
@@ -649,9 +653,11 @@ public class TypeUtility {
                 return makeLiteralList(argv);
             case LIST:
                 return combine(argv);
+            case PROJECT:
             case SUBLIST:
                 return sublist(argv);
             case FILTER:
+            case SELECT:
                 return filter(argv);
             case ARRAY:
                 return argv;

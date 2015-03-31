@@ -17,7 +17,7 @@ public  class RangeIterator implements Iterator {
         e = end;
         b = begin;
         s = step;
-        cur = b;
+        cur = b - s ;
     }
 
     public RangeIterator(long end, long begin){

@@ -32,4 +32,6 @@ out:println ( "abcdef"**-1 )
 // List power stuff : l * l 
 out:println( l ** 2 )
 
-
+// use some trick to test sorted array? 
+y = select{ _ > 0 and l[_-1] > $ }(l)
+out:println( empty(y) ? "Sorted array" : "Not sorted." )

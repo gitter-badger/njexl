@@ -82,6 +82,7 @@ PARSER_END(Parser)
     | < FOR : "for" >
     | < FOREACH : "foreach" >
     | < WHILE : "while" >
+    | < WHERE : "where" >
     | < NEW : "new" >
     | < VAR : "var" >
     | < EMPTY : "empty" >
@@ -506,9 +507,7 @@ void ArrayRange() : {}
 
 void ArrayLiteral() : {}
 {
-  LOOKAHEAD(3) <LBRACKET> (Expression() ( <COMMA> Expression() )*)? <RBRACKET>
-  |
-   ArrayRange()
+  <LBRACKET> (Expression() ( <COMMA> Expression() )*)? <RBRACKET>
 }
 
 void MapLiteral() : {}
@@ -642,6 +641,8 @@ void Reference() : {}
    LOOKAHEAD(Identifier() Block() <LPAREN>) Method()
 |
    LOOKAHEAD(<LCURLY>) MapLiteral()
+|
+   LOOKAHEAD(<LBRACKET> Expression() <COLON>) ArrayRange()
 |
    LOOKAHEAD(<LBRACKET>) ArrayLiteral()
 |

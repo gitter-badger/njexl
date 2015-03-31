@@ -471,8 +471,9 @@ final class Debugger implements ParserVisitor {
         return infixChildren(node, " < ", false, data);
     }
 
-
+    /** {@inheritDoc} */
     public Object visit(ASTArrayRange node, Object data) {
+        builder.append("[");
         accept(node.jjtGetChild(0), data);
         builder.append(":");
         accept(node.jjtGetChild(1), data);
@@ -480,6 +481,7 @@ final class Debugger implements ParserVisitor {
             builder.append(":");
             accept(node.jjtGetChild(2), data);
         }
+        builder.append("]");
         return data ;
     }
     /** {@inheritDoc} */
