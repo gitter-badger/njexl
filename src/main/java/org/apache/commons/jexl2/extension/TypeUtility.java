@@ -1,6 +1,7 @@
 package org.apache.commons.jexl2.extension;
 
 import org.apache.commons.jexl2.JexlException;
+import org.apache.commons.jexl2.extension.iterators.RangeIterator;
 import org.apache.commons.jexl2.parser.*;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -468,53 +469,6 @@ public class TypeUtility {
             anon.interpreter.getContext().remove(_ITEM_);
         }
         return list;
-    }
-
-    public static class RangeIterator implements Iterator{
-        protected long e;
-        protected long b;
-        protected long s;
-
-        private long cur ;
-
-        public RangeIterator(long end, long begin, long step){
-            e = end;
-            b = begin;
-            s = step;
-            cur = b;
-        }
-
-        public RangeIterator(long end, long begin){
-            this(end,begin,1);
-        }
-
-        public RangeIterator(long end){
-            this(end,0);
-        }
-
-        public RangeIterator(){
-            this(42);
-        }
-
-        @Override
-        public void forEachRemaining(Consumer action) {
-
-        }
-
-        @Override
-        public boolean hasNext() {
-            return cur < e - 1 ;
-        }
-
-        @Override
-        public Object next() {
-            return cur++;
-        }
-
-        @Override
-        public void remove() {
-
-        }
     }
 
     public static Iterator range(Object... args) throws Exception {

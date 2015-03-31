@@ -17,6 +17,8 @@
 package org.apache.commons.jexl2.introspection;
 
 import java.beans.IntrospectionException;
+
+import org.apache.commons.jexl2.extension.iterators.StringIterator;
 import org.apache.commons.jexl2.internal.Introspector;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -24,6 +26,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.InvocationTargetException;
 
 import java.lang.reflect.Method;
+import java.text.StringCharacterIterator;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -83,6 +86,9 @@ public class UberspectImpl extends Introspector implements Uberspect {
         }
         if (obj instanceof Enumeration<?>) {
             return new EnumerationIterator<Object>((Enumeration<Object>) obj);
+        }
+        if ( obj instanceof String){
+            return new StringIterator((String)obj);
         }
         if (obj instanceof Iterable<?>) {
             return ((Iterable<?>) obj).iterator();

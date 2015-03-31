@@ -46,10 +46,8 @@ public class ForEachTest extends JexlTestCase {
 
     public void testForEachWithEmptyList() throws Exception {
         JexlContext jc = new MapContext();
-        jc.set("list","[]");
 
-        Expression e = JEXL.createExpression("for(item : list) 1+1");
-
+        Expression e = JEXL.createExpression("for(item : [] )  1+1 ");
 
         Object o = e.evaluate(jc);
         assertNull("Result is not null", o);

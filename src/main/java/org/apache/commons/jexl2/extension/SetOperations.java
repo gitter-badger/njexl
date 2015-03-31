@@ -292,7 +292,6 @@ public final class SetOperations {
         return list_d(u,i);
     }
 
-
     public static List join(List left, List right){
         if ( left == null || right == null ){
             return null;
@@ -318,9 +317,15 @@ public final class SetOperations {
         return r;
     }
 
-    public static boolean in(Object c1, Object c2){
+    public static Boolean in(Object c1, Object c2){
         if ( c2 == null ){
             return false ;
+        }
+        if ( c2 instanceof String ){
+            if ( c1 == null ){
+                return false ;
+            }
+            return ((String)c2).contains(c1.toString());
         }
         if (  c2 instanceof Set ){
             if ( c1 instanceof Set ) {

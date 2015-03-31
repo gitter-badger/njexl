@@ -3,12 +3,25 @@ It's loops are 2 times faster than Python at minimum
 Finally we have a better than python JVM language 
 With all the stupidity of OOP taken off 
 ***************************/
-for( i : [1:6] ){
-	x = 0
+
+// strings are char sequences 
+for ( c : "abcdefgh"){
+	x = c  
 }
+
+// use range functionality 
 for( i : range(100000000) ){
-	x = 0
+	x = c 
 }
+// this is short hand for range 
+for( i : [1:6] ){
+	x = c
+}
+// one can use explicit array 
 for( i : array(1,2,3,4,5,6) ){
-	x = 0
+	x = c 
+}
+// also, implicit array 
+for( i : [1,2,3,4,5,6] ){
+	x = c 
 }
