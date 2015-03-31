@@ -1181,6 +1181,15 @@ public class Interpreter implements ParserVisitor {
             this.interpreter = i;
             this.block = block;
         }
+
+        public void setIterationContext(Object o, int i){
+            interpreter.context.set(TypeUtility._ITEM_, o);
+            interpreter.context.set(TypeUtility._INDEX_, i);
+        }
+        public void removeIterationContext(){
+            interpreter.context.remove(TypeUtility._ITEM_);
+            interpreter.context.remove(TypeUtility._INDEX_);
+        }
     }
 
     /**

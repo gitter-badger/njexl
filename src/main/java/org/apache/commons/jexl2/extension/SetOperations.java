@@ -147,16 +147,18 @@ public final class SetOperations {
         }
         HashMap<Object,ArrayList> m = new HashMap();
         if (anon != null) {
+            int i = 0 ;
             for (Object o : list) {
-                anon.interpreter.getContext().set(TypeUtility._ITEM_, o);
+                anon.setIterationContext(o, i);
                 Object ret = anon.block.jjtAccept(anon.interpreter, null);
                 if ( !m.containsKey(ret) ){
                     m.put(ret,new ArrayList());
                 }
                 ArrayList values = m.get(ret);
                 values.add(o);
+                i++;
             }
-            anon.interpreter.getContext().remove(TypeUtility._ITEM_);
+            anon.removeIterationContext();
         }else{
             for (Object o : list) {
                 if ( !m.containsKey(o) ){

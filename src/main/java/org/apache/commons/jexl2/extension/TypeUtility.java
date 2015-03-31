@@ -80,6 +80,9 @@ public class TypeUtility {
 
     public static final String _ITEM_ = "$";
 
+    public static final String _INDEX_ = "_";
+
+
     /**
      * <pre>
      * Take a look around here.
@@ -270,9 +273,9 @@ public class TypeUtility {
         if ( args[0] instanceof AnonymousParam){
             AnonymousParam anon = (AnonymousParam)args[0];
             args = shiftArrayLeft(args, 1);
-            anon.interpreter.getContext().set(_ITEM_,args[0]);
+            anon.setIterationContext(args[0],-1);
             Object ret = anon.block.jjtAccept(anon.interpreter, null);
-            anon.interpreter.getContext().remove(_ITEM_);
+            anon.removeIterationContext();
             args[0] = ret; //set it up
             return castString(args);
         }
@@ -431,13 +434,15 @@ public class TypeUtility {
 
         if (anon != null) {
             ArrayList l = new ArrayList();
+            int i = 0 ;
             for (Object o : list) {
-                anon.interpreter.getContext().set(_ITEM_, o);
+                anon.setIterationContext( o,i);
                 Object ret = anon.block.jjtAccept(anon.interpreter, null);
                 l.add(ret);
+                i++;
             }
             list = l;
-            anon.interpreter.getContext().remove(_ITEM_);
+            anon.removeIterationContext();
         }
 
         return list;
@@ -458,15 +463,17 @@ public class TypeUtility {
         }
         if (anon != null) {
             ArrayList l = new ArrayList();
+            int i = 0 ;
             for (Object o : list) {
-                anon.interpreter.getContext().set(_ITEM_, o);
+                anon.setIterationContext(o,i);
                 Object ret = anon.block.jjtAccept(anon.interpreter, null);
                 if ( castBoolean(ret,false) ){
                     l.add(o);
                 }
+                i++;
             }
             list = l;
-            anon.interpreter.getContext().remove(_ITEM_);
+            anon.removeIterationContext();
         }
         return list;
     }
