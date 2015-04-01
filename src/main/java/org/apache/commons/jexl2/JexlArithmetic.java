@@ -18,6 +18,7 @@ package org.apache.commons.jexl2;
 
 import org.apache.commons.jexl2.extension.ListSet;
 import org.apache.commons.jexl2.extension.SetOperations;
+import org.apache.commons.jexl2.extension.TypeUtility;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -76,6 +77,16 @@ public class JexlArithmetic {
      */
     protected final int mathScale;
 
+    public static boolean isListOrArray(Object a){
+        if ( a != null ){
+            return  a instanceof List || a.getClass().isArray() ;
+        }
+        return false;
+    }
+
+    public static boolean areListOrArray(Object l, Object r){
+        return isListOrArray(r) && isListOrArray(r);
+    }
     /**
      * Creates a JexlArithmetic.
      * @param lenient whether this arithmetic is lenient or strict
@@ -401,10 +412,10 @@ public class JexlArithmetic {
                 r.addAll((List)right);
                 return r;
             }
-            if ( left instanceof List ){
-                ArrayList r = new ArrayList((List)left);
-                if (right instanceof List) {
-                    r.addAll((List)right) ;
+            if ( isListOrArray(left) ){
+                ArrayList r = TypeUtility.from(left);
+                if (isListOrArray(right)) {
+                    r.addAll(TypeUtility.from(right)) ;
                 }else{
                     r.add(right);
                 }
@@ -538,8 +549,8 @@ public class JexlArithmetic {
             double r = toDouble(right);
             return new Double(l * r);
         }
-        if ( left instanceof  List && right instanceof List ){
-            return SetOperations.join((List)left,(List)right);
+        if ( areListOrArray(left,right) ){
+            return SetOperations.join(left,right);
         }
         // if either are bigdecimal use that type 
         if (left instanceof BigDecimal || right instanceof BigDecimal) {
@@ -604,16 +615,15 @@ public class JexlArithmetic {
                 }
             }
         }
-        if ( left instanceof List && right instanceof Integer ){
+        if ( isListOrArray(left) && right instanceof Integer ){
             int n = (int)right;
-            List l = new ArrayList((List)left);
+            List l = TypeUtility.from(left);
             while ( --n > 0 ){
-                l = SetOperations.join(l,(List)left);
+                l = SetOperations.join(l,left);
             }
             return l;
         }
         throw new ArithmeticException("Power can not be computed!");
-
     }
 
     /**
@@ -638,11 +648,11 @@ public class JexlArithmetic {
             return SetOperations.set_d((Set) left, (Set) right);
         }
 
-        if ( left instanceof List ){
-            if ( right instanceof List ) {
-                return SetOperations.list_d((List) left, (List) right);
+        if ( isListOrArray(left) ){
+            if ( isListOrArray(right) ) {
+                return SetOperations.list_d(left,right);
             }else{
-                ArrayList r = new ArrayList((List)left);
+                ArrayList r = TypeUtility.from(left);
                 r.remove(right);
                 return r;
             }
@@ -736,8 +746,8 @@ public class JexlArithmetic {
         if ( left instanceof Set && right instanceof Set){
             return SetOperations.set_i((Set)left,(Set)right);
         }
-        if ( left instanceof List && right instanceof List){
-            return SetOperations.list_i((List) left, (List) right);
+        if ( areListOrArray(left,right)){
+            return SetOperations.list_i(left, right);
         }
         long l = toLong(left);
         long r = toLong(right);
@@ -755,8 +765,8 @@ public class JexlArithmetic {
         if ( left instanceof Set && right instanceof Set){
             return SetOperations.set_u((Set) left, (Set) right);
         }
-        if ( left instanceof List && right instanceof List){
-            return SetOperations.list_u((List) left, (List) right);
+        if ( areListOrArray(left,right)){
+            return SetOperations.list_u(left,right);
         }
         long l = toLong(left);
         long r = toLong(right);
@@ -775,8 +785,8 @@ public class JexlArithmetic {
             return SetOperations.set_sym_d((Set)left,(Set)right);
         }
 
-        if ( left instanceof List && right instanceof List){
-            return SetOperations.list_sym_d((List)left,(List)right);
+        if ( areListOrArray(left,right)){
+            return SetOperations.list_sym_d(left,right);
         }
 
         long l = toLong(left);
@@ -863,7 +873,7 @@ public class JexlArithmetic {
                     case INDEPENDENT:
                         return Integer.MIN_VALUE ;
                 }
-            }else if ( left instanceof Collection && right instanceof Collection ){
+            }else if ( areListOrArray(left,right) ){
                 HashMap l = SetOperations.multiset(left);
                 HashMap r = SetOperations.multiset(right);
                 SetOperations.SetRelation sr = SetOperations.mset_relation(l, r);

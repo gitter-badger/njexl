@@ -139,10 +139,10 @@ public class NogaExtendedTest extends JexlTestCase {
     }
     @Test
     public void testJoin() throws Exception{
-        List l = TypeUtility.from(new int[]{0, 1, 2, 3});
-        List r = TypeUtility.from(new String[]{"hi","hello"});
+        int[] l = new int[]{0, 1, 2, 3};
+        String[] r = new String[]{"hi","hello"};
         List ret = SetOperations.join(l,r);
-        Assert.assertTrue(ret.size() == l.size() * r.size());
+        Assert.assertTrue(ret.size() == l.length * r.length);
     }
 
     @Test

@@ -4,8 +4,6 @@ import org.apache.commons.jexl2.Interpreter;
 
 import java.lang.reflect.Array;
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by noga on 10/03/15.
@@ -251,7 +249,7 @@ public final class SetOperations {
         return SetRelation.is(relation, actual);
     }
 
-    public static List list_i(List l1, List l2) {
+    public static List list_i(Object l1, Object l2) {
         HashMap m1 = multiset(l1);
         HashMap m2 = multiset(l2);
         HashMap<Object, int[]> d = mset_diff(m1, m2);
@@ -266,7 +264,7 @@ public final class SetOperations {
         return l;
     }
 
-    public static List list_u(List l1, List l2) {
+    public static List list_u(Object l1, Object l2) {
         HashMap m1 = multiset(l1);
         HashMap m2 = multiset(l2);
         HashMap<Object, int[]> d = mset_diff(m1, m2);
@@ -281,7 +279,7 @@ public final class SetOperations {
         return l;
     }
 
-    public static List list_d(List l1, List l2) {
+    public static List list_d(Object l1, Object l2) {
         HashMap m1 = multiset(l1);
         HashMap m2 = multiset(l2);
         HashMap<Object, int[]> d = mset_diff(m1, m2);
@@ -296,13 +294,16 @@ public final class SetOperations {
         return l;
     }
 
-    public static List list_sym_d(List l1, List l2) {
+    public static List list_sym_d(Object l1, Object l2) {
         List i = list_i(l1, l2);
         List u = list_u(l1, l2);
         return list_d(u, i);
     }
 
-    public static List join(List left, List right) {
+    public static List join(Object a, Object b) {
+        List left = TypeUtility.from(a);
+        List right = TypeUtility.from(b);
+
         if (left == null || right == null) {
             return null;
         }
