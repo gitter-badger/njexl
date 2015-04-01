@@ -70,6 +70,8 @@ public class Main {
         JexlContext context = getContext();
         JexlEngine JEXL = getJexl(context);
         ConsoleReader console = new ConsoleReader();
+        console.setExpandEvents(false);
+        console.setCopyPasteDetection(true);
 
         console.setPrompt(PROMPT);
 
@@ -77,6 +79,10 @@ public class Main {
             String line = console.readLine();
             if ( line == null || line.equals("q")){
                 break;
+            }
+            if ( line == null || line.equals("cls")){
+                console.clearScreen();
+                continue;
             }
             line = line.trim();
             if ( line.isEmpty() ){
