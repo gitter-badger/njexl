@@ -168,8 +168,11 @@ public class TypeUtility {
             return 0.0;
         }
         try {
-            if ( args[0] instanceof Double || args[0] instanceof Float){
+            if ( args[0] instanceof Double ) {
                 return (Double)args[0];
+            }
+            if ( args[0] instanceof Float){
+                return ((Float)args[0]).doubleValue();
             }
             Object objectValue = args[0];
             Double val = Double.valueOf(objectValue.toString());
