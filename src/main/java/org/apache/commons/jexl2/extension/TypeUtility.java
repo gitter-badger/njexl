@@ -32,7 +32,11 @@ public class TypeUtility {
      * ***** The Casting Calls  ******
      */
     public static final String INT = "int";
+    public static final String CHAR = "char";
+    public static final String SHORT = "short";
+    public static final String BYTE = "byte";
     public static final String DOUBLE = "double";
+    public static final String FLOAT = "float";
     public static final String LONG = "long";
     public static final String TIME = "time";
     public static final String DATE = "date";
@@ -120,6 +124,7 @@ public class TypeUtility {
         String data = args[1].toString();
         Files.write( new File(fileName).toPath(), data.getBytes()) ;
     }
+
     public static String read(Object... args) throws Exception{
         if ( args.length == 0 ){
             return System.console().readLine();
@@ -185,6 +190,42 @@ public class TypeUtility {
             }
             return null;
         }
+    }
+
+    public static Float castFloat(Object... args) {
+        Double doubleValue = castDouble(args);
+        if (doubleValue != null) {
+            float f = doubleValue.floatValue();
+            return new Float(f);
+        }
+        return null;
+    }
+
+    public static Byte castByte(Object... args) {
+        Double doubleValue = castDouble(args);
+        if (doubleValue != null) {
+            byte b = doubleValue.byteValue();
+            return new Byte(b);
+        }
+        return null;
+    }
+
+    public static Character castChar(Object... args) {
+        Double doubleValue = castDouble(args);
+        if (doubleValue != null) {
+            char[] cc = Character.toChars(doubleValue.intValue());
+            return new Character(cc[0]);
+        }
+        return null;
+    }
+
+    public static Short castShort(Object... args) {
+        Double doubleValue = castDouble(args);
+        if (doubleValue != null) {
+            Short s  =  doubleValue.shortValue();
+            return s;
+        }
+        return null;
     }
 
     public static Integer castInteger(Object... args) {
@@ -631,16 +672,31 @@ public class TypeUtility {
         return ret ;
     }
 
+    public static Object[] array(Object... args){
+        ArrayList l = combine(args);
+        Object[] a = new Object[l.size()];
+        l.toArray(a);
+        return a;
+    }
+
     public static Object interceptCastingCall(String methodName, Object[] argv, Boolean[] success) throws Exception {
 
         if ( success != null ) {
             success[0] = true;
         }
         switch (methodName){
+            case BYTE:
+                return castByte(argv);
+            case CHAR:
+                return castChar(argv);
+            case SHORT:
+                return castShort(argv);
             case INT:
                 return castInteger(argv);
             case LONG:
                 return castLong(argv);
+            case FLOAT:
+                return castFloat(argv);
             case DOUBLE:
                 return castDouble(argv);
             case BIGDECIMAL1:
@@ -669,7 +725,7 @@ public class TypeUtility {
             case JOIN:
                 return SetOperations.join_c(argv);
             case ARRAY:
-                return argv;
+                return array(argv);
             case SET:
                 return set(argv);
             case DICTIONARY:

@@ -22,6 +22,8 @@ import org.apache.commons.jexl2.extension.ReflectionUtility;
 import org.apache.commons.jexl2.extension.TypeUtility;
 
 import java.io.File;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +34,7 @@ import java.util.Map;
  */
 public class Main {
 
-    public static final String PROMPT = "njexl>" ;
+    public static final String PROMPT = "(njexl)" ;
 
     public static JexlContext getContext(){
         Map<Object,Object> m = System.getProperties();
@@ -82,7 +84,7 @@ public class Main {
                 Object o = e.evaluate(context);
                 context.set("_o_", o);
                 context.set("_e_", null);
-                System.out.printf("=>%s\n", o);
+                System.out.printf("=>%s\n", str(o));
             }catch (Exception e){
                 context.set("_e_", e);
                 context.set("_o_", null);
@@ -107,6 +109,30 @@ public class Main {
         }catch (Exception e){
             e.printStackTrace();
             System.exit(1);
+        }
+    }
+
+    public static String strArr( Object arr){
+        StringBuffer buf = new StringBuffer("@[");
+        int len = Array.getLength(arr);
+        if ( len > 0 ) {
+            buf.append(String.format("%s", Array.get(arr,0)) );
+            for (int i = 1; i < len; i++) {
+                buf.append(String.format(", %s", Array.get(arr, i)));
+            }
+        }
+        buf.append("]");
+        return buf.toString();
+    }
+
+    public static String str(Object o){
+        if ( o != null ){
+            if ( o.getClass().isArray() ){
+                return  strArr(o);
+            }
+            return o.toString();
+        }else{
+            return "null" ;
         }
     }
 
