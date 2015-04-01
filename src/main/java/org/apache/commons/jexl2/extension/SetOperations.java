@@ -151,7 +151,7 @@ public final class SetOperations {
         if (anon != null) {
             int i = 0 ;
             for (Object o : list) {
-                anon.setIterationContext(o, i);
+                anon.setIterationContext(list, o, i);
                 Object ret = anon.execute();
                 if ( !m.containsKey(ret) ){
                     m.put(ret,new ArrayList());
@@ -349,7 +349,7 @@ public final class SetOperations {
         }
         int c = 0 ;
         if ( anon != null ) {
-            anon.setIterationContext(tuple, c++);
+            anon.setIterationContext(argsList, tuple, c++);
             Object r = anon.execute();
             if (TypeUtility.castBoolean(r, false)) {
                 ArrayList t = new ArrayList();
@@ -388,7 +388,7 @@ public final class SetOperations {
             }
 
             if ( anon != null ) {
-                anon.setIterationContext(tuple, c++);
+                anon.setIterationContext(argsList, tuple, c++);
                 Object r = anon.execute();
                 if (TypeUtility.castBoolean(r, false)) {
                     ArrayList t = new ArrayList();

@@ -84,6 +84,8 @@ public class TypeUtility {
     public static final String WRITE = "write";
 
     public static final String _ITEM_ = "$";
+    public static final String _CONTEXT_ = "$$";
+
 
     public static final String _INDEX_ = "_";
 
@@ -281,7 +283,7 @@ public class TypeUtility {
         if ( args[0] instanceof AnonymousParam){
             AnonymousParam anon = (AnonymousParam)args[0];
             args = shiftArrayLeft(args, 1);
-            anon.setIterationContext(args[0],-1);
+            anon.setIterationContext(args[0], args[0],-1);
             Object ret = anon.execute();
             anon.removeIterationContext();
             args[0] = ret; //set it up
@@ -444,7 +446,7 @@ public class TypeUtility {
             ArrayList l = new ArrayList();
             int i = 0 ;
             for (Object o : list) {
-                anon.setIterationContext( o,i);
+                anon.setIterationContext(list, o,i);
                 Object ret = anon.execute();
                 l.add(ret);
                 i++;
@@ -473,7 +475,7 @@ public class TypeUtility {
             ArrayList l = new ArrayList();
             int i = 0 ;
             for (Object o : list) {
-                anon.setIterationContext(o,i);
+                anon.setIterationContext(list, o,i);
                 Object ret = anon.execute();
                 if ( castBoolean(ret,false) ){
                     //should add _ITEM_ 's value, if anyone modified it

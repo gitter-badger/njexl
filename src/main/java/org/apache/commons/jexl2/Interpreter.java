@@ -1184,12 +1184,14 @@ public class Interpreter implements ParserVisitor {
             this.block = block;
         }
 
-        public void setIterationContext(Object o, int i){
+        public void setIterationContext(Object con, Object o, int i){
+            interpreter.context.set(TypeUtility._CONTEXT_, con);
             interpreter.context.set(TypeUtility._ITEM_, o);
             interpreter.context.set(TypeUtility._INDEX_, i);
         }
 
         public void removeIterationContext(){
+            interpreter.context.remove(TypeUtility._CONTEXT_);
             interpreter.context.remove(TypeUtility._ITEM_);
             interpreter.context.remove(TypeUtility._INDEX_);
         }
