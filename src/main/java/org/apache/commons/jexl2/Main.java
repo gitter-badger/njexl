@@ -23,9 +23,10 @@ import org.apache.commons.jexl2.extension.TypeUtility;
 
 import java.io.File;
 import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import jline.console.ConsoleReader;
+
 
 /**
  * Test application for JEXL.
@@ -65,13 +66,15 @@ public class Main {
         return jexl;
     }
 
-    public static void interpret(){
+    public static void interpret() throws Exception{
         JexlContext context = getContext();
         JexlEngine JEXL = getJexl(context);
+        ConsoleReader console = new ConsoleReader();
+
+        console.setPrompt(PROMPT);
 
         while(true){
-            System.out.print(PROMPT);
-            String line = System.console().readLine();
+            String line = console.readLine();
             if ( line == null || line.equals("q")){
                 break;
             }
@@ -136,7 +139,7 @@ public class Main {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         if ( args.length == 0 ){
             interpret();
         }
