@@ -4,6 +4,8 @@ import org.apache.commons.jexl2.Interpreter;
 
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by noga on 10/03/15.
@@ -317,6 +319,96 @@ public final class SetOperations {
             }
         }
         return r;
+    }
+
+    public static List join_c(Object... args){
+        Interpreter.AnonymousParam anon = null;
+        ArrayList join = new ArrayList();
+        if (args.length > 1) {
+            if (args[0] instanceof Interpreter.AnonymousParam) {
+                anon = (Interpreter.AnonymousParam) args[0];
+                args = TypeUtility.shiftArrayLeft(args, 1);
+            }
+        }
+        // the list of lists over which join would happen
+        ArrayList[]  argsList = new ArrayList[ args.length ];
+
+        for ( int i = 0 ; i < args.length;i++ ){
+            argsList[i] =  TypeUtility.from(args[i]);
+        }
+
+        Iterator[] iterators = new Iterator[ argsList.length ];
+        for ( int i = 0; i < argsList.length ;i++ ){
+            Iterator itr = argsList[i].iterator() ;
+            iterators[i] = itr ;
+        }
+        Object[] tuple = new Object[argsList.length];
+
+        for ( int i = iterators.length - 1 ; i >= 0 ;i-- ){
+            tuple[i] = iterators[i].next() ;
+        }
+        int c = 0 ;
+        if ( anon != null ) {
+            anon.setIterationContext(tuple, c++);
+            Object r = anon.execute();
+            if (TypeUtility.castBoolean(r, false)) {
+                ArrayList t = new ArrayList();
+                for(int i = 0 ; i < tuple.length; i++ ){
+                    t.add(tuple[i]);
+                }
+                join.add(t);
+            }
+        }else{
+            ArrayList t = new ArrayList();
+            for(int i = 0 ; i < tuple.length; i++ ){
+                t.add(tuple[i]);
+            }
+            join.add(t);
+        }
+
+        boolean emptied = false ;
+
+        while(true){
+
+            emptied = true ;
+            for ( int i = iterators.length - 1 ; i >= 0 ;i-- ){
+                Iterator itr = iterators[i] ;
+                if ( !itr.hasNext() ){
+                    itr = argsList[i].iterator();
+                    iterators[i] = itr;
+                    tuple[i] = itr.next();
+                    continue;
+                }
+                tuple[i] = itr.next();
+                emptied = false ;
+                break;
+            }
+            if ( emptied ){
+                break;
+            }
+
+            if ( anon != null ) {
+                anon.setIterationContext(tuple, c++);
+                Object r = anon.execute();
+                if (TypeUtility.castBoolean(r, false)) {
+                    ArrayList t = new ArrayList();
+                    for(int i = 0 ; i < tuple.length; i++ ){
+                        t.add(tuple[i]);
+                    }
+                    join.add(t);
+                }
+            }else{
+                ArrayList t = new ArrayList();
+                for(int i = 0 ; i < tuple.length; i++ ){
+                    t.add(tuple[i]);
+                }
+                join.add(t);
+            }
+        }
+        if ( anon!= null ){
+            anon.removeIterationContext();
+        }
+        return join;
     }
 
     public static Boolean in(Object c1, Object c2){

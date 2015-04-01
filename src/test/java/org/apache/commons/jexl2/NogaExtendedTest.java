@@ -146,6 +146,16 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testConditionalJoin() throws Exception{
+        List l1 = TypeUtility.from(new int[]{0, 1, 2, 3, });
+        List l2 = TypeUtility.from(new String[]{"hi","hello" , "bye"});
+        List l3 = TypeUtility.from(new boolean[] {true,false });
+
+        List ret = SetOperations.join_c(l1, l2, l3);
+        Assert.assertTrue(ret.size() == l1.size() * l2.size() *l3.size());
+    }
+
+    @Test
     public void testAnonymousFunction() throws Exception {
 
         JexlContext jc = new MapContext();

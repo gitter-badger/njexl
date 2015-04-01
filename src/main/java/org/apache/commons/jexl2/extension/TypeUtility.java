@@ -55,6 +55,8 @@ public class TypeUtility {
     public static final String LIST = "list";
     public static final String FILTER = "filter";
     public static final String SELECT = "select";
+    public static final String JOIN = "join";
+
 
     public static final String PROJECT = "project";
     public static final String SUBLIST = "sub";
@@ -659,6 +661,8 @@ public class TypeUtility {
             case FILTER:
             case SELECT:
                 return filter(argv);
+            case JOIN:
+                return SetOperations.join_c(argv);
             case ARRAY:
                 return argv;
             case SET:
