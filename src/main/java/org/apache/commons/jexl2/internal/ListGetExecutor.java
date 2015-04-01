@@ -29,6 +29,12 @@ public final class ListGetExecutor extends AbstractExecutor.Get {
     /** The java.util.obj.get method used as an active marker in ListGet. */
     private static final java.lang.reflect.Method LIST_GET =
             initMarker(List.class, "get", Integer.TYPE);
+
+    /** The java.lang.String.charAt method used as an active marker in ListGet. */
+    private static final java.lang.reflect.Method CHAR_AT =
+            initMarker(String.class, "charAt", Integer.TYPE);
+
+
     /** The property. */
     private final Integer property;
 
@@ -58,9 +64,11 @@ public final class ListGetExecutor extends AbstractExecutor.Get {
     public Object execute(final Object obj) {
         if (method == ARRAY_GET) {
             return java.lang.reflect.Array.get(obj, property.intValue());
-        } else {
-            return ((List<?>) obj).get(property.intValue());
         }
+        if (method == CHAR_AT) {
+            return ((String)obj).charAt( property.intValue());
+        }
+        return ((List<?>) obj).get(property.intValue());
     }
 
     /** {@inheritDoc} */
@@ -91,6 +99,9 @@ public final class ListGetExecutor extends AbstractExecutor.Get {
         }
         if (List.class.isAssignableFrom(clazz)) {
             return LIST_GET;
+        }
+        if (String.class.isAssignableFrom(clazz)) {
+            return CHAR_AT;
         }
         return null;
     }
