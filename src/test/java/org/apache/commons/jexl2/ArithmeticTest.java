@@ -165,16 +165,8 @@ public class ArithmeticTest extends JexlTestCase {
         asserter.assertExpression("6 / 3", new Integer(6 / 3));
         asserter.assertExpression("6.4 / 3", new Double(6.4 / 3));
         asserter.assertExpression("0 / 3", new Integer(0 / 3));
-        asserter.assertExpression("3 / 0", new Double(0));
         asserter.assertExpression("4 % 3", new Integer(1));
         asserter.assertExpression("4.8 % 3", new Double(4.8 % 3));
-
-        /*
-         * test new null coersion
-         */
-        asserter.setVariable("imanull", null);
-        asserter.assertExpression("imanull + 2", new Integer(2));
-        asserter.assertExpression("imanull + imanull", new Integer(0));
     }
 
     public void testCoercions() throws Exception {
