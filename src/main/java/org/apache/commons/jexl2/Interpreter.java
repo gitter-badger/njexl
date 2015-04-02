@@ -26,7 +26,6 @@ import org.apache.commons.logging.Log;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -845,6 +844,38 @@ public class Interpreter implements ParserVisitor {
         return context.has(varName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Object visit(ASTISANode node, Object data) {
+        Object left = node.jjtGetChild(0).jjtAccept(this, data);
+        Object right = node.jjtGetChild(1).jjtAccept(this, data);
+        try {
+            if (left == null ){
+                return false ;
+            }
+            Class r ;
+            if ( right instanceof Class ){
+                r = (Class)right;
+            }else {
+                r = right.getClass();
+            }
+            Class l ;
+            if ( left instanceof Class ){
+                l = (Class)left;
+            }else{
+                l = left.getClass();
+            }
+            return r.isAssignableFrom(l) ;
+
+        } catch (ArithmeticException xrt) {
+            throw new JexlException(node, "isa error", xrt);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Object visit(ASTINNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
@@ -1266,6 +1297,14 @@ public class Interpreter implements ParserVisitor {
             JexlMethod vm = uberspect.getMethod(bean, methodName, argv, node);
             // DG: If we can't find an exact match, narrow the parameters and try again
             if (vm == null) {
+                /* Intercept it here,
+                 if possible
+                 */
+                Boolean[] success = new Boolean[1];
+                Object ret = TypeUtility.interceptCastingCall(methodName, argv, success);
+                if (success[0]) {
+                    return ret;
+                }
                 if (arithmetic.narrowArguments(argv)) {
                     vm = uberspect.getMethod(bean, methodName, argv, node);
                 }
@@ -1292,14 +1331,7 @@ public class Interpreter implements ParserVisitor {
                         vm = (JexlMethod) functor;
                         cacheable = false;
                     } else {
-                        /* Intercept it here,
-                        if possible
-                         */
-                        Boolean[] success = new Boolean[1];
-                        Object ret = TypeUtility.interceptCastingCall(methodName, argv, success);
-                        if (success[0]) {
-                            return ret;
-                        }
+
                         xjexl = new JexlException.Method(node, methodName);
                     }
                 }
@@ -1662,6 +1694,17 @@ public class Interpreter implements ParserVisitor {
             }
         }
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object visit(ASTTypeFunction node, Object data) {
+        Object val = node.jjtGetChild(0).jjtAccept(this, data);
+        if (val == null) {
+            return null;
+        }
+        return val.getClass();
     }
 
     /**

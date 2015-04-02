@@ -41,7 +41,7 @@
 
 		<dict>
 			<key>match</key>
-			<string>\bnew\b|\bif\b|\belse\b|\bwhile\b|\bwhere\b|\bfor\b|\breturn\b|\bvar\b</string>
+			<string>\btype\b|\bisa\b|\bnew\b|\bif\b|\belse\b|\bwhile\b|\bwhere\b|\bfor\b|\breturn\b|\bvar\b</string>
 			<key>name</key>
 			<string>keyword.control.jexl</string>
 		</dict>

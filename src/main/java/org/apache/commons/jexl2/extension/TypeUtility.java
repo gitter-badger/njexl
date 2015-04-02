@@ -31,6 +31,7 @@ public class TypeUtility {
     /**
      * ***** The Casting Calls  ******
      */
+
     public static final String INT = "int";
     public static final String CHAR = "char";
     public static final String SHORT = "short";

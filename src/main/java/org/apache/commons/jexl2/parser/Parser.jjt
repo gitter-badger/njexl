@@ -88,6 +88,7 @@ PARSER_END(Parser)
     | < EMPTY : "empty" >
     | < SIZE : "size" >
     | < DEFINED : "defined" > /* This is to check if any variable is already defined or not */
+    | < TYPE :   "type" > /* find the type of the guy */
     | < NULL : "null" >
     | < TRUE : "true" >
     | < FALSE : "false" >
@@ -130,6 +131,7 @@ PARSER_END(Parser)
     | < lt : "<" | "lt" >
     | < le : "<=" | "le" >
     | < in : "@" >
+    | <isa : "isa" >
 }
 
 <*> TOKEN : { /* OPERATORS */
@@ -355,6 +357,8 @@ void EqualityExpression() #void :
 {
   RelationalExpression()
   (
+   <isa> AdditiveExpression() #ISANode(2)
+   |
    <in> AdditiveExpression() #INNode(2)
    |
      <eq> RelationalExpression() #EQNode(2)
@@ -552,6 +556,10 @@ void DefinedFunction() : {}
     <DEFINED> Reference()
 }
 
+void TypeFunction() : {}
+{
+    <TYPE> <LPAREN> Expression() <RPAREN>
+}
 
 void SizeFunction() : {}
 {
@@ -595,6 +603,8 @@ void PrimaryExpression() #void : {}
   LOOKAHEAD(2) Reference()
 |
   LOOKAHEAD( <EMPTY> ) EmptyFunction()
+|
+  LOOKAHEAD( <TYPE> ) TypeFunction()
 |
   LOOKAHEAD( <DEFINED> ) DefinedFunction()
 |

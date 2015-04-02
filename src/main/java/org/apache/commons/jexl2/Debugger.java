@@ -371,6 +371,10 @@ final class Debugger implements ParserVisitor {
         return data;
     }
 
+    public Object visit(ASTISANode node, Object data) {
+        return infixChildren(node, " isa ", false, data);
+    }
+
     public Object visit(ASTINNode node, Object data) {
         return infixChildren(node, " @ ", false, data);
     }
@@ -656,6 +660,14 @@ final class Debugger implements ParserVisitor {
     public Object visit(ASTReturnStatement node, Object data) {
         builder.append("return ");
         accept(node.jjtGetChild(0), data);
+        return data;
+    }
+
+    /** {@inheritDoc} */
+    public Object visit(ASTTypeFunction node, Object data) {
+        builder.append("type(");
+        accept(node.jjtGetChild(0), data);
+        builder.append(")");
         return data;
     }
 
