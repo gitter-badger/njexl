@@ -203,28 +203,41 @@ public class TypeUtility {
     }
 
     public static Byte castByte(Object... args) {
-        Double doubleValue = castDouble(args);
-        if (doubleValue != null) {
-            byte b = doubleValue.byteValue();
-            return new Byte(b);
+        Integer i = castInteger(args);
+        if (i != null) {
+            return new Byte(i.byteValue());
+        }
+        Character c = castChar(args);
+        if ( c != null ){
+            new Byte( new Integer(c).byteValue());
         }
         return null;
     }
 
     public static Character castChar(Object... args) {
+        if ( args.length == 0 ){
+            return 0;
+        }
+        if ( args[0] instanceof String){
+            return ((String)args[0]).charAt(0);
+        }
         Double doubleValue = castDouble(args);
         if (doubleValue != null) {
             char[] cc = Character.toChars(doubleValue.intValue());
             return new Character(cc[0]);
         }
+
         return null;
     }
 
     public static Short castShort(Object... args) {
-        Double doubleValue = castDouble(args);
-        if (doubleValue != null) {
-            Short s  =  doubleValue.shortValue();
-            return s;
+        Integer i = castInteger(args);
+        if (i != null) {
+            return new Short(i.shortValue());
+        }
+        Character c = castChar(args);
+        if ( c != null ){
+            return new Short( new Integer(c).shortValue());
         }
         return null;
     }
