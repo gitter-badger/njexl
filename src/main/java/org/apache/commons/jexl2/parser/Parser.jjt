@@ -144,6 +144,7 @@ PARSER_END(Parser)
     | < and : "&" >
     | < or : "|" >
     | < xor : "^" >
+    | <hash : "#" >
 }
 
 /***************************************
@@ -413,6 +414,8 @@ void MultiplicativeExpression() #void : {}
 
 void UnaryExpression() #void : {}
 {
+    <hash> <or> AdditiveExpression() <or> #UnarySizeNode(1)
+|
   <minus> UnaryExpression() #UnaryMinusNode(1)
 |
   <tilda> UnaryExpression() #BitwiseComplNode(1)

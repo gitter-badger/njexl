@@ -701,6 +701,16 @@ final class Debugger implements ParserVisitor {
         return data;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Object visit(ASTUnarySizeNode node, Object data) {
+        builder.append("#|");
+        accept(node.jjtGetChild(0), data);
+        builder.append("|");
+        return data;
+    }
+
     /** {@inheritDoc} */
     public Object visit(ASTUnaryMinusNode node, Object data) {
         return prefixChild(node, "-", data);
