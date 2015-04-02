@@ -1,6 +1,7 @@
 package org.apache.commons.jexl2;
 
 import org.apache.commons.jexl2.extension.TypeUtility;
+import org.apache.commons.jexl2.extension.dataaccess.DBManager;
 import org.apache.commons.jexl2.extension.dataaccess.XmlMap;
 import org.junit.Test;
 
@@ -50,7 +51,7 @@ public class ExtendedScriptTest extends JexlTestCase {
 
     @Test
     public void testJSONLoading() throws Exception{
-        Object json = TypeUtility.json("dummy.json");
-        assertTrue(json instanceof Collection);
+        DBManager.init(DBManager.DB_CONFIG_FILE_LOC);
+        assertTrue(DBManager.dataBaseDOMHash != null );
     }
 }

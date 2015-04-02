@@ -1,0 +1,23 @@
+{
+  "some1": {
+    "dbName": "dummy",
+    "url": "dummy",
+    "driverClass" : "class",
+    "user": "u",
+    "pass": "p"
+  },
+  "some2": {
+    "dbName": "dummy",
+    "url": "dummy",
+    "driverClass" : "class",
+    "user": "u",
+    "pass": "p"
+  },
+  "some3": {
+    "dbName": "dummy",
+    "url": "dummy",
+    "driverClass" : "class",
+    "user": "u",
+    "pass": "p"
+  }
+}
