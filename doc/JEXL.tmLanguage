@@ -53,7 +53,7 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>#|\b_\b|[a-zA-Z]+:[a-zA-Z_]+|\{\S+\}|\*\* \S+|^@@|^\$\$|\b&lt;\-|\$[\$a-z0-9_]*|\btrue\b|\bfalse\b|\bnull\b|\bint\b|\bshort\b|\bbyte\b|\bchar\b|\bdouble\b|\blong\b|\bsub\b|\btime\b|\bbool\b|\bstr\b|\blist\b|\bset\b|\blistLiteral\b|\barray\b|\barrayFromList\b|\bsize\b|\bwithin\b|\bdict\b|\brange\b|\bempty\b|\bsqlmath\b|\btypeof\b|\bselect\b|\bdefined\b|\b_\S+_\b</string>
+			<string>#|\b_\b|[a-zA-Z]+:[a-zA-Z_]+|\{\S+\}|\*\* \S+|^@@|^\$\$|\b&lt;\-|\$[\$a-z0-9_]*|\btrue\b|\bfalse\b|\bnull\b|\bint\b|\bshort\b|\bbyte\b|\bchar\b|\bdouble\b|\blong\b|\bsub\b|\btime\b|\bbool\b|\bstr\b|\blist\b|\bset\b|\blistLiteral\b|\barray\b|\barrayFromList\b|\bsize\b|\bwithin\b|\bdict\b|\brange\b|\bempty\b|\bsqlmath\b|\btypeof\b|\bselect\b|\bdefined\b|\bjson\b|\b_\S+_\b</string>
 			<key>name</key>
 			<string>support.language.jexl</string>
 		</dict>

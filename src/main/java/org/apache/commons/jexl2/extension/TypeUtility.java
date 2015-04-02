@@ -1,6 +1,6 @@
 package org.apache.commons.jexl2.extension;
 
-import org.apache.commons.jexl2.JexlException;
+import org.apache.commons.jexl2.*;
 import org.apache.commons.jexl2.extension.iterators.RangeIterator;
 import org.apache.commons.jexl2.parser.*;
 import org.joda.time.DateTime;
@@ -16,7 +16,6 @@ import java.math.MathContext;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.Consumer;
 
 import org.apache.commons.jexl2.Interpreter.AnonymousParam;
 
@@ -88,6 +87,8 @@ public class TypeUtility {
     public static final String READ_LINES = "lines";
     public static final String WRITE = "write";
 
+    public static final String JSON = "json";
+
     public static final String _ITEM_ = "$";
     public static final String _CONTEXT_ = "$$";
 
@@ -104,6 +105,23 @@ public class TypeUtility {
     public static final Class<?>[] ARRAY_PRIMITIVE_TYPES = {
             int[].class, float[].class, double[].class, boolean[].class,
             byte[].class, short[].class, long[].class, char[].class};
+
+
+    public static Object json(Object...args) throws Exception{
+        if ( args.length ==  0 ){
+            return null;
+        }
+        String text = args[0].toString();
+        if ( args.length == 1 ){
+            // this is the file name
+            text = readToEnd(text);
+            text = text.replaceAll("[\\r\\n]"," ");
+        }
+        JexlEngine jexlEngine = new JexlEngine();
+        Script sc = jexlEngine.createScript(text);
+        JexlContext context = new MapContext();
+        return sc.execute(context);
+    }
 
     public static String readToEnd(String fileName) throws Exception{
         List<String> lines = Files.readAllLines(new File(fileName).toPath());
@@ -766,6 +784,8 @@ public class TypeUtility {
                 return  test(argv);
             case LOAD_PATH:
                 return ReflectionUtility.load_path(argv);
+            case JSON:
+                return json(argv);
             case MULTI_SET1:
             case MULTI_SET2:
             case MULTI_SET3:
