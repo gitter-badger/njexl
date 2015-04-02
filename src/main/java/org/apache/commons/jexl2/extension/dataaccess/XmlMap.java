@@ -1,5 +1,6 @@
 package org.apache.commons.jexl2.extension.dataaccess;
 
+import org.apache.commons.jexl2.Main;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -67,13 +68,21 @@ public class XmlMap {
                 int len = map.getLength();
                 for ( int i = 0 ; i < len; i++){
                     Node a = map.item(i);
-                    String name = a.getLocalName();
+                    String name = a.getNodeName();
                     String value = a.getTextContent();
                     attr.put(name,value);
                 }
             }
             text = getFirstLevelTextContent(node);
             child = new ArrayList<>();
+        }
+
+        @Override
+        public String toString(){
+            return String.format("name='%s',text='%s'\nattr=%s\nchildren=%s\n",
+                    name,
+                    text.replaceAll("[\\r\\n]","").trim(),
+                    attr,child);
         }
 
     }
@@ -121,5 +130,10 @@ public class XmlMap {
                 populate(c,root);
             }
         }
+    }
+
+    @Override
+    public String toString(){
+        return root.toString();
     }
 }
