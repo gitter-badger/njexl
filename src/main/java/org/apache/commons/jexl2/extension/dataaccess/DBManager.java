@@ -74,13 +74,17 @@ public final class DBManager {
     public static Pattern SELECT_PATTERN = Pattern.compile("^\\s*select\\s+.*",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
-    public static void init(String configFile) {
+    public static boolean init(String configFile) {
         try {
             dataBaseDOMHash = getDatabaseDetails(configFile);
+            System.out.println("Successfully Loaded DB Config");
+            System.out.println(dataBaseDOMHash);
+            return true;
         } catch (Exception e) {
             System.err.println(e);
             System.err.println("I will have no DB Connectivity!");
         }
+        return false;
     }
 
     public static boolean addCon(String n, Map entry){

@@ -5,7 +5,6 @@ import org.apache.commons.jexl2.extension.ListSet;
 import org.apache.commons.jexl2.extension.TypeUtility;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -53,18 +52,28 @@ public class DataMatrix {
         }
 
         HashSet<Integer> colIndexes = new HashSet<>();
-        for(int i = 0; i < args.length;i++ ){
-            int pos = -1;
-            if ( args[i] instanceof Integer ){
-                pos = (int)args[i] ;
-            }else{
-                pos = columns.indexOf(args[i]);
+
+        if ( args.length == 0 ){
+            //select all
+            for ( int i = 0 ; i < columns.size();i++ ){
+                colIndexes.add(i);
             }
-            if ( pos < 0 ){
-                throw new Exception("No such header : " + args[i]);
+        }else {
+            // select specific
+            for (int i = 0; i < args.length; i++) {
+                int pos = -1;
+                if (args[i] instanceof Integer) {
+                    pos = (int) args[i];
+                } else {
+                    pos = columns.indexOf(args[i]);
+                }
+                if (pos < 0) {
+                    throw new Exception("No such header : " + args[i]);
+                }
+                colIndexes.add(pos);
             }
-            colIndexes.add(pos);
         }
+
         // now do the stuff
         ArrayList rs = new ArrayList();
         for ( int i = 0 ; i < rows.size();i++  ){
@@ -89,5 +98,10 @@ public class DataMatrix {
             anon.removeIterationContext();
         }
         return rs;
+    }
+
+    @Override
+    public String toString(){
+        return "< " + columns + " , " + rows + " >" ;
     }
 }
