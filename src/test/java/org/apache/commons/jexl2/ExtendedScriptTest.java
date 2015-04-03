@@ -58,6 +58,13 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
 
+    @Test
+    public void testTSVLoading() throws Exception{
+        DataMatrix m = DataMatrix.file2matrix("samples/test.tsv");
+        assertTrue(m != null );
+
+    }
+
     /****
     @Test
     public void testDB() throws Exception{

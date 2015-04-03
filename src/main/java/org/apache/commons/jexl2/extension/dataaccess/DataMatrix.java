@@ -2,11 +2,12 @@ package org.apache.commons.jexl2.extension.dataaccess;
 
 import org.apache.commons.jexl2.Interpreter.AnonymousParam;
 import org.apache.commons.jexl2.extension.ListSet;
+import org.apache.commons.jexl2.extension.SetOperations;
 import org.apache.commons.jexl2.extension.TypeUtility;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.io.File;
+import java.nio.file.Files;
+import java.util.*;
 
 /**
  * Created by noga on 03/04/15.
@@ -16,6 +17,50 @@ public class DataMatrix {
     ListSet<String> columns;
 
     ArrayList<ArrayList<String>> rows;
+
+    public static DataMatrix loadExcel(String file, Object...args){
+        System.err.println("Excel Not Implemented yet, Noga, the, is thinking");
+        return null;
+    }
+
+    public static DataMatrix loadText(String file, Object...args) throws Exception{
+        String sep="\t";
+        boolean header = true ;
+        if ( args.length > 0 ){
+            sep = args[0].toString();
+            if ( args.length > 1 ){
+                header = TypeUtility.castBoolean(args[1],false);
+            }
+        }
+        List<String> lines = Files.readAllLines(new File(file).toPath());
+        ListSet cols = null;
+        if ( header ){
+            String[] words =  lines.get(0).split(sep);
+            cols = new ListSet(Arrays.asList(words));
+            lines.remove(0);
+        }
+        ArrayList rows = new ArrayList();
+        for ( String line : lines ){
+            String[] words =  line.split(sep);
+            ArrayList row = new ArrayList(Arrays.asList(words));
+            rows.add(row);
+        }
+        if ( header ){
+            return new DataMatrix(rows,cols);
+        }
+        return new DataMatrix(rows);
+    }
+
+    public static DataMatrix file2matrix(String file,Object...args) throws Exception{
+        String name = file.toLowerCase();
+        if ( name.endsWith(".txt")||name.endsWith(".csv")||name.endsWith(".tsv")){
+            return loadText(file,args);
+        }
+        if ( name.endsWith(".xls")||name.endsWith(".xlsx")){
+            return loadExcel(file, args);
+        }
+        return null;
+    }
 
     public DataMatrix(ArrayList<ArrayList<String>> rows,ListSet<String> cols){
         this.rows = rows;
