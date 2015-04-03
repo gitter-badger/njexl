@@ -603,7 +603,7 @@ public class TypeUtility {
         return set;
     }
 
-    public static Boolean within(Object[] args) throws Exception {
+    public static Boolean within(Object... args) throws Exception {
         ArrayList list = combine(args);
 
         if (list.size() < 3) {
@@ -633,7 +633,7 @@ public class TypeUtility {
         return false;
     }
 
-    public static HashMap makeDict(Object[] args) throws Exception {
+    public static HashMap makeDict(Object... args) throws Exception {
         HashMap map = new HashMap();
 
         if (args.length == 1 &&

@@ -2,9 +2,11 @@ package org.apache.commons.jexl2;
 
 import org.apache.commons.jexl2.extension.TypeUtility;
 import org.apache.commons.jexl2.extension.dataaccess.DBManager;
+import org.apache.commons.jexl2.extension.dataaccess.DataMatrix;
 import org.apache.commons.jexl2.extension.dataaccess.XmlMap;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -53,5 +55,16 @@ public class ExtendedScriptTest extends JexlTestCase {
     public void testJSONLoading() throws Exception{
         DBManager.init(DBManager.DB_CONFIG_FILE_LOC);
         assertTrue(DBManager.dataBaseDOMHash != null );
+    }
+    @Test
+    public void testDB() throws Exception{
+        testJSONLoading();
+        Object l = DBManager.results("noga", "select * from noga_demo");
+        assertTrue( l instanceof DataMatrix);
+        DataMatrix dm = (DataMatrix)l;
+        l = dm.select(0);
+        assertTrue( l instanceof ArrayList);
+        l = dm.select("Name");
+        assertTrue( l instanceof ArrayList);
     }
 }

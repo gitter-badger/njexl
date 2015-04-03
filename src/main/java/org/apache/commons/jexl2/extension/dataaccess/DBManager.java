@@ -1,5 +1,6 @@
 package org.apache.commons.jexl2.extension.dataaccess;
 
+import org.apache.commons.jexl2.extension.ListSet;
 import org.apache.commons.jexl2.extension.TypeUtility;
 
 import java.sql.*;
@@ -91,11 +92,11 @@ public final class DBManager {
         return true;
     }
 
-    private static Connection getConnection(String dbName) throws Exception {
+    private static Connection getConnection(String dbConnectionId) throws Exception {
 
         Connection conn = null;
 
-        DatabaseDOM d = dataBaseDOMHash.get(dbName);
+        DatabaseDOM d = dataBaseDOMHash.get(dbConnectionId);
         try {
             Class.forName( d.driverClass );
         } catch (ClassNotFoundException e) {
@@ -103,15 +104,15 @@ public final class DBManager {
         }
         try {
 
-            if (connectionMap.containsKey(dbName)) {
-                conn = connectionMap.get(dbName);
+            if (connectionMap.containsKey(dbConnectionId)) {
+                conn = connectionMap.get(dbConnectionId);
                 if (!conn.isClosed()) {
                     return conn;
                 }
-                connectionMap.remove(dbName);
+                connectionMap.remove(dbConnectionId);
             }
             conn = DriverManager.getConnection(d.url);
-            connectionMap.put(dbName, conn);
+            connectionMap.put(dbConnectionId, conn);
 
         } catch (SQLException e) {
             if (conn != null) {
@@ -122,9 +123,9 @@ public final class DBManager {
         return conn;
     }
 
-    public static Object exec(String dbName, String sql) throws Exception {
+    public static Object exec(String dbConnectionId, String sql) throws Exception {
 
-        Connection conn = getConnection(dbName);
+        Connection conn = getConnection(dbConnectionId);
 
         sql = sql.trim();
 
@@ -141,16 +142,21 @@ public final class DBManager {
         }
     }
 
-    public static Object results(String dbName, String sql) throws Exception {
-        Object retObject = exec(dbName, sql);
-        int count = 0 ;
+    public static Object results(String dbConnectionId, String sql) throws Exception {
+        Object retObject = exec(dbConnectionId, sql);
+
         ArrayList results = new ArrayList();
+        ArrayList columns = new ArrayList();
+
         if (retObject instanceof ResultSet) {
             ResultSet rs = (ResultSet)retObject;
             ResultSetMetaData rsmd = rs.getMetaData();
             int cols = rsmd.getColumnCount();
+            for ( int i =1; i <= cols; i++ ) {
+                String value =  rsmd.getColumnName(i);
+                columns.add(value);
+            }
             while(rs.next()) {
-                count++;
                 ArrayList row = new ArrayList();
                 for ( int i =1; i <= cols; i++ ) {
                     String value =  rs.getString(i);
@@ -161,7 +167,7 @@ public final class DBManager {
         } else {
             return retObject;
         }
-        return results;
+        return new DataMatrix(results, new ListSet<>(columns));
     }
 
 }

@@ -1,0 +1,10 @@
+import 'java.lang.System.out' as out
+import 'org.apache.commons.jexl2.extension.dataaccess.DBManager' as db  
+
+// which connection profile ? 
+db:init('db.json')
+// query is darn easy : result is a data matrix object 
+matrix =  db:results("noga", "select * from noga_demo")
+// which lets you further subquery if need be 
+qr = matrix.select( "Name" )
+out:println(qr)

@@ -1,10 +1,10 @@
 {
-  "some1": {
-    "dbName": "dummy",
-    "url": "dummy",
-    "driverClass" : "class",
-    "user": "u",
-    "pass": "p"
+  "noga": {
+    "dbName": "noga",
+    "url": "jdbc:postgresql://localhost:5432/noga",
+    "driverClass" : "org.postgresql.Driver",
+    "user": "noga",
+    "pass": ""
   },
   "some2": {
     "dbName": "dummy",
