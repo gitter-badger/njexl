@@ -59,6 +59,10 @@ public class TypeUtility {
     public static final String LIST = "list";
     public static final String FILTER = "filter";
     public static final String SELECT = "select";
+
+    public static final String FIND = "find";
+    public static final String INDEX = "index";
+
     public static final String JOIN = "join";
 
 
@@ -562,6 +566,48 @@ public class TypeUtility {
         return list;
     }
 
+    public static int index(Object... args) {
+        AnonymousParam anon = null;
+        ArrayList list = new ArrayList();
+        if (args.length > 1) {
+            if (args[0] instanceof AnonymousParam) {
+                anon = (AnonymousParam) args[0];
+                args = shiftArrayLeft(args, 1);
+            }
+        }
+        Object item = args[0];
+        int start = 0 ;
+        if ( anon == null ){
+            start = 1;
+        }
+        for (int i = start ; i < args.length; i++) {
+            List l = from(args[i]);
+            list.addAll(l);
+        }
+        if ( anon == null ){
+            return list.indexOf(item);
+        }
+
+        int i = 0 ;
+
+        boolean found = false ;
+        for (Object o : list) {
+            anon.setIterationContext(list, o,i);
+            Object ret = anon.execute();
+            found = castBoolean(ret,false) ;
+            if ( found ){
+                break;
+            }
+            i++;
+        }
+        anon.removeIterationContext();
+        if ( found ){
+            return i;
+        }
+
+        return -1;
+    }
+
     public static Iterator range(Object... args) throws Exception {
 
         if (args.length == 0) {
@@ -699,7 +745,7 @@ public class TypeUtility {
         if ( args.length == 0  ){
             return true ;
         }
-        boolean ret = castBoolean(args[0],false);
+        boolean ret = castBoolean(args[0], false);
         // log it - later problem - not now
         return ret ;
     }
@@ -754,6 +800,9 @@ public class TypeUtility {
             case FILTER:
             case SELECT:
                 return filter(argv);
+            case FIND:
+            case INDEX:
+                return index(argv);
             case JOIN:
                 return SetOperations.join_c(argv);
             case ARRAY:
