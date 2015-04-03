@@ -53,7 +53,7 @@ public class ExtendedScriptTest extends JexlTestCase {
 
     @Test
     public void testJSONLoading() throws Exception{
-        DBManager.init(DBManager.DB_CONFIG_FILE_LOC);
+        DBManager.init("samples/" + DBManager.DB_CONFIG_FILE_LOC);
         assertTrue(DBManager.dataBaseDOMHash != null );
     }
 
