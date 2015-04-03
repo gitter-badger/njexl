@@ -56,6 +56,9 @@ public class ExtendedScriptTest extends JexlTestCase {
         DBManager.init(DBManager.DB_CONFIG_FILE_LOC);
         assertTrue(DBManager.dataBaseDOMHash != null );
     }
+
+
+    /****
     @Test
     public void testDB() throws Exception{
         testJSONLoading();
@@ -67,4 +70,6 @@ public class ExtendedScriptTest extends JexlTestCase {
         l = dm.select("Name");
         assertTrue( l instanceof ArrayList);
     }
+    ****/
+
 }

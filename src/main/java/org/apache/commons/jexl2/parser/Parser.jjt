@@ -580,7 +580,8 @@ void AnyMethod() #void : {}
 {
     LOOKAHEAD(<SIZE>) SizeMethod()
   |
-    LOOKAHEAD(Identifier() <LPAREN>) Method()
+    LOOKAHEAD(Identifier() (Block())? <LPAREN>) Method()
+
 }
 
 void SizeMethod() : {}

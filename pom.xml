@@ -123,12 +123,14 @@
             <artifactId>jline</artifactId>
             <version>RELEASE</version>
         </dependency>
-        <!-- Later to be commented : testing purpose only -->
+        <!--  commented : testing purpose only
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>RELEASE</version>
         </dependency>
+
+       -->
 
 
     </dependencies>

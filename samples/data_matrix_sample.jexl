@@ -6,5 +6,5 @@ db:init('db.json')
 // query is darn easy : result is a data matrix object 
 matrix =  db:results("noga", "select * from noga_demo")
 // which lets you further subquery if need be 
-qr = matrix.select( "Name" )
+qr = matrix.select{ _ > 1 and _ < 4 }( "Name" )
 out:println(qr)
