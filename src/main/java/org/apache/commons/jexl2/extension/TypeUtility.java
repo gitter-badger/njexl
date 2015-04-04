@@ -703,20 +703,20 @@ public class TypeUtility {
 
     }
 
-    public static Object sqlmath(Object[] argv) {
+    public static Double[] sqlmath(Object... argv) {
         Double[] math = new Double[]{null, null, null};
         ArrayList list = combine(argv);
         if (list.size() > 0) {
             int index = 0;
             Object obj = list.get(index);
 
-            math[0] = Double.valueOf(obj.toString());
+            math[0] = castDouble(obj, 0);
             math[1] = math[0];
             math[2] = math[0];
             for (index = 1; index < list.size(); index++) {
                 obj = list.get(index);
 
-                Double value = Double.valueOf(obj.toString());
+                Double value = castDouble(obj, 0);
                 if (value < math[0]) {
                     math[0] = value;  // MIN
                 }

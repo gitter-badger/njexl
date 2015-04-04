@@ -1,13 +1,10 @@
 package org.apache.commons.jexl2;
 
-import org.apache.commons.jexl2.extension.TypeUtility;
 import org.apache.commons.jexl2.extension.dataaccess.DBManager;
 import org.apache.commons.jexl2.extension.dataaccess.DataMatrix;
 import org.apache.commons.jexl2.extension.dataaccess.XmlMap;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by noga on 28/03/15.
@@ -59,11 +56,25 @@ public class ExtendedScriptTest extends JexlTestCase {
 
 
     @Test
-    public void testTSVLoading() throws Exception{
-        DataMatrix m = DataMatrix.file2matrix("samples/test.tsv");
-        assertTrue(m != null );
+    public void testTSVEqualComparison() throws Exception{
+        DataMatrix m1 = DataMatrix.file2matrix("samples/test.tsv");
+        assertTrue(m1 != null );
+        DataMatrix m2 = DataMatrix.file2matrix("samples/test.tsv");
+        assertTrue(m2 != null );
+        m1.keys(0);
+        m1 = m1.aggregate("Points");
+        assertTrue(m1.columns.size() == 1 );
+        m2.keys(0);
+        m2 = m2.aggregate("Points");
+        assertTrue(m2.columns.size() == 1 );
 
+        Object[] arr = DataMatrix.diff(m1, m2);
+        assertTrue( ((List)arr[0]).isEmpty() );
+        assertTrue( ((List)arr[1]).isEmpty() );
+        assertTrue(((List) arr[2]).isEmpty());
     }
+
+
 
     /****
     @Test
