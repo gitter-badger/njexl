@@ -17,6 +17,7 @@
 
 package org.apache.commons.jexl2;
 
+import jline.console.history.FileHistory;
 import org.apache.commons.jexl2.extension.SetOperations;
 import org.apache.commons.jexl2.extension.ReflectionUtility;
 import org.apache.commons.jexl2.extension.TypeUtility;
@@ -70,9 +71,11 @@ public class Main {
         JexlContext context = getContext();
         JexlEngine JEXL = getJexl(context);
         ConsoleReader console = new ConsoleReader();
+
+        String historyFile = System.getProperty("user.home") + "/.njexl_cli_history" ;
+        console.setHistory( new FileHistory(new File(historyFile)));
         console.setExpandEvents(false);
         console.setCopyPasteDetection(true);
-
         console.setPrompt(PROMPT);
 
         while(true){
@@ -94,6 +97,7 @@ public class Main {
                 context.set("_o_", o);
                 context.set("_e_", null);
                 System.out.printf("=>%s\n", str(o));
+                ((FileHistory)console.getHistory()).flush();
             }catch (Exception e){
                 context.set("_e_", e);
                 context.set("_o_", null);
