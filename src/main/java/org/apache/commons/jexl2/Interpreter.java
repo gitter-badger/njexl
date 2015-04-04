@@ -1235,6 +1235,10 @@ public class Interpreter implements ParserVisitor {
                 return r.getValue();
             }
         }
+
+        public Object getVar(String name){
+            return interpreter.context.get(name);
+        }
     }
 
     /**

@@ -1,9 +1,13 @@
 package org.apache.commons.jexl2;
 
+import org.apache.commons.jexl2.extension.ListSet;
+import org.apache.commons.jexl2.extension.Tuple;
 import org.apache.commons.jexl2.extension.dataaccess.DBManager;
 import org.apache.commons.jexl2.extension.dataaccess.DataMatrix;
 import org.apache.commons.jexl2.extension.dataaccess.XmlMap;
 import org.junit.Test;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +20,24 @@ public class ExtendedScriptTest extends JexlTestCase {
         JEXL.setFunctions(Main.getFunction(jc));
         Script e = JEXL.importScript(path);
         return e.execute(jc);
+    }
+
+    @Test
+    public void testTupleIndexing()throws Exception {
+        JexlContext jc = new MapContext();
+        ArrayList<String> cnames = new ArrayList<>();
+        cnames.add("a");
+        cnames.add("b");
+        cnames.add("c");
+        ArrayList<String> values = new ArrayList<>();
+        values.add("A");
+        values.add("B");
+        values.add("C");
+        Tuple t = new Tuple(cnames,values);
+        jc.set("T",t);
+        Expression e = JEXL.createExpression("T[0]");
+        Object o = e.evaluate(jc);
+        assertTrue("A".equals(o));
     }
 
     @Test
@@ -55,10 +77,12 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
-    public void testTSVEqualComparison() throws Exception{
+    public void testDataMatrixComparison() throws Exception{
         DataMatrix m1 = DataMatrix.file2matrix("samples/test.tsv");
-        assertTrue(m1 != null );
+        m1 = m1.sub(0,3);
+        assertTrue(m1 != null);
         DataMatrix m2 = DataMatrix.file2matrix("samples/test.tsv");
+        m2 = m2.sub(0,3);
         assertTrue(m2 != null );
         m1.keys(0);
         m1 = m1.aggregate("Points");

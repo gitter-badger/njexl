@@ -3,13 +3,13 @@ package org.apache.commons.jexl2.extension.dataaccess;
 import org.apache.commons.jexl2.Interpreter.AnonymousParam;
 import org.apache.commons.jexl2.extension.ListSet;
 import org.apache.commons.jexl2.extension.SetOperations;
+import org.apache.commons.jexl2.extension.Tuple;
 import org.apache.commons.jexl2.extension.TypeUtility;
 import org.apache.commons.jexl2.extension.iterators.RangeIterator;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.function.ObjDoubleConsumer;
 
 /**
  * Created by noga on 03/04/15.
@@ -36,6 +36,10 @@ public class DataMatrix {
         public List rl ;
         public List id ;
 
+        @Override
+        public String toString(){
+            return String.format("%s : < %s %s %s>", diff(), lr, rl, id );
+        }
     }
 
 
@@ -102,19 +106,12 @@ public class DataMatrix {
         }
     }
 
-    public HashMap rh(int r){
+    public Tuple tuple(int r){
         if ( r >= rows.size() ){
             return null;
         }
-        HashMap<Object,String> map = new HashMap<>();
-        for ( int i = 0 ; i < columns.size();i++ ){
-            String value = rows.get(r).get(i);
-            // accessible by column name
-            map.put(columns.get(i),value);
-            //accessible by indices
-            map.put(i, value);
-        }
-        return map;
+        Tuple t = new Tuple(columns, rows.get(r));
+        return t;
     }
 
     public ArrayList<String> c(int c){
@@ -133,19 +130,29 @@ public class DataMatrix {
         return l;
     }
 
-    private AnonymousParam setup(HashSet<Integer> colIndexes, Object[]args) throws Exception{
-        AnonymousParam anon = null;
+    private static class SelectSetup{
+        private AnonymousParam anon;
+        private HashSet<Integer> colIndexes;
+    }
+
+    private SelectSetup setup(Object... args) throws Exception{
+
+        SelectSetup selectSetup = new SelectSetup();
+        selectSetup.colIndexes = new HashSet<>();
+
+        if ( args.length > 0 ){
+            if ( args[0] instanceof AnonymousParam ){
+                selectSetup.anon = (AnonymousParam)args[0];
+                args = TypeUtility.shiftArrayLeft(args,1);
+            }
+        }
 
         if ( args.length == 0 ){
             //select all
             for ( int i = 0 ; i < columns.size();i++ ){
-                colIndexes.add(i);
+                selectSetup.colIndexes.add(i);
             }
         }else {
-            if ( args[0] instanceof AnonymousParam ){
-                anon = (AnonymousParam)args[0];
-                args = TypeUtility.shiftArrayLeft(args,1);
-            }
             // select specific
             for (int i = 0; i < args.length; i++) {
                 int pos = -1;
@@ -154,7 +161,7 @@ public class DataMatrix {
                 } else if ( args[i] instanceof RangeIterator){
                     Iterator<Long> itr = (RangeIterator)args[i];
                     while(itr.hasNext()){
-                        colIndexes.add(itr.next().intValue());
+                        selectSetup.colIndexes.add(itr.next().intValue());
                     }
                     continue;
                 }
@@ -164,35 +171,72 @@ public class DataMatrix {
                 if (pos < 0) {
                     throw new Exception("No such header : " + args[i]);
                 }
-                colIndexes.add(pos);
+                selectSetup.colIndexes.add(pos);
             }
         }
-        return anon;
+        return selectSetup;
     }
 
     public ArrayList select(Object...args) throws Exception {
         if ( args.length ==  0 ){
             return rows;
         }
-        HashSet<Integer> colIndexes = new HashSet<>();
-        AnonymousParam anon = setup(colIndexes,args);
+        SelectSetup setup = setup(args);
+        // now do the stuff
+        ArrayList rs = _select_op_(setup.anon, setup.colIndexes);
+        return rs;
+    }
 
+    public DataMatrix sub(Object...args) throws Exception {
+
+        if ( args.length ==  0 ){
+            return this; // risky? May be. I don't know
+        }
+
+        SelectSetup setup = setup(args);
+
+        ListSet nColumns = new ListSet();
+
+        for ( int j = 0 ;j < columns.size();j++ ) {
+            if (setup.colIndexes.contains(j)) {
+                nColumns.add(columns.get(j));
+            }
+        }
+        ArrayList rs = _select_op_(setup.anon,setup.colIndexes);
+
+        return new DataMatrix(rs,nColumns);
+    }
+
+    private ArrayList  _select_op_(AnonymousParam anon, HashSet<Integer> colIndexes ) throws Exception{
         // now do the stuff
         ArrayList rs = new ArrayList();
-        for ( int i = 0 ; i < rows.size();i++  ){
+        HashMap<Integer,Tuple> selectedRows = new HashMap<>();
+        for ( int i = 0 ; i < rows.size();i++ ){
             if ( anon != null ){
                 //process this ...
-                anon.setIterationContext(this,rh(i),i);
+                anon.setIterationContext(this, tuple(i),i);
                 Object ret = anon.execute();
                 if ( !TypeUtility.castBoolean(ret,false)){
                     continue;
                 }
+                // get back the values if over written ?
+                selectedRows.put(i,(Tuple)anon.getVar(TypeUtility._ITEM_));
             }
             ArrayList cs = new ArrayList();
-            ArrayList dataRow = rows.get(i);
+            ArrayList<String> dataRow = rows.get(i);
             for ( int j = 0 ;j < columns.size();j++ ) {
                 if (colIndexes.contains(j)) {
-                    cs.add(dataRow.get(j));
+                    String val = dataRow.get(j) ;
+                    if ( selectedRows.isEmpty() ){
+                        cs.add(val);
+                    }else {
+                        Object var = selectedRows.get(i).get(j);
+                        if ( !val.equals(var) ){
+                            cs.add(var);
+                        }else{
+                            cs.add(val);
+                        }
+                    }
                 }
             }
             rs.add(cs);
@@ -205,22 +249,21 @@ public class DataMatrix {
 
     public DataMatrix keys(Object...args) throws Exception{
         keys = new HashMap<>();
-        HashSet<Integer> colIndexes = new HashSet<>();
-        AnonymousParam anon = setup(colIndexes,args);
+        SelectSetup setup = setup(args);
 
         // now do the stuff
         for ( int i = 0 ; i < rows.size();i++  ){
             String key = "";
-            if ( anon != null ){
+            if ( setup.anon != null ){
                 //process this ...
-                anon.setIterationContext(this,rh(i),i);
-                Object ret = anon.execute();
+                setup.anon.setIterationContext(this, tuple(i),i);
+                Object ret = setup.anon.execute();
                 key = ret.toString();
             }
             else{
                 String sep = "Ø";
                 for ( int j = 0 ; j < columns.size(); j++ ){
-                    if ( colIndexes.contains(j) ){
+                    if ( setup.colIndexes.contains(j) ){
                         key += rows.get(i).get(j) + sep ;
                     }
                 }
@@ -230,8 +273,8 @@ public class DataMatrix {
             }
             keys.get(key).add(i);
         }
-        if ( anon != null ){
-            anon.removeIterationContext();
+        if ( setup.anon != null ){
+            setup.anon.removeIterationContext();
         }
         return this;
     }
@@ -240,8 +283,9 @@ public class DataMatrix {
         if ( keys == null ){
             keys();
         }
-        HashSet<Integer> colIndexes = new HashSet<>();
-        AnonymousParam anon = setup(colIndexes,args);
+        SelectSetup setup = setup(args);
+        HashSet<Integer> colIndexes = setup.colIndexes;
+        AnonymousParam anon = setup.anon;
 
         ListSet  aColumns = new ListSet();
 
@@ -345,8 +389,8 @@ public class DataMatrix {
             }
             int lIndex = l.get(0) ;
             int rIndex = r.get(0) ;
-            HashMap L =  left.rh( lIndex );
-            HashMap R =  right.rh(rIndex);
+            Tuple L =  left.tuple(lIndex);
+            Tuple R =  right.tuple(rIndex);
 
             if ( anon != null ){
                 Object context = new Object[]{ left, right };
@@ -359,10 +403,10 @@ public class DataMatrix {
                     diff.add( new Object[] { left.rows.get(lIndex) , right.rows.get(rIndex) } );
                 }
             }else{
-                Set colIntersect = SetOperations.set_i( L.keySet(), R.keySet() );
+                Set colIntersect = SetOperations.set_i(L.names.keySet(), R.names.keySet() );
                 for ( Object c : colIntersect ){
-                    Object valLeft = L.get(c);
-                    Object valRight = R.get(c);
+                    Object valLeft = L.get(c.toString());
+                    Object valRight = R.get(c.toString());
                     if ( !valLeft.equals(valRight )){
                         diff.add( new Object[] { left.rows.get(lIndex) , right.rows.get(rIndex) } );
                     }
@@ -377,7 +421,6 @@ public class DataMatrix {
 
         return matrixDiff;
     }
-
 
     @Override
     public String toString(){
