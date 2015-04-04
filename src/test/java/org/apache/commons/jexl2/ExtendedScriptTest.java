@@ -54,7 +54,6 @@ public class ExtendedScriptTest extends JexlTestCase {
         assertTrue(DBManager.dataBaseDOMHash != null );
     }
 
-
     @Test
     public void testTSVEqualComparison() throws Exception{
         DataMatrix m1 = DataMatrix.file2matrix("samples/test.tsv");
@@ -68,12 +67,10 @@ public class ExtendedScriptTest extends JexlTestCase {
         m2 = m2.aggregate("Points");
         assertTrue(m2.columns.size() == 1 );
 
-        Object[] arr = DataMatrix.diff(m1, m2);
-        assertTrue( ((List)arr[0]).isEmpty() );
-        assertTrue( ((List)arr[1]).isEmpty() );
-        assertTrue(((List) arr[2]).isEmpty());
-    }
+        DataMatrix.MatrixDiff diff  = DataMatrix.diff(m1, m2);
+        assertFalse( diff.diff()  );
 
+    }
 
 
     /****

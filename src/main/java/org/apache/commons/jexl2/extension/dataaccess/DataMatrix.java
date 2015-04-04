@@ -16,6 +16,29 @@ import java.util.function.ObjDoubleConsumer;
  */
 public class DataMatrix {
 
+    public static class MatrixDiff{
+
+        public boolean diff(){
+
+            if ( lr != null && !lr.isEmpty() ){
+                return true;
+            }
+            if ( rl!= null && !rl.isEmpty() ){
+                return true;
+            }
+            if ( id!= null && !id.isEmpty() ){
+                return true;
+            }
+            return false ;
+        }
+
+        public List lr ;
+        public List rl ;
+        public List id ;
+
+    }
+
+
     public ListSet<String> columns;
 
     public ArrayList<ArrayList<String>> rows;
@@ -279,7 +302,7 @@ public class DataMatrix {
         return retVal ;
     }
 
-    public static Object[] diff (Object... args) throws Exception {
+    public static MatrixDiff diff (Object... args) throws Exception {
         AnonymousParam anon = null;
         if ( args.length == 0 ){
             return null;
@@ -298,7 +321,7 @@ public class DataMatrix {
         if ( right.keys == null ){
             right.keys();
         }
-        Object[] result = new Object[3];
+        MatrixDiff matrixDiff = new MatrixDiff();
         // Keys which are not in left but in right
         Set[] diffKey = key_diff(left,right);
         ArrayList d1 = new ArrayList();
@@ -309,8 +332,8 @@ public class DataMatrix {
         for (  Object i : diffKey[1] ){
             d1.add(  right.keys.get(i) );
         }
-        result[0] = d1;
-        result[1] = d2 ;
+        matrixDiff.lr = d1;
+        matrixDiff.rl = d2 ;
         ArrayList diff = new ArrayList();
         //now the rest
         Set intersection = SetOperations.set_i(  left.keys.keySet(), right.keys.keySet() );
@@ -346,13 +369,13 @@ public class DataMatrix {
                 }
             }
         }
-        result[2] = diff ;
+        matrixDiff.id = diff ;
 
         if ( anon != null ){
             anon.removeIterationContext();
         }
 
-        return result;
+        return matrixDiff;
     }
 
 
