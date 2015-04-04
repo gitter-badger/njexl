@@ -42,7 +42,6 @@ public class DataMatrix {
         }
     }
 
-
     public ListSet<String> columns;
 
     public ArrayList<ArrayList<String>> rows;
@@ -226,12 +225,13 @@ public class DataMatrix {
             ArrayList<String> dataRow = rows.get(i);
             for ( int j = 0 ;j < columns.size();j++ ) {
                 if (colIndexes.contains(j)) {
-                    String val = dataRow.get(j) ;
+                    Object val = dataRow.get(j) ;
                     if ( selectedRows.isEmpty() ){
                         cs.add(val);
                     }else {
                         Object var = selectedRows.get(i).get(j);
-                        if ( !val.equals(var) ){
+
+                        if ( Objects.equals(val,var) ){
                             cs.add(var);
                         }else{
                             cs.add(val);
@@ -407,7 +407,7 @@ public class DataMatrix {
                 for ( Object c : colIntersect ){
                     Object valLeft = L.get(c.toString());
                     Object valRight = R.get(c.toString());
-                    if ( !valLeft.equals(valRight )){
+                    if ( Objects.equals(valLeft , valRight )){
                         diff.add( new Object[] { left.rows.get(lIndex) , right.rows.get(rIndex) } );
                     }
                 }

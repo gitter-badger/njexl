@@ -31,6 +31,7 @@ public class Tuple  {
     public Object get(int index){
         return t[index];
     }
+
     public Object set(int index,Object object){
         return ( t[index] = object ) ;
     }
@@ -38,12 +39,13 @@ public class Tuple  {
     public Object get(String name){
         return t[ names.get(name) ] ;
     }
+
     public Object set(String name, Object object){
         return ( t[names.get(name)] = object ) ;
     }
 
     @Override
     public String toString(){
-        return String.format( "<%s , %s >", mapping, Main.strArr(t) );
+        return String.format( "<%s,%s>", mapping, Main.strArr(t) );
     }
 }
