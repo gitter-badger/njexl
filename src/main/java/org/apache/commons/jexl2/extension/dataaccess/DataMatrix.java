@@ -226,16 +226,12 @@ public class DataMatrix {
             for ( int j = 0 ;j < columns.size();j++ ) {
                 if (colIndexes.contains(j)) {
                     Object val = dataRow.get(j) ;
-                    if ( selectedRows.isEmpty() ){
+                    if ( anon == null ){
                         cs.add(val);
                     }else {
                         Object var = selectedRows.get(i).get(j);
-
-                        if ( Objects.equals(val,var) ){
-                            cs.add(var);
-                        }else{
-                            cs.add(val);
-                        }
+                        // avoid stupidity, add Tuple value always
+                        cs.add(var);
                     }
                 }
             }
