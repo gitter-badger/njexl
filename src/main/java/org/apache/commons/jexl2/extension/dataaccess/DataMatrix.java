@@ -407,7 +407,7 @@ public class DataMatrix {
                 for ( Object c : colIntersect ){
                     Object valLeft = L.get(c.toString());
                     Object valRight = R.get(c.toString());
-                    if ( Objects.equals(valLeft , valRight )){
+                    if ( !Objects.equals(valLeft , valRight )){
                         diff.add( new Object[] { left.rows.get(lIndex) , right.rows.get(rIndex) } );
                     }
                 }

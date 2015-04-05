@@ -41,6 +41,15 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testCurrying()throws Exception {
+        JexlContext jc = new MapContext();
+        jc.set("op","+");
+        Expression e = JEXL.createExpression("`2 #{op} 3`");
+        Object o = e.evaluate(jc);
+        assertTrue(o.equals(5));
+    }
+
+    @Test
     public void testFullScript() throws Exception {
         runScript(JEXL,"samples/main.jexl");
     }

@@ -692,6 +692,12 @@ final class Debugger implements ParserVisitor {
     }
 
     /** {@inheritDoc} */
+    public Object visit(ASTCurryingLiteral node, Object data) {
+        String img = node.image.replace("`", "\\`");
+        return check(node, "`" + img + "`", data);
+    }
+
+    /** {@inheritDoc} */
     public Object visit(ASTTernaryNode node, Object data) {
         accept(node.jjtGetChild(0), data);
         if (node.jjtGetNumChildren() > 2) {

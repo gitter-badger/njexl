@@ -27,6 +27,8 @@ import org.apache.commons.logging.Log;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * An interpreter of JEXL syntax.
@@ -1737,6 +1739,41 @@ public class Interpreter implements ParserVisitor {
             return getAttribute(data, node.getLiteral(), node);
         }
         return node.image;
+    }
+
+    public static final Pattern CURRY_PATTERN = Pattern.compile("\\#\\{(?<expr>[^\\{^\\}]*)\\}",
+                                       Pattern.MULTILINE);
+
+    protected Object curry(String toBeCurried) {
+        String ret = toBeCurried;
+        Matcher m = CURRY_PATTERN.matcher(ret);
+        while (m.find()) {
+            String expression = m.group("expr");
+            try {
+                Script curry = jexlEngine.createScript(expression);
+                Object o = curry.execute(context);
+                String val = String.format("%s", o);
+                ret = m.replaceFirst(val);
+                m = CURRY_PATTERN.matcher(ret);
+            } catch (Exception e) {
+                return toBeCurried;
+            }
+        }
+        // now, in here, finally execute all ....
+        try {
+            Script curry = jexlEngine.createScript(ret);
+            Object c = curry.execute(context);
+            return c;
+        }catch (Exception e){
+            return toBeCurried ;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object visit(ASTCurryingLiteral node, Object data) {
+        return curry(node.image);
     }
 
     /**

@@ -186,6 +186,17 @@ PARSER_END(Parser)
       >
 }
 
+<*> TOKEN :
+{
+   /*
+      This is for Currying - See Lambda Calculus
+      In essence - we need to replace strings with runtime values and execute them as script!
+   */
+  < CURRY_LITERAL:
+        "`" (~["`","\\", "\u2028","\u2029"] | "\\" ~[  "\u2028","\u2029"])* "`"
+  >
+}
+
 /***************************************
  *      Statements
  ***************************************/
@@ -468,6 +479,8 @@ void Literal() #void :
 |
   StringLiteral()
 |
+  CurryingLiteral()
+|
   NullLiteral()
 }
 
@@ -509,6 +522,16 @@ void StringLiteral() :
 }
 {
   t=<STRING_LITERAL>
+  { jjtThis.image = Parser.buildString(t.image, true); }
+}
+
+/** Support Currying **/
+void CurryingLiteral() :
+{
+   Token t;
+}
+{
+  t=<CURRY_LITERAL>
   { jjtThis.image = Parser.buildString(t.image, true); }
 }
 
@@ -668,6 +691,8 @@ void Reference() : {}
    LOOKAHEAD( <LPAREN> Expression() ) ReferenceExpression()
 |
    StringLiteral()
+|
+   CurryingLiteral()
 |
    Identifier(true)
   )  DotReference()
