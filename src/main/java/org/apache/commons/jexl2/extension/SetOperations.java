@@ -96,6 +96,12 @@ public final class SetOperations {
         return ssd;
     }
 
+    public static SetRelation set_relation(Object o1, Object o2) {
+        Set s1 = TypeUtility.set(o1);
+        Set s2 = TypeUtility.set(o2);
+        return set_relation(s1,s2);
+    }
+
     public static SetRelation set_relation(Set s1, Set s2) {
 
         ListSet ssd = set_sym_d(s1, s2);
@@ -197,6 +203,12 @@ public final class SetOperations {
             diff.put(k, v);
         }
         return diff;
+    }
+
+    public static SetRelation list_relation(Object o1, Object o2) {
+        HashMap m1 = multiset(o1);
+        HashMap m2 = multiset(o2);
+        return mset_relation(m1,m2);
     }
 
     public static SetRelation mset_relation(Map<Object, ArrayList> mset1, Map<Object, ArrayList> mset2) {
