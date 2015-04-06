@@ -1353,7 +1353,10 @@ public class Interpreter implements ParserVisitor {
             }
         } catch (InvocationTargetException e) {
             xjexl = new JexlException(node, "method invocation error", e.getCause());
-        } catch (Exception e) {
+        } catch(JexlException.Return | JexlException.Cancel e) {
+            throw e;
+        }
+        catch (Exception e) {
             xjexl = new JexlException(node, "method error", e);
         }
         return invocationFailed(xjexl);

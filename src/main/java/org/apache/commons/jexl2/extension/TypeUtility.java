@@ -732,13 +732,20 @@ public class TypeUtility {
     public static void bye(Object...args){
         String msg = "BYE received, we will exit this script..." ;
         Integer exitStatus = null;
+
+        System.out.println(Main.strArr(args));
+
         if ( args.length > 1 && args[0] instanceof Number ){
             exitStatus = ((Number)args[0]).intValue();
         }
         if ( exitStatus != null ) {
             System.exit(exitStatus);
         }
-        throw new JexlException.Return(new ASTReturnStatement(ParserConstants.RETURN), msg, args);
+        JexlNode node = new ASTReturnStatement(Parser.JJTARRAYLITERAL);
+        JexlNode child = new ASTStringLiteral(Parser.STRING_LITERAL);
+        child.image = "__bye__" ;
+        node.jjtAddChild( child , 0 );
+        throw new JexlException.Return(node, msg, args);
     }
 
     public static boolean test(Object... args){
