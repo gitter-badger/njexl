@@ -407,9 +407,29 @@ public class JexlArithmetic {
                 double r = toDouble(right);
                 return new Double(l + r);
             }
-            if ( left instanceof Set && right instanceof Set){
-                ListSet r = new ListSet((List)left);
-                r.addAll((List)right);
+
+            // if either are bigdecimal use that type 
+            if (left instanceof BigDecimal || right instanceof BigDecimal) {
+                BigDecimal l = toBigDecimal(left);
+                BigDecimal r = toBigDecimal(right);
+                BigDecimal result = l.add(r, getMathContext());
+                return narrowBigDecimal(left, right, result);
+            }
+
+            // otherwise treat as integers
+            BigInteger l = toBigInteger(left);
+            BigInteger r = toBigInteger(right);
+            BigInteger result = l.add(r);
+            return narrowBigInteger(left, right, result);
+        } catch (Exception e) {
+            if ( left instanceof Set ){
+                ListSet r = new ListSet((List) left);
+                if (right instanceof Set) {
+                    r.addAll((List) right);
+
+                }else{
+                    r.add(right);
+                }
                 return r;
             }
             if ( isListOrArray(left) ){
@@ -427,20 +447,6 @@ public class JexlArithmetic {
                 return r;
             }
 
-            // if either are bigdecimal use that type 
-            if (left instanceof BigDecimal || right instanceof BigDecimal) {
-                BigDecimal l = toBigDecimal(left);
-                BigDecimal r = toBigDecimal(right);
-                BigDecimal result = l.add(r, getMathContext());
-                return narrowBigDecimal(left, right, result);
-            }
-
-            // otherwise treat as integers
-            BigInteger l = toBigInteger(left);
-            BigInteger r = toBigInteger(right);
-            BigInteger result = l.add(r);
-            return narrowBigInteger(left, right, result);
-        } catch (java.lang.NumberFormatException nfe) {
             // Well, use strings!
             return toString(left).concat(toString(right));
         }
@@ -539,31 +545,36 @@ public class JexlArithmetic {
      * @return left * right.
      */
     public Object multiply(Object left, Object right) {
-        if (left == null && right == null) {
-            return controlNullNullOperands();
-        }
+        try {
+            if (left == null && right == null) {
+                return controlNullNullOperands();
+            }
+            // if either are floating point (double or float) use double
+            if (isFloatingPointNumber(left) || isFloatingPointNumber(right)) {
+                double l = toDouble(left);
+                double r = toDouble(right);
+                return new Double(l * r);
+            }
 
-        // if either are floating point (double or float) use double
-        if (isFloatingPointNumber(left) || isFloatingPointNumber(right)) {
-            double l = toDouble(left);
-            double r = toDouble(right);
-            return new Double(l * r);
+            // if either are bigdecimal use that type
+            if (left instanceof BigDecimal || right instanceof BigDecimal) {
+                BigDecimal l = toBigDecimal(left);
+                BigDecimal r = toBigDecimal(right);
+                BigDecimal result = l.multiply(r, getMathContext());
+                return narrowBigDecimal(left, right, result);
+            }
+            // otherwise treat as integers
+            BigInteger l = toBigInteger(left);
+            BigInteger r = toBigInteger(right);
+            BigInteger result = l.multiply(r);
+            return narrowBigInteger(left, right, result);
+        }catch (Exception e){
+            // check if join is possible?
+            if ( areListOrArray(left,right) ){
+                return SetOperations.join(left,right);
+            }
+            throw e;
         }
-        if ( areListOrArray(left,right) ){
-            return SetOperations.join(left,right);
-        }
-        // if either are bigdecimal use that type 
-        if (left instanceof BigDecimal || right instanceof BigDecimal) {
-            BigDecimal l = toBigDecimal(left);
-            BigDecimal r = toBigDecimal(right);
-            BigDecimal result = l.multiply(r, getMathContext());
-            return narrowBigDecimal(left, right, result);
-        }
-        // otherwise treat as integers
-        BigInteger l = toBigInteger(left);
-        BigInteger r = toBigInteger(right);
-        BigInteger result = l.multiply(r);
-        return narrowBigInteger(left, right, result);
     }
 
     /**
@@ -633,44 +644,54 @@ public class JexlArithmetic {
      * @return left - right.
      */
     public Object subtract(Object left, Object right) {
-        if (left == null && right == null) {
-            return controlNullNullOperands();
-        }
-
-        // if either are floating point (double or float) use double
-        if (isFloatingPointNumber(left) || isFloatingPointNumber(right)) {
-            double l = toDouble(left);
-            double r = toDouble(right);
-            return new Double(l - r);
-        }
-
-        if ( left instanceof Set && right instanceof Set){
-            return SetOperations.set_d((Set) left, (Set) right);
-        }
-
-        if ( isListOrArray(left) ){
-            if ( isListOrArray(right) ) {
-                return SetOperations.list_d(left,right);
-            }else{
-                ArrayList r = TypeUtility.from(left);
-                r.remove(right);
-                return r;
+        try {
+            if (left == null && right == null) {
+                return controlNullNullOperands();
             }
-        }
 
-        // if either are bigdecimal use that type 
-        if (left instanceof BigDecimal || right instanceof BigDecimal) {
-            BigDecimal l = toBigDecimal(left);
-            BigDecimal r = toBigDecimal(right);
-            BigDecimal result = l.subtract(r, getMathContext());
-            return narrowBigDecimal(left, right, result);
-        }
+            // if either are floating point (double or float) use double
+            if (isFloatingPointNumber(left) || isFloatingPointNumber(right)) {
+                double l = toDouble(left);
+                double r = toDouble(right);
+                return new Double(l - r);
+            }
 
-        // otherwise treat as integers
-        BigInteger l = toBigInteger(left);
-        BigInteger r = toBigInteger(right);
-        BigInteger result = l.subtract(r);
-        return narrowBigInteger(left, right, result);
+            // if either are bigdecimal use that type
+            if (left instanceof BigDecimal || right instanceof BigDecimal) {
+                BigDecimal l = toBigDecimal(left);
+                BigDecimal r = toBigDecimal(right);
+                BigDecimal result = l.subtract(r, getMathContext());
+                return narrowBigDecimal(left, right, result);
+            }
+
+            // otherwise treat as integers
+            BigInteger l = toBigInteger(left);
+            BigInteger r = toBigInteger(right);
+            BigInteger result = l.subtract(r);
+            return narrowBigInteger(left, right, result);
+        }catch (Exception e){
+            // if set ?
+            if (left instanceof Set ) {
+                if ( right instanceof Set) {
+                    return SetOperations.set_d((Set) left, (Set) right);
+                }
+                ListSet l = new ListSet((Set)left);
+                l.remove(right);
+                return l;
+            }
+            // if list or array
+            if (isListOrArray(left)) {
+                if (isListOrArray(right)) {
+                    return SetOperations.list_d(left, right);
+                } else {
+                    ArrayList r = TypeUtility.from(left);
+                    r.remove(right);
+                    return r;
+                }
+            }
+
+            throw  e;
+        }
     }
 
     /**
@@ -743,15 +764,19 @@ public class JexlArithmetic {
      * @since 2.1
      */
     public Object bitwiseAnd(Object left, Object right) {
-        if ( left instanceof Set && right instanceof Set){
-            return SetOperations.set_i((Set)left,(Set)right);
+        try {
+            long l = toLong(left);
+            long r = toLong(right);
+            return Long.valueOf(l & r);
+        }catch (Exception e){
+            if ( left instanceof Set && right instanceof Set){
+                return SetOperations.set_i((Set)left,(Set)right);
+            }
+            if ( areListOrArray(left,right)){
+                return SetOperations.list_i(left, right);
+            }
+            throw e;
         }
-        if ( areListOrArray(left,right)){
-            return SetOperations.list_i(left, right);
-        }
-        long l = toLong(left);
-        long r = toLong(right);
-        return Long.valueOf(l & r);
     }
 
     /**
@@ -762,15 +787,19 @@ public class JexlArithmetic {
      * @since 2.1
      */
     public Object bitwiseOr(Object left, Object right) {
-        if ( left instanceof Set && right instanceof Set){
-            return SetOperations.set_u((Set) left, (Set) right);
+        try {
+            long l = toLong(left);
+            long r = toLong(right);
+            return Long.valueOf(l | r);
+        }catch (Exception e){
+            if ( left instanceof Set && right instanceof Set){
+                return SetOperations.set_u((Set) left, (Set) right);
+            }
+            if ( areListOrArray(left,right)){
+                return SetOperations.list_u(left,right);
+            }
+            throw e;
         }
-        if ( areListOrArray(left,right)){
-            return SetOperations.list_u(left,right);
-        }
-        long l = toLong(left);
-        long r = toLong(right);
-        return Long.valueOf(l | r);
     }
 
     /**
@@ -781,17 +810,20 @@ public class JexlArithmetic {
      * @since 2.1
      */
     public Object bitwiseXor(Object left, Object right) {
-        if ( left instanceof Set && right instanceof Set){
-            return SetOperations.set_sym_d((Set)left,(Set)right);
-        }
+        try {
+            long l = toLong(left);
+            long r = toLong(right);
+            return Long.valueOf(l ^ r);
+        }catch (Exception e){
+            if ( left instanceof Set && right instanceof Set){
+                return SetOperations.set_sym_d((Set)left,(Set)right);
+            }
 
-        if ( areListOrArray(left,right)){
-            return SetOperations.list_sym_d(left,right);
+            if ( areListOrArray(left,right)){
+                return SetOperations.list_sym_d(left,right);
+            }
+            throw e;
         }
-
-        long l = toLong(left);
-        long r = toLong(right);
-        return Long.valueOf(l ^ r);
     }
 
     /**
@@ -855,9 +887,7 @@ public class JexlArithmetic {
                 }
             } else if (left instanceof String || right instanceof String) {
                 return toString(left).compareTo(toString(right));
-            } else if ("==".equals(operator)) {
-                return left.equals(right) ? 0 : -1;
-            } else if ( left instanceof Set && right instanceof Set ){
+            }  else if ( left instanceof Set && right instanceof Set ){
                 Set l = (Set)left;
                 Set r = (Set)right;
                 SetOperations.SetRelation sr = SetOperations.set_relation(l,r);
@@ -889,6 +919,9 @@ public class JexlArithmetic {
                     case INDEPENDENT:
                         return Integer.MIN_VALUE ;
                 }
+            }
+            else if ("==".equals(operator)) {
+                return left.equals(right) ? 0 : -1;
             }
             else if (left instanceof Comparable<?>) {
                 @SuppressWarnings("unchecked") // OK because of instanceof check above
