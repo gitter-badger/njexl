@@ -837,6 +837,12 @@ public class JexlArithmetic {
         return Long.valueOf(~l);
     }
 
+    public static class NonComparableCollectionException extends ArithmeticException{
+        public NonComparableCollectionException(String message){
+            super(message);
+        }
+    }
+
     /**
      * Performs a comparison.
      * @param left the left operand
@@ -898,10 +904,8 @@ public class JexlArithmetic {
                         return 1 ;
                     case EQUAL:
                         return 0 ;
-                    case OVERLAP:
-                        return Integer.MAX_VALUE  ;
-                    case INDEPENDENT:
-                        return Integer.MIN_VALUE ;
+                    default:
+                        throw new NonComparableCollectionException(l.toString() + "," +r.toString());
                 }
             }else if ( areListOrArray(left,right) ){
                 HashMap l = SetOperations.multiset(left);
@@ -914,10 +918,8 @@ public class JexlArithmetic {
                         return 1 ;
                     case EQUAL:
                         return 0 ;
-                    case OVERLAP:
-                        return Integer.MAX_VALUE  ;
-                    case INDEPENDENT:
-                        return Integer.MIN_VALUE ;
+                    default:
+                        throw new NonComparableCollectionException(l.toString() + "," +r.toString());
                 }
             }
             else if ("==".equals(operator)) {
@@ -960,7 +962,6 @@ public class JexlArithmetic {
                  */
                 return left.equals(right);
             }
-
         }
     }
 
@@ -975,9 +976,12 @@ public class JexlArithmetic {
         if ((left == right) || (left == null) || (right == null)) {
             return false;
         } else {
-            return compare(left, right, "<") < 0;
+            try {
+                return compare(left, right, "<") < 0;
+            }catch (NonComparableCollectionException ne){
+                return false ;
+            }
         }
-
     }
 
     /**
@@ -991,7 +995,11 @@ public class JexlArithmetic {
         if ((left == right) || left == null || right == null) {
             return false;
         } else {
-            return compare(left, right, ">") > 0;
+            try {
+                return compare(left, right, ">") > 0;
+            }catch (NonComparableCollectionException ne){
+                return false;
+            }
         }
     }
 
@@ -1008,7 +1016,11 @@ public class JexlArithmetic {
         } else if (left == null || right == null) {
             return false;
         } else {
-            return compare(left, right, "<=") <= 0;
+            try {
+                return compare(left, right, "<=") <= 0;
+            }catch (NonComparableCollectionException ne){
+                return false ;
+            }
         }
     }
 
@@ -1025,7 +1037,11 @@ public class JexlArithmetic {
         } else if (left == null || right == null) {
             return false;
         } else {
-            return compare(left, right, ">=") >= 0;
+            try {
+                return compare(left, right, ">=") >= 0;
+            }catch (NonComparableCollectionException ne){
+                return false;
+            }
         }
     }
 
