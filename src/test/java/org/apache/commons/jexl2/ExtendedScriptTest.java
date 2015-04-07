@@ -49,6 +49,19 @@ public class ExtendedScriptTest extends JexlTestCase {
         assertTrue(o.equals(5));
     }
 
+
+    @Test
+    public void testModulas()throws Exception {
+        JexlContext jc = new MapContext();
+        jc.set("a", Integer.MAX_VALUE );
+        jc.set("b", Integer.MIN_VALUE );
+
+        Expression e = JEXL.createExpression("#|b-a|");
+        Object o = e.evaluate(jc);
+        assertTrue(o!= null);
+    }
+
+
     @Test
     public void testFullScript() throws Exception {
         runScript(JEXL,"samples/main.jexl");

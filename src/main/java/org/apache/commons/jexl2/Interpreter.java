@@ -1821,8 +1821,11 @@ public class Interpreter implements ParserVisitor {
             if ( val.getClass().isArray()){
                 return Array.getLength(val);
             }
-            double d = arithmetic.toDouble(val);
-            return d>=0?d:-d;
+            if ( arithmetic.compare(val,0,">=") < 0 ){
+                return arithmetic.negate(val);
+            }else{
+                return val;
+            }
 
         } catch (ArithmeticException xrt) {
             throw new JexlException(valNode, "arithmetic modulus error", xrt);
