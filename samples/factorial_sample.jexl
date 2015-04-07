@@ -1,6 +1,8 @@
 import 'java.lang.System.out' as out
-
-def factorial ( n ){
+/*
+  The iterative version of the factorial
+*/
+def factorial_iterative ( n ){
     if ( n <= 0 ){
         return 1
     }
@@ -11,9 +13,24 @@ def factorial ( n ){
     }
     return x
 }
+/*
+   Recursive version of the factorial
+*/
+def factorial_recursive(n){
+    if ( n <= 0 ) {
+        return 1
+    } else {
+        return n * my:factorial_recursive(n-1)
+    }
+}
 
-size(__args__) > 1 or bye ( 'usage : ' + __args__[0] + '  <number>')
-y = factorial( __args__[1] )
+
+size(__args__) > 1 or bye ( 'usage : ' + __args__[0] + '  <number> [-r : recursively]')
+if ( __args__.length == 2 ){
+    y = factorial_iterative( __args__[1] )
+}else {
+   y = factorial_iterative( __args__[1] )
+}
 out:println(y)
 
 
