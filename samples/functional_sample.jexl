@@ -1,0 +1,15 @@
+/*
+   Demonstrates functional arg passing in Jexl functions 
+*/
+
+import 'java.lang.System.out' as out
+
+// This does not take any param, so, a call to this 
+def my_max_function(){
+    // Use a function that use functional : e.g. list 
+    o = sqlmath(__args__)
+    return o[1]
+}
+// in here would result in var args 
+x = my_max_function{ int($) }( '1', 2, '3', 4, '5')
+out:println(x)

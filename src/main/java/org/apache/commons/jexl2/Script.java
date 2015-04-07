@@ -38,14 +38,15 @@ import java.util.concurrent.Callable;
  */
 public interface Script {
 
-    public static final String SELF = "my" ;
+    String SELF = "my" ;
 
-    public static final String DEFAULT_IMPORT_NAME = "JexlMain" ;
+    String DEFAULT_IMPORT_NAME = "JexlMain" ;
 
-    public static final String DEFAULT_EXTENSION = ".jexl" ;
+    String DEFAULT_EXTENSION = ".jexl" ;
 
-    public static final String RELATIVE = "_" ;
+    String RELATIVE = "_" ;
 
+    String ARGS = "__args__" ;
 
     /**
      * Executes the script with the variables contained in the

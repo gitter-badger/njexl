@@ -162,8 +162,8 @@ public class ExpressionImpl implements Expression, Script {
 
         try {
             ASTBlock codeBlock = (ASTBlock) methodDef.jjtGetChild(numChild - 1);
-
-            // create the params
+            context.set(ARGS,args);
+            // create the named params
             for ( int i = 0 ; i< numParams;i++ ){
                 String paramName = methodDef.jjtGetChild(i+1).image;
                 if ( i< args.length ){
@@ -178,7 +178,9 @@ public class ExpressionImpl implements Expression, Script {
             ret = er.getValue();
         }
         finally {
-            //clear the params
+
+            context.remove(ARGS);
+            //clear the named params
             for (int i = 0; i < numParams; i++) {
                 String paramName = methodDef.jjtGetChild(i + 1).image;
                 //remove context
