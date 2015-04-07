@@ -1,0 +1,19 @@
+import 'java.lang.System.out' as out
+
+def factorial ( n ){
+    if ( n <= 0 ){
+        return 1
+    }
+    x = 1
+    while ( n > 0 ){
+        x = x * n
+        n = n - 1  
+    }
+    return x
+}
+
+size(__args__) > 1 or bye ( 'usage : ' + __args__[0] + '  <number>')
+y = factorial( __args__[1] )
+out:println(y)
+
+

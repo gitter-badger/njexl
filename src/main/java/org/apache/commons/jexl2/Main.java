@@ -113,7 +113,7 @@ public class Main {
     public static void executeScript(String[] args){
         JexlContext jc = getContext();
         JexlEngine JEXL = getJexl(jc);
-        jc.set("args", args);
+        jc.set(Script.ARGS, args);
         try {
             Script sc = JEXL.createScript(new File(args[0]));
             Object o = sc.execute(jc);
