@@ -1,6 +1,20 @@
 import 'java.lang.System.out' as out
 
-def Point {
+def Some1{
+
+    def do_print(me){
+        out:println('Some1!')
+    }
+}
+
+def Some2{
+   def do_print(me){
+       out:println('Some2!')
+   }
+}
+
+
+def Point : Some1 , Some2 {
 
       def __new__ (me,x=0.0,y=0.0){
           me.x = x
@@ -16,12 +30,20 @@ def Point {
       def __str__(me){
           str:format('(%f,%f)',me.x,me.y)
       }
-
+      def do_print(me){
+             out:println('Point!')
+      }
 }
-
 
 def print(m='hello, world' , s=' xxx '){
     out:println(m + s)
 }
 
 print('foo bar')
+
+x = new ( 'Point' )
+print( x.__str__() )
+
+x.supers['Some1'].do_print()
+x.supers['Some2'].do_print()
+x.do_print()

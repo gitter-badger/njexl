@@ -17,6 +17,8 @@
 package org.apache.commons.jexl2;
 import org.apache.commons.jexl2.extension.SetOperations;
 import org.apache.commons.jexl2.extension.TypeUtility;
+import org.apache.commons.jexl2.extension.oop.Invokable;
+import org.apache.commons.jexl2.extension.oop.ScriptClass;
 import org.apache.commons.jexl2.introspection.JexlMethod;
 import org.apache.commons.jexl2.introspection.JexlPropertyGet;
 import org.apache.commons.jexl2.introspection.JexlPropertySet;
@@ -41,6 +43,17 @@ public class Interpreter implements ParserVisitor {
 
     public HashMap<String, Script> imports() {
         return imports;
+    }
+
+    public ScriptClass resolveJexlClassName(String name){
+        for ( String s : imports.keySet() ){
+            Script script = imports.get(s);
+            HashMap<String,ScriptClass> map = script.classes() ;
+            if ( map.containsKey(name )){
+                return map.get(name);
+            }
+        }
+        return null;
     }
 
     protected Script resolveScriptForFunction(String prefix, String name) {
@@ -1304,8 +1317,8 @@ public class Interpreter implements ParserVisitor {
                 }
             }
             boolean cacheable = cache;
-            if (bean instanceof Script) {
-                return ((Script) bean).execMethod(methodName, this, argv);
+            if (bean instanceof Invokable) {
+                return ((Invokable) bean).execMethod(methodName, this, argv);
             }
 
             JexlMethod vm = uberspect.getMethod(bean, methodName, argv, node);
@@ -1431,6 +1444,13 @@ public class Interpreter implements ParserVisitor {
                     if (!mctor.tryFailed(eval)) {
                         return eval;
                     }
+                }
+            }
+            if ( cobject instanceof String ){
+                ScriptClass scriptClass = resolveJexlClassName((String)cobject);
+                if ( scriptClass != null ){
+                    scriptClass.init( this, argv);
+                    return scriptClass ;
                 }
             }
             JexlMethod ctor = uberspect.getConstructorMethod(cobject, argv, node);

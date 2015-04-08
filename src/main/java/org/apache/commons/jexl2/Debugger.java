@@ -255,12 +255,18 @@ final class Debugger implements ParserVisitor {
         // the name of the class
         builder.append( node.jjtGetChild(0).image);
         int i = 1;
-        if( i< numChild -1 ){
+        if( i< numChild -1 ) {
             // the extends now
-            builder.append( " : ") ;
-            while (i<numChild-1){
-                builder.append( node.jjtGetChild(i).image);
-                builder.append(",");
+            builder.append(" : ");
+            int numSupers = numChild - 2;
+            if (numSupers > 1) {
+                builder.append(node.jjtGetChild(i).image);
+                i++;
+                while (i < numChild - 1) {
+                    builder.append(",");
+                    builder.append(node.jjtGetChild(i).image);
+                    i++;
+                }
             }
             builder.replace(builder.length() - 1, builder.length() - 1, "");
         }
@@ -276,7 +282,7 @@ final class Debugger implements ParserVisitor {
         int numChild = node.jjtGetNumChildren();
         accept(node.jjtGetChild(0),data);
 
-        if ( numChild == 2 ) {
+        if ( numChild == 2) {
             builder.append("=");
             accept(node.jjtGetChild(1),data);
         }

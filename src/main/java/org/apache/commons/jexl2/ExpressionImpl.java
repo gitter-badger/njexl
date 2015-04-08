@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.jexl2.extension.oop.Invokable;
 import org.apache.commons.jexl2.extension.oop.ScriptClass;
 import org.apache.commons.jexl2.extension.oop.ScriptMethod;
 import org.apache.commons.jexl2.parser.*;
@@ -32,7 +33,7 @@ import org.apache.commons.jexl2.parser.*;
  * {@link Script} interface.
  * @since 1.0
  */
-public class ExpressionImpl implements Expression, Script {
+public class ExpressionImpl implements Expression, Script , Invokable {
 
     String location;
 
@@ -71,7 +72,7 @@ public class ExpressionImpl implements Expression, Script {
     protected void findInnerObjects(JexlNode node){
         if ( node instanceof ASTClassDef ){
             ScriptClass classDef = new ScriptClass((ASTClassDef)node);
-            classes.put( classDef.name , classDef );
+            classes.put( classDef.getName() , classDef );
         }
         else if ( node instanceof ASTMethodDef ){
             ScriptMethod methodDef = new ScriptMethod((ASTMethodDef)node);
@@ -160,8 +161,11 @@ public class ExpressionImpl implements Expression, Script {
         if ( methodDef == null){
             throw new Exception("Method : '" + method + "' is not found in : " + this.importName );
         }
-        return methodDef.invoke(null,interpreter, args);
+        return methodDef.invoke(null, interpreter, args);
     }
+
+    @Override
+    public String type(){ return  ExpressionImpl.class.getName() ; }
 
     /**
      * {@inheritDoc}

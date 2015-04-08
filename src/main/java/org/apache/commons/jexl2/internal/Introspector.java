@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import org.apache.commons.jexl2.internal.introspection.IntrospectorBase;
 import org.apache.commons.jexl2.internal.introspection.MethodKey;
 
+import org.apache.commons.jexl2.introspection.UberspectImpl;
 import org.apache.commons.logging.Log;
 
 /**

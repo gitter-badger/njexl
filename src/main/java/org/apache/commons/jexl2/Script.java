@@ -16,6 +16,7 @@
  */
 package org.apache.commons.jexl2;
 
+import org.apache.commons.jexl2.extension.oop.Invokable;
 import org.apache.commons.jexl2.extension.oop.ScriptClass;
 import org.apache.commons.jexl2.extension.oop.ScriptMethod;
 import org.apache.commons.jexl2.parser.ASTImportStatement;
@@ -164,15 +165,5 @@ public interface Script {
      * @return
      */
     String location();
-
-    /**
-     * Execute method inside a script
-     *
-     * @param method
-     * @param interpreter
-     * @param args
-     * @return
-     */
-    Object execMethod(String method, Interpreter interpreter, Object[] args) throws Exception;
 
 }

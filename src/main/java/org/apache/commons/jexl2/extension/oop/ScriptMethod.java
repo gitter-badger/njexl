@@ -21,6 +21,8 @@ public class ScriptMethod {
 
     public final ASTBlock astBlock;
 
+    public final boolean instance;
+
     public final HashMap<String, Object> defaultValues;
 
     public final ListSet<String> params;
@@ -41,12 +43,15 @@ public class ScriptMethod {
             defaultValues.put(argName, value);
         }
         astBlock = (ASTBlock) def.jjtGetChild(numChild - 1);
+        instance = params.isEmpty() || ScriptClass.SELF.equals(params.get(0));
     }
 
     private Object getDefault(String paramName,Interpreter interpreter) {
         if (defaultValues.containsKey(paramName)) {
-            JexlNode node = (JexlNode) defaultValues.get(paramName);
-            Object defValue = node.jjtAccept(interpreter, null);
+            Object defValue =  defaultValues.get(paramName);
+            if ( defValue instanceof JexlNode ) {
+                defValue = ((JexlNode)defValue).jjtAccept(interpreter, null);
+            }
             return defValue;
         }
         return null;
