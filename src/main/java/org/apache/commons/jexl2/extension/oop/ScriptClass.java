@@ -41,9 +41,31 @@ public class ScriptClass implements Invokable {
         }
     }
 
+    public ScriptMethod getMethod(String method) throws Exception{
+        if ( methods.containsKey(method)){
+            return methods.get(method);
+        }
+        else {
+            ScriptMethod m1;
+            ScriptMethod m2 = null;
+            for (String sup : supers.keySet()) {
+                m1 = supers.get(sup).getMethod(method);
+                if ( m1 != null ){
+                    if ( m2 == null ) {
+                        m2 = m1;
+                    }else{
+                        // m2 exists, we have diamond issue
+                        throw new Exception("Ambiguous Method : '" + method + "' !");
+                    }
+                }
+            }
+            return m2;
+        }
+    }
+
     @Override
     public Object execMethod(String method,Interpreter interpreter ,Object[] args) throws Exception{
-        ScriptMethod methodDef = methods.get(method) ;
+        ScriptMethod methodDef = getMethod(method) ;
         if ( methodDef == null){
             throw new Exception("Method : '" + method + "' is not found in class : " + this.name );
         }

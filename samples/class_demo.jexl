@@ -44,6 +44,10 @@ print('foo bar')
 x = new ( 'Point' )
 print( x.__str__() )
 
-x.supers['Some1'].do_print()
-x.supers['Some2'].do_print()
+// no issues
 x.do_print()
+// for calling supers...
+x.supers['Some1'].do_print()
+// this way
+x.supers['Some2'].do_print()
+
