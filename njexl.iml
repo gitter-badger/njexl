@@ -10,6 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/java" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/jjtree" isTestSource="false" generated="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target/javacc-1428435535734" />
       <excludeFolder url="file://$MODULE_DIR$/target/lib" />
       <excludeFolder url="file://$MODULE_DIR$/target/maven-archiver" />
       <excludeFolder url="file://$MODULE_DIR$/target/maven-status" />

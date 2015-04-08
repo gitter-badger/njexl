@@ -220,8 +220,9 @@ void Statement() #void : {}
     | ExpressionStatement()
     | ReturnStatement()
     | Var()
-    | MethodDef()
+    | LOOKAHEAD(3) MethodDef()
     | ImportStatement()
+    | LOOKAHEAD(3) ClassDef()
 }
 
 void Block() #Block : {}
@@ -234,12 +235,6 @@ void ImportStatement() : {}
     <IMPORT>  StringLiteral()  <AS> Identifier()
 }
 
-void MethodDef() #MethodDef : {}
-{
-    LOOKAHEAD(3) <DEF>  Identifier()  <LPAREN>[  Identifier() ( <COMMA> Identifier() )* ] <RPAREN> Block()
-    |
-    <DEF>  Identifier()  <LPAREN>  <RPAREN> Block()
-}
 
 void ExpressionStatement() #void : {}
 {
@@ -591,12 +586,12 @@ void SizeFunction() : {}
 
 void Function() #FunctionNode: {}
 {
-   Identifier() <COLON> Identifier() ( Block() )? <LPAREN>[ Expression() ( <COMMA> Expression() )* ] <RPAREN>
+   Identifier() <COLON> Identifier() ( Block() )? <LPAREN>[ ArgDef() ( <COMMA> ArgDef() )* ] <RPAREN>
 }
 
 void Method() #MethodNode: {}
 {
-   Identifier() ( Block() )? <LPAREN>[  Expression() ( <COMMA> Expression() )* ] <RPAREN>
+   Identifier() ( Block() )? <LPAREN>[  ArgDef() ( <COMMA> ArgDef() )* ] <RPAREN>
 }
 
 void AnyMethod() #void : {}
@@ -705,4 +700,33 @@ void ReferenceExpression() : {}
 {
     <LPAREN> Expression() <RPAREN> (LOOKAHEAD(1) <LBRACKET> Expression() <RBRACKET>)*
 }
+
+void ClassDef() #ClassDef : {}
+{
+    LOOKAHEAD(3) <DEF>  Identifier()  <COLON>  Identifier() ( <COMMA> Identifier() )*  Block()
+    |
+    <DEF>  Identifier() Block()
+}
+
+void ParamDef() #ParamDef : {}
+{
+    LOOKAHEAD(2) Identifier()  <assign> Expression()
+    |
+    Identifier()
+}
+
+void ArgDef() #ArgDef : {}
+{
+    LOOKAHEAD(2) Identifier()  <assign> Expression()
+    |
+    Expression()
+}
+
+void MethodDef() #MethodDef : {}
+{
+    LOOKAHEAD(3) <DEF>  Identifier()  <LPAREN>[  ParamDef() ( <COMMA> ParamDef()  )* ] <RPAREN> Block()
+    |
+    <DEF>  ParamDef()  <LPAREN>  <RPAREN> Block()
+}
+
 

@@ -1,0 +1,27 @@
+import 'java.lang.System.out' as out
+
+def Point {
+
+      def __new__ (me,x=0.0,y=0.0){
+          me.x = x
+          me.y = y
+      }
+
+      def  shift_x(me, x ){
+          me.x = me.x + x
+      }
+      def  shift_y(me, y ){
+          me.y = me.y + y
+      }
+      def __str__(me){
+          str:format('(%f,%f)',me.x,me.y)
+      }
+
+}
+
+
+def print(m='hello, world' , s=' xxx '){
+    out:println(m + s)
+}
+
+print('foo bar')

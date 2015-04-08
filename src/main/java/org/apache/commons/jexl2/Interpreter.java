@@ -52,7 +52,7 @@ public class Interpreter implements ParserVisitor {
         // else do some more
         for (String key : imports.keySet()) {
             script = imports.get(key);
-            HashMap<String, ASTMethodDef> methods = script.methods();
+            HashMap methods = script.methods();
             if (methods.containsKey(name)) {
                 return script;
             }
@@ -463,7 +463,38 @@ public class Interpreter implements ParserVisitor {
     }
 
     @Override
+    public Object visit(ASTParamDef node, Object data) {
+        return null;
+    }
+
+    public static class NamedArgs{
+        public final String name;
+        public final Object value;
+        public NamedArgs(String n,Object v){
+            name = n;
+            value = v;
+        }
+
+    }
+
+    @Override
+    public Object visit(ASTArgDef node, Object data) {
+        int numChild = node.jjtGetNumChildren();
+        if (numChild ==  1 ){
+            return node.jjtGetChild(0).jjtAccept(this, data);
+        }
+        NamedArgs na = new NamedArgs(node.jjtGetChild(0).image,
+                node.jjtGetChild(1).jjtAccept(this, data));
+        return na;
+    }
+
+    @Override
     public Object visit(ASTMethodDef node, Object data) {
+        return null;
+    }
+
+    @Override
+    public Object visit(ASTClassDef node, Object data) {
         return null;
     }
 
@@ -1120,39 +1151,16 @@ public class Interpreter implements ParserVisitor {
         return node.getLiteral();
     }
 
-    public static boolean __debug__ = false;
-    final Debugger debugger = new Debugger();
-
-    void log(String prefix, String message) {
-        if (__debug__) {
-            System.out.printf("[%s] %s\n", prefix, message);
-        }
-    }
-
     /**
      * {@inheritDoc}
      */
     public Object visit(ASTJexlScript node, Object data) {
-        log("STARTED", new Date().toString());
         int numChildren = node.jjtGetNumChildren();
         Object result = null;
         for (int i = 0; i < numChildren; i++) {
             JexlNode child = node.jjtGetChild(i);
-            String info = debugger.data(child);
-            log("BEFORE", info);
-            try {
-                result = child.jjtAccept(this, data);
-                log("OK", info);
-            } catch (Throwable throwable) {
-                if (throwable instanceof JexlException.Return) {
-                    log("OK", info);
-                } else {
-                    log("ERROR", info);
-                }
-                throw throwable;
-            }
+            result = child.jjtAccept(this, data);
         }
-        log("ENDED", new Date().toString());
         return result;
     }
 

@@ -34,7 +34,7 @@ public class ExtendedScriptTest extends JexlTestCase {
         values.add("B");
         values.add("C");
         Tuple t = new Tuple(cnames,values);
-        jc.set("T",t);
+        jc.set("T", t);
         Expression e = JEXL.createExpression("T[0]");
         Object o = e.evaluate(jc);
         assertTrue("A".equals(o));
@@ -61,10 +61,9 @@ public class ExtendedScriptTest extends JexlTestCase {
         assertTrue(o!= null);
     }
 
-
     @Test
-    public void testFullScript() throws Exception {
-        runScript(JEXL,"samples/main.jexl");
+    public void testClassScript() throws Exception {
+        runScript(JEXL,"samples/class_demo.jexl");
     }
 
     @Test

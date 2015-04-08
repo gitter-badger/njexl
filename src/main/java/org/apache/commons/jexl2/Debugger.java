@@ -249,22 +249,68 @@ final class Debugger implements ParserVisitor {
     }
 
     @Override
+    public Object visit(ASTClassDef node, Object data) {
+        int numChild = node.jjtGetNumChildren();
+        builder.append("def ");
+        // the name of the class
+        builder.append( node.jjtGetChild(0).image);
+        int i = 1;
+        if( i< numChild -1 ){
+            // the extends now
+            builder.append( " : ") ;
+            while (i<numChild-1){
+                builder.append( node.jjtGetChild(i).image);
+                builder.append(",");
+            }
+            builder.replace(builder.length() - 1, builder.length() - 1, "");
+        }
+        // the block now :
+        accept(node.jjtGetChild(numChild - 1), data);
+
+        return data;
+    }
+
+    @Override
+    public Object visit(ASTArgDef node, Object data) {
+
+        int numChild = node.jjtGetNumChildren();
+        accept(node.jjtGetChild(0),data);
+
+        if ( numChild == 2 ) {
+            builder.append("=");
+            accept(node.jjtGetChild(1),data);
+        }
+        return data;
+    }
+
+    @Override
+    public Object visit(ASTParamDef node, Object data) {
+
+        int numChild = node.jjtGetNumChildren();
+        accept(node.jjtGetChild(0),data);
+
+        if ( numChild == 2 ) {
+            builder.append("=");
+            accept(node.jjtGetChild(1),data);
+
+        }
+        return data;
+    }
+
+    @Override
     public Object visit(ASTMethodDef node, Object data) {
         int numChild = node.jjtGetNumChildren();
         builder.append("def ");
         builder.append( node.jjtGetChild(0).image);
         builder.append("( ");
-        // now the params
-        String params = "" ;
         int numParams = numChild - 2;
-        for ( int i = 1; i < numChild -1 ; i++ ){
-            String paramName = node.jjtGetChild(i).image;
-            params = paramName + "," ;
+        if ( numParams > 0 ) {
+            accept(node.jjtGetChild(1), data);
+            for (int i = 2; i < numChild - 1; i++) {
+                builder.append(",");
+                accept(node.jjtGetChild(i), data);
+            }
         }
-        if( numParams > 0 ){
-            params = params.substring(0, params.length()-1);
-        }
-        builder.append(params);
         builder.append(") ");
         // now the body
         accept(node.jjtGetChild(numChild-1),data);

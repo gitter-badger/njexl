@@ -16,9 +16,10 @@
  */
 package org.apache.commons.jexl2;
 
+import org.apache.commons.jexl2.extension.oop.ScriptClass;
+import org.apache.commons.jexl2.extension.oop.ScriptMethod;
 import org.apache.commons.jexl2.parser.ASTImportStatement;
 import org.apache.commons.jexl2.parser.ASTJexlScript;
-import org.apache.commons.jexl2.parser.ASTMethodDef;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,28 +34,28 @@ import java.util.concurrent.Callable;
  * <p>The statements can be <code>blocks</code> (curly braces containing code),
  * Control statements such as <code>if</code> and <code>while</code>
  * as well as expressions and assignment statements.</p>
- *  
+ *
  * @since 1.1
  */
 public interface Script {
 
-    String SELF = "my" ;
+    String SELF = "my";
 
-    String DEFAULT_IMPORT_NAME = "JexlMain" ;
+    String DEFAULT_IMPORT_NAME = "JexlMain";
 
-    String DEFAULT_EXTENSION = ".jexl" ;
+    String DEFAULT_EXTENSION = ".jexl";
 
-    String RELATIVE = "_" ;
+    String RELATIVE = "_";
 
-    String ARGS = "__args__" ;
+    String ARGS = "__args__";
 
     /**
      * Executes the script with the variables contained in the
-     * supplied {@link JexlContext}. 
-     * 
+     * supplied {@link JexlContext}.
+     *
      * @param context A JexlContext containing variables.
-     * @return The result of this script, usually the result of 
-     *      the last statement.
+     * @return The result of this script, usually the result of
+     * the last statement.
      */
     Object execute(JexlContext context);
 
@@ -62,23 +63,25 @@ public interface Script {
      * Executes the script with the variables contained in the
      * supplied {@link JexlContext} and a set of arguments corresponding to the
      * parameters used during parsing.
-     * 
+     *
      * @param context A JexlContext containing variables.
-     * @param args the arguments
-     * @return The result of this script, usually the result of 
-     *      the last statement.
+     * @param args    the arguments
+     * @return The result of this script, usually the result of
+     * the last statement.
      * @since 2.1
      */
     Object execute(JexlContext context, Object... args);
 
     /**
      * Returns the text of this Script.
+     *
      * @return The script to be executed.
      */
     String getText();
 
     /**
      * Gets this script parameters.
+     *
      * @return the parameters or null
      * @since 2.1
      */
@@ -86,6 +89,7 @@ public interface Script {
 
     /**
      * Gets this script local variables.
+     *
      * @return the local variables or null
      * @since 2.1
      */
@@ -93,8 +97,9 @@ public interface Script {
 
     /**
      * Gets this script variables.
-     * <p>Note that since variables can be in an ant-ish form (ie foo.bar.quux), each variable is returned as 
+     * <p>Note that since variables can be in an ant-ish form (ie foo.bar.quux), each variable is returned as
      * a list of strings where each entry is a fragment of the variable ({"foo", "bar", "quux"} in the example.</p>
+     *
      * @return the variables or null
      * @since 2.1
      */
@@ -104,6 +109,7 @@ public interface Script {
      * Creates a Callable from this script.
      * <p>This allows to submit it to an executor pool and provides support for asynchronous calls.</p>
      * <p>The interpreter will handle interruption/cancellation gracefully if needed.</p>
+     *
      * @param context the context
      * @return the callable
      * @since 2.1
@@ -114,8 +120,9 @@ public interface Script {
      * Creates a Callable from this script.
      * <p>This allows to submit it to an executor pool and provides support for asynchronous calls.</p>
      * <p>The interpreter will handle interruption/cancellation gracefully if needed.</p>
+     *
      * @param context the context
-     * @param args the script arguments
+     * @param args    the script arguments
      * @return the callable
      * @since 2.1
      */
@@ -123,37 +130,49 @@ public interface Script {
 
     /**
      * The defined methods of the script
+     *
      * @return
      */
-    HashMap<String,ASTMethodDef> methods();
+    HashMap<String, ScriptMethod> methods();
+
+    /**
+     * The defined classes of the script
+     *
+     * @return
+     */
+    HashMap<String, ScriptClass> classes();
 
     /**
      * The defined methods of the script
+     *
      * @return
      */
-    HashMap<String,ASTImportStatement> imports();
+    HashMap<String, ASTImportStatement> imports();
 
     ASTJexlScript script();
 
     /**
      * The name under which it was imported
+     *
      * @return
      */
     String name();
 
     /**
      * From where it was imported
+     *
      * @return
      */
     String location();
 
     /**
      * Execute method inside a script
+     *
      * @param method
      * @param interpreter
      * @param args
      * @return
      */
-    public Object execMethod(String method,Interpreter interpreter,Object[] args);
+    Object execMethod(String method, Interpreter interpreter, Object[] args) throws Exception;
 
-    }
+}

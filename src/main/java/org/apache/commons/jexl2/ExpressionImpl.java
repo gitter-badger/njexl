@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+
+import org.apache.commons.jexl2.extension.oop.ScriptClass;
+import org.apache.commons.jexl2.extension.oop.ScriptMethod;
 import org.apache.commons.jexl2.parser.*;
 
 /**
@@ -35,9 +38,11 @@ public class ExpressionImpl implements Expression, Script {
 
     String importName;
 
-    HashMap<String,ASTMethodDef> methods;
+    final HashMap<String,ScriptClass> classes;
 
-    HashMap<String,ASTImportStatement> imports;
+    final HashMap<String,ScriptMethod> methods;
+
+    final HashMap<String,ASTImportStatement> imports;
 
     /** The engine for this expression. */
     protected final JexlEngine jexl;
@@ -63,22 +68,21 @@ public class ExpressionImpl implements Expression, Script {
         }
     }
 
-    protected void findMethods(JexlNode node){
-        if ( node instanceof ASTMethodDef ){
-            ASTMethodDef methodDef = (ASTMethodDef)node;
-            methods.put( methodDef.jjtGetChild(0).image, methodDef );
-            int numChild = methodDef.jjtGetNumChildren();
-            for ( int i = 1; i < numChild-1;i++ ){
-                String paramName = methodDef.jjtGetChild(i).image;
-            }
+    protected void findInnerObjects(JexlNode node){
+        if ( node instanceof ASTClassDef ){
+            ScriptClass classDef = new ScriptClass((ASTClassDef)node);
+            classes.put( classDef.name , classDef );
+        }
+        else if ( node instanceof ASTMethodDef ){
+            ScriptMethod methodDef = new ScriptMethod((ASTMethodDef)node);
+            methods.put( methodDef.name, methodDef );
         }else {
             int numChild = node.jjtGetNumChildren();
             for ( int i =0; i < numChild; i++ ){
-                findMethods( node.jjtGetChild(i) );
+                findInnerObjects(node.jjtGetChild(i));
             }
         }
     }
-
 
     protected ExpressionImpl(String from, String as, JexlEngine engine, String expr, ASTJexlScript ref) {
         jexl = engine;
@@ -86,10 +90,11 @@ public class ExpressionImpl implements Expression, Script {
         script = ref;
         methods = new HashMap<>();
         imports = new HashMap<>();
+        classes = new HashMap<>();
         location = from;
         importName = as;
         findImports(script);
-        findMethods(script);
+        findInnerObjects(script);
     }
 
     /**
@@ -150,51 +155,19 @@ public class ExpressionImpl implements Expression, Script {
 
 
     @Override
-    public Object execMethod(String method,Interpreter interpreter ,Object[] args){
-        ASTMethodDef methodDef = methods.get(method) ;
-        if ( methodDef == null ){
-            return null;
+    public Object execMethod(String method,Interpreter interpreter ,Object[] args) throws Exception{
+        ScriptMethod methodDef = methods.get(method) ;
+        if ( methodDef == null){
+            throw new Exception("Method : '" + method + "' is not found in : " + this.importName );
         }
-        JexlContext context = interpreter.context;
-        Object ret = null;
-        int numChild = methodDef.jjtGetNumChildren();
-        int numParams = numChild - 2 ; // function_name ...params... code_block
-
-        try {
-            ASTBlock codeBlock = (ASTBlock) methodDef.jjtGetChild(numChild - 1);
-            context.set(ARGS,args);
-            // create the named params
-            for ( int i = 0 ; i< numParams;i++ ){
-                String paramName = methodDef.jjtGetChild(i+1).image;
-                if ( i< args.length ){
-                    context.set(paramName,args[i]);
-                }else{
-                    context.set(paramName,null);
-                }
-            }
-            ret = codeBlock.jjtAccept(interpreter,null);
-
-        }catch (JexlException.Return er){
-            ret = er.getValue();
-        }
-        finally {
-
-            context.remove(ARGS);
-            //clear the named params
-            for (int i = 0; i < numParams; i++) {
-                String paramName = methodDef.jjtGetChild(i + 1).image;
-                //remove context
-                context.remove(paramName);
-            }
-        }
-        return ret;
+        return methodDef.invoke(null,interpreter, args);
     }
 
     /**
      * {@inheritDoc}
      */
     public Object execute(JexlContext context) {
-        return execute( context,(Object[])null);
+        return execute(context, (Object[]) null);
     }
 
     /**
@@ -281,8 +254,18 @@ public class ExpressionImpl implements Expression, Script {
      * @return
      */
     @Override
-    public HashMap<String, ASTMethodDef> methods() {
+    public HashMap<String, ScriptMethod> methods() {
         return methods;
+    }
+
+    /**
+     * The defined classes of the script
+     *
+     * @return
+     */
+    @Override
+    public HashMap<String, ScriptClass> classes() {
+        return classes;
     }
 
     @Override
