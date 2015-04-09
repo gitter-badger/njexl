@@ -30,9 +30,11 @@ def Point : Some1 , Some2 {
       def __str__(me){
           str:format('(%f,%f)',me.x,me.y)
       }
+      
       def do_print(me){
              out:println('Point!')
       }
+      
 }
 
 def print(m='hello, world' , s=' xxx '){
@@ -42,7 +44,7 @@ def print(m='hello, world' , s=' xxx '){
 print('foo bar')
 
 x = new ( 'Point' , 1.0, 2.0 )
-print( x.__str__() )
+print( x )
 
 // no issues
 x.do_print()

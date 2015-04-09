@@ -26,11 +26,10 @@ def factorial_recursive(n){
 
 
 size(__args__) > 1 or bye ( 'usage : ' + __args__[0] + '  <number> [-r : recursively]')
+
 if ( __args__.length == 2 ){
     y = factorial_iterative( __args__[1] )
 }else {
-   y = factorial_iterative( __args__[1] )
+   y = factorial_recursive( __args__[1] )
 }
 out:println(y)
-
-

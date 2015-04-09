@@ -1,6 +1,7 @@
 package org.apache.commons.jexl2.extension.oop;
 
 import org.apache.commons.jexl2.Interpreter;
+import org.apache.commons.jexl2.extension.TypeUtility;
 import org.apache.commons.jexl2.parser.ASTClassDef;
 import org.apache.commons.jexl2.parser.ASTMethodDef;
 import org.apache.commons.jexl2.parser.JexlNode;
@@ -11,7 +12,7 @@ import java.util.HashMap;
 /**
  * Created by noga on 08/04/15.
  */
-public class ScriptClass implements Executable {
+public class ScriptClass implements Executable,ObjectComparable {
 
     public static final String _INIT_ = "__new__" ;
 
@@ -70,7 +71,6 @@ public class ScriptClass implements Executable {
         this.interpreter = interpreter ;
     }
 
-
     @Override
     public Object execMethod(String method,Object[] args) throws Exception{
         ScriptMethod methodDef = getMethod(method) ;
@@ -82,8 +82,6 @@ public class ScriptClass implements Executable {
         }
         return methodDef.invoke(null, interpreter, args);
     }
-
-
 
     final String name;
 
@@ -149,4 +147,45 @@ public class ScriptClass implements Executable {
         constructor = methods.get(_INIT_);
     }
 
+    @Override
+    public String toString(){
+        if (  methods.containsKey(ScriptClassBehaviour.STR ) ) {
+            try {
+                return execMethod(ScriptClassBehaviour.STR, new Object[]{} ).toString();
+            } catch (Exception e) {
+
+            }
+        }
+        return super.toString();
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if (  methods.containsKey(ScriptClassBehaviour.EQ ) ) {
+            try {
+                return TypeUtility.castBoolean( execMethod(ScriptClassBehaviour.EQ, new Object[]{ o } ), false );
+            } catch (Exception e) {
+
+            }
+        }
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        try {
+            if (methods.containsKey(ScriptClassBehaviour.HC)) {
+                return TypeUtility.castInteger(execMethod(ScriptClassBehaviour.EQ, new Object[]{}));
+            }
+        }catch (Exception e){}
+        return super.hashCode();
+    }
+
+    @Override
+    public int compare(Object o) throws Exception {
+        if (  methods.containsKey(ObjectComparable.COMPARE ) ) {
+            return TypeUtility.castInteger( execMethod(ScriptClassBehaviour.EQ, new Object[]{ o } ));
+        }
+        throw new Exception( "Compare Function is not defined!" );
+    }
 }

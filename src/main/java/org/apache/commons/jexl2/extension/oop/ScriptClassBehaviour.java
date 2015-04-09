@@ -8,6 +8,13 @@ import org.apache.commons.jexl2.Interpreter;
 public final class ScriptClassBehaviour {
 
 
+    public static final String STR = "__str__" ;
+
+    public static final String EQ = "__eq__" ;
+
+    public static final String HC = "__hc__" ;
+
+
     public interface Executable {
 
         void setInterpreter(Interpreter interpreter);
@@ -16,4 +23,11 @@ public final class ScriptClassBehaviour {
 
     }
 
+    public interface ObjectComparable {
+
+        public static final String COMPARE = "__cmp__" ;
+
+        int compare(Object o) throws Exception;
+
+    }
 }
