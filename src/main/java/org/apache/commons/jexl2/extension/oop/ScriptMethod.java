@@ -1,8 +1,6 @@
 package org.apache.commons.jexl2.extension.oop;
 
-import org.apache.commons.jexl2.Interpreter;
-import org.apache.commons.jexl2.JexlContext;
-import org.apache.commons.jexl2.Script;
+import org.apache.commons.jexl2.*;
 import org.apache.commons.jexl2.extension.ListSet;
 import org.apache.commons.jexl2.extension.SetOperations;
 import org.apache.commons.jexl2.parser.ASTBlock;
@@ -43,7 +41,11 @@ public class ScriptMethod {
             defaultValues.put(argName, value);
         }
         astBlock = (ASTBlock) def.jjtGetChild(numChild - 1);
-        instance = params.isEmpty() || ScriptClass.SELF.equals(params.get(0));
+        instance = ( !params.isEmpty() && ScriptClass.SELF.equals(params.get(0)));
+        if ( instance ) {
+            // This was always dummy...
+            params.remove(0);
+        }
     }
 
     private Object getDefault(String paramName,Interpreter interpreter) {
@@ -115,16 +117,26 @@ public class ScriptMethod {
         //process params, if need be
         JexlContext context = interpreter.getContext();
         HashMap map = getParamValues(interpreter, args);
-        if ( me != null){
+        if ( instance ){
+            // do double check : to be sure
+            if ( me == null ){
+                throw new Exception("Instance Method called with null instance!");
+            }
             map.put(ScriptClass.SELF, me);
         }
         addToContext(context, map);
         try {
             Object ret = astBlock.jjtAccept(interpreter,null);
             return ret;
-        } finally {
+        }catch (Exception e){
+            if ( e instanceof JexlException.Return ){
+                return ((JexlException.Return) e).getValue();
+            }
+        }
+        finally {
             //finally remove
             removeFromContext(context, map);
         }
+        return null;
     }
 }

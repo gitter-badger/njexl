@@ -115,7 +115,7 @@ public class ListSet<T> extends HashSet<T> implements List<T> {
 
     @Override
     public T remove(int index) {
-        T t = behind.get(index);
+        T t = behind.remove(index);
         super.remove(t);
         return t;
     }

@@ -41,12 +41,12 @@ def print(m='hello, world' , s=' xxx '){
 
 print('foo bar')
 
-x = new ( 'Point' )
+x = new ( 'Point' , 1.0, 2.0 )
 print( x.__str__() )
 
 // no issues
 x.do_print()
-// for calling supers...
+// for calling supers:
 x.supers['Some1'].do_print()
 // this way
 x.supers['Some2'].do_print()
