@@ -50,7 +50,8 @@ public class Interpreter implements ParserVisitor {
             Script script = imports.get(s);
             HashMap<String,ScriptClass> map = script.classes() ;
             if ( map.containsKey(name )){
-                return map.get(name);
+                ScriptClass template =  map.get(name);
+                return new ScriptClass(template);
             }
         }
         return null;
@@ -1448,7 +1449,7 @@ public class Interpreter implements ParserVisitor {
                 }
             }
             if ( cobject instanceof String ){
-                ScriptClass scriptClass = resolveJexlClassName((String)cobject);
+                ScriptClass scriptClass = resolveJexlClassName((String) cobject);
                 if ( scriptClass != null ){
                     scriptClass.setInterpreter(this);
                     scriptClass.init(argv);

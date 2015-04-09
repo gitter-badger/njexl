@@ -156,6 +156,16 @@ public class ScriptClass implements Executable, Comparable, Arithmetic, Logic {
         constructor = methods.get(_INIT_);
     }
 
+    public ScriptClass(ScriptClass template) {
+        name = template.name ;
+        // need a new copy
+        fields = new HashMap<>(template.fields);
+        methods = template.methods ;
+        // supers copy are needed --> their field may be changed
+        supers = new HashMap<>(template.supers);
+        constructor = template.constructor;
+    }
+
     @Override
     public String toString() {
         try {

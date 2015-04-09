@@ -585,7 +585,7 @@ public class JexlArithmetic {
                 return SetOperations.join(left,right);
             }
             if ( left instanceof Arithmetic){
-                ((Arithmetic) left).mul(right);
+                return ((Arithmetic) left).mul(right);
             }
             throw e;
         }

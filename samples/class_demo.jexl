@@ -14,42 +14,63 @@ def Some2{
 }
 
 
-def Point : Some1 , Some2 {
+def Complex : Some1 , Some2 {
 
       def __new__ (me,x=0.0,y=0.0){
           me.x = x
           me.y = y
       }
 
-      def  shift_x(me, x ){
-          me.x = me.x + x
-      }
-      def  shift_y(me, y ){
-          me.y = me.y + y
-      }
       def __str__(me){
-          str:format('(%f,%f)',me.x,me.y)
+          str:format('(%f,i %f)',me.x,me.y)
       }
+      
+
+      def __add__(me,o){
+
+          return new ('Complex' , me.x + o.x , me.y + o.y )
+      }
+      
+
+      def __sub__(me,o){
+          return new ('Complex' , me.x - o.x , me.y - o.y )
+      }
+
+      
+
+      def __mul__(me,o){
+          return new ('Complex' , me.x * o.x  - me.y * o.y , me.x * o.y + me.y * o.x )
+      }
+
       
       def do_print(me){
-             out:println('Point!')
+             out:println('Complex!')
       }
+    
       
 }
 
-def print(m='hello, world' , s=' xxx '){
-    out:println(m + s)
+def print(p='hello, world' , v){
+    out:println(p + ':' + v)
 }
 
-print('foo bar')
 
-x = new ( 'Point' , 1.0, 2.0 )
-print( x )
+c1 = new ( 'Complex' , 1.0, 2.0 )
+print( 'Complex No :' , c1 )
+
+c2 = new ( 'Complex' , 2.0, 1.0 )
+print( 'Complex No :' , c2 )
+
+print( 'Add :' , c1 + c2 )
+
+print( 'Sub :' , c1 - c2 )
+
+print( 'Mul :' , c1 * c2 )
+
 
 // no issues
-x.do_print()
+c1.do_print()
 // for calling supers:
-x.supers['Some1'].do_print()
+c2.supers['Some1'].do_print()
 // this way
-x.supers['Some2'].do_print()
-
+c1.supers['Some2'].do_print()
