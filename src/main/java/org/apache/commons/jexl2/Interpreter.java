@@ -19,6 +19,7 @@ import org.apache.commons.jexl2.extension.SetOperations;
 import org.apache.commons.jexl2.extension.TypeUtility;
 import org.apache.commons.jexl2.extension.oop.ScriptClassBehaviour.Executable;
 import org.apache.commons.jexl2.extension.oop.ScriptClass;
+import org.apache.commons.jexl2.extension.oop.ScriptClassInstance;
 import org.apache.commons.jexl2.introspection.JexlMethod;
 import org.apache.commons.jexl2.introspection.JexlPropertyGet;
 import org.apache.commons.jexl2.introspection.JexlPropertySet;
@@ -50,8 +51,7 @@ public class Interpreter implements ParserVisitor {
             Script script = imports.get(s);
             HashMap<String,ScriptClass> map = script.classes() ;
             if ( map.containsKey(name )){
-                ScriptClass template =  map.get(name);
-                return new ScriptClass(template);
+                return map.get(name);
             }
         }
         return null;
@@ -902,6 +902,9 @@ public class Interpreter implements ParserVisitor {
             if (left == null ){
                 return false ;
             }
+            if ( left instanceof ScriptClassInstance ){
+                return ((ScriptClassInstance) left).getNClass().isa(right);
+            }
             Class r ;
             if ( right instanceof Class ){
                 r = (Class)right;
@@ -914,6 +917,7 @@ public class Interpreter implements ParserVisitor {
             }else{
                 l = left.getClass();
             }
+
             return r.isAssignableFrom(l) ;
 
         } catch (ArithmeticException xrt) {
@@ -1451,9 +1455,7 @@ public class Interpreter implements ParserVisitor {
             if ( cobject instanceof String ){
                 ScriptClass scriptClass = resolveJexlClassName((String) cobject);
                 if ( scriptClass != null ){
-                    scriptClass.setInterpreter(this);
-                    scriptClass.init(argv);
-                    return scriptClass ;
+                    return scriptClass.instance(this,argv) ;
                 }
             }
             JexlMethod ctor = uberspect.getConstructorMethod(cobject, argv, node);
@@ -1743,6 +1745,9 @@ public class Interpreter implements ParserVisitor {
         Object val = node.jjtGetChild(0).jjtAccept(this, data);
         if (val == null) {
             return null;
+        }
+        if ( val instanceof ScriptClassInstance ){
+            return ((ScriptClassInstance) val).getNClass();
         }
         return val.getClass();
     }

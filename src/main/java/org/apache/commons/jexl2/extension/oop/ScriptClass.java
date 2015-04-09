@@ -1,18 +1,17 @@
 package org.apache.commons.jexl2.extension.oop;
 
 import org.apache.commons.jexl2.Interpreter;
-import org.apache.commons.jexl2.extension.TypeUtility;
 import org.apache.commons.jexl2.parser.ASTClassDef;
 import org.apache.commons.jexl2.parser.ASTMethodDef;
 import org.apache.commons.jexl2.parser.JexlNode;
-import org.apache.commons.jexl2.extension.oop.ScriptClassBehaviour.*;
-
 import java.util.HashMap;
+import org.apache.commons.jexl2.extension.oop.ScriptClassBehaviour.TypeAware;
+
 
 /**
  * Created by noga on 08/04/15.
  */
-public class ScriptClass implements Executable, Comparable, Arithmetic, Logic {
+public class ScriptClass  implements TypeAware {
 
     public static final String _INIT_ = "__new__";
 
@@ -25,8 +24,6 @@ public class ScriptClass implements Executable, Comparable, Arithmetic, Logic {
     }
 
     ScriptMethod constructor;
-
-    HashMap<String, Object> fields;
 
     final HashMap<String, ScriptClass> supers;
 
@@ -67,83 +64,37 @@ public class ScriptClass implements Executable, Comparable, Arithmetic, Logic {
         }
     }
 
-    Interpreter interpreter;
-
-    @Override
-    public void setInterpreter(Interpreter interpreter) {
-        this.interpreter = interpreter;
-    }
-
-    @Override
-    public Object execMethod(String method, Object[] args)  {
-        try {
-            ScriptMethod methodDef = getMethod(method);
-            if (methodDef == null) {
-                throw new Exception("Method : '" + method + "' is not found in class : " + this.name);
-            }
-            if (methodDef.instance) {
-                return methodDef.invoke(this, interpreter, args);
-            }
-            return methodDef.invoke(null, interpreter, args);
-        }catch (Exception e){
-            throw new Error(e);
-        }
-    }
-
     final String name;
 
     public String getName() {
         return name;
     }
 
-    public Object get(String name) throws Exception {
-        if (fields.containsKey(name)) {
-            return fields.get(name);
-        }
-        for (String sup : supers.keySet()) {
-            if (supers.get(sup).fields.containsKey(name)) {
-                return supers.get(sup).fields.get(name);
-            }
-        }
-        throw new Exception("Key : '" + name + "' is not found!");
-    }
+    public ScriptClassInstance  instance(Interpreter interpreter, Object[] args) throws Exception {
 
-    public void set(String name, Object value) {
-        if (fields.containsKey(name)) {
-            fields.put(name, value);
-        }
-        for (String sup : supers.keySet()) {
-            if (supers.get(sup).fields.containsKey(name)) {
-                supers.get(sup).fields.put(name, value);
-                return;
-            }
-        }
-        fields.put(name, value);
-    }
-
-    public void init(Object[] args) throws Exception {
+        ScriptClassInstance instance = new ScriptClassInstance(this, interpreter);
         for (String n : supers.keySet()) {
-            ScriptClass scriptClass = supers.get(n);
-            if (scriptClass != null) {
-                continue;
+            ScriptClass superClass = supers.get(n);
+            if (superClass == null) {
+                superClass = interpreter.resolveJexlClassName(n);
+                if ( superClass == null ) {
+                    throw new Exception("Superclass : '" + n + "' not found!");
+                }
+                // one time resolving of this
+                supers.put(n,superClass);
             }
-            scriptClass = interpreter.resolveJexlClassName(n);
-            if (scriptClass == null) {
-                throw new Exception("Superclass : '" + n + "' not found!");
-            }
-            scriptClass.interpreter = this.interpreter;
-            scriptClass.init(args);
-            supers.put(n, scriptClass);
+            ScriptClassInstance superClassInstance = superClass.instance(interpreter, args);
+            instance.supers.put( superClass.name, superClassInstance);
         }
         if (constructor != null) {
-            execMethod(_INIT_, args);
+            instance.execMethod(_INIT_, args);
         }
-        // nothing really
+        // return
+        return instance ;
     }
 
     public ScriptClass(ASTClassDef ref) {
         name = ref.jjtGetChild(0).image;
-        fields = new HashMap<>();
         methods = new HashMap<>();
         supers = new HashMap<>();
         int numChild = ref.jjtGetNumChildren();
@@ -156,97 +107,37 @@ public class ScriptClass implements Executable, Comparable, Arithmetic, Logic {
         constructor = methods.get(_INIT_);
     }
 
-    public ScriptClass(ScriptClass template) {
-        name = template.name ;
-        // need a new copy
-        fields = new HashMap<>(template.fields);
-        methods = template.methods ;
-        // supers copy are needed --> their field may be changed
-        supers = new HashMap<>(template.supers);
-        constructor = template.constructor;
-    }
-
     @Override
-    public String toString() {
-        try {
-            return execMethod(ScriptClassBehaviour.STR, new Object[]{}).toString();
-        } catch (Exception e) {
+    public boolean isa(Object o) {
+        if ( o == null ){
+            return false ;
         }
-        return super.toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        try {
-            return TypeUtility.castBoolean(execMethod(ScriptClassBehaviour.EQ, new Object[]{o}), false);
-        } catch (Exception e) {
-
+        ScriptClass that;
+        if ( o instanceof ScriptClass){
+            that = (ScriptClass)o;
+        }
+        else if ( o instanceof ScriptClassInstance){
+            that = ((ScriptClassInstance)o).scriptClass;
+        }
+        else{
+            return false ;
         }
 
-        return super.equals(o);
-    }
-
-    @Override
-    public int hashCode() {
-        try {
-            return TypeUtility.castInteger(execMethod(ScriptClassBehaviour.HC, new Object[]{}));
-        } catch (Exception e) {
+        if ( this.name.equals(that.name) ){
+            return true ;
         }
-        return super.hashCode();
+        for ( String n :  supers.keySet()){
+            boolean s = supers.get(n).isa(o);
+            if ( s ){
+                return true ;
+            }
+        }
+
+        return false;
     }
 
     @Override
-    public int compareTo(Object o) {
-        return TypeUtility.castInteger(execMethod(ScriptClassBehaviour.CMP, new Object[]{o}));
-    }
-
-    @Override
-    public Object add(Object o) {
-        return execMethod(Arithmetic.ADD, new Object[]{o});
-    }
-
-    @Override
-    public Object neg()  {
-        return execMethod(Arithmetic.NEG, new Object[]{});
-    }
-
-    @Override
-    public Object sub(Object o)  {
-        return execMethod(Arithmetic.SUB, new Object[]{o});
-    }
-
-    @Override
-    public Object mul(Object o)  {
-        return execMethod(Arithmetic.MUL, new Object[]{o});
-    }
-
-    @Override
-    public Object div(Object o)  {
-        return execMethod(Arithmetic.DIV, new Object[]{o});
-    }
-
-    @Override
-    public Object exp(Object o)  {
-        return execMethod(Arithmetic.EXP, new Object[]{o});
-    }
-
-    @Override
-    public Object and(Object o)  {
-        return execMethod(Logic.AND, new Object[]{o});
-    }
-
-    @Override
-    public Object complement()  {
-        return execMethod(Logic.COMPLEMENT, new Object[]{});
-    }
-
-    @Override
-    public Object or(Object o) {
-        return execMethod(Logic.OR, new Object[]{o});
-    }
-
-    @Override
-    public Object xor(Object o)  {
-        return execMethod(Logic.XOR, new Object[]{o});
+    public String toString(){
+        return "nClass " + name ;
     }
 }

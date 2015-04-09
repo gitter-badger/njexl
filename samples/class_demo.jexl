@@ -2,6 +2,10 @@ import 'java.lang.System.out' as out
 
 def Some1{
 
+    def __new__ (me){
+          me.s = 'xxx'
+      }
+
     def do_print(me){
         out:println('Some1!')
     }
@@ -22,7 +26,7 @@ def Complex : Some1 , Some2 {
       }
 
       def __str__(me){
-          str:format('(%f,i %f)',me.x,me.y)
+          str:format('%s : (%f,i %f)', me.s, me.x, me.y)
       }
       
 
@@ -44,10 +48,9 @@ def Complex : Some1 , Some2 {
 
       
       def do_print(me){
-             out:println('Complex!')
+          out:println(me)
       }
-    
-      
+  
 }
 
 def print(p='hello, world' , v){
@@ -68,9 +71,27 @@ print( 'Sub :' , c1 - c2 )
 print( 'Mul :' , c1 * c2 )
 
 
-// no issues
-c1.do_print()
 // for calling supers:
 c2.supers['Some1'].do_print()
 // this way
 c1.supers['Some2'].do_print()
+
+c1.s = 'yyy'
+// no issues
+c1.do_print()
+c2.do_print()
+c2.s = 'zzz'
+c1.do_print()
+c2.do_print()
+
+out:println(c1 isa c2)
+
+s1 = new ( 'Some1' )
+
+out:println(c1 isa s1)
+
+out:println(s1 isa c1)
+
+
+
+

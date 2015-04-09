@@ -17,6 +17,12 @@ public final class ScriptClassBehaviour {
     public static final String CMP = "__cmp__" ;
 
 
+    public interface TypeAware{
+
+        boolean isa( Object o);
+
+    }
+
     public interface Executable {
 
         void setInterpreter(Interpreter interpreter);
