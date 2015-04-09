@@ -19,7 +19,7 @@ package org.apache.commons.jexl2;
 import org.apache.commons.jexl2.extension.ListSet;
 import org.apache.commons.jexl2.extension.SetOperations;
 import org.apache.commons.jexl2.extension.TypeUtility;
-
+import org.apache.commons.jexl2.extension.oop.ScriptClassBehaviour.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -422,6 +422,10 @@ public class JexlArithmetic {
             BigInteger result = l.add(r);
             return narrowBigInteger(left, right, result);
         } catch (Exception e) {
+            if ( !(right instanceof String) &&
+                    left instanceof Arithmetic ){ // very important
+                return ((Arithmetic)left).add(right);
+            }
             if ( left instanceof Set ){
                 ListSet r = new ListSet((List) left);
                 if (right instanceof Set) {
@@ -460,39 +464,46 @@ public class JexlArithmetic {
      * @throws ArithmeticException if right == 0
      */
     public Object divide(Object left, Object right) {
-        if (left == null && right == null) {
-            return controlNullNullOperands();
-        }
+        try {
+            if (left == null && right == null) {
+                return controlNullNullOperands();
+            }
 
-        // if either are floating point (double or float) use double
-        if (isFloatingPointNumber(left) || isFloatingPointNumber(right)) {
-            double l = toDouble(left);
-            double r = toDouble(right);
-            if (r == 0.0) {
+            // if either are floating point (double or float) use double
+            if (isFloatingPointNumber(left) || isFloatingPointNumber(right)) {
+                double l = toDouble(left);
+                double r = toDouble(right);
+                if (r == 0.0) {
+                    throw new ArithmeticException("/");
+                }
+                return new Double(l / r);
+            }
+
+            // if either are bigdecimal use that type
+            if (left instanceof BigDecimal || right instanceof BigDecimal) {
+                BigDecimal l = toBigDecimal(left);
+                BigDecimal r = toBigDecimal(right);
+                if (BigDecimal.ZERO.equals(r)) {
+                    throw new ArithmeticException("/");
+                }
+                BigDecimal result = l.divide(r, getMathContext());
+                return narrowBigDecimal(left, right, result);
+            }
+
+            // otherwise treat as integers
+            BigInteger l = toBigInteger(left);
+            BigInteger r = toBigInteger(right);
+            if (BigInteger.ZERO.equals(r)) {
                 throw new ArithmeticException("/");
             }
-            return new Double(l / r);
-        }
-
-        // if either are bigdecimal use that type
-        if (left instanceof BigDecimal || right instanceof BigDecimal) {
-            BigDecimal l = toBigDecimal(left);
-            BigDecimal r = toBigDecimal(right);
-            if (BigDecimal.ZERO.equals(r)) {
-                throw new ArithmeticException("/");
+            BigInteger result = l.divide(r);
+            return narrowBigInteger(left, right, result);
+        }catch (Throwable e){
+            if ( left instanceof Arithmetic ){
+                return ((Arithmetic) left).div(right);
             }
-            BigDecimal result = l.divide(r, getMathContext());
-            return narrowBigDecimal(left, right, result);
+            throw e;
         }
-
-        // otherwise treat as integers
-        BigInteger l = toBigInteger(left);
-        BigInteger r = toBigInteger(right);
-        if (BigInteger.ZERO.equals(r)) {
-            throw new ArithmeticException("/");
-        }
-        BigInteger result = l.divide(r);
-        return narrowBigInteger(left, right, result);
     }
 
     /**
@@ -573,6 +584,9 @@ public class JexlArithmetic {
             if ( areListOrArray(left,right) ){
                 return SetOperations.join(left,right);
             }
+            if ( left instanceof Arithmetic){
+                ((Arithmetic) left).mul(right);
+            }
             throw e;
         }
     }
@@ -634,6 +648,9 @@ public class JexlArithmetic {
             }
             return l;
         }
+        if ( left instanceof Arithmetic ){
+            return ((Arithmetic) left).exp(right);
+        }
         throw new ArithmeticException("Power can not be computed!");
     }
 
@@ -689,6 +706,9 @@ public class JexlArithmetic {
                     return r;
                 }
             }
+            if ( left instanceof Arithmetic){
+                return ((Arithmetic) left).sub(right);
+            }
 
             throw  e;
         }
@@ -727,6 +747,9 @@ public class JexlArithmetic {
             return Byte.valueOf((byte) -valueAsByte);
         } else if (val instanceof Boolean) {
             return ((Boolean) val).booleanValue() ? Boolean.FALSE : Boolean.TRUE;
+        }
+        if ( val instanceof Arithmetic){
+            return ((Arithmetic) val).neg();
         }
         throw new ArithmeticException("Object negation:(" + val + ")");
     }
@@ -770,10 +793,13 @@ public class JexlArithmetic {
             return Long.valueOf(l & r);
         }catch (Exception e){
             if ( left instanceof Set && right instanceof Set){
-                return SetOperations.set_i((Set)left,(Set)right);
+                return SetOperations.set_i((Set) left, (Set) right);
             }
             if ( areListOrArray(left,right)){
                 return SetOperations.list_i(left, right);
+            }
+            if ( left instanceof Logic ){
+                return ((Logic) left).and(right);
             }
             throw e;
         }
@@ -796,7 +822,10 @@ public class JexlArithmetic {
                 return SetOperations.set_u((Set) left, (Set) right);
             }
             if ( areListOrArray(left,right)){
-                return SetOperations.list_u(left,right);
+                return SetOperations.list_u(left, right);
+            }
+            if ( left instanceof Logic){
+                return ((Logic) left).or(right);
             }
             throw e;
         }
@@ -816,11 +845,13 @@ public class JexlArithmetic {
             return Long.valueOf(l ^ r);
         }catch (Exception e){
             if ( left instanceof Set && right instanceof Set){
-                return SetOperations.set_sym_d((Set)left,(Set)right);
+                return SetOperations.set_sym_d((Set) left, (Set) right);
             }
-
             if ( areListOrArray(left,right)){
-                return SetOperations.list_sym_d(left,right);
+                return SetOperations.list_sym_d(left, right);
+            }
+            if ( left instanceof Logic){
+                return ((Logic) left).xor(right);
             }
             throw e;
         }
@@ -833,8 +864,15 @@ public class JexlArithmetic {
      * @since 2.1
      */
     public Object bitwiseComplement(Object val) {
-        long l = toLong(val);
-        return Long.valueOf(~l);
+        try {
+            long l = toLong(val);
+            return Long.valueOf(~l);
+        }catch (Exception e){
+            if ( val instanceof Logic){
+                return ((Logic) val).complement();
+            }
+            throw e;
+        }
     }
 
     public static class NonComparableCollectionException extends ArithmeticException{

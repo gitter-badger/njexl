@@ -162,12 +162,16 @@ public class ExpressionImpl implements Expression, Script , Executable {
     }
 
     @Override
-    public Object execMethod(String method,Object[] args) throws Exception{
-        ScriptMethod methodDef = methods.get(method) ;
-        if ( methodDef == null){
-            throw new Exception("Method : '" + method + "' is not found in : " + this.importName );
+    public Object execMethod(String method,Object[] args){
+        try {
+            ScriptMethod methodDef = methods.get(method);
+            if (methodDef == null) {
+                throw new Exception("Method : '" + method + "' is not found in : " + this.importName);
+            }
+            return methodDef.invoke(null, this.interpreter, args);
+        }catch (Throwable e){
+            throw new Error(e);
         }
-        return methodDef.invoke(null, this.interpreter, args);
     }
 
 
