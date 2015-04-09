@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.jexl2.extension.oop.Invokable;
+import org.apache.commons.jexl2.extension.oop.ScriptClassBehaviour.Executable ;
 import org.apache.commons.jexl2.extension.oop.ScriptClass;
 import org.apache.commons.jexl2.extension.oop.ScriptMethod;
 import org.apache.commons.jexl2.parser.*;
@@ -33,7 +33,7 @@ import org.apache.commons.jexl2.parser.*;
  * {@link Script} interface.
  * @since 1.0
  */
-public class ExpressionImpl implements Expression, Script , Invokable {
+public class ExpressionImpl implements Expression, Script , Executable {
 
     String location;
 
@@ -154,18 +154,22 @@ public class ExpressionImpl implements Expression, Script , Invokable {
         return toString();
     }
 
+    Interpreter interpreter;
 
     @Override
-    public Object execMethod(String method,Interpreter interpreter ,Object[] args) throws Exception{
+    public void setInterpreter(Interpreter interpreter) {
+        this.interpreter = interpreter ;
+    }
+
+    @Override
+    public Object execMethod(String method,Object[] args) throws Exception{
         ScriptMethod methodDef = methods.get(method) ;
         if ( methodDef == null){
             throw new Exception("Method : '" + method + "' is not found in : " + this.importName );
         }
-        return methodDef.invoke(null, interpreter, args);
+        return methodDef.invoke(null, this.interpreter, args);
     }
 
-    @Override
-    public String type(){ return  ExpressionImpl.class.getName() ; }
 
     /**
      * {@inheritDoc}
@@ -179,7 +183,7 @@ public class ExpressionImpl implements Expression, Script , Invokable {
      * @since 2.1
      */
     public Object execute(JexlContext context, Object... args) {
-        Interpreter interpreter = jexl.createInterpreter(context);
+        interpreter = jexl.createInterpreter(context);
         interpreter.setFrame(script.createFrame(args));
         // the following are key for calling methods ...
         interpreter.imports.put(importName, this);

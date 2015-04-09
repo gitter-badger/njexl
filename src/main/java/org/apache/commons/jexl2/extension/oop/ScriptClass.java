@@ -1,17 +1,17 @@
 package org.apache.commons.jexl2.extension.oop;
 
 import org.apache.commons.jexl2.Interpreter;
-import org.apache.commons.jexl2.extension.ListSet;
 import org.apache.commons.jexl2.parser.ASTClassDef;
 import org.apache.commons.jexl2.parser.ASTMethodDef;
 import org.apache.commons.jexl2.parser.JexlNode;
+import org.apache.commons.jexl2.extension.oop.ScriptClassBehaviour.* ;
 
 import java.util.HashMap;
 
 /**
  * Created by noga on 08/04/15.
  */
-public class ScriptClass implements Invokable {
+public class ScriptClass implements Executable {
 
     public static final String _INIT_ = "__new__" ;
 
@@ -63,8 +63,16 @@ public class ScriptClass implements Invokable {
         }
     }
 
+    Interpreter interpreter;
+
     @Override
-    public Object execMethod(String method,Interpreter interpreter ,Object[] args) throws Exception{
+    public void setInterpreter(Interpreter interpreter) {
+        this.interpreter = interpreter ;
+    }
+
+
+    @Override
+    public Object execMethod(String method,Object[] args) throws Exception{
         ScriptMethod methodDef = getMethod(method) ;
         if ( methodDef == null){
             throw new Exception("Method : '" + method + "' is not found in class : " + this.name );
@@ -75,8 +83,7 @@ public class ScriptClass implements Invokable {
         return methodDef.invoke(null, interpreter, args);
     }
 
-    @Override
-    public String type(){ return ScriptClass.class.getName() ; }
+
 
     final String name;
 
@@ -107,7 +114,7 @@ public class ScriptClass implements Invokable {
         fields.put(name,value);
     }
 
-    public void init(Interpreter interpreter, Object[] args) throws Exception {
+    public void init( Object[] args) throws Exception {
         for ( String n : supers.keySet() ){
             ScriptClass scriptClass = supers.get(n);
             if ( scriptClass != null ){
@@ -117,11 +124,12 @@ public class ScriptClass implements Invokable {
             if ( scriptClass == null ){
                 throw new Exception("Superclass : '" + n + "' not found!");
             }
-            scriptClass.init( interpreter, args);
+            scriptClass.interpreter = this.interpreter ;
+            scriptClass.init(args);
             supers.put(n,scriptClass);
          }
         if ( constructor != null ){
-            execMethod( _INIT_, interpreter, args) ;
+            execMethod( _INIT_, args) ;
         }
         // nothing really
     }

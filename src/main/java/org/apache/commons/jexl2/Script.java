@@ -16,7 +16,6 @@
  */
 package org.apache.commons.jexl2;
 
-import org.apache.commons.jexl2.extension.oop.Invokable;
 import org.apache.commons.jexl2.extension.oop.ScriptClass;
 import org.apache.commons.jexl2.extension.oop.ScriptMethod;
 import org.apache.commons.jexl2.parser.ASTImportStatement;

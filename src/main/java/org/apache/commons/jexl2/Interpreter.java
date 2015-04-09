@@ -17,7 +17,7 @@
 package org.apache.commons.jexl2;
 import org.apache.commons.jexl2.extension.SetOperations;
 import org.apache.commons.jexl2.extension.TypeUtility;
-import org.apache.commons.jexl2.extension.oop.Invokable;
+import org.apache.commons.jexl2.extension.oop.ScriptClassBehaviour.Executable;
 import org.apache.commons.jexl2.extension.oop.ScriptClass;
 import org.apache.commons.jexl2.introspection.JexlMethod;
 import org.apache.commons.jexl2.introspection.JexlPropertyGet;
@@ -464,6 +464,7 @@ public class Interpreter implements ParserVisitor {
             }
 
             Script freshlyImported = jexlEngine.importScript(from, as);
+            ((Executable)freshlyImported).setInterpreter(this);
             imports.put(as, freshlyImported);
             context.set(as, freshlyImported);
 
@@ -1317,8 +1318,8 @@ public class Interpreter implements ParserVisitor {
                 }
             }
             boolean cacheable = cache;
-            if (bean instanceof Invokable) {
-                return ((Invokable) bean).execMethod(methodName, this, argv);
+            if (bean instanceof Executable) {
+                return ((Executable) bean).execMethod(methodName,argv);
             }
 
             JexlMethod vm = uberspect.getMethod(bean, methodName, argv, node);
@@ -1449,7 +1450,8 @@ public class Interpreter implements ParserVisitor {
             if ( cobject instanceof String ){
                 ScriptClass scriptClass = resolveJexlClassName((String)cobject);
                 if ( scriptClass != null ){
-                    scriptClass.init( this, argv);
+                    scriptClass.setInterpreter(this);
+                    scriptClass.init(argv);
                     return scriptClass ;
                 }
             }

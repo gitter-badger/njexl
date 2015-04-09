@@ -1,14 +1,12 @@
 package org.apache.commons.jexl2;
 
-import org.apache.commons.jexl2.extension.ListSet;
+
 import org.apache.commons.jexl2.extension.Tuple;
 import org.apache.commons.jexl2.extension.dataaccess.DBManager;
 import org.apache.commons.jexl2.extension.dataaccess.DataMatrix;
 import org.apache.commons.jexl2.extension.dataaccess.XmlMap;
 import org.junit.Test;
-
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by noga on 28/03/15.
@@ -21,6 +19,17 @@ public class ExtendedScriptTest extends JexlTestCase {
         Script e = JEXL.importScript(path);
         return e.execute(jc);
     }
+
+    @Test
+    public void testClassFile()throws Exception {
+        runScript(JEXL,"samples/class_demo.jexl");
+    }
+
+    @Test
+    public void testFunctionalInNormalFunction()throws Exception {
+        runScript(JEXL,"samples/functional_sample.jexl");
+    }
+
 
     @Test
     public void testTupleIndexing()throws Exception {
@@ -72,7 +81,7 @@ public class ExtendedScriptTest extends JexlTestCase {
         runScript(JEXL,"samples/perf.jexl");
         t = System.currentTimeMillis() - t ;
         System.out.println("Time Taken (ms): " + t);
-        assertTrue(10000 > t );
+        assertTrue(20000 > t );
     }
 
     @Test
