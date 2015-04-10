@@ -135,6 +135,7 @@ public class ScriptMethod {
             if ( e instanceof JexlException.Return ){
                 return ((JexlException.Return) e).getValue();
             }
+            e.printStackTrace(); // ensure that we have an issue which is to be noted down...
         }
         finally {
             //finally remove

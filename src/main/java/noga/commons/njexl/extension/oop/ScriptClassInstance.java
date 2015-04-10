@@ -69,6 +69,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     public void set(String name, Object value) {
         if (fields.containsKey(name)) {
             fields.put(name, value);
+            return;
         }
         for (String sup : supers.keySet()) {
             if (supers.get(sup).fields.containsKey(name)) {
@@ -83,7 +84,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     public String toString() {
         try {
             return execMethod(ScriptClassBehaviour.STR, new Object[]{}).toString();
-        } catch (Exception e) {
+        } catch (Throwable e) {
         }
         return super.toString();
     }
@@ -92,7 +93,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     public boolean equals(Object o) {
         try {
             return TypeUtility.castBoolean(execMethod(ScriptClassBehaviour.EQ, new Object[]{o}), false);
-        } catch (Exception e) {
+        } catch (Throwable e) {
 
         }
 
@@ -103,7 +104,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     public int hashCode() {
         try {
             return TypeUtility.castInteger(execMethod(ScriptClassBehaviour.HC, new Object[]{}));
-        } catch (Exception e) {
+        } catch (Throwable e) {
         }
         return super.hashCode();
     }
