@@ -497,8 +497,10 @@ public class JexlEngine {
 
     public Script createCopyScript(String scriptText,Script parent) {
         Script child =  createScript(scriptText, null, null);
-        child.imports().putAll(parent.imports());
-        child.methods().putAll(parent.methods());
+        if ( parent != null ) {
+            child.imports().putAll(parent.imports());
+            child.methods().putAll(parent.methods());
+        }
         return child;
     }
 

@@ -14,15 +14,20 @@ import java.util.ArrayList;
 public class ExtendedScriptTest extends JexlTestCase {
 
     private static Object runScript(JexlEngine JEXL, String path)throws Exception{
+        System.out.println("==========START=============");
+
         JexlContext jc = new MapContext();
         JEXL.setFunctions(Main.getFunction(jc));
         Script e = JEXL.importScript(path);
-        return e.execute(jc);
+        Object o = e.execute(jc);
+        System.out.println("=============END==========");
+        return o;
     }
 
     @Test
     public void testClassFile()throws Exception {
-        runScript(JEXL,"samples/class_demo.jexl");
+        runScript(JEXL, "samples/class_demo.jexl");
+
     }
 
     @Test

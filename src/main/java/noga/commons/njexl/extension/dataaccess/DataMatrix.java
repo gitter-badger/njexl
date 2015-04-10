@@ -308,7 +308,7 @@ public class DataMatrix {
                         Object ret = anon.execute();
                         value = String.format("%s", ret);
                     }else{
-                        Double[] a = TypeUtility.sqlmath(data);
+                        Object[] a = TypeUtility.sqlmath(data);
                         value = String.format("%s", a[2]);
                     }
                     //create a row with aggregated rows for the column

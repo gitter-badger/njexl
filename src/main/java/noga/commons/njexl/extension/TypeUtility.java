@@ -707,27 +707,27 @@ public class TypeUtility {
 
     }
 
-    public static Double[] sqlmath(Object... argv) {
-        Double[] math = new Double[]{null, null, null};
+    public static Object[] sqlmath(Object... argv) {
+        Object[] math = new Object[]{null, null, null};
+        JexlArithmetic arithmetic = new JexlArithmetic(false);
         ArrayList list = combine(argv);
         if (list.size() > 0) {
             int index = 0;
             Object obj = list.get(index);
 
-            math[0] = castDouble(obj, 0);
+            math[0] = obj;
             math[1] = math[0];
             math[2] = math[0];
             for (index = 1; index < list.size(); index++) {
                 obj = list.get(index);
 
-                Double value = castDouble(obj, 0);
-                if (value < math[0]) {
-                    math[0] = value;  // MIN
+                if ( arithmetic.lessThan(obj, math[0]) ) {
+                    math[0] = obj;  // MIN
                 }
-                if (value > math[1]) {
-                    math[1] = value;   // MAX
+                if (arithmetic.greaterThan(obj , math[1])) {
+                    math[1] = obj;   // MAX
                 }
-                math[2] = math[2] + value; // SUM
+                math[2] = arithmetic.add( math[2] ,obj); // SUM
             }
         }
         return math;
