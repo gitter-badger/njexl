@@ -191,6 +191,7 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
      */
     public Object execute(JexlContext context, Object... args) {
         interpreter = jexl.createInterpreter(context);
+        interpreter.current = this;
         interpreter.setFrame(script.createFrame(args));
         // the following are key for calling methods ...
         interpreter.imports.put(importName, this);

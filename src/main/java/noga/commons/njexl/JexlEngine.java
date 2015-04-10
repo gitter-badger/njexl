@@ -495,6 +495,13 @@ public class JexlEngine {
         return createScript(scriptText, null, null);
     }
 
+    public Script createCopyScript(String scriptText,Script parent) {
+        Script child =  createScript(scriptText, null, null);
+        child.imports().putAll(parent.imports());
+        child.methods().putAll(parent.methods());
+        return child;
+    }
+
     /**
      * Creates a Script from a String containing valid JEXL syntax.
      * This method parses the script which validates the syntax.

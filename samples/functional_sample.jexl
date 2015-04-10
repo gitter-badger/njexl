@@ -10,6 +10,12 @@ def my_max_function(){
     o = sqlmath(__args__)
     return o[1]
 }
-// in here would result in var args 
+
+def func_taking_other_function( func ){
+   y = `#{func}( 10, 1, 2 )`
+   out:println(y)
+}
+// in here would result in var args
 x = my_max_function{ int($) }( '1', 2, '3', 4, '5')
 out:println(x)
+func_taking_other_function( 'my_max_function' )

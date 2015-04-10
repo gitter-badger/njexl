@@ -1787,13 +1787,15 @@ public class Interpreter implements ParserVisitor {
     public static final Pattern CURRY_PATTERN = Pattern.compile("\\#\\{(?<expr>[^\\{^\\}]*)\\}",
                                        Pattern.MULTILINE);
 
+    Script current;
+
     protected Object curry(String toBeCurried) {
         String ret = toBeCurried;
         Matcher m = CURRY_PATTERN.matcher(ret);
         while (m.find()) {
             String expression = m.group("expr");
             try {
-                Script curry = jexlEngine.createScript(expression);
+                Script curry = jexlEngine.createCopyScript(expression,current);
                 Object o = curry.execute(context);
                 String val = String.format("%s", o);
                 ret = m.replaceFirst(val);
@@ -1804,7 +1806,7 @@ public class Interpreter implements ParserVisitor {
         }
         // now, in here, finally execute all ....
         try {
-            Script curry = jexlEngine.createScript(ret);
+            Script curry = jexlEngine.createCopyScript(ret,current);
             Object c = curry.execute(context);
             return c;
         }catch (Exception e){
