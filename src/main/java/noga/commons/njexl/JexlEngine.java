@@ -591,8 +591,8 @@ public class JexlEngine {
         if (scriptText == null) {
             throw new NullPointerException("scriptText is null");
         }
-        //do the implicit "..." thing.
-        scriptText = scriptText.replaceAll("\\.\\.\\.[\\r\\n]+", "");
+        //do the implicit "\..." thing.
+        scriptText = scriptText.replaceAll("\\\\.\\.\\.[\\r\\n]+", "");
 
         // Parse the expression
         ASTJexlScript tree = parse(scriptText, info, new Scope(names));

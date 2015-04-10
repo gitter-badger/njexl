@@ -1,4 +1,5 @@
-import 'java.lang.System.out' as out
+import 'java.lang.System.out' \...
+ as out
 
 def Some1{
 
