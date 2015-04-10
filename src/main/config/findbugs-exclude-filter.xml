@@ -19,33 +19,33 @@
 <FindBugsFilter>
     <!-- Ignore JavaCC generated classes -->
     <Match>
-        <Class name="org.apache.commons.jexl2.parser.ParseException"/>
+        <Class name="noga.commons.njexl.parser.ParseException"/>
     </Match>
     <Match>
-        <Class name="org.apache.commons.jexl2.parser.Parser"/>
+        <Class name="noga.commons.njexl.parser.Parser"/>
     </Match>
     <Match>
-        <Class name="org.apache.commons.jexl2.parser.ParserConstants"/>
+        <Class name="noga.commons.njexl.parser.ParserConstants"/>
     </Match>
     <Match>
-        <Class name="org.apache.commons.jexl2.parser.ParserTokenManager"/>
+        <Class name="noga.commons.njexl.parser.ParserTokenManager"/>
     </Match>
     <Match>
-        <Class name="org.apache.commons.jexl2.parser.ParserTreeConstants"/>
+        <Class name="noga.commons.njexl.parser.ParserTreeConstants"/>
     </Match>
     <Match>
-        <Class name="org.apache.commons.jexl2.parser.TokenMgrError"/>
+        <Class name="noga.commons.njexl.parser.TokenMgrError"/>
     </Match>
     <!-- Ignore deliberately unused field -->
     <Match>
-        <Class name="org.apache.commons.jexl2.Interpreter"/>
+        <Class name="noga.commons.njexl.Interpreter"/>
         <Field name="parameters"/>
     </Match>
     <!-- Deprecated and unused, included for binary compat only -->
     <Match>
-        <Class name="org.apache.commons.jexl2.parser.ASTFloatLiteral"/>
+        <Class name="noga.commons.njexl.parser.ASTFloatLiteral"/>
     </Match>
     <Match>
-        <Class name="org.apache.commons.jexl2.parser.ASTIntegerLiteral"/>
+        <Class name="noga.commons.njexl.parser.ASTIntegerLiteral"/>
     </Match>
 </FindBugsFilter>

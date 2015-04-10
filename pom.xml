@@ -18,7 +18,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.commons</groupId>
+    <groupId>noga.commons</groupId>
     <artifactId>njexl</artifactId>
     <version>0.1-SNAPSHOT</version>
     <name>New Jexl For Testing</name>
@@ -205,10 +205,10 @@
                     <execution>
                         <id>jexl-jjtree</id>
                         <configuration>
-                            <sourceDirectory>${basedir}/src/main/java/org/apache/commons/jexl2/parser</sourceDirectory>
+                            <sourceDirectory>${basedir}/src/main/java/noga/commons/njexl/parser</sourceDirectory>
                             <outputDirectory>${project.build.directory}/generated-sources/java</outputDirectory>
                             <timestampDirectory>${project.build.directory}/generated-sources/javacc-timestamp</timestampDirectory>
-                            <packageName>org.apache.commons.jexl2.parser</packageName>
+                            <packageName>noga.commons.njex.parser</packageName>
                         </configuration>
                         <goals>
                             <goal>jjtree-javacc</goal>
@@ -225,7 +225,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib</classpathPrefix>
-                            <mainClass>org.apache.commons.jexl2.Main</mainClass>
+                            <mainClass>noga.commons.njexl.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
