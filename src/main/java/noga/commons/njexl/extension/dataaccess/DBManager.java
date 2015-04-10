@@ -1,8 +1,7 @@
 package noga.commons.njexl.extension.dataaccess;
 
 import noga.commons.njexl.extension.TypeUtility;
-import noga.commons.njexl.extension.ListSet;
-import noga.commons.njexl.extension.TypeUtility;
+import noga.commons.njexl.extension.datastructures.ListSet;
 
 import java.sql.*;
 import java.util.ArrayList;

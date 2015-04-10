@@ -5,12 +5,10 @@ import noga.commons.njexl.JexlContext;
 import noga.commons.njexl.JexlException;
 import noga.commons.njexl.Script;
 import noga.commons.njexl.parser.JexlNode;
-import noga.commons.njexl.*;
-import noga.commons.njexl.extension.ListSet;
+import noga.commons.njexl.extension.datastructures.ListSet;
 import noga.commons.njexl.extension.SetOperations;
 import noga.commons.njexl.parser.ASTBlock;
 import noga.commons.njexl.parser.ASTMethodDef;
-import noga.commons.njexl.parser.JexlNode;
 
 import java.util.HashMap;
 import java.util.Set;

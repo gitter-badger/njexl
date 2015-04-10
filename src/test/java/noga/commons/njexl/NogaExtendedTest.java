@@ -17,7 +17,7 @@
 
 package noga.commons.njexl;
 
-import noga.commons.njexl.extension.ListSet;
+import noga.commons.njexl.extension.datastructures.ListSet;
 import noga.commons.njexl.extension.SetOperations;
 import noga.commons.njexl.extension.TypeUtility;
 import org.junit.Assert;

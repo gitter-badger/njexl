@@ -1,6 +1,8 @@
-package noga.commons.njexl.extension;
+package noga.commons.njexl.extension.datastructures;
 
 import noga.commons.njexl.Main;
+import noga.commons.njexl.extension.TypeUtility;
+
 import java.util.HashMap;
 import java.util.List;
 

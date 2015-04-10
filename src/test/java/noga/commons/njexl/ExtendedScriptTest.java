@@ -1,12 +1,10 @@
 package noga.commons.njexl;
 
 
-import noga.commons.njexl.extension.Tuple;
+import noga.commons.njexl.extension.datastructures.Tuple;
 import noga.commons.njexl.extension.dataaccess.XmlMap;
-import noga.commons.njexl.extension.Tuple;
 import noga.commons.njexl.extension.dataaccess.DBManager;
 import noga.commons.njexl.extension.dataaccess.DataMatrix;
-import noga.commons.njexl.extension.dataaccess.XmlMap;
 import org.junit.Test;
 import java.util.ArrayList;
 

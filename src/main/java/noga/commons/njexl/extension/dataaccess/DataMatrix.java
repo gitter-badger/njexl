@@ -1,15 +1,9 @@
 package noga.commons.njexl.extension.dataaccess;
 
 import noga.commons.njexl.Interpreter;
-import noga.commons.njexl.extension.ListSet;
+import noga.commons.njexl.extension.datastructures.ListSet;
 import noga.commons.njexl.extension.SetOperations;
-import noga.commons.njexl.extension.Tuple;
-import noga.commons.njexl.extension.TypeUtility;
-import noga.commons.njexl.extension.iterators.RangeIterator;
-import noga.commons.njexl.Interpreter.AnonymousParam;
-import noga.commons.njexl.extension.ListSet;
-import noga.commons.njexl.extension.SetOperations;
-import noga.commons.njexl.extension.Tuple;
+import noga.commons.njexl.extension.datastructures.Tuple;
 import noga.commons.njexl.extension.TypeUtility;
 import noga.commons.njexl.extension.iterators.RangeIterator;
 

@@ -1,4 +1,4 @@
-package noga.commons.njexl.extension;
+package noga.commons.njexl.extension.datastructures;
 
 import java.util.*;
 
