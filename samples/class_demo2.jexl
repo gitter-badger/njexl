@@ -13,5 +13,6 @@ def Some1{
 
 x = new ('Some1')
 x.do_print()
-//x.supers['yy'].do_something()
+out:println( x.supers )
+
 

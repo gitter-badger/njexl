@@ -2012,8 +2012,13 @@ public class Interpreter implements ParserVisitor {
         JexlPropertyGet vg = uberspect.getPropertyGet(object, attribute, node);
         if (vg != null) {
             try {
-
-                Object value = vg.invoke(object);
+                Object value = null;
+                Exception ex = null;
+                try {
+                    value = vg.invoke(object);
+                }catch (Exception e){
+                    ex = e ;
+                }
                 // before we do something check for once if the field value is that?
                 if ( value == null ){
                     Field field = ((UberspectImpl)uberspect).getField(object, attribute.toString(), null);
@@ -2023,6 +2028,9 @@ public class Interpreter implements ParserVisitor {
                         if ( value != null ){
                             vg = fg ;
                         }
+                    }else{
+                        // null field, raise ex
+                        throw ex;
                     }
                 }
                 // cache executor in volatile JexlNode.value

@@ -3,9 +3,7 @@ package noga.commons.njexl.extension.oop;
 import noga.commons.njexl.parser.ASTClassDef;
 import noga.commons.njexl.parser.JexlNode;
 import noga.commons.njexl.Interpreter;
-import noga.commons.njexl.parser.ASTClassDef;
 import noga.commons.njexl.parser.ASTMethodDef;
-import noga.commons.njexl.parser.JexlNode;
 import java.util.HashMap;
 import noga.commons.njexl.extension.oop.ScriptClassBehaviour.TypeAware;
 
