@@ -122,7 +122,12 @@ public class Main {
             int e = TypeUtility.castInteger(o, -1);
             System.exit(e);
         }catch (Exception e){
-            e.printStackTrace();
+            if ( e instanceof JexlException ){
+                System.err.println(((JexlException) e).getFaultyCode());
+            }
+            else {
+                e.printStackTrace();
+            }
             System.exit(1);
         }
     }

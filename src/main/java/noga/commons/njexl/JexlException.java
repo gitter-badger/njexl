@@ -41,6 +41,20 @@ public class JexlException extends RuntimeException {
     /** Maximum number of characters around exception location. */
     private static final int MAX_EXCHARLOC = 10;
 
+    String faultyCode = "unknown" ;
+
+
+    public String getFaultyCode(){
+        return  detailedMessage() + " : " + faultyCode ;
+    }
+
+    private void populateFault(){
+        Debugger d = new Debugger();
+        if ( mark != null ) {
+            faultyCode = d.data(mark);
+        }
+    }
+
     /**
      * Creates a new JexlException.
      * @param node the node causing the error
@@ -50,7 +64,7 @@ public class JexlException extends RuntimeException {
         super(msg);
         mark = node;
         info = node != null ? node.debugInfo() : null;
-
+        populateFault();
     }
 
     /**
@@ -63,6 +77,7 @@ public class JexlException extends RuntimeException {
         super(msg, unwrap(cause));
         mark = node;
         info = node != null ? node.debugInfo() : null;
+        populateFault();
     }
 
     /**

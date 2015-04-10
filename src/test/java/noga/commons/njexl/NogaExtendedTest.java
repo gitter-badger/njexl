@@ -118,9 +118,9 @@ public class NogaExtendedTest extends JexlTestCase {
     public void testMultiSetFunctions() throws Exception {
         HashMap oe = SetOperations.multiset(new int[]{});
 
-        HashMap a = SetOperations.multiset(new int[]{0, 1, 2, 3,3,3,3});
-        HashMap b = SetOperations.multiset(new int[]{0, 1, 2, 3,3,3,3, 4,5});
-        HashMap c = SetOperations.multiset(new int[]{5, 6,6,7,8});
+        HashMap a = SetOperations.multiset(new int[]{0, 1, 2, 3, 3, 3, 3});
+        HashMap b = SetOperations.multiset(new int[]{0, 1, 2, 3, 3, 3, 3, 4, 5});
+        HashMap c = SetOperations.multiset(new int[]{5, 6, 6, 7, 8});
 
         Assert.assertTrue(SetOperations.is_mset_relation(oe, oe, "="));
 
@@ -141,7 +141,7 @@ public class NogaExtendedTest extends JexlTestCase {
     public void testJoin() throws Exception{
         int[] l = new int[]{0, 1, 2, 3};
         String[] r = new String[]{"hi","hello"};
-        List ret = SetOperations.join(l,r);
+        List ret = SetOperations.join(l, r);
         Assert.assertTrue(ret.size() == l.length * r.length);
     }
 
@@ -201,6 +201,16 @@ public class NogaExtendedTest extends JexlTestCase {
         Object o = e.execute(jc);
         assertTrue(o != null);
 
+    }
+
+    @Test
+    public void testWithMixedModeClass() throws Exception {
+        JexlContext jc = new MapContext();
+        // basically test accessing random fields - where another getter is available
+        String s = "x = dict() ; x.MAXIMUM_CAPACITY " ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertNotNull(o);
     }
 
     private static class XClass {

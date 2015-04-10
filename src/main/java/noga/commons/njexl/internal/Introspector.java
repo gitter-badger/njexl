@@ -255,16 +255,12 @@ public class Introspector {
                 return executor;
             }
         }
-        // if that didn't work, look for set("foo")
+        // if that didn't work, look for get("foo")
         executor = new DuckGetExecutor(this, claz, identifier);
         if (executor.isAlive()) {
             return executor;
         }
-        // if that didn't work, look for set("foo")
-        executor = new DuckGetExecutor(this, claz, property);
-        if (executor.isAlive()) {
-            return executor;
-        }
+
         return null;
     }
 
@@ -305,11 +301,7 @@ public class Introspector {
         if (executor.isAlive()) {
             return executor;
         }
-        // if that didn't work, look for set("foo")
-        executor = new DuckSetExecutor(this, claz, property, arg);
-        if (executor.isAlive()) {
-            return executor;
-        }
+
         return null;
     }
 }

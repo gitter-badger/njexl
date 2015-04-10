@@ -17,21 +17,20 @@
 package noga.commons.njexl;
 import noga.commons.njexl.extension.TypeUtility;
 import noga.commons.njexl.extension.oop.ScriptClass;
-import noga.commons.njexl.introspection.JexlPropertySet;
-import noga.commons.njexl.introspection.Uberspect;
+import noga.commons.njexl.internal.MapGetExecutor;
+import noga.commons.njexl.introspection.*;
 import noga.commons.njexl.parser.*;
 import noga.commons.njexl.extension.SetOperations;
 import noga.commons.njexl.extension.TypeUtility;
 import noga.commons.njexl.extension.oop.ScriptClassBehaviour.Executable;
 import noga.commons.njexl.extension.oop.ScriptClass;
 import noga.commons.njexl.extension.oop.ScriptClassInstance;
-import noga.commons.njexl.introspection.JexlMethod;
-import noga.commons.njexl.introspection.JexlPropertyGet;
 import noga.commons.njexl.introspection.JexlPropertySet;
 import noga.commons.njexl.introspection.Uberspect;
 import org.apache.commons.logging.Log;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -2013,7 +2012,19 @@ public class Interpreter implements ParserVisitor {
         JexlPropertyGet vg = uberspect.getPropertyGet(object, attribute, node);
         if (vg != null) {
             try {
+
                 Object value = vg.invoke(object);
+                // before we do something check for once if the field value is that?
+                if ( value == null ){
+                    Field field = ((UberspectImpl)uberspect).getField(object, attribute.toString(), null);
+                    if (field != null) {
+                        JexlPropertyGet fg = new UberspectImpl.FieldPropertyGet(field);
+                        value = fg.invoke(object);
+                        if ( value != null ){
+                            vg = fg ;
+                        }
+                    }
+                }
                 // cache executor in volatile JexlNode.value
                 if (node != null && cache && vg.isCacheable()) {
                     node.jjtSetValue(vg);

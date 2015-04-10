@@ -1,0 +1,17 @@
+import 'java.lang.System.out' as out
+
+def Some1{
+
+    def __new__ (me,a='xxx'){
+          me.s = a
+      }
+
+    def do_print(me){
+        out:println('Some1! : ' + me.s)
+    }
+}
+
+x = new ('Some1')
+x.do_print()
+//x.supers['yy'].do_something()
+
