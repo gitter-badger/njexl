@@ -26,6 +26,11 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testNamedParameters()throws Exception {
+        runScript(JEXL, "samples/named_sample.jexl");
+    }
+
+    @Test
     public void testClassFile()throws Exception {
         runScript(JEXL, "samples/class_demo.jexl");
     }

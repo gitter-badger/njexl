@@ -67,7 +67,7 @@ public class ScriptMethod {
                 continue;
             }
             if (args[i] instanceof Interpreter.NamedArgs) {
-                Interpreter.NamedArgs na = (Interpreter.NamedArgs) args[0];
+                Interpreter.NamedArgs na = (Interpreter.NamedArgs) args[i];
                 map.put(na.name, na.value);
                 namedArgs = true ;
                 continue;

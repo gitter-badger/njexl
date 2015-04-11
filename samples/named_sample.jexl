@@ -1,0 +1,22 @@
+/*
+ Showcases the named parameters 
+*/
+import 'java.lang.System.out' as out 
+
+def some_method(param1='1',param2='2'){
+     out:printf('p1 is : %s , p2 is %s', param1,param2)
+     out:println()
+}
+
+// should take defaults 
+some_method()
+// only the fist parameter
+some_method(2)
+// both the positional paramater
+some_method(3,4)
+// specific parameter : 1 
+some_method(param2='42')
+// Parameter 2 
+some_method(param1='42')
+// parameters in reverse order 
+some_method(param2='42', param1='24')

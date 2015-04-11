@@ -1,0 +1,7 @@
+	import 'java.lang.System.out' as out 
+
+	def func_taking_other_function( func ){
+	   `#{func}( 'hello!' )`
+	}
+
+	my:func_taking_other_function('out:println')
