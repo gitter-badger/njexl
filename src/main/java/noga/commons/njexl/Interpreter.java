@@ -17,13 +17,10 @@
 package noga.commons.njexl;
 import noga.commons.njexl.extension.TypeUtility;
 import noga.commons.njexl.extension.oop.ScriptClass;
-import noga.commons.njexl.internal.MapGetExecutor;
 import noga.commons.njexl.introspection.*;
 import noga.commons.njexl.parser.*;
 import noga.commons.njexl.extension.SetOperations;
-import noga.commons.njexl.extension.TypeUtility;
 import noga.commons.njexl.extension.oop.ScriptClassBehaviour.Executable;
-import noga.commons.njexl.extension.oop.ScriptClass;
 import noga.commons.njexl.extension.oop.ScriptClassInstance;
 import noga.commons.njexl.introspection.JexlPropertySet;
 import noga.commons.njexl.introspection.Uberspect;
@@ -468,6 +465,12 @@ public class Interpreter implements ParserVisitor {
         String as = node.jjtGetChild(1).image;
         try {
             if (functions.containsKey(as) || imports.containsKey(as)) {
+                if ( data instanceof  Script ){
+                    // no need to bother
+                    //probably log a statement:
+                    System.out.printf("Ignoring re-import of [%s] from [%s] \n", as,from);
+                    return null;
+                }
                 throw new Exception(String.format("[%s] is already taken as import name!", as));
             }
             try {
@@ -493,6 +496,11 @@ public class Interpreter implements ParserVisitor {
             }
 
             Script freshlyImported = jexlEngine.importScript(from, as);
+            //recurse it's own imports
+            for ( String ext : freshlyImported.imports().keySet() ){
+                ASTImportStatement extImp = freshlyImported.imports().get(ext);
+                visit(extImp,current);
+            }
             ((Executable)freshlyImported).setInterpreter(this);
             imports.put(as, freshlyImported);
             context.set(as, freshlyImported);

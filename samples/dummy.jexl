@@ -1,6 +1,7 @@
+import 'java.lang.System.out' as out
 
 def some_func(s){
-    sys.out.println(s)
+    out:println(s)
     my:void_func()
     return true
 }
