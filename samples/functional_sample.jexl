@@ -3,6 +3,7 @@
 */
 
 import 'java.lang.System.out' as out
+import '_/samples/dummy.jexl' as dummy
 
 // This does not take any param, so, a call to this 
 def my_max_function(){
@@ -20,5 +21,9 @@ out.println(str(__args__))
 x = my_max_function{ int($) }( '1', 2, '3', 4, '5')
 out.println(str(__args__))
 out:println(x)
+// current script
 func_taking_other_function( 'my_max_function' )
+// other script
+func_taking_other_function( 'dummy:some_func' )
+
 out.println(str(__args__))

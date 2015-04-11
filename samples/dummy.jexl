@@ -1,3 +1,4 @@
+
 def some_func(s){
     sys.out.println(s)
     my:void_func()

@@ -173,7 +173,9 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
         if ( interpreter.context.has(method)){
             Object m = interpreter.context.get(method);
             if ( m!= null ){
-                return methods.get(m.toString());
+                String[] arr = m.toString().split(":");
+                // ignore first, call by last.
+                return methods.get(arr[arr.length-1]);
             }
         }
         return null;

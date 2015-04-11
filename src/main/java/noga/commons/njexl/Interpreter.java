@@ -79,7 +79,15 @@ public class Interpreter implements ParserVisitor {
         if ( context.has( name ) ){
             Object fo = context.get(name);
             if ( fo != null ) {
-                return resolveScriptForFunction(prefix, fo.toString() );
+                String m = fo.toString();
+                String[] arr = m.split(":");
+                if ( arr.length > 1 ){
+                    prefix = arr[0];
+                    name = arr[1];
+                }else{
+                    name = m ;
+                }
+                return resolveScriptForFunction(prefix, name );
             }
         }
         return null;
