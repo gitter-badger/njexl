@@ -164,10 +164,25 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
         this.interpreter = interpreter ;
     }
 
+    ScriptMethod getMethod(String method){
+        ScriptMethod methodDef = methods.get(method);
+        if ( methodDef != null ){
+            return methodDef;
+        }
+        // by argument?
+        if ( interpreter.context.has(method)){
+            Object m = interpreter.context.get(method);
+            if ( m!= null ){
+                return methods.get(m.toString());
+            }
+        }
+        return null;
+    }
+
     @Override
     public Object execMethod(String method,Object[] args){
         try {
-            ScriptMethod methodDef = methods.get(method);
+            ScriptMethod methodDef = getMethod(method);
             if (methodDef == null) {
                 throw new Exception("Method : '" + method + "' is not found in : " + this.importName);
             }

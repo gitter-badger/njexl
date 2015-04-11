@@ -62,16 +62,24 @@ public class Interpreter implements ParserVisitor {
 
     protected Script resolveScriptForFunction(String prefix, String name) {
         Script script = imports.get(prefix);
-        if (script != null && script.methods().containsKey(name)) {
-            return script;
+        if (script != null ) {
+            if (script.methods().containsKey(name)) {
+                return script;
+            }
         }
-
         // else do some more
         for (String key : imports.keySet()) {
             script = imports.get(key);
             HashMap methods = script.methods();
             if (methods.containsKey(name)) {
                 return script;
+            }
+        }
+        // now, is this name of a method passed as an arg?
+        if ( context.has( name ) ){
+            Object fo = context.get(name);
+            if ( fo != null ) {
+                return resolveScriptForFunction(prefix, fo.toString() );
             }
         }
         return null;

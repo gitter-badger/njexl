@@ -12,7 +12,7 @@ def my_max_function(){
 }
 
 def func_taking_other_function( func ){
-   y = `#{func}( 10, 1, 2 )`
+   y = func( 10, 1, 2 )
    out:println(y)
 }
 // in here would result in var args
