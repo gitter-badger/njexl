@@ -56,4 +56,16 @@ public class ObjectContext<T> implements JexlContext {
     public void remove(String name) {
         jexl.setProperty(object, name, null);
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public JexlContext copy() {
+        Class c = object.getClass();
+        try {
+            Object o = c.newInstance();
+            return new ObjectContext<>(jexl,o);
+        }catch (Exception e){
+        }
+        return null;
+    }
 }

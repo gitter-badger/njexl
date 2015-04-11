@@ -13,10 +13,11 @@ import java.util.ArrayList;
  */
 public class ExtendedScriptTest extends JexlTestCase {
 
-    private static Object runScript(JexlEngine JEXL, String path)throws Exception{
+    private static Object runScript(JexlEngine JEXL, String path,Object...args)throws Exception{
         System.out.println("==========START=============");
 
         JexlContext jc = new MapContext();
+        jc.set(Script.ARGS, args);
         JEXL.setFunctions(Main.getFunction(jc));
         Script e = JEXL.importScript(path);
         Object o = e.execute(jc);

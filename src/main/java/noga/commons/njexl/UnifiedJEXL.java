@@ -1266,6 +1266,12 @@ public final class UnifiedJEXL {
         }
 
         /** {@inheritDoc} */
+        @Override
+        public JexlContext copy() {
+            return wrap.copy();
+        }
+
+        /** {@inheritDoc} */
         public Object resolveNamespace(String ns) {
             if ("jexl".equals(ns)) {
                 return this;

@@ -82,7 +82,7 @@ public class NogaExtendedTest extends JexlTestCase {
 
     @Test
     public void testLineStatement() throws Exception {
-        Script e = JEXL.createScript("if ( true ) { \n x = y ...\r *10 \n return x*10 }else{\n  return 0 }");
+        Script e = JEXL.createScript("if ( true ) { \n x = y \\...\r *10 \n return x*10 }else{\n  return 0 }");
         JexlContext jc = new MapContext();
         jc.set("y", new Integer(1));
 

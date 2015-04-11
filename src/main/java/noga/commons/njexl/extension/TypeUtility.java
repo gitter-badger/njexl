@@ -359,7 +359,7 @@ public class TypeUtility {
 
     public static String castString(Object... args) {
         if (args.length == 0) {
-            return null;
+            return "";
         }
         if ( args[0] instanceof AnonymousParam){
             AnonymousParam anon = (AnonymousParam)args[0];

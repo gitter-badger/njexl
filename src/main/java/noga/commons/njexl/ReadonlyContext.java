@@ -54,4 +54,10 @@ public final class ReadonlyContext implements JexlContext {
     public boolean has(String name) {
         return wrapped.has(name);
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public JexlContext copy() {
+        return this;
+    }
 }

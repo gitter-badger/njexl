@@ -118,6 +118,12 @@ public class JexlEngine {
         public void remove(String name) {
             throw new UnsupportedOperationException("Not supported in void context.");
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public JexlContext copy() {
+            return this;
+        }
     };
 
     /**

@@ -1,9 +1,6 @@
 package noga.commons.njexl.extension.oop;
 
-import noga.commons.njexl.Interpreter;
-import noga.commons.njexl.JexlContext;
-import noga.commons.njexl.JexlException;
-import noga.commons.njexl.Script;
+import noga.commons.njexl.*;
 import noga.commons.njexl.parser.JexlNode;
 import noga.commons.njexl.extension.datastructures.ListSet;
 import noga.commons.njexl.extension.SetOperations;
@@ -110,15 +107,11 @@ public class ScriptMethod {
         }
     }
 
-    private void removeFromContext(JexlContext context, HashMap<String, Object> map) {
-        for (String key : map.keySet()) {
-            context.remove(key);
-        }
-    }
-
     public Object invoke(Object me, Interpreter interpreter, Object[] args) throws Exception {
-        //process params, if need be
-        JexlContext context = interpreter.getContext();
+        JexlContext oldContext = interpreter.getContext() ;
+        //process params : copy context
+        JexlContext context = oldContext.copy();
+
         HashMap map = getParamValues(interpreter, args);
         if ( instance ){
             // do double check : to be sure
@@ -129,6 +122,7 @@ public class ScriptMethod {
         }
         addToContext(context, map);
         try {
+            interpreter.setContext(context);
             Object ret = astBlock.jjtAccept(interpreter,null);
             return ret;
         }catch (Exception e){
@@ -139,7 +133,7 @@ public class ScriptMethod {
         }
         finally {
             //finally remove
-            removeFromContext(context, map);
+            interpreter.setContext(oldContext);
         }
         return null;
     }

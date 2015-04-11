@@ -24,6 +24,9 @@ package noga.commons.njexl;
  *  @version $Id: JexlContext.java 1202769 2011-11-16 16:33:02Z henrib $
  */
 public interface JexlContext {
+
+    String PARENT_CONTEXT = "__parent__" ;
+
     /**
      * Gets the value of a variable.
      * @param name the variable's name
@@ -53,4 +56,11 @@ public interface JexlContext {
      * @param name
      */
     void remove(String name);
+
+    /**
+     * Needed to call methods,
+     * Copies the context
+     * @return
+     */
+    JexlContext copy();
 }

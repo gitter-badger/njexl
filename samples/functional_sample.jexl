@@ -16,6 +16,9 @@ def func_taking_other_function( func ){
    out:println(y)
 }
 // in here would result in var args
+out.println(str(__args__))
 x = my_max_function{ int($) }( '1', 2, '3', 4, '5')
+out.println(str(__args__))
 out:println(x)
 func_taking_other_function( 'my_max_function' )
+out.println(str(__args__))

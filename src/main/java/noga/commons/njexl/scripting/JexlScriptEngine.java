@@ -343,6 +343,13 @@ public class JexlScriptEngine extends AbstractScriptEngine implements Compilable
             return bnd.containsKey(name);
         }
 
+        /** {@inheritDoc} */
+        @Override
+        public JexlContext copy() {
+            // no idea how to copy
+            return null;
+        }
+
     }
 
     /**

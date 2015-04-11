@@ -66,4 +66,12 @@ public class MapContext implements JexlContext {
             map.remove(name);
         }
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public JexlContext copy() {
+        HashMap<String,Object> copy = new HashMap(map);
+        copy.put( JexlContext.PARENT_CONTEXT , this);
+        return new MapContext(copy);
+    }
 }

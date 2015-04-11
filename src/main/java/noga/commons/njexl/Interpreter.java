@@ -101,7 +101,7 @@ public class Interpreter implements ParserVisitor {
     /**
      * The context to store/retrieve variables.
      */
-    protected final JexlContext context;
+    protected JexlContext context;
     /**
      * Strict interpreter flag. Do not modify; will be made final/private in a later version.
      */
@@ -265,6 +265,15 @@ public class Interpreter implements ParserVisitor {
      */
     public JexlContext getContext() {
         return context;
+    }
+
+    /**
+     * Sets the context.
+     * This is very dangerous, but then needed
+     * @since 2.1
+     */
+    public void setContext(JexlContext context) {
+         this.context = context ;
     }
 
     /**
