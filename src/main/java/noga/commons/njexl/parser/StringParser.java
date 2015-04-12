@@ -16,6 +16,8 @@
  */
 package noga.commons.njexl.parser;
 
+import java.util.HashMap;
+
 /**
  * Common constant strings utilities.
  * <p>
@@ -68,6 +70,16 @@ public class StringParser {
     /** The length of an escaped unicode sequence. */
     private static final int UCHAR_LEN = 4;
 
+    public static final HashMap<Character,Character> validEscapes = new HashMap<>();
+
+    static {
+        validEscapes.put('n','\n');
+        validEscapes.put('r','\r');
+        validEscapes.put('t','\t');
+        validEscapes.put('b','\b');
+        validEscapes.put('f','\f');
+    }
+
     /**
      * Read the remainder of a string till a given separator,
      * handles escaping through '\' syntax.
@@ -87,6 +99,13 @@ public class StringParser {
                 if (c == 'u' && (index + UCHAR_LEN) < end && readUnicodeChar(strb, str, index + 1) > 0) {
                     index += UCHAR_LEN;
                 } else {
+                    //intercept before
+                    if ( validEscapes.containsKey(c)){
+                        strb.append(validEscapes.get(c));
+                        escape = false ;
+                        continue;
+                    }
+
                     // if c is not an escapable character, re-emmit the backslash before it
                     boolean notSeparator = sep == 0 ? c != '\'' && c != '"' : c != sep;
                     if (notSeparator && c != '\\') {

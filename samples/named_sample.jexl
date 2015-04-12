@@ -4,8 +4,7 @@
 import 'java.lang.System.out' as out 
 
 def some_method(param1='1',param2='2'){
-     out:printf('p1 is : %s , p2 is %s', param1,param2)
-     out:println()
+     out:printf('p1 is : %s\tp2 is %s\n', param1,param2)
 }
 
 // should take defaults 
