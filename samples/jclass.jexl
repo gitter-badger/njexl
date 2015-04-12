@@ -1,0 +1,13 @@
+import  '_/class_demo.jexl' as  CD 
+
+
+def ExternalImport : CD:Some1 {}
+
+s1 = new ( 'CD:Some1' )
+s1.do_print()
+
+ei = new ( 'ExternalImport' )
+ei.do_print()
+ei.supers['CD:Some1'].do_print()
+
+return 0

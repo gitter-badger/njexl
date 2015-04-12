@@ -501,9 +501,9 @@ public class JexlEngine {
         return createScript(scriptText, null, null);
     }
 
-    public Script createCopyScript(String scriptText,Script parent) {
-        Script child =  createScript(scriptText, null, null);
-        if ( parent != null ) {
+    public Script createCopyScript(String scriptText, Script parent) {
+        Script child = createScript(scriptText, null, null);
+        if (parent != null) {
             child.imports().putAll(parent.imports());
             child.methods().putAll(parent.methods());
         }
@@ -547,6 +547,10 @@ public class JexlEngine {
         return importScript(from, Script.DEFAULT_IMPORT_NAME);
     }
 
+    public Script importScript(String from, String as) throws Exception {
+        return importScript(from, as, null);
+    }
+
     /**
      * Import a script from a location
      *
@@ -555,10 +559,16 @@ public class JexlEngine {
      * @return
      * @throws Exception
      */
-    public Script importScript(String from, String as) throws Exception {
-        String scriptText = null;
+    public Script importScript(String from, String as, Script base) throws Exception {
+        String scriptText;
+
         if (from.startsWith(Script.RELATIVE)) {
-            from = System.getProperty("user.dir") + from.substring(1);
+
+            if ( base == null ) {
+                from = System.getProperty("user.dir") + from.substring(1);
+            }else{
+                from = base.location() + from.substring(1);
+            }
         }
         if (!from.endsWith(Script.DEFAULT_EXTENSION)) {
             from += Script.DEFAULT_EXTENSION;
@@ -569,16 +579,16 @@ public class JexlEngine {
         // name mangling for linking
         scriptText = scriptText.replaceAll(Script.SELF + ":", as + ":");
         // now create script
-        Script script = createScript(scriptText, null, null);
-        if (script instanceof ExpressionImpl) {
-            ExpressionImpl ei = ((ExpressionImpl) script);
-            ei.location = f.getAbsolutePath();
-            ei.importName = as;
-            System.out.printf("Script imported : %s@%s\n", ei.importName, ei.location);
-        }
+        //do the implicit "\..." thing.
+        scriptText = scriptText.replaceAll("\\\\.\\.\\.[\\r\\n]+", "");
+        // Parse the expression
+        ASTJexlScript tree = parse(scriptText, null, new Scope(null));
+        Script script = new ExpressionImpl(f.getAbsolutePath(), as, this, scriptText, tree);
+        System.out.printf("Script imported : %s@%s\n", as, f.getAbsolutePath());
         imports.put(as, script);
         return script;
     }
+
 
     /**
      * Creates a Script from a String containing valid JEXL syntax.

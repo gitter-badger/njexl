@@ -47,6 +47,24 @@ public class Interpreter implements ParserVisitor {
     }
 
     public ScriptClass resolveJexlClassName(String name){
+
+        String[] arr = name.split(":");
+        if ( arr.length > 1 ){
+            // namespaced
+            String s = arr[0];
+            name = arr[1];
+            Script script = imports.get(s);
+            if ( script == null ){
+                return null;
+            }
+            HashMap<String,ScriptClass> map = script.classes() ;
+            if ( map.containsKey(name )){
+                return map.get(name);
+            }
+            // you wanted specific, hence, I can not load you
+            return null;
+        }
+
         for ( String s : imports.keySet() ){
             Script script = imports.get(s);
             HashMap<String,ScriptClass> map = script.classes() ;
@@ -495,11 +513,18 @@ public class Interpreter implements ParserVisitor {
                 }
             }
 
-            Script freshlyImported = jexlEngine.importScript(from, as);
+            Script base;
+            if ( data == null ){
+                base = current ;
+            }else{
+                base = (Script)data;
+            }
+            Script freshlyImported = jexlEngine.importScript(from, as,base);
+
             //recurse it's own imports
             for ( String ext : freshlyImported.imports().keySet() ){
                 ASTImportStatement extImp = freshlyImported.imports().get(ext);
-                visit(extImp,current);
+                visit(extImp,base);
             }
             ((Executable)freshlyImported).setInterpreter(this);
             imports.put(as, freshlyImported);
@@ -541,6 +566,11 @@ public class Interpreter implements ParserVisitor {
 
     @Override
     public Object visit(ASTMethodDef node, Object data) {
+        return null;
+    }
+
+    @Override
+    public Object visit(ASTExtendsDef node, Object data) {
         return null;
     }
 

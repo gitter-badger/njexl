@@ -1,10 +1,14 @@
 package noga.commons.njexl.extension.oop;
 
+import noga.commons.njexl.Script;
 import noga.commons.njexl.parser.ASTClassDef;
 import noga.commons.njexl.parser.JexlNode;
 import noga.commons.njexl.Interpreter;
 import noga.commons.njexl.parser.ASTMethodDef;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
 import noga.commons.njexl.extension.oop.ScriptClassBehaviour.TypeAware;
 
 
@@ -64,6 +68,7 @@ public class ScriptClass  implements TypeAware {
         }
     }
 
+    final String ns;
     final String name;
 
     public String getName() {
@@ -73,7 +78,8 @@ public class ScriptClass  implements TypeAware {
     public ScriptClassInstance  instance(Interpreter interpreter, Object[] args) throws Exception {
 
         ScriptClassInstance instance = new ScriptClassInstance(this, interpreter);
-        for (String n : supers.keySet()) {
+        Set<String> superKeys = new HashSet<>(supers.keySet());
+        for (String n : superKeys ) {
             ScriptClass superClass = supers.get(n);
             if (superClass == null) {
                 superClass = interpreter.resolveJexlClassName(n);
@@ -81,10 +87,10 @@ public class ScriptClass  implements TypeAware {
                     throw new Exception("Superclass : '" + n + "' not found!");
                 }
                 // one time resolving of this
-                supers.put(n,superClass);
+                addSuper(superClass.ns, superClass.name, superClass);
             }
             ScriptClassInstance superClassInstance = superClass.instance(interpreter, args);
-            instance.supers.put( superClass.name, superClassInstance);
+            instance.addSuper(superClass.ns, superClass.name, superClassInstance);
         }
         if (constructor != null) {
             instance.execMethod(_INIT_, args);
@@ -93,14 +99,28 @@ public class ScriptClass  implements TypeAware {
         return instance ;
     }
 
-    public ScriptClass(ASTClassDef ref) {
+    protected void addSuper(String ns, String superName, ScriptClass value){
+        if ( this.ns.equals(ns)) {
+            supers.put(superName, value);
+        }
+        supers.put( ns +":" + superName, value);
+    }
+
+    public ScriptClass(ASTClassDef ref,String ns) {
+        this.ns = ns ;
         name = ref.jjtGetChild(0).image;
         methods = new HashMap<>();
         supers = new HashMap<>();
         int numChild = ref.jjtGetNumChildren();
         for (int i = 1; i < numChild - 1; i++) {
-            String superName = ref.jjtGetChild(i).image;
-            supers.put(superName, null);
+            int n = ref.jjtGetChild(i).jjtGetNumChildren();
+            String supNs = this.ns ;
+            String superName = ref.jjtGetChild(i).jjtGetChild(0).image ;
+            if ( n > 1){
+                supNs = superName ;
+                superName = ref.jjtGetChild(i).jjtGetChild(1).image ;
+            }
+            addSuper(supNs,superName,null);
         }
 
         findMethods(ref.jjtGetChild(numChild - 1));
@@ -138,6 +158,6 @@ public class ScriptClass  implements TypeAware {
 
     @Override
     public String toString(){
-        return "nClass " + name ;
+        return String.format("nClass %s:%s", ns, name) ;
     }
 }

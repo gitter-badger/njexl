@@ -249,6 +249,19 @@ final class Debugger implements ParserVisitor {
     }
 
     @Override
+    public Object visit(ASTExtendsDef node, Object data) {
+
+        int numChild = node.jjtGetNumChildren();
+        accept(node.jjtGetChild(0), data);
+
+        if ( numChild == 2) {
+            builder.append(":");
+            accept(node.jjtGetChild(1),data);
+        }
+        return data;
+    }
+
+    @Override
     public Object visit(ASTClassDef node, Object data) {
         int numChild = node.jjtGetNumChildren();
         builder.append("def ");
@@ -259,16 +272,16 @@ final class Debugger implements ParserVisitor {
             // the extends now
             builder.append(" : ");
             int numSupers = numChild - 2;
-            if (numSupers > 1) {
-                builder.append(node.jjtGetChild(i).image);
+            if (numSupers > 0) {
+                // accept the first
+                accept(node.jjtGetChild(i), data);
                 i++;
                 while (i < numChild - 1) {
                     builder.append(",");
-                    builder.append(node.jjtGetChild(i).image);
+                    accept(node.jjtGetChild(i),data);
                     i++;
                 }
             }
-            builder.replace(builder.length() - 1, builder.length() - 1, "");
         }
         // the block now :
         accept(node.jjtGetChild(numChild - 1), data);

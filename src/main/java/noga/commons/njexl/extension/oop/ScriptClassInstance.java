@@ -17,6 +17,14 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
 
     final HashMap<String,ScriptClassInstance> supers;
 
+    protected void addSuper(String ns, String superName, ScriptClassInstance value){
+        if ( scriptClass.ns.equals(ns)) {
+            //make direct calling possible ONLY if the namespace of child and parent match
+            supers.put(superName, value);
+        }
+        supers.put( ns +":" + superName, value);
+    }
+
     public HashMap<String,ScriptClassInstance> getSupers(){ return supers ; }
 
     Interpreter interpreter;

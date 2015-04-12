@@ -117,7 +117,7 @@ public class Main {
         JexlEngine JEXL = getJexl(jc);
         jc.set(Script.ARGS, args);
         try {
-            Script sc = JEXL.createScript(new File(args[0]));
+            Script sc = JEXL.importScript(args[0]);
             Object o = sc.execute(jc);
             int e = TypeUtility.castInteger(o, -1);
             System.exit(e);

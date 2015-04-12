@@ -74,7 +74,7 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
 
     protected void findInnerObjects(JexlNode node){
         if ( node instanceof ASTClassDef){
-            ScriptClass classDef = new ScriptClass((ASTClassDef)node);
+            ScriptClass classDef = new ScriptClass((ASTClassDef)node,importName);
             classes.put( classDef.getName() , classDef );
         }
         else if ( node instanceof ASTMethodDef){
@@ -95,7 +95,10 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
         methods = new HashMap<>();
         imports = new HashMap<>();
         classes = new HashMap<>();
-        location = from;
+        location = from ;
+        if ( location != null && !location.isEmpty() ){
+            location = location.substring(0,location.lastIndexOf("/"));
+        }
         importName = as;
         findImports(script);
         findInnerObjects(script);

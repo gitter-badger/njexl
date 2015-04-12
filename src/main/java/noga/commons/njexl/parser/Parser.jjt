@@ -701,9 +701,16 @@ void ReferenceExpression() : {}
     <LPAREN> Expression() <RPAREN> (LOOKAHEAD(1) <LBRACKET> Expression() <RBRACKET>)*
 }
 
+void ExtendsDef() #ExtendsDef : {}
+{
+   LOOKAHEAD(2) Identifier() <COLON> Identifier()
+   |
+   Identifier()
+}
+
 void ClassDef() #ClassDef : {}
 {
-    LOOKAHEAD(3) <DEF>  Identifier()  <COLON>  Identifier() ( <COMMA> Identifier() )*  Block()
+    LOOKAHEAD(3) <DEF>  Identifier()  <COLON>  ExtendsDef() ( <COMMA> ExtendsDef() )*  Block()
     |
     <DEF>  Identifier() Block()
 }
