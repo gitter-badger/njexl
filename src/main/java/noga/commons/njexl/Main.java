@@ -38,6 +38,8 @@ import jline.console.ConsoleReader;
  */
 public class Main {
 
+    public static final boolean __DEBUG__ = false ;
+
     public static final String PROMPT = "(njexl)" ;
 
     public static JexlContext getContext(){
@@ -121,12 +123,21 @@ public class Main {
             Object o = sc.execute(jc);
             int e = TypeUtility.castInteger(o, -1);
             System.exit(e);
-        }catch (Exception e){
-            if ( e instanceof JexlException ){
-                System.err.println(((JexlException) e).getFaultyCode());
+        }catch (Throwable e){
+            if ( __DEBUG__ ){
+               System.err.println(e);
+               e.printStackTrace();
             }
             else {
-                e.printStackTrace();
+                if (e instanceof JexlException) {
+                    System.err.printf( "Error : %s\n", ((JexlException) e).getFaultyCode());
+                } else {
+                    System.err.println(e.getMessage());
+                    if (e.getCause() != null) {
+                        System.err.println(e.getCause().getMessage());
+                    }
+
+                }
             }
             System.exit(1);
         }

@@ -1,19 +1,30 @@
-import 'java.lang.System.out' \...
- as out
+	import 'java.lang.System.out' as out
 
-def Some1{
-
-    def __new__ (me,a='xxx'){
-          me.s = a
-      }
-
-    def do_print(me){
-        out:println('Some1! : ' + me.s)
-    }
-}
-
-x = new ('Some1')
-x.do_print()
-out:println( x.supers )
+cccc
+	def Complex {
+	def __new__ (me,x=0.0,y=0.0){
+	  me.x = x
+	  me.y = y
+	}
+	def __str__(me){
+	  str:format('(%f,i %f)', me.x, me.y)
+	}
+	def __add__(me,o){
+	  return new ('Complex' , me.x + o.x , me.y + o.y )
+	}
+	def __sub__(me,o){
+	  return new ('Complex' , me.x - o.x , me.y - o.y )
+	}
+	def __mul__(me,o){
+	  return new ('Complex' , me.x * o.x  - me.y * o.y , me.x * o.y + me.y * o.x )
+	}
+	}
+	c1 = new ( 'Complex' , 1.0, 2.0 )
+	out:printf( 'c1 : %s\n' , c1 )
+	c2 = new ( 'Complex' , 2.0, 1.0 )
+	out:printf( 'c2 : %s\n' , c2 )
+	out:printf( 'c1 + c2 : %s\n' , c1 + c2 )
+	out:printf( 'c1 - c2 : %s\n' , c1 - c2 )
+	out:printf( 'c1 * c2 : %s\n' , c1 * c2 )
 
 
