@@ -157,27 +157,38 @@ public class ScriptClass  implements TypeAware {
         if ( o == null ){
             return false ;
         }
-        ScriptClass that;
+        ScriptClass that = null;
         if ( o instanceof ScriptClass){
             that = (ScriptClass)o;
         }
         else if ( o instanceof ScriptClassInstance){
             that = ((ScriptClassInstance)o).scriptClass;
         }
+        if ( that != null){
+            // match body hash
+            if ( this.hash.equals(that.hash) ){
+                return true ;
+            }
+        }
         else{
-            return false ;
+            // do we have Java Supers?
+            Class clazz;
+            if  ( o instanceof Class){
+                clazz = (Class)o;
+            }else{
+                clazz = o.getClass();
+            }
+            if ( this.clazz != null && clazz.isAssignableFrom(this.clazz)){
+                return true ;
+            }
         }
-        // match body hash
-        if ( this.hash.equals(that.hash) ){
-            return true ;
-        }
+        // nothing, continue upward : may end in loop
         for ( String n :  supers.keySet()){
             boolean s = supers.get(n).isa(o);
             if ( s ){
                 return true ;
             }
         }
-
         return false;
     }
 

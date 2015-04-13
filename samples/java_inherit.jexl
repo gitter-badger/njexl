@@ -22,6 +22,8 @@ cs = new ('XString',"hello, world!")
 out:println(cs)
 out:println(cs.length())
 out:println(cs.charAt(3))
+out:println(cs isa String)
+
 
 
 
