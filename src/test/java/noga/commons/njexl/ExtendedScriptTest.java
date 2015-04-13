@@ -36,6 +36,11 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testJavaInheritanceClassFile()throws Exception {
+        runScript(JEXL, "samples/java_inherit.jexl");
+    }
+
+    @Test
     public void testFunctionalInNormalFunction()throws Exception {
         runScript(JEXL,"samples/functional_sample.jexl");
     }

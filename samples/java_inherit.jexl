@@ -1,0 +1,30 @@
+/* Showing inheritence from native Java Objects :
+ref : http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/8-b132/java/lang/String.java
+One can use this to find out the internals
+*/
+
+import 'java.lang.System.out' as out
+import 'java.lang.String' as String
+
+
+def XString : String {
+     // have a constructor
+     def __new__(me,s=''){
+         me.__anc__('String',s)
+     }
+     // define the toString()
+     def __str__(me){
+        me.supers['String']
+     }
+}
+
+cs = new ('XString',"hello, world!")
+out:println(cs)
+out:println(cs.length())
+out:println(cs.charAt(3))
+
+
+
+
+
+
