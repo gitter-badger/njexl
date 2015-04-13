@@ -483,12 +483,6 @@ public class Interpreter implements ParserVisitor {
         String as = node.jjtGetChild(1).image;
         try {
             if (functions.containsKey(as) || imports.containsKey(as)) {
-                if ( data instanceof  Script ){
-                    // no need to bother
-                    //probably log a statement:
-                    System.out.printf("Ignoring re-import of [%s] from [%s] \n", as,from);
-                    return null;
-                }
                 throw new Exception(String.format("[%s] is already taken as import name!", as));
             }
             try {
@@ -515,21 +509,15 @@ public class Interpreter implements ParserVisitor {
 
             Script base;
             if ( data == null ){
+                // I am the starting interpreter,
                 base = current ;
             }else{
                 base = (Script)data;
             }
             Script freshlyImported = jexlEngine.importScript(from, as,base);
-
-            //recurse it's own imports
-            for ( String ext : freshlyImported.imports().keySet() ){
-                ASTImportStatement extImp = freshlyImported.imports().get(ext);
-                visit(extImp,base);
-            }
-            ((Executable)freshlyImported).setInterpreter(this);
+            freshlyImported.setup( context );
             imports.put(as, freshlyImported);
             context.set(as, freshlyImported);
-
             return freshlyImported;
 
         } catch (Exception e) {

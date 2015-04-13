@@ -23,12 +23,9 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import noga.commons.njexl.extension.oop.ScriptClass;
-import noga.commons.njexl.extension.oop.ScriptClassBehaviour;
 import noga.commons.njexl.extension.oop.ScriptMethod;
 import noga.commons.njexl.parser.*;
 import noga.commons.njexl.extension.oop.ScriptClassBehaviour.Executable;
-import noga.commons.njexl.extension.oop.ScriptClass;
-import noga.commons.njexl.extension.oop.ScriptMethod;
 
 /**
  * Instances of ExpressionImpl are created by the {@link JexlEngine},
@@ -36,7 +33,7 @@ import noga.commons.njexl.extension.oop.ScriptMethod;
  * {@link Script} interface.
  * @since 1.0
  */
-public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour.Executable {
+public class ExpressionImpl implements Expression, Script , Executable {
 
     String location;
 
@@ -59,21 +56,13 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
      */
     protected final ASTJexlScript script;
 
-    protected void findImports(JexlNode node){
+    protected void findInnerObjects(JexlNode node){
         if ( node instanceof ASTImportStatement ){
             ASTImportStatement importDef = (ASTImportStatement)node;
             String as = importDef.jjtGetChild(1).image ;
             imports.put( as , importDef );
-        }else {
-            int numChild = node.jjtGetNumChildren();
-            for ( int i =0; i < numChild; i++ ){
-                findImports(node.jjtGetChild(i));
-            }
         }
-    }
-
-    protected void findInnerObjects(JexlNode node){
-        if ( node instanceof ASTClassDef){
+        else if ( node instanceof ASTClassDef){
             ScriptClass classDef = new ScriptClass((ASTClassDef)node,importName);
             classes.put( classDef.getName() , classDef );
         }
@@ -100,7 +89,6 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
             location = location.substring(0,location.lastIndexOf("/"));
         }
         importName = as;
-        findImports(script);
         findInnerObjects(script);
     }
 
@@ -162,11 +150,6 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
 
     Interpreter interpreter;
 
-    @Override
-    public void setInterpreter(Interpreter interpreter) {
-        this.interpreter = interpreter ;
-    }
-
     ScriptMethod getMethod(String method){
         ScriptMethod methodDef = methods.get(method);
         if ( methodDef != null ){
@@ -197,12 +180,24 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
         }
     }
 
-
     /**
      * {@inheritDoc}
      */
     public Object execute(JexlContext context) {
         return execute(context, (Object[]) null);
+    }
+
+    public void setup(JexlContext context){
+        interpreter = jexl.createInterpreter(context);
+        interpreter.current = this;
+        interpreter.setFrame(script.createFrame(new Object[]{}));
+        interpreter.imports.put(importName, this);
+        interpreter.imports.put(null, this);
+        //only execute the import statements
+        for ( String i : imports.keySet() ){
+            ASTImportStatement importStatement = imports.get(i);
+            interpreter.visit( importStatement, this);
+        }
     }
 
     /**

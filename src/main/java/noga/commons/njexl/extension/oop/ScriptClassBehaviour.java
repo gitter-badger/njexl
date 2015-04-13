@@ -26,8 +26,6 @@ public final class ScriptClassBehaviour {
 
     public interface Executable {
 
-        void setInterpreter(Interpreter interpreter);
-
         Object execMethod(String method, Object[] args) ;
 
     }

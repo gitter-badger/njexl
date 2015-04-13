@@ -42,11 +42,6 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     }
 
     @Override
-    public void setInterpreter(Interpreter interpreter) {
-        this.interpreter = interpreter ;
-    }
-
-    @Override
     public Object execMethod(String method, Object[] args)  {
         try {
             ScriptMethod methodDef = scriptClass.getMethod(method);

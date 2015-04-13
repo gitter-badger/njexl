@@ -132,6 +132,13 @@ public interface Script {
     Callable<Object> callable(JexlContext context, Object... args);
 
     /**
+     * Necessary to import the script,
+     * The script needs to be pre-processed, e.g. the imports and/or initializer
+     * @param context
+     */
+    void setup(JexlContext context);
+
+    /**
      * The defined methods of the script
      *
      * @return
