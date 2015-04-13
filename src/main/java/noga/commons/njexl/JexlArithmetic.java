@@ -373,7 +373,7 @@ public class JexlArithmetic {
      * @return true if some arguments were narrowed and args array is modified,
      *         false if no narrowing occured and args array has not been modified
      */
-    protected boolean narrowArguments(Object[] args) {
+    public boolean narrowArguments(Object[] args) {
         boolean narrowed = false;
         for (int a = 0; a < args.length; ++a) {
             Object arg = args[a];

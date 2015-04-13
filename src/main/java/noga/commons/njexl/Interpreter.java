@@ -64,7 +64,10 @@ public class Interpreter implements ParserVisitor {
             // you wanted specific, hence, I can not load you
             return null;
         }
-
+        // Try, is that a Java object loaded?
+        if ( context.has(name) ){
+            return new ScriptClass(context.get(name),current.name());
+        }
         for ( String s : imports.keySet() ){
             Script script = imports.get(s);
             HashMap<String,ScriptClass> map = script.classes() ;
@@ -116,11 +119,11 @@ public class Interpreter implements ParserVisitor {
     /**
      * The uberspect.
      */
-    protected final Uberspect uberspect;
+    public final Uberspect uberspect;
     /**
      * The arithmetic handler.
      */
-    protected final JexlArithmetic arithmetic;
+    public final JexlArithmetic arithmetic;
     /**
      * The map of registered functions.
      */

@@ -1,6 +1,8 @@
 package noga.commons.njexl.extension.oop;
 
+import noga.commons.njexl.Debugger;
 import noga.commons.njexl.Script;
+import noga.commons.njexl.extension.TypeUtility;
 import noga.commons.njexl.parser.ASTClassDef;
 import noga.commons.njexl.parser.JexlNode;
 import noga.commons.njexl.Interpreter;
@@ -28,6 +30,7 @@ public class ScriptClass  implements TypeAware {
     }
 
     ScriptMethod constructor;
+
 
     final HashMap<String, ScriptClass> supers;
 
@@ -68,8 +71,11 @@ public class ScriptClass  implements TypeAware {
         }
     }
 
-    final String ns;
-    final String name;
+    public final String ns;
+
+    public final String name;
+
+    public final String hash;
 
     public String getName() {
         return name;
@@ -90,7 +96,7 @@ public class ScriptClass  implements TypeAware {
                 addSuper(superClass.ns, superClass.name, superClass);
             }
             ScriptClassInstance superClassInstance = superClass.instance(interpreter, args);
-            instance.addSuper(superClass.ns, superClass.name, superClassInstance);
+            instance.addSuper(superClassInstance);
         }
         if (constructor != null) {
             instance.execMethod(_INIT_, args);
@@ -114,17 +120,36 @@ public class ScriptClass  implements TypeAware {
         int numChild = ref.jjtGetNumChildren();
         for (int i = 1; i < numChild - 1; i++) {
             int n = ref.jjtGetChild(i).jjtGetNumChildren();
-            String supNs = this.ns ;
-            String superName = ref.jjtGetChild(i).jjtGetChild(0).image ;
-            if ( n > 1){
-                supNs = superName ;
-                superName = ref.jjtGetChild(i).jjtGetChild(1).image ;
+            String supNs = this.ns;
+            String superName = ref.jjtGetChild(i).jjtGetChild(0).image;
+            if (n > 1) {
+                supNs = superName;
+                superName = ref.jjtGetChild(i).jjtGetChild(1).image;
             }
-            addSuper(supNs,superName,null);
+            addSuper(supNs, superName, null);
         }
-
         findMethods(ref.jjtGetChild(numChild - 1));
         constructor = methods.get(_INIT_);
+        hash = TypeUtility.hash(Debugger.getText(ref));
+        clazz = null ;
+    }
+
+    public final Class clazz;
+
+    public ScriptClass(Object o,String ns){
+        Class c ;
+        if (o instanceof  Class){
+            c = (Class)o ;
+        }else{
+            c = o.getClass();
+        }
+        clazz = c ;
+        this.ns = ns ;
+        name = c.getSimpleName();
+        hash = ns;
+        // we will do something about them later
+        methods = new HashMap<>();
+        supers = new HashMap<>();
     }
 
     @Override
@@ -142,8 +167,8 @@ public class ScriptClass  implements TypeAware {
         else{
             return false ;
         }
-
-        if ( this.name.equals(that.name) ){
+        // match body hash
+        if ( this.hash.equals(that.hash) ){
             return true ;
         }
         for ( String n :  supers.keySet()){

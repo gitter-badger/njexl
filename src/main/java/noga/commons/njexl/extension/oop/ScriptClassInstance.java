@@ -3,6 +3,7 @@ package noga.commons.njexl.extension.oop;
 import noga.commons.njexl.Interpreter;
 import noga.commons.njexl.extension.TypeUtility;
 import noga.commons.njexl.extension.oop.ScriptClassBehaviour.*;
+import noga.commons.njexl.introspection.JexlMethod;
 
 import java.util.HashMap;
 
@@ -15,17 +16,19 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
 
     public HashMap<String,Object> getFields(){return fields ;}
 
-    final HashMap<String,ScriptClassInstance> supers;
+    final HashMap<String,Object> supers;
 
-    protected void addSuper(String ns, String superName, ScriptClassInstance value){
-        if ( scriptClass.ns.equals(ns)) {
+    public static final String _ANCESTOR_ = "__anc__" ;
+
+    protected void addSuper(ScriptClassInstance value){
+        if ( scriptClass.ns.equals(value.scriptClass.ns)) {
             //make direct calling possible ONLY if the namespace of child and parent match
-            supers.put(superName, value);
+            supers.put(value.scriptClass.name, value);
         }
-        supers.put( ns +":" + superName, value);
+        supers.put( value.scriptClass.ns +":" + value.scriptClass.name, value);
     }
 
-    public HashMap<String,ScriptClassInstance> getSupers(){ return supers ; }
+    public HashMap<String,Object> getSupers(){ return supers ; }
 
     Interpreter interpreter;
 
@@ -41,9 +44,54 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
 
     }
 
+    /**
+     * replace ancestors
+     * @param sName
+     * @param args
+     */
+    public void ancestor(Object sName,Object[]args) throws Exception {
+        Object old = supers.get(sName);
+        if ( old != null && ! interpreter.getContext().has(sName.toString()) ) {
+            ScriptClassInstance _new_ = ((ScriptClassInstance)old).scriptClass.instance(interpreter, args);
+            addSuper( _new_ ); // this should replace the old
+            return;
+        }
+        String name;
+        if ( sName instanceof  String ){
+            sName = interpreter.getContext().get((String)sName);
+        }
+        if ( sName instanceof Class ){
+            old = ((Class) sName).getName();
+            name = ((Class) sName).getSimpleName();
+        }else{
+            old = sName.getClass().getName();
+            name = sName.getClass().getSimpleName();
+        }
+        // java guy... call constructor
+        JexlMethod ctor = interpreter.uberspect.getConstructorMethod(old, args, null);
+        // DG: If we can't find an exact match, narrow the parameters and try again
+        if (ctor == null) {
+            if (interpreter.arithmetic.narrowArguments(args)) {
+                ctor = interpreter.uberspect.getConstructorMethod(old, args, null);
+                if (ctor == null) {
+                    throw new Exception("Constructor not found!");
+                }
+            }
+        }
+        Object instance = ctor.invoke(old.getClass(), args);
+        supers.put(name,instance);
+        supers.put(scriptClass.ns + ":" + name,instance);
+    }
+
     @Override
     public Object execMethod(String method, Object[] args)  {
         try {
+            if ( method.equals(_ANCESTOR_)){
+                Object arg0 = args[0];
+                args = TypeUtility.shiftArrayLeft(args,1);
+                ancestor(arg0,args);
+                return null;
+            }
             ScriptMethod methodDef = scriptClass.getMethod(method);
             if (methodDef == null) {
                 throw new Exception("Method : '" + method + "' is not found in class : " + this.scriptClass.name);
@@ -58,12 +106,17 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     }
 
     public Object get(String name) throws Exception {
+
         if (fields.containsKey(name)) {
             return fields.get(name);
         }
         for (String sup : supers.keySet()) {
-            if (supers.get(sup).fields.containsKey(name)) {
-                return supers.get(sup).fields.get(name);
+            Object s = supers.get(sup);
+            if (s instanceof  ScriptClassInstance ) {
+                ScriptClassInstance supI = (ScriptClassInstance)s;
+                if ( supI.fields.containsKey(name)){
+                    return supI.fields.get(name);
+                }
             }
         }
         throw new Exception("Key : '" + name + "' is not found!");
@@ -75,9 +128,13 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
             return;
         }
         for (String sup : supers.keySet()) {
-            if (supers.get(sup).fields.containsKey(name)) {
-                supers.get(sup).fields.put(name, value);
-                return;
+            Object s = supers.get(sup);
+            if (s instanceof  ScriptClassInstance ) {
+                ScriptClassInstance supI = (ScriptClassInstance)s;
+                if ( supI.fields.containsKey(name)){
+                    supI.fields.put(name,value);
+                    return;
+                }
             }
         }
         fields.put(name, value);

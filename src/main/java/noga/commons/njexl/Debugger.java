@@ -30,7 +30,7 @@ import noga.commons.njexl.parser.*;
  * the error.
  * @since 2.0
  */
-final class Debugger implements ParserVisitor {
+public final class Debugger implements ParserVisitor {
     /** The builder to compose messages. */
     private final StringBuilder builder;
     /** The cause of the issue to debug. */
@@ -39,6 +39,12 @@ final class Debugger implements ParserVisitor {
     private int start;
     /** The ending character location offset of the cause in the builder. */
     private int end;
+
+    public static String getText(JexlNode node){
+        Debugger d = new Debugger();
+        String s = d.data(node);
+        return s;
+    }
 
     /**
      * Creates a Debugger.

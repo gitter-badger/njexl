@@ -121,7 +121,10 @@ public class Main {
         try {
             Script sc = JEXL.importScript(args[0]);
             Object o = sc.execute(jc);
-            int e = TypeUtility.castInteger(o, -1);
+            int e = 0;
+            if ( o instanceof Integer ){
+                e = (int)o;
+            }
             System.exit(e);
         }catch (Throwable e){
             if ( __DEBUG__ ){
