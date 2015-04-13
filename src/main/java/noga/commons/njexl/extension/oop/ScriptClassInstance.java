@@ -4,7 +4,11 @@ import noga.commons.njexl.Interpreter;
 import noga.commons.njexl.extension.TypeUtility;
 import noga.commons.njexl.extension.oop.ScriptClassBehaviour.*;
 import noga.commons.njexl.introspection.JexlMethod;
+import noga.commons.njexl.introspection.JexlPropertyGet;
+import noga.commons.njexl.introspection.JexlPropertySet;
+import noga.commons.njexl.introspection.UberspectImpl;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 
 /**
@@ -30,6 +34,12 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
 
     public HashMap<String,Object> getSupers(){ return supers ; }
 
+    boolean hasJSuper;
+
+    public boolean hasJSuper(){
+        return hasJSuper;
+    }
+
     Interpreter interpreter;
 
     final ScriptClass scriptClass;
@@ -41,7 +51,25 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
         this.scriptClass = scriptClass ;
         this.fields = new HashMap<>();
         this.supers = new HashMap<>();
+        this.hasJSuper = false ;
+    }
 
+    public JexlMethod getJSuperMethod(String name, Object[] sups, Object[] args) throws Exception {
+
+        for ( String s : supers.keySet() ){
+            if ( s.contains(":") ){
+                continue;
+            }
+            Object sup = supers.get(s);
+            if ( !(sup instanceof ScriptClassInstance) ){
+                JexlMethod method = interpreter.uberspect.getMethod(sup, name, args, null);
+                if ( method != null ){
+                    sups[0] = sup;
+                    return method ;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -54,6 +82,9 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
         if ( old != null && ! interpreter.getContext().has(sName.toString()) ) {
             ScriptClassInstance _new_ = ((ScriptClassInstance)old).scriptClass.instance(interpreter, args);
             addSuper( _new_ ); // this should replace the old
+            return;
+        }
+        if ( !hasJSuper ){
             return;
         }
         String name;
@@ -93,7 +124,15 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
                 return null;
             }
             ScriptMethod methodDef = scriptClass.getMethod(method);
-            if (methodDef == null) {
+            if (methodDef == null ) {
+                if ( hasJSuper ) {
+                    Object[] sups = new Object[1];
+                    JexlMethod jexlMethod = getJSuperMethod(method, sups, args);
+                    if (jexlMethod != null) {
+                        // call jexl method
+                        return jexlMethod.invoke(sups[0], args);
+                    }
+                }
                 throw new Exception("Method : '" + method + "' is not found in class : " + this.scriptClass.name);
             }
             if (methodDef.instance) {
@@ -117,12 +156,19 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
                 if ( supI.fields.containsKey(name)){
                     return supI.fields.get(name);
                 }
+            }else{
+                // try from this
+                Field field = ((UberspectImpl)interpreter.uberspect).getField(s, name, null);
+                if (field != null) {
+                    JexlPropertyGet fg = new UberspectImpl.FieldPropertyGet(field);
+                    return fg.invoke(s);
+                }
             }
         }
         throw new Exception("Key : '" + name + "' is not found!");
     }
 
-    public void set(String name, Object value) {
+    public void set(String name, Object value) throws Exception {
         if (fields.containsKey(name)) {
             fields.put(name, value);
             return;
@@ -133,6 +179,13 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
                 ScriptClassInstance supI = (ScriptClassInstance)s;
                 if ( supI.fields.containsKey(name)){
                     supI.fields.put(name,value);
+                    return;
+                }
+            }else{
+                Field field = ((UberspectImpl)interpreter.uberspect).getField(s, name, null);
+                if (field != null) {
+                    JexlPropertySet fs = new UberspectImpl.FieldPropertySet(field);
+                    fs.invoke(s,value);
                     return;
                 }
             }

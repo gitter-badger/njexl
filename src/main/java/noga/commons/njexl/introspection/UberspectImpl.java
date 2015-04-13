@@ -514,9 +514,8 @@ public class UberspectImpl extends Introspector implements Uberspect {
 
     /**
      * A JexlPropertySet for public fields.
-    * @deprecated Do not use externally - will be made private in a later version
+    *  Do not use externally - will be made private in a later version
      */
-    @Deprecated
     public static final class FieldPropertySet implements JexlPropertySet {
         /**
          * The public field.

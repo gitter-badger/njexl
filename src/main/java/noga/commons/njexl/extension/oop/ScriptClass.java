@@ -1,7 +1,6 @@
 package noga.commons.njexl.extension.oop;
 
 import noga.commons.njexl.Debugger;
-import noga.commons.njexl.Script;
 import noga.commons.njexl.extension.TypeUtility;
 import noga.commons.njexl.parser.ASTClassDef;
 import noga.commons.njexl.parser.JexlNode;
@@ -92,6 +91,7 @@ public class ScriptClass  implements TypeAware {
                 if ( superClass == null ) {
                     throw new Exception("Superclass : '" + n + "' not found!");
                 }
+                instance.hasJSuper = (superClass.clazz != null );
                 // one time resolving of this
                 addSuper(superClass.ns, superClass.name, superClass);
             }
