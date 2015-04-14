@@ -88,7 +88,7 @@ PARSER_END(Parser)
     | < EMPTY : "empty" >
     | < SIZE : "size" >
     | < DEFINED : "defined" > /* This is to check if any variable is already defined or not */
-    | < TYPE :   "type" > /* find the type of the guy */
+    | < TYPE :   "typeof" > /* find the type of the guy : can not use type() that conflicts ! */
     | < NULL : "null" >
     | < TRUE : "true" >
     | < FALSE : "false" >
