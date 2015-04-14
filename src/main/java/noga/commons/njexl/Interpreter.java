@@ -21,6 +21,7 @@ import noga.commons.njexl.introspection.*;
 import noga.commons.njexl.parser.*;
 import noga.commons.njexl.extension.SetOperations;
 import noga.commons.njexl.extension.oop.ScriptClassBehaviour.Executable;
+import noga.commons.njexl.extension.oop.ScriptClassBehaviour.Eventing;
 import noga.commons.njexl.extension.oop.ScriptClassInstance;
 import noga.commons.njexl.introspection.JexlPropertySet;
 import noga.commons.njexl.introspection.Uberspect;
@@ -421,7 +422,9 @@ public class Interpreter implements ParserVisitor {
         }
         return cancelled;
     }
-
+    boolean isEventing;
+    String eventingPattern;
+    Eventing eventing;
     /**
      * Resolves a namespace, eventually allocating an instance using context as constructor argument.
      * The lifetime of such instances span the current expression or script evaluation.
@@ -431,6 +434,17 @@ public class Interpreter implements ParserVisitor {
      * @return the namespace instance
      */
     protected Object resolveNamespace(String prefix, JexlNode node) {
+        // just resolve the prefix and all
+        eventingPattern = "" ;
+        isEventing = false ;
+        if ( prefix != null ) {
+            isEventing = Eventing.EVENTS.matcher(prefix).matches();
+            if ( isEventing ){
+                eventingPattern = prefix.substring(0,2);
+                prefix = prefix.substring(2);
+            }
+        }
+
         Object namespace = null;
         // check whether this namespace is a functor
         if (functors != null) {
@@ -1373,6 +1387,10 @@ public class Interpreter implements ParserVisitor {
             }
         }
         JexlException xjexl = null;
+        if ( isEventing ) {
+            eventing = getEventing(bean);
+            eventing.before( eventingPattern, methodName, argv );
+        }
         try {
             // attempt to reuse last executor cached in volatile JexlNode.value
             if (cache) {
@@ -1449,7 +1467,22 @@ public class Interpreter implements ParserVisitor {
         catch (Exception e) {
             xjexl = new JexlException(node, "method error", e);
         }
+        finally {
+            if ( isEventing ) {
+               eventing.after(eventingPattern,methodName,argv);
+            }
+            isEventing = false ;
+            eventing = null;
+            eventingPattern = null;
+        }
         return invocationFailed(xjexl);
+    }
+
+    Eventing getEventing(Object object){
+        if ( object instanceof Eventing ){
+            return ((Eventing)object);
+        }
+        return Eventing.Timer.TIMER ;
     }
 
     /**

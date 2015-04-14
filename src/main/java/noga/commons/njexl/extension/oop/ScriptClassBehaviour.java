@@ -3,6 +3,8 @@ package noga.commons.njexl.extension.oop;
 import noga.commons.njexl.Interpreter;
 import noga.commons.njexl.Interpreter;
 
+import java.util.regex.Pattern;
+
 /**
  * Created by noga on 08/04/15.
  */
@@ -24,12 +26,56 @@ public final class ScriptClassBehaviour {
 
     }
 
+    public interface Eventing {
+
+        /**
+         * Thus, only 4 types of waiting pattern are possible
+         * You should choose wisely
+         */
+        Pattern EVENTS = Pattern.compile("^[@\\$][@\\$].+", Pattern.DOTALL );
+
+        /**
+         * Before event call
+         * @param pattern
+         * @param method
+         * @param args
+         * @throws Exception
+         */
+        void before(String pattern, String method ,Object[] args) ;
+
+        /**
+         * After event call
+         * @param pattern
+         * @param method
+         * @param args
+         * @throws Exception
+         */
+        void after(String pattern, String method, Object[] args) ;
+
+        final class Timer implements Eventing{
+
+            public static Timer TIMER = new Timer();
+
+            long t;
+
+            @Override
+            public void after(String pattern, String method, Object[] args) {
+                long ts = System.currentTimeMillis() - t ;
+                System.out.printf("<<%s%s:%d>>\n", pattern, method, ts);
+            }
+
+            @Override
+            public void before(String pattern, String method, Object[] args) {
+                 t = System.currentTimeMillis();
+            }
+        }
+    }
+
     public interface Executable {
 
         Object execMethod(String method, Object[] args) ;
 
     }
-
 
     public interface Arithmetic{
 
