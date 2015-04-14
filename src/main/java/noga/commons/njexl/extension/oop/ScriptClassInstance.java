@@ -72,6 +72,23 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
         return null;
     }
 
+
+    public void addJSuper(String name, Object obj, Object[] args) throws Exception {
+        JexlMethod ctor = interpreter.uberspect.getConstructorMethod(obj, args, null);
+        // DG: If we can't find an exact match, narrow the parameters and try again
+        if (ctor == null) {
+            if (interpreter.arithmetic.narrowArguments(args)) {
+                ctor = interpreter.uberspect.getConstructorMethod(obj, args, null);
+                if (ctor == null) {
+                    throw new Exception("Constructor not found!");
+                }
+            }
+        }
+        Object instance = ctor.invoke(null, args);
+        supers.put(name,instance);
+        supers.put(scriptClass.ns + ":" + name,instance);
+    }
+
     /**
      * replace ancestors
      * @param sName
@@ -99,19 +116,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
             name = sName.getClass().getSimpleName();
         }
         // java guy... call constructor
-        JexlMethod ctor = interpreter.uberspect.getConstructorMethod(old, args, null);
-        // DG: If we can't find an exact match, narrow the parameters and try again
-        if (ctor == null) {
-            if (interpreter.arithmetic.narrowArguments(args)) {
-                ctor = interpreter.uberspect.getConstructorMethod(old, args, null);
-                if (ctor == null) {
-                    throw new Exception("Constructor not found!");
-                }
-            }
-        }
-        Object instance = ctor.invoke(old.getClass(), args);
-        supers.put(name,instance);
-        supers.put(scriptClass.ns + ":" + name,instance);
+        addJSuper(name,old,args);
     }
 
     @Override

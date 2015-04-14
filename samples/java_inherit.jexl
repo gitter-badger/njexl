@@ -10,7 +10,7 @@ import 'java.lang.String' as String
 def XString : String {
      // have a constructor
      def __new__(me,s=''){
-         me.__anc__('String',s)
+         //me.__anc__('String',s)
      }
      // define the toString()
      def __str__(me){

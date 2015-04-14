@@ -66,7 +66,7 @@ public class Interpreter implements ParserVisitor {
         }
         // Try, is that a Java object loaded?
         if ( context.has(name) ){
-            return new ScriptClass(context.get(name),current.name());
+            return new ScriptClass(name, context.get(name),current.name());
         }
         for ( String s : imports.keySet() ){
             Script script = imports.get(s);

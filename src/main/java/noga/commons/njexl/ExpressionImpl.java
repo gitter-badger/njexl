@@ -64,7 +64,7 @@ public class ExpressionImpl implements Expression, Script , Executable {
         }
         else if ( node instanceof ASTClassDef){
             ScriptClass classDef = new ScriptClass((ASTClassDef)node,importName);
-            classes.put( classDef.getName() , classDef );
+            classes.put( classDef.name , classDef );
         }
         else if ( node instanceof ASTMethodDef){
             ScriptMethod methodDef = new ScriptMethod((ASTMethodDef)node);

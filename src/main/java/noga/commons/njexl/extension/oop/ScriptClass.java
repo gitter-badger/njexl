@@ -95,8 +95,12 @@ public class ScriptClass  implements TypeAware {
                 // one time resolving of this
                 addSuper(superClass.ns, superClass.name, superClass);
             }
-            ScriptClassInstance superClassInstance = superClass.instance(interpreter, args);
-            instance.addSuper(superClassInstance);
+            if ( superClass.clazz == null ) {
+                ScriptClassInstance superClassInstance = superClass.instance(interpreter, args);
+                instance.addSuper(superClassInstance);
+            }else{
+                instance.addJSuper( superClass.name, superClass.clazz, args);
+            }
         }
         if (constructor != null) {
             instance.execMethod(_INIT_, args);
@@ -136,7 +140,7 @@ public class ScriptClass  implements TypeAware {
 
     public final Class clazz;
 
-    public ScriptClass(Object o,String ns){
+    public ScriptClass(String name, Object o,String ns){
         Class c ;
         if (o instanceof  Class){
             c = (Class)o ;
@@ -145,7 +149,7 @@ public class ScriptClass  implements TypeAware {
         }
         clazz = c ;
         this.ns = ns ;
-        name = c.getSimpleName();
+        this.name = name ;
         hash = ns;
         // we will do something about them later
         methods = new HashMap<>();
