@@ -21,11 +21,11 @@
     <groupId>noga.commons</groupId>
     <artifactId>njexl</artifactId>
     <version>0.1-SNAPSHOT</version>
-    <name>New Jexl For Testing</name>
-    <inceptionYear>2001</inceptionYear>
+    <name>New Jexl Core</name>
+    <inceptionYear>2015</inceptionYear>
     <description>
 		The Commons Jexl library is an implementation of the JSTL Expression Language with extensions.
-		This was customized by nmondal.
+		This was customized by Noga.
 	</description>
     <pluginRepositories>
     <pluginRepository>
@@ -83,10 +83,9 @@
         <developer>
             <name>Nabarun Mondal</name>
             <id>mondal</id>
-            <email>mondal AT deshaw DOT com</email>
-            <organization>D.E.Shaw and Co. India</organization>
+            <email>nabarun DOT mondal AT gmail DOT com</email>
+            <organization>Noga</organization>
         </developer>
-
     </developers>
 
     <dependencies>
