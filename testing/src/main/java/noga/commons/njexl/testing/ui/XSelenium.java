@@ -6,6 +6,7 @@ import com.thoughtworks.selenium.webdriven.WebDriverCommandProcessor;
 import noga.commons.njexl.extension.oop.ScriptClassBehaviour.Eventing;
 import org.jsoup.Jsoup;
 import org.openqa.selenium.*;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
@@ -41,10 +42,52 @@ public class XSelenium extends DefaultSelenium implements Eventing{
     public int getTimeout(){
         return timeout ;
     }
+
     public void setTimeout(int ms){
         timeout = ms ;
     }
 
+    protected void waitForAppear(String locator){
+        long start = System.currentTimeMillis() ;
+        long now = start ;
+        while( true ){
+            boolean in = isElementPresent(locator) && isVisible(locator);
+            if ( in ){
+                System.out.printf("@@[%s]%d\n", locator,now-start);
+                break;
+            }
+            now = System.currentTimeMillis();
+            if ( now - start > timeout ){
+                throw new Error("Can not have element : " + locator );
+            }
+            try{
+                Thread.sleep(100);
+            }catch (Exception e){}
+        }
+    }
+
+    protected void waitForDisappear(String locator){
+        long start = System.currentTimeMillis() ;
+        long now = start ;
+        while( true ){
+            boolean out = !isElementPresent(locator) || !isVisible(locator);
+            if ( out ){
+                System.out.printf("@@[%s]%d\n", locator,now-start);
+                break;
+            }
+            now = System.currentTimeMillis();
+            if ( now - start > timeout ){
+                throw new Error("Did not disappear element : " + locator );
+            }
+            try{
+                Thread.sleep(100);
+            }catch (Exception e){}
+        }
+    }
+
+    public static final String APPEAR = "@@" ;
+
+    public static final String DISAPPEAR = "$$" ;
 
     /**
      * After event call
@@ -56,7 +99,9 @@ public class XSelenium extends DefaultSelenium implements Eventing{
      */
     @Override
     public void after(String pattern, String method, Object[] args) {
-
+        if ( DISAPPEAR.equals(pattern) && args.length > 1 ){
+            waitForDisappear( args[0].toString() );
+        }
     }
 
     /**
@@ -69,7 +114,32 @@ public class XSelenium extends DefaultSelenium implements Eventing{
      */
     @Override
     public void before(String pattern, String method, Object[] args) {
+        if ( APPEAR.equals(pattern) && args.length > 1 ){
+            waitForAppear(args[0].toString());
+        }
+    }
 
+    public enum BrowserType{
+        FIREFOX,
+        CHROME,
+        SAFARI
+    }
+
+    public static XSelenium  selenium(String baseUrl, String browserType){
+        BrowserType type = Enum.valueOf(BrowserType.class,browserType);
+        WebDriver driver = null;
+        switch (type){
+            case CHROME:
+                break;
+            case SAFARI:
+                break;
+            case FIREFOX:
+            default:
+                driver = new FirefoxDriver();
+                break;
+        }
+        CommandProcessor commandProcessor = new WebDriverCommandProcessor(baseUrl,driver);
+        return new XSelenium(commandProcessor);
     }
 
     public XSelenium(String serverHost, int serverPort, String browserStartCommand, String browserURL) {
@@ -120,7 +190,7 @@ public class XSelenium extends DefaultSelenium implements Eventing{
 
     WebDriver driver;
 
-    protected String getXPath(WebElement webElement) {
+    public String getXPath(WebElement webElement) {
         String jscript = "function getPathTo(node) {" +
                 "  var stack = [];" +
                 "  while(node.parentNode !== null) {" +
@@ -133,7 +203,6 @@ public class XSelenium extends DefaultSelenium implements Eventing{
         return (String) ((JavascriptExecutor) driver).executeScript(jscript, webElement);
     }
 
-
     Select getSelect(String locator) {
         By by = getByFromLocator(locator);
         WebElement elem = driver.findElement(by);
@@ -142,7 +211,7 @@ public class XSelenium extends DefaultSelenium implements Eventing{
     }
 
     public static class SelectOption {
-        public static enum Using {
+        public enum Using {
             id,
             label,
             value,
@@ -340,7 +409,7 @@ public class XSelenium extends DefaultSelenium implements Eventing{
 
     @Override
     public void close() {
-        driver.close();
+        driver.quit();
     }
 
     @Override
@@ -699,5 +768,15 @@ public class XSelenium extends DefaultSelenium implements Eventing{
     public Number getElementPositionTop(String locator) {
         By by = getByFromLocator(locator);
         return driver.findElement(by).getLocation().getY();
+    }
+
+    public Object js(String script,Object... args){
+        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        return executor.executeScript(script, args);
+    }
+
+    public Object jsa(String script,Object... args){
+        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        return executor.executeAsyncScript(script,args);
     }
 }

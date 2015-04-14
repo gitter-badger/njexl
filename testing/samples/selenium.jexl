@@ -1,0 +1,3 @@
+sel:open("/")
+@@sel:type("lst-ib","Hello, There!")
+
