@@ -86,6 +86,7 @@ public class ExpressionImpl implements Expression, Script , Executable {
         classes = new HashMap<>();
         location = from ;
         if ( location != null && !location.isEmpty() ){
+            location = location.replace("\\","/"); // windows?
             location = location.substring(0,location.lastIndexOf("/"));
         }
         importName = as;
