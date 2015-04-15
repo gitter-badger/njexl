@@ -1,11 +1,14 @@
-<testSuite version="xxx">
+<testSuite version="4.2">
     <dataSources>
-        <source name="ds1">
-            <location>/loc/some.xlsx</location>
+        <source name="sample">
+            <location>_/UIData.xlsx</location>
         </source>
     </dataSources>
+    <reporting dir="">
+        <reporter name="" type="" />
+    </reporting>
 
-    <test name="" build="" url="">
-        <vectors module="" url="" ds="" dl=""  script=""/>
-    </test>
+    <tests name="Demo" build="build" url="http://www.google.co.in" scriptDir="">
+        <feature name="Demo" ds="sample" table="Demo" script="selenium_demo" owner="" />
+    </tests>
 </testSuite>
