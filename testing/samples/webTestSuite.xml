@@ -1,0 +1,11 @@
+<testSuite version="xxx">
+    <dataSources>
+        <source name="ds1">
+            <location>/loc/some.xlsx</location>
+        </source>
+    </dataSources>
+
+    <test name="" build="" url="">
+        <vectors module="" url="" ds="" dl=""  script=""/>
+    </test>
+</testSuite>

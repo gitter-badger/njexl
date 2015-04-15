@@ -1,3 +1,6 @@
+import 'java.lang.Thread' as Thread
 sel:open("/")
-@@sel:type("lst-ib","Hello, There!")
+@@sel:type("lst-ib",textValue)
+Thread:sleep(5000)
+
 
