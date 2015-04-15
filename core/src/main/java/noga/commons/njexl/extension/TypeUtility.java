@@ -2,6 +2,8 @@ package noga.commons.njexl.extension;
 
 import noga.commons.njexl.*;
 import noga.commons.njexl.extension.datastructures.ListSet;
+import noga.commons.njexl.extension.oop.ScriptClass;
+import noga.commons.njexl.extension.oop.ScriptClassInstance;
 import noga.commons.njexl.parser.ASTReturnStatement;
 import noga.commons.njexl.parser.ASTStringLiteral;
 import noga.commons.njexl.parser.JexlNode;
@@ -31,6 +33,9 @@ import noga.commons.njexl.Interpreter.AnonymousParam;
  * </pre>
  */
 public class TypeUtility {
+
+
+    public static final String TYPE = "type";
 
     /**
      * ***** The Casting Calls  ******
@@ -114,6 +119,19 @@ public class TypeUtility {
     public static final Class<?>[] ARRAY_PRIMITIVE_TYPES = {
             int[].class, float[].class, double[].class, boolean[].class,
             byte[].class, short[].class, long[].class, char[].class};
+
+    public static Object type(Object...args){
+        if ( args.length == 0 ){
+            return null;
+        }
+        if ( args[0] == null ){
+            return null;
+        }
+        if ( args[0] instanceof ScriptClassInstance ){
+            return ((ScriptClassInstance)args[0]).getNClass();
+        }
+        return args[0].getClass();
+    }
 
     public static String hash(String text) {
         try {
@@ -786,6 +804,8 @@ public class TypeUtility {
             success[0] = true;
         }
         switch (methodName) {
+            case TYPE :
+                return type(argv);
             case BYTE:
                 return castByte(argv);
             case CHAR:

@@ -1837,20 +1837,6 @@ public class Interpreter implements ParserVisitor {
     /**
      * {@inheritDoc}
      */
-    public Object visit(ASTTypeFunction node, Object data) {
-        Object val = node.jjtGetChild(0).jjtAccept(this, data);
-        if (val == null) {
-            return null;
-        }
-        if ( val instanceof ScriptClassInstance ){
-            return ((ScriptClassInstance) val).getNClass();
-        }
-        return val.getClass();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public Object visit(ASTSizeFunction node, Object data) {
         Object val = node.jjtGetChild(0).jjtAccept(this, data);
         if (val == null) {
