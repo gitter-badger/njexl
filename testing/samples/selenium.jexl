@@ -2,5 +2,6 @@ import 'java.lang.Thread' as Thread
 sel:open("/")
 @@sel:type("lst-ib",textValue)
 Thread:sleep(5000)
-
-
+assert:test(true,'This should be fine!')
+assert:test(false,'Take a screenshot!')
+assert:abort(true,'This should abort it!')

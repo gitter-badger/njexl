@@ -4,12 +4,15 @@ import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.webdriven.WebDriverCommandProcessor;
 import noga.commons.njexl.extension.oop.ScriptClassBehaviour.Eventing;
+import noga.commons.njexl.testing.TestAssert.*;
+import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +22,11 @@ import java.util.regex.Pattern;
 /**
  * Created by noga on 24/02/15.
  */
-public class XSelenium extends DefaultSelenium implements Eventing{
+public class XSelenium extends DefaultSelenium implements Eventing , AssertionEventListener {
+
+    public static final String SELENIUM_VAR = "selenium" ;
+    public static final String SELENIUM_NS = "sel" ;
+
 
     boolean __CLEAR_FIELD__ = true;
 
@@ -36,6 +43,30 @@ public class XSelenium extends DefaultSelenium implements Eventing{
             "//input[@type=\'file\']", "//input[@type=\'reset\']"};
 
     public static final String[] xpathListLinks = {"//a"};
+
+    String screenShotDir = System.getProperty("user.dir") ;
+
+    public String screenShotDir(){
+        return screenShotDir ;
+    }
+
+    public void screenShotDir(String dir){
+        screenShotDir = dir;
+    }
+
+    String getScreenShotFile(){
+        String file = screenShotDir + "/" + System.currentTimeMillis() + ".png" ;
+        return file ;
+    }
+
+    @Override
+    public void onAssertion(AssertionEvent assertionEvent) {
+        boolean screenShot = (assertionEvent.type == AssertionType.ABORT && assertionEvent.value )
+                || (assertionEvent.type == AssertionType.TEST && !assertionEvent.value );
+        if ( screenShot ){
+            captureScreenshot(getScreenShotFile());
+        }
+    }
 
     int timeout = 10000; // 10 sec should be good
 
@@ -778,5 +809,25 @@ public class XSelenium extends DefaultSelenium implements Eventing{
     public Object jsa(String script,Object... args){
         JavascriptExecutor executor = (JavascriptExecutor) driver;
         return executor.executeAsyncScript(script,args);
+    }
+
+    @Override
+    public void captureEntirePageScreenshot(String filename, String kwargs) {
+        this.captureScreenshot(filename);
+    }
+
+    @Override
+    public String captureEntirePageScreenshotToString(String kwargs) {
+       return ((TakesScreenshot)driver).getScreenshotAs(OutputType.BASE64);
+    }
+
+    @Override
+    public void captureScreenshot(String filename) {
+        try {
+            File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+            FileUtils.copyFile(scrFile, new File(filename));
+        }catch (Exception e){
+            System.err.printf("Error Taking Screenshot : %s", e);
+        }
     }
 }

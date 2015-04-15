@@ -30,10 +30,19 @@ public class Main {
 
         JexlContext context = noga.commons.njexl.Main.getContext();
         context.set(Script.ARGS, args);
+
         XSelenium xSelenium = XSelenium.selenium(url, XSelenium.BrowserType.FIREFOX.toString());
-        context.set("selenium", xSelenium);
+        context.set(XSelenium.SELENIUM_VAR, xSelenium);
         HashMap<String,Object> functions = noga.commons.njexl.Main.getFunction(context);
-        functions.put("sel", xSelenium);
+        functions.put(XSelenium.SELENIUM_NS, xSelenium);
+
+        TestAssert testAssert = new TestAssert();
+        testAssert.eventListeners.add(xSelenium);
+        context.set(TestAssert.ASSERT_VAR, testAssert);
+        functions.put(TestAssert.ASSERT_NS, testAssert);
+
+
+
         JexlEngine JEXL = noga.commons.njexl.Main.getJexl(context);
         JEXL.setFunctions(functions);
         Script script = null;
