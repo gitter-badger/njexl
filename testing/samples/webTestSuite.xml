@@ -1,14 +1,14 @@
-<testSuite version="4.2">
+<testSuite version="4.2" browser="FIREFOX">
     <dataSources>
-        <source name="sample">
-            <location>_/UIData.xlsx</location>
-        </source>
+        <source  name="sample"  location ="_/UIData.xlsx" />
     </dataSources>
-    <reporting dir="">
-        <reporter name="" type="" />
-    </reporting>
-
-    <tests name="Demo" build="build" url="http://www.google.co.in" scriptDir="">
-        <feature name="Demo" ds="sample" table="Demo" script="selenium_demo" owner="" />
+    <reporters dir="reports">
+        <reporter name="xml" type="xml" />
+    </reporters>
+    <tests>
+        <webApp name="DemoApp" build="4.2"  enabled="true" scriptDir="_/" url = "http://google.co.in"   >
+            <feature name="Demo1" ds="sample" table="Demo" script="selenium_demo" owner="nmondal" enabled="true"/>
+            <feature name="Demo2" ds="sample" table="Demo" script="selenium_demo" owner="nmondal" enabled="true"/>
+        </webApp>
     </tests>
 </testSuite>

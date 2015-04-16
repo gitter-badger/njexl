@@ -1,0 +1,100 @@
+package noga.commons.njexl.testing;
+
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
+
+import java.util.ArrayList;
+
+/**
+ * Created by noga on 16/04/15.
+ */
+@XStreamAlias("testSuite")
+public class TestSuite {
+
+    public String location ;
+
+    @XStreamAsAttribute
+    public String version;
+
+    @XStreamAlias("source")
+    public static class DataSource{
+
+        @XStreamAsAttribute
+        public String name;
+
+        @XStreamAsAttribute
+        public String location;
+
+        public DataSource(){
+            name="";
+            location="";
+        }
+    }
+
+    @XStreamAlias("reporter")
+    public static class Reporter{
+
+        @XStreamAsAttribute
+        public String name;
+
+        @XStreamAsAttribute
+        public String type;
+
+        public Reporter(){
+            name="";
+            type="";
+        }
+    }
+
+    public static class BaseFeature{
+
+        @XStreamAsAttribute
+        public String name ;
+
+        @XStreamAsAttribute
+        public String ds ;
+
+        @XStreamAsAttribute
+        public String table ;
+
+        @XStreamAsAttribute
+        public String owner ;
+
+        @XStreamAsAttribute
+        public boolean enabled ;
+
+        @XStreamAsAttribute
+        public String script ;
+
+        @XStreamAsAttribute
+        public String beforeScript ;
+
+        @XStreamAsAttribute
+        public String afterScript ;
+
+
+        public BaseFeature(){
+            name = "" ;
+            ds = "" ;
+            table = "" ;
+            owner = "" ;
+            enabled = true ;
+            script = "";
+            beforeScript = "" ;
+            afterScript = "" ;
+        }
+
+    }
+
+    public ArrayList<DataSource> dataSources;
+
+    public ArrayList<Reporter> reporters;
+
+    public TestSuite(){
+        location = "" ;
+        version = "0.1";
+        dataSources = new ArrayList<>();
+        reporters = new ArrayList<>();
+    }
+}
