@@ -15,6 +15,13 @@ public final class TestAssert {
 
     public static final String ASSERT_NS = "assert" ;
 
+    boolean error;
+
+    public boolean hasError(){
+        return error;
+    }
+
+    public void setError(boolean err){ error = err ; }
 
     public enum AssertionType {
         TEST,
@@ -51,6 +58,7 @@ public final class TestAssert {
     }
 
     public void test(boolean value, Object...args){
+        error = !value ;
         for ( AssertionEventListener listener : eventListeners ){
             AssertionEvent event = new AssertionEvent(this, AssertionType.TEST, value,args);
             listener.onAssertion(event);
@@ -58,6 +66,7 @@ public final class TestAssert {
     }
 
     public void abort(boolean value, Object...args) throws JexlException.Return {
+        error = value ;
         for ( AssertionEventListener listener : eventListeners ){
             AssertionEvent event = new AssertionEvent(this, AssertionType.ABORT, value,args);
             listener.onAssertion(event);

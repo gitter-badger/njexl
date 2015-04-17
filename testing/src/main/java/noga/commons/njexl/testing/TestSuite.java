@@ -77,7 +77,6 @@ public class TestSuite {
         @XStreamAsAttribute
         public String afterScript ;
 
-
         public BaseFeature(){
             name = "" ;
             ds = "" ;
@@ -89,6 +88,33 @@ public class TestSuite {
             afterScript = "" ;
         }
 
+    }
+
+    public static class Application{
+
+        @XStreamAsAttribute
+        public String name;
+
+        @XStreamAsAttribute
+        public String build;
+
+        @XStreamAsAttribute
+        public String scriptDir;
+
+        @XStreamAsAttribute
+        public String logs;
+
+
+        @XStreamImplicit(itemFieldName = "feature")
+        public ArrayList<BaseFeature> features;
+
+        public Application(){
+            features = new ArrayList<>();
+            name= "";
+            build = "" ;
+            scriptDir ="" ;
+            logs = "" ;
+        }
     }
 
     public ArrayList<DataSource> dataSources;

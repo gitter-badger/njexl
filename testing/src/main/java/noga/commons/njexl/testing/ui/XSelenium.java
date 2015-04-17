@@ -4,6 +4,7 @@ import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.webdriven.WebDriverCommandProcessor;
 import noga.commons.njexl.extension.oop.ScriptClassBehaviour.Eventing;
+import noga.commons.njexl.testing.TestAssert;
 import noga.commons.njexl.testing.TestAssert.*;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
@@ -61,8 +62,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , AssertionEv
 
     @Override
     public void onAssertion(AssertionEvent assertionEvent) {
-        boolean screenShot = (assertionEvent.type == AssertionType.ABORT && assertionEvent.value )
-                || (assertionEvent.type == AssertionType.TEST && !assertionEvent.value );
+        boolean screenShot = ((TestAssert)assertionEvent.getSource()).hasError();
         if ( screenShot ){
             captureScreenshot(getScreenShotFile());
         }

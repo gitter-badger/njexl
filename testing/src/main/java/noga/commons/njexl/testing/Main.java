@@ -7,6 +7,7 @@ import noga.commons.njexl.Script;
 import noga.commons.njexl.testing.dataprovider.DataSource;
 import noga.commons.njexl.testing.dataprovider.DataSourceTable;
 import noga.commons.njexl.testing.dataprovider.ProviderFactory;
+import noga.commons.njexl.testing.ui.WebSuiteRunner;
 import noga.commons.njexl.testing.ui.XSelenium;
 
 import java.util.HashMap;
@@ -17,60 +18,6 @@ import java.util.HashMap;
 public class Main {
 
     static final boolean __DEBUG__ = true ;
-
-    static void executeScriptUIWithDS(String[] args){
-        if ( args.length < 4 ){
-            System.exit(1);
-        }
-        String file = args[0];
-        String url = args[1];
-        String dsLoc = args[2];
-        String table = args[3];
-
-
-        JexlContext context = noga.commons.njexl.Main.getContext();
-        context.set(Script.ARGS, args);
-
-        XSelenium xSelenium = XSelenium.selenium(url, XSelenium.BrowserType.FIREFOX.toString());
-        context.set(XSelenium.SELENIUM_VAR, xSelenium);
-        HashMap<String,Object> functions = noga.commons.njexl.Main.getFunction(context);
-        functions.put(XSelenium.SELENIUM_NS, xSelenium);
-
-        TestAssert testAssert = new TestAssert();
-        testAssert.eventListeners.add(xSelenium);
-        context.set(TestAssert.ASSERT_VAR, testAssert);
-        functions.put(TestAssert.ASSERT_NS, testAssert);
-
-
-
-        JexlEngine JEXL = noga.commons.njexl.Main.getJexl(context);
-        JEXL.setFunctions(functions);
-        Script script = null;
-        try {
-            script = JEXL.importScript(file);
-        }catch (Exception e){
-            System.err.println(e);
-            System.exit(2);
-        }
-        DataSource dataSource = ProviderFactory.dataSource(dsLoc);
-        DataSourceTable dataSourceTable = dataSource.tables.get(table);
-        String[] columns = dataSourceTable.row(0);
-        for ( int row = 1 ; row < dataSourceTable.length(); row++ ){
-            String[] values = dataSourceTable.row(row);
-            // put into context
-            for ( int i = 0 ; i < columns.length;i++ ){
-                context.set(columns[i],values[i]);
-            }
-            try{
-                script.execute(context);
-
-            }catch (Throwable e){
-                System.err.println(e);
-            }
-        }
-        // i am here...
-        xSelenium.close();
-    }
 
     static void executeScriptUI(String[] args){
         if ( args.length < 2 ){
@@ -118,7 +65,30 @@ public class Main {
         }
     }
 
+    private static void executeUISuite(String[] args) {
+        try {
+            WebSuiteRunner runner = new WebSuiteRunner(args[0]);
+            runner.run();
+
+        }catch (Throwable t){
+            if ( __DEBUG__){
+                t.printStackTrace();
+            }else{
+                System.err.println(t);
+            }
+        }
+    }
     public static void main(String[] args) {
-        executeScriptUIWithDS(args);
+        if ( args.length ==  0 ){
+            return;
+        }
+        if ( args[0].endsWith(".jexl") ){
+            executeScriptUI(args);
+            return;
+        }
+        if ( args[0].endsWith(".xml") ){
+            executeUISuite(args);
+            return;
+        }
     }
 }

@@ -14,7 +14,7 @@ public final class Utils {
 
     public static final String REDIRECT_TO_FILE = "@" ;
 
-    public static final Pattern RELOCATE_PATH_PATTERN = Pattern.compile("\"_/(?<path>[^<]+)\"", Pattern.MULTILINE);
+    public static final Pattern RELOCATE_PATH_PATTERN = Pattern.compile("\"_/(?<path>[^\"]*)\"", Pattern.MULTILINE);
 
     public static Object createInstance(String className, Object... params) {
         try {
