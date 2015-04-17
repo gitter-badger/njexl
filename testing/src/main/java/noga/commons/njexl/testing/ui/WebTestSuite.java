@@ -59,19 +59,8 @@ public class WebTestSuite extends TestSuite{
         tests = new ArrayList<>();
     }
 
-    public static WebTestSuite loadFrom(String xmlFile) throws Exception{
-        XStream xStream = new XStream(new PureJavaReflectionProvider());
-        xStream.alias("testSuite", WebTestSuite.class);
-
-        xStream.autodetectAnnotations(true);
-        String xml = Utils.readToEnd(xmlFile);
-        String location = new File(xmlFile).getCanonicalPath();
-        location = location.replace('\\','/');
-        String dir = location.substring(0, location.lastIndexOf("/"));
-        // do the magical relocation here
-        xml = Utils.relocatePathInXml(dir, xml);
-        WebTestSuite obj = (WebTestSuite)xStream.fromXML(xml);
-        obj.location = location ;
-        return  obj;
+    public static WebTestSuite loadFrom(String file) throws Exception{
+        return loadFrom(WebTestSuite.class , file);
     }
+
 }
