@@ -4,9 +4,12 @@
     </dataSources>
     <reporters>
         <reporter name="console" type="noga.commons.njexl.testing.reporting.SimpleTextReporter" />
+
+        <!--
         <reporter name="text" type="noga.commons.njexl.testing.reporting.SimpleTextReporter" >
             <params>FILE</params>
         </reporter>
+        -->
 
     </reporters>
     <webApp name="DemoApp" build="4.2" scriptDir="_/" url = "http://google.co.in" logs="reports/DemoApp"  >

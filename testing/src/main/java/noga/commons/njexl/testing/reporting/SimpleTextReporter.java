@@ -81,20 +81,19 @@ public class SimpleTextReporter implements Reporter {
             case BEFORE_TEST:
             case ABORT_TEST:
             case IGNORE_TEST:
-                printStream.printf("%s|%s|%s|%s:%d\n", Utils.ts(),
-                        testRunEvent.feature, testRunEvent.type,
-                        testRunEvent.table.name(), testRunEvent.row);
+                printStream.printf("%s|%s|%s:%d|%s\n", Utils.ts(),
+                        testRunEvent.feature, testRunEvent.table.name(), testRunEvent.row , testRunEvent.type);
                 break;
 
             case OK_TEST:
-                printStream.printf("%s|%s|%s|%s:%d >o> %s \n",Utils.ts(),
-                        testRunEvent.feature, testRunEvent.type,
-                        testRunEvent.table.name(), testRunEvent.row , testRunEvent.runObject );
+                printStream.printf("%s|%s|%s:%d|%s >o> %s \n",Utils.ts(),
+                        testRunEvent.feature,
+                        testRunEvent.table.name(), testRunEvent.row , testRunEvent.type,testRunEvent.runObject );
                 break;
             case ERROR_TEST:
-                printStream.printf("%s|%s|%s|%s:%d >e> %s \n",Utils.ts(),
-                        testRunEvent.feature, testRunEvent.type,
-                        testRunEvent.table.name(), testRunEvent.row , testRunEvent.error );
+                printStream.printf("%s|%s|%s:%d|%s >e> %s \n",Utils.ts(),
+                        testRunEvent.feature,
+                        testRunEvent.table.name(), testRunEvent.row , testRunEvent.type,testRunEvent.error );
                 break;
         }
     }
