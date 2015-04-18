@@ -1172,7 +1172,9 @@ public class JexlArithmetic {
             if ("".equals(val)) {
                 return 0;
             } else {
-                return Long.parseLong((String) val);
+                // what if " <num>  " comes?
+                String text = ((String)val).trim();
+                return Long.parseLong(text);
             }
         } else if (val instanceof Boolean) {
             return ((Boolean) val).booleanValue() ? 1L : 0L;
