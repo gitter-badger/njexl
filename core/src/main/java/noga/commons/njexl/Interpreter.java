@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 package noga.commons.njexl;
+
 import noga.commons.njexl.extension.TypeUtility;
 import noga.commons.njexl.extension.oop.ScriptClass;
 import noga.commons.njexl.introspection.*;
@@ -47,32 +48,32 @@ public class Interpreter implements ParserVisitor {
         return imports;
     }
 
-    public ScriptClass resolveJexlClassName(String name){
+    public ScriptClass resolveJexlClassName(String name) {
 
         String[] arr = name.split(":");
-        if ( arr.length > 1 ){
+        if (arr.length > 1) {
             // namespaced
             String s = arr[0];
             name = arr[1];
             Script script = imports.get(s);
-            if ( script == null ){
+            if (script == null) {
                 return null;
             }
-            HashMap<String,ScriptClass> map = script.classes() ;
-            if ( map.containsKey(name )){
+            HashMap<String, ScriptClass> map = script.classes();
+            if (map.containsKey(name)) {
                 return map.get(name);
             }
             // you wanted specific, hence, I can not load you
             return null;
         }
         // Try, is that a Java object loaded?
-        if ( context.has(name) ){
-            return new ScriptClass(name, context.get(name),current.name());
+        if (context.has(name)) {
+            return new ScriptClass(name, context.get(name), current.name());
         }
-        for ( String s : imports.keySet() ){
+        for (String s : imports.keySet()) {
             Script script = imports.get(s);
-            HashMap<String,ScriptClass> map = script.classes() ;
-            if ( map.containsKey(name )){
+            HashMap<String, ScriptClass> map = script.classes();
+            if (map.containsKey(name)) {
                 return map.get(name);
             }
         }
@@ -81,7 +82,7 @@ public class Interpreter implements ParserVisitor {
 
     protected Script resolveScriptForFunction(String prefix, String name) {
         Script script = imports.get(prefix);
-        if (script != null ) {
+        if (script != null) {
             if (script.methods().containsKey(name)) {
                 return script;
             }
@@ -95,18 +96,18 @@ public class Interpreter implements ParserVisitor {
             }
         }
         // now, is this name of a method passed as an arg?
-        if ( context.has( name ) ){
+        if (context.has(name)) {
             Object fo = context.get(name);
-            if ( fo != null ) {
+            if (fo != null) {
                 String m = fo.toString();
                 String[] arr = m.split(":");
-                if ( arr.length > 1 ){
+                if (arr.length > 1) {
                     prefix = arr[0];
                     name = arr[1];
-                }else{
-                    name = m ;
+                } else {
+                    name = m;
                 }
-                return resolveScriptForFunction(prefix, name );
+                return resolveScriptForFunction(prefix, name);
             }
         }
         return null;
@@ -305,10 +306,11 @@ public class Interpreter implements ParserVisitor {
     /**
      * Sets the context.
      * This is very dangerous, but then needed
+     *
      * @since 2.1
      */
     public void setContext(JexlContext context) {
-         this.context = context ;
+        this.context = context;
     }
 
     /**
@@ -422,9 +424,11 @@ public class Interpreter implements ParserVisitor {
         }
         return cancelled;
     }
+
     boolean isEventing;
     String eventingPattern;
     Eventing eventing;
+
     /**
      * Resolves a namespace, eventually allocating an instance using context as constructor argument.
      * The lifetime of such instances span the current expression or script evaluation.
@@ -435,12 +439,12 @@ public class Interpreter implements ParserVisitor {
      */
     protected Object resolveNamespace(String prefix, JexlNode node) {
         // just resolve the prefix and all
-        eventingPattern = "" ;
-        isEventing = false ;
-        if ( prefix != null ) {
+        eventingPattern = "";
+        isEventing = false;
+        if (prefix != null) {
             isEventing = Eventing.EVENTS.matcher(prefix).matches();
-            if ( isEventing ){
-                eventingPattern = prefix.substring(0,2);
+            if (isEventing) {
+                eventingPattern = prefix.substring(0, 2);
                 prefix = prefix.substring(2);
             }
         }
@@ -525,14 +529,14 @@ public class Interpreter implements ParserVisitor {
             }
 
             Script base;
-            if ( data == null ){
+            if (data == null) {
                 // I am the starting interpreter,
-                base = current ;
-            }else{
-                base = (Script)data;
+                base = current;
+            } else {
+                base = (Script) data;
             }
-            Script freshlyImported = jexlEngine.importScript(from, as,base);
-            freshlyImported.setup( context );
+            Script freshlyImported = jexlEngine.importScript(from, as, base);
+            freshlyImported.setup(context);
             imports.put(as, freshlyImported);
             context.set(as, freshlyImported);
             return freshlyImported;
@@ -548,10 +552,11 @@ public class Interpreter implements ParserVisitor {
         return null;
     }
 
-    public static class NamedArgs{
+    public static class NamedArgs {
         public final String name;
         public final Object value;
-        public NamedArgs(String n,Object v){
+
+        public NamedArgs(String n, Object v) {
             name = n;
             value = v;
         }
@@ -561,7 +566,7 @@ public class Interpreter implements ParserVisitor {
     @Override
     public Object visit(ASTArgDef node, Object data) {
         int numChild = node.jjtGetNumChildren();
-        if (numChild ==  1 ){
+        if (numChild == 1) {
             return node.jjtGetChild(0).jjtAccept(this, data);
         }
         NamedArgs na = new NamedArgs(node.jjtGetChild(0).image,
@@ -687,12 +692,12 @@ public class Interpreter implements ParserVisitor {
         Object start = node.jjtGetChild(0).jjtAccept(this, data);
         Object end = node.jjtGetChild(1).jjtAccept(this, data);
         Object step = 1;
-        if ( node.jjtGetNumChildren() == 3 ){
+        if (node.jjtGetNumChildren() == 3) {
             step = node.jjtGetChild(1).jjtAccept(this, data);
         }
         try {
             return TypeUtility.range(end, start, step);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new JexlException(node, "Invalid Range!", e);
         }
     }
@@ -970,26 +975,26 @@ public class Interpreter implements ParserVisitor {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
         try {
-            if (left == null ){
-                return false ;
+            if (left == null) {
+                return false;
             }
-            if ( left instanceof ScriptClassInstance ){
+            if (left instanceof ScriptClassInstance) {
                 return ((ScriptClassInstance) left).getNClass().isa(right);
             }
-            Class r ;
-            if ( right instanceof Class ){
-                r = (Class)right;
-            }else {
+            Class r;
+            if (right instanceof Class) {
+                r = (Class) right;
+            } else {
                 r = right.getClass();
             }
-            Class l ;
-            if ( left instanceof Class ){
-                l = (Class)left;
-            }else{
+            Class l;
+            if (left instanceof Class) {
+                l = (Class) left;
+            } else {
                 l = left.getClass();
             }
 
-            return r.isAssignableFrom(l) ;
+            return r.isAssignableFrom(l);
 
         } catch (ArithmeticException xrt) {
             throw new JexlException(node, "isa error", xrt);
@@ -1008,6 +1013,34 @@ public class Interpreter implements ParserVisitor {
             throw new JexlException(node, "in error", xrt);
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object visit(ASTAEQNode node, Object data) {
+        Object left = node.jjtGetChild(0).jjtAccept(this, data);
+        Object right = node.jjtGetChild(1).jjtAccept(this, data);
+        try {
+
+            if (left == right) {
+                return true;
+            }
+            if (left == null || right == null) {
+                return false;
+            }
+            if (left instanceof ScriptClassInstance && right instanceof ScriptClassInstance) {
+                if (((ScriptClassInstance) left).getNClass().equals(((ScriptClassInstance) right).getNClass())) {
+                    return left.equals(right);
+                }
+                return false;
+            }
+            return left.equals(right);
+
+        } catch (ArithmeticException xrt) {
+            throw new JexlException(node, "=== error", xrt);
+        }
+    }
+
 
     /**
      * {@inheritDoc}
@@ -1315,28 +1348,28 @@ public class Interpreter implements ParserVisitor {
             this.block = block;
         }
 
-        public void setIterationContext(Object con, Object o, Object i){
+        public void setIterationContext(Object con, Object o, Object i) {
             interpreter.context.set(TypeUtility._CONTEXT_, con);
             interpreter.context.set(TypeUtility._ITEM_, o);
             interpreter.context.set(TypeUtility._INDEX_, i);
         }
 
-        public void removeIterationContext(){
+        public void removeIterationContext() {
             interpreter.context.remove(TypeUtility._CONTEXT_);
             interpreter.context.remove(TypeUtility._ITEM_);
             interpreter.context.remove(TypeUtility._INDEX_);
         }
 
-        public Object execute(){
+        public Object execute() {
             try {
                 Object ret = block.jjtAccept(interpreter, null);
                 return ret;
-            }catch (JexlException.Return r){
+            } catch (JexlException.Return r) {
                 return r.getValue();
             }
         }
 
-        public Object getVar(String name){
+        public Object getVar(String name) {
             return interpreter.context.get(name);
         }
     }
@@ -1380,16 +1413,16 @@ public class Interpreter implements ParserVisitor {
                 argv[i] = node.jjtGetChild(i + argb).jjtAccept(this, null);
             }
             // if __args__ expansion was used?
-            if ( n.jjtGetNumChildren() > 0 && n.jjtGetChild(0).jjtGetNumChildren() > 0 ) {
+            if (n.jjtGetNumChildren() > 0 && n.jjtGetChild(0).jjtGetNumChildren() > 0) {
                 if (Script.ARGS.equals(n.jjtGetChild(0).jjtGetChild(0).image)) {
                     argv = (Object[]) argv[0];
                 }
             }
         }
         JexlException xjexl = null;
-        if ( isEventing ) {
+        if (isEventing) {
             eventing = getEventing(bean);
-            eventing.before( eventingPattern, methodName, argv );
+            eventing.before(eventingPattern, methodName, argv);
         }
         try {
             // attempt to reuse last executor cached in volatile JexlNode.value
@@ -1405,7 +1438,7 @@ public class Interpreter implements ParserVisitor {
             }
             boolean cacheable = cache;
             if (bean instanceof Executable) {
-                return ((Executable) bean).execMethod(methodName,argv);
+                return ((Executable) bean).execMethod(methodName, argv);
             }
 
             JexlMethod vm = uberspect.getMethod(bean, methodName, argv, node);
@@ -1461,28 +1494,26 @@ public class Interpreter implements ParserVisitor {
             }
         } catch (InvocationTargetException e) {
             xjexl = new JexlException(node, "method invocation error", e.getCause());
-        } catch(JexlException.Return | JexlException.Cancel e) {
+        } catch (JexlException.Return | JexlException.Cancel e) {
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             xjexl = new JexlException(node, "method error", e);
-        }
-        finally {
-            if ( isEventing ) {
-               eventing.after(eventingPattern,methodName,argv);
+        } finally {
+            if (isEventing) {
+                eventing.after(eventingPattern, methodName, argv);
             }
-            isEventing = false ;
+            isEventing = false;
             eventing = null;
             eventingPattern = null;
         }
         return invocationFailed(xjexl);
     }
 
-    Eventing getEventing(Object object){
-        if ( object instanceof Eventing ){
-            return ((Eventing)object);
+    Eventing getEventing(Object object) {
+        if (object instanceof Eventing) {
+            return ((Eventing) object);
         }
-        return Eventing.Timer.TIMER ;
+        return Eventing.Timer.TIMER;
     }
 
     /**
@@ -1548,10 +1579,10 @@ public class Interpreter implements ParserVisitor {
                     }
                 }
             }
-            if ( cobject instanceof String ){
+            if (cobject instanceof String) {
                 ScriptClass scriptClass = resolveJexlClassName((String) cobject);
-                if ( scriptClass != null ){
-                    return scriptClass.instance(this,argv) ;
+                if (scriptClass != null) {
+                    return scriptClass.instance(this, argv);
                 }
             }
             JexlMethod ctor = uberspect.getConstructorMethod(cobject, argv, node);
@@ -1863,7 +1894,7 @@ public class Interpreter implements ParserVisitor {
     }
 
     public static final Pattern CURRY_PATTERN = Pattern.compile("\\#\\{(?<expr>[^\\{^\\}]*)\\}",
-                                       Pattern.MULTILINE);
+            Pattern.MULTILINE);
 
     Script current;
 
@@ -1873,7 +1904,7 @@ public class Interpreter implements ParserVisitor {
         while (m.find()) {
             String expression = m.group("expr");
             try {
-                Script curry = jexlEngine.createCopyScript(expression,current);
+                Script curry = jexlEngine.createCopyScript(expression, current);
                 Object o = curry.execute(context);
                 String val = String.format("%s", o);
                 ret = m.replaceFirst(val);
@@ -1884,11 +1915,11 @@ public class Interpreter implements ParserVisitor {
         }
         // now, in here, finally execute all ....
         try {
-            Script curry = jexlEngine.createCopyScript(ret,current);
+            Script curry = jexlEngine.createCopyScript(ret, current);
             Object c = curry.execute(context);
             return c;
-        }catch (Exception e){
-            return toBeCurried ;
+        } catch (Exception e) {
+            return toBeCurried;
         }
     }
 
@@ -1932,18 +1963,18 @@ public class Interpreter implements ParserVisitor {
         JexlNode valNode = node.jjtGetChild(0);
         Object val = valNode.jjtAccept(this, data);
         try {
-            if ( val == null ){
-                return 0 ;
+            if (val == null) {
+                return 0;
             }
-            if ( val instanceof Collection ){
-                return ((Collection)val).size();
+            if (val instanceof Collection) {
+                return ((Collection) val).size();
             }
-            if ( val.getClass().isArray()){
+            if (val.getClass().isArray()) {
                 return Array.getLength(val);
             }
-            if ( arithmetic.compare(val,0,">=") < 0 ){
+            if (arithmetic.compare(val, 0, ">=") < 0) {
                 return arithmetic.negate(val);
-            }else{
+            } else {
                 return val;
             }
 
@@ -2003,9 +2034,9 @@ public class Interpreter implements ParserVisitor {
             if (node.jjtGetNumChildren() > 1) {
                 node.jjtGetChild(1).jjtAccept(this, data);
             }
-            return true ;
+            return true;
         }
-        return false ;
+        return false;
     }
 
     /**
@@ -2089,19 +2120,19 @@ public class Interpreter implements ParserVisitor {
                 Exception ex = null;
                 try {
                     value = vg.invoke(object);
-                }catch (Exception e){
-                    ex = e ;
+                } catch (Exception e) {
+                    ex = e;
                 }
                 // before we do something check for once if the field value is that?
-                if ( value == null ){
-                    Field field = ((UberspectImpl)uberspect).getField(object, attribute.toString(), null);
+                if (value == null) {
+                    Field field = ((UberspectImpl) uberspect).getField(object, attribute.toString(), null);
                     if (field != null) {
                         JexlPropertyGet fg = new UberspectImpl.FieldPropertyGet(field);
                         value = fg.invoke(object);
-                        if ( value != null ){
-                            vg = fg ;
+                        if (value != null) {
+                            vg = fg;
                         }
-                    }else{
+                    } else {
                         // null field, raise ex
                         throw ex;
                     }

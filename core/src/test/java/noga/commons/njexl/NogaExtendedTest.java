@@ -45,9 +45,20 @@ public class NogaExtendedTest extends JexlTestCase {
         Expression e = JEXL.createExpression("1 == '   1   '");
         JexlContext jc = new MapContext();
         Object o = e.evaluate(jc);
-        assertTrue((Boolean)o);
+        assertTrue((Boolean) o);
     }
 
+
+    @Test
+    public void testNumberTypeEquality() throws Exception {
+        Expression e = JEXL.createExpression("1 === '   1   '");
+        JexlContext jc = new MapContext();
+        Object o = e.evaluate(jc);
+        assertFalse((Boolean)o);
+        e = JEXL.createExpression("1 === 1");
+        o = e.evaluate(jc);
+        assertTrue((Boolean) o);
+    }
 
     @Test
     public void testStringEscape() throws Exception {

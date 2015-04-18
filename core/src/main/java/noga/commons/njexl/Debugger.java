@@ -451,6 +451,11 @@ public final class Debugger implements ParserVisitor {
     }
 
     /** {@inheritDoc} */
+    public Object visit(ASTAEQNode node, Object data) {
+        return infixChildren(node, " === ", false, data);
+    }
+
+    /** {@inheritDoc} */
     public Object visit(ASTEQNode node, Object data) {
         return infixChildren(node, " == ", false, data);
     }

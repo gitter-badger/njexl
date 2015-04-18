@@ -122,6 +122,7 @@ PARSER_END(Parser)
 
 <*> TOKEN : { /* COMPARISONS */
       < eq : "==" | "eq" >
+    | <aeq : "===" | "aeq" >
     | < ne : "!=" | "ne" >
     | < req : "=~" >
     | < rne : "!~" >
@@ -365,6 +366,8 @@ void EqualityExpression() #void :
    <isa> AdditiveExpression() #ISANode(2)
    |
    <in> AdditiveExpression() #INNode(2)
+   |
+     LOOKAHEAD(2) <aeq> RelationalExpression() #AEQNode(2)
    |
      <eq> RelationalExpression() #EQNode(2)
    |
