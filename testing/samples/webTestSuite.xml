@@ -3,7 +3,7 @@
         <source name="sample"  location ="_/UIData.xlsx" />
     </dataSources>
     <reporters>
-        <reporter name="xml" type="xml" />
+        <reporter name="tr1" type="noga.commons.njexl.testing.reporting.SimpleTextReporter" />
     </reporters>
     <webApp name="DemoApp" build="4.2" scriptDir="_/" url = "http://google.co.in" logs="reports/DemoApp"  >
         <feature name="Demo1" ds="sample" table="Data" script="selenium_demo" owner="nmondal" enabled="true"/>

@@ -36,8 +36,7 @@ public class TestSuite {
         }
     }
 
-    @XStreamAlias("reporter")
-    public static class Reporter{
+    public static class ObjectInit{
 
         @XStreamAsAttribute
         public String name;
@@ -45,11 +44,18 @@ public class TestSuite {
         @XStreamAsAttribute
         public String type;
 
-        public Reporter(){
+        @XStreamImplicit(itemFieldName = "param")
+        public ArrayList<String> params;
+
+        public ObjectInit(){
             name="";
             type="";
+            params = new ArrayList<>();
         }
     }
+
+    @XStreamAlias("reporter")
+    public static class Reporter extends ObjectInit{}
 
     public static class BaseFeature{
 

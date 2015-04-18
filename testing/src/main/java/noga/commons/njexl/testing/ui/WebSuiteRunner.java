@@ -7,11 +7,16 @@ import noga.commons.njexl.testing.TestAssert;
 import noga.commons.njexl.testing.TestAssert.*;
 import noga.commons.njexl.testing.TestSuite;
 import noga.commons.njexl.testing.TestSuiteRunner;
+import noga.commons.njexl.testing.Utils;
 import noga.commons.njexl.testing.dataprovider.DataSource;
 import noga.commons.njexl.testing.dataprovider.DataSourceTable;
 import noga.commons.njexl.testing.dataprovider.ProviderFactory;
+import noga.commons.njexl.testing.reporting.Reporter;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by noga on 17/04/15.
@@ -29,6 +34,9 @@ public class WebSuiteRunner extends TestSuiteRunner {
     JexlContext jexlContext ;
 
     HashMap<String,Object> functions;
+
+    HashSet<Reporter> reporters;
+
 
     public final HashMap<String,DataSource> dataSources;
 
@@ -59,6 +67,12 @@ public class WebSuiteRunner extends TestSuiteRunner {
             }
             dataSources.put( ds.name, dataSource );
         }
+        reporters = new HashSet<>();
+        for (TestSuite.Reporter r : webTestSuite.reporters ){
+            Reporter reporter = (Reporter)Utils.createInstance( r.type );
+            reporter.init( r.params );
+            reporters.add(reporter);
+        }
     }
 
     @Override
@@ -74,6 +88,20 @@ public class WebSuiteRunner extends TestSuiteRunner {
     }
 
     @Override
+    protected Set<Reporter> reporters() {
+        return reporters;
+    }
+
+    @Override
+    protected String logLocation(TestSuite.BaseFeature feature) {
+        String loc = webTestSuite.webApp.logs + "/" + feature.name ;
+        File file = new File(loc);
+        if ( !file.exists() ){
+            file.mkdir();
+        }
+        return loc;
+    }
+
     protected DataSourceTable dataSourceTable(TestSuite.BaseFeature feature) {
         DataSource source = dataSources.get(feature.ds) ;
         if ( source == null ){
@@ -97,7 +125,8 @@ public class WebSuiteRunner extends TestSuiteRunner {
 
     @Override
     protected void beforeFeature(TestSuite.BaseFeature feature) throws Exception {
-        xSelenium.screenShotDir( webTestSuite.webApp.logs + "/" + feature.name  );
+        String logLocation = logLocation(feature) ;
+        xSelenium.screenShotDir(  logLocation );
         jexlContext = getContext();
         functions = getFunctions();
         JexlEngine engine = new JexlEngine();
@@ -107,20 +136,24 @@ public class WebSuiteRunner extends TestSuiteRunner {
     }
 
     @Override
-    protected TestRunEventType runTest(DataSourceTable table, int row) throws Exception {
+    protected TestRunEvent runTest(TestRunEvent runEvent) throws Exception {
         testAssert.setError(false);
-        String[] columns = table.row(0);
-        String[] values = table.row(row);
+        String[] columns = runEvent.table.row(0);
+        String[] values = runEvent.table.row(runEvent.row);
         JexlContext local = jexlContext.copy();
         // put into context
         for ( int i = 0 ; i < columns.length;i++ ){
             local.set(columns[i],values[i]);
         }
-        script.execute(local);
+        // set output if need be?
+        runEvent.runObject = script.execute(local);
+
         if (testAssert.hasError()){
-            return TestRunEventType.ERROR_TEST ;
+            runEvent.type = TestRunEventType.ERROR_TEST ;
+        }else {
+            runEvent.type = TestRunEventType.OK_TEST;
         }
-        return TestRunEventType.OK_TEST ;
+        return runEvent ;
     }
 
     @Override

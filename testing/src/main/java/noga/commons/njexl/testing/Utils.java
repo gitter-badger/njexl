@@ -1,8 +1,11 @@
 package noga.commons.njexl.testing;
 
+import noga.commons.njexl.extension.TypeUtility;
+
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.nio.file.Files;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,5 +76,9 @@ public final class Utils {
             matcher = RELOCATE_PATH_PATTERN.matcher(xml);
         }
         return xml ;
+    }
+
+    public static String ts(){
+        return TypeUtility.castString(new Date(),"yyyyMMdd-hhmmss");
     }
 }
