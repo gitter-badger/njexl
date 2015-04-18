@@ -1034,8 +1034,10 @@ public class Interpreter implements ParserVisitor {
                 }
                 return false;
             }
-            return left.equals(right);
-
+            if ( left.getClass().equals( right.getClass() )) {
+                return arithmetic.equals(left, right) ? Boolean.TRUE : Boolean.FALSE;
+            }
+            return false;
         } catch (ArithmeticException xrt) {
             throw new JexlException(node, "=== error", xrt);
         }
