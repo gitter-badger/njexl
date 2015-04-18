@@ -65,8 +65,11 @@ public class SimpleTextReporter implements Reporter {
 
     @Override
     public void onAssertion(TestAssert.AssertionEvent assertionEvent) {
-        printStream.printf("%s|@ %s\n", Utils.ts(), assertionEvent);
+        printStream.printf("%s|%s:%d|@ %s\n", Utils.ts(), dsTable,row,assertionEvent);
     }
+
+    String dsTable;
+    int row;
 
     @Override
     public void onTestRunEvent(TestSuiteRunner.TestRunEvent testRunEvent) {
@@ -79,21 +82,23 @@ public class SimpleTextReporter implements Reporter {
                 printStream.printf("%s|%s|%s\n", Utils.ts(), testRunEvent.feature, testRunEvent.type);
                 break;
             case BEFORE_TEST:
+                dsTable = testRunEvent.table.name() ;
+                row = testRunEvent.row ;
             case ABORT_TEST:
             case IGNORE_TEST:
                 printStream.printf("%s|%s|%s:%d|%s\n", Utils.ts(),
-                        testRunEvent.feature, testRunEvent.table.name(), testRunEvent.row , testRunEvent.type);
+                        testRunEvent.feature, dsTable, row , testRunEvent.type);
                 break;
 
             case OK_TEST:
                 printStream.printf("%s|%s|%s:%d|%s >o> %s \n",Utils.ts(),
                         testRunEvent.feature,
-                        testRunEvent.table.name(), testRunEvent.row , testRunEvent.type,testRunEvent.runObject );
+                        dsTable,row , testRunEvent.type,testRunEvent.runObject );
                 break;
             case ERROR_TEST:
                 printStream.printf("%s|%s|%s:%d|%s >e> %s \n",Utils.ts(),
                         testRunEvent.feature,
-                        testRunEvent.table.name(), testRunEvent.row , testRunEvent.type,testRunEvent.error );
+                        dsTable, row , testRunEvent.type,testRunEvent.error );
                 break;
         }
     }
