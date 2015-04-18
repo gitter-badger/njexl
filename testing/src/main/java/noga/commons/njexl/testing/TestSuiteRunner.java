@@ -78,7 +78,7 @@ public abstract class TestSuiteRunner implements Runnable{
 
     protected abstract DataSourceTable dataSourceTable( TestSuite.BaseFeature feature);
 
-    protected abstract String logLocation( TestSuite.BaseFeature feature);
+    protected abstract String logLocation( String base, TestSuite.BaseFeature feature);
 
     protected abstract Set<Reporter>  reporters();
 
@@ -101,7 +101,8 @@ public abstract class TestSuiteRunner implements Runnable{
     }
 
     protected void changeLogDirectory(TestSuite.BaseFeature feature){
-        String logDir = logLocation(feature);
+        String timeStamp = Utils.ts();
+        String logDir = logLocation(timeStamp, feature);
         Set<Reporter> reporters = reporters();
         for ( Reporter r : reporters ){
             r.location(logDir);

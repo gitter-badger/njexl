@@ -94,12 +94,13 @@ public class WebSuiteRunner extends TestSuiteRunner {
     }
 
     @Override
-    protected String logLocation(TestSuite.BaseFeature feature) {
-        String loc = webTestSuite.webApp.logs + "/" + feature.name ;
+    protected String logLocation(String base, TestSuite.BaseFeature feature) {
+        String loc = webTestSuite.webApp.logs + "/" + base +"/" + feature.name ;
         File file = new File(loc);
         if ( !file.exists() ){
-            file.mkdir();
+            file.mkdirs();
         }
+        xSelenium.screenShotDir(loc);
         return loc;
     }
 
@@ -126,8 +127,6 @@ public class WebSuiteRunner extends TestSuiteRunner {
 
     @Override
     protected void beforeFeature(TestSuite.BaseFeature feature) throws Exception {
-        String logLocation = logLocation(feature) ;
-        xSelenium.screenShotDir(  logLocation );
         jexlContext = getContext();
         functions = getFunctions();
         JexlEngine engine = new JexlEngine();

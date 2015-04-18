@@ -22,6 +22,8 @@ public class SimpleTextReporter implements Reporter {
 
     protected String location;
 
+    protected String fileName = "TextReport.txt" ;
+
     Sync type;
 
     @Override
@@ -33,9 +35,13 @@ public class SimpleTextReporter implements Reporter {
     public void init(ArrayList<String> args) {
         if ( args.size() == 0 ){
             type = Sync.CONSOLE ;
+            fileName = "" ;
             return;
         }
         type = Enum.valueOf(Sync.class, args.get(0));
+        if ( args.size() > 1 ){
+            fileName = args.get(2);
+        }
     }
 
     @Override
@@ -44,9 +50,8 @@ public class SimpleTextReporter implements Reporter {
         printStream = System.out ;
         if (Sync.FILE == type ) {
             try {
-                this.location = location +"/" + Utils.ts() + "_" + name();
-                printStream = new PrintStream(location);
-                this.location = location;
+                this.location = location +"/" +  name();
+                printStream = new PrintStream(this.location);
             } catch (Exception e) {
                 this.location = "";
             }
@@ -55,7 +60,7 @@ public class SimpleTextReporter implements Reporter {
 
     @Override
     public String name() {
-        return "TextReport.txt";
+        return fileName ;
     }
 
     @Override
@@ -79,6 +84,7 @@ public class SimpleTextReporter implements Reporter {
                 printStream.printf("%s|%s|%s|%s:%d\n", Utils.ts(),
                         testRunEvent.feature, testRunEvent.type,
                         testRunEvent.table.name(), testRunEvent.row);
+                break;
 
             case OK_TEST:
                 printStream.printf("%s|%s|%s|%s:%d >o> %s \n",Utils.ts(),
