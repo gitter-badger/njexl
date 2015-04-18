@@ -1,5 +1,6 @@
 package noga.commons.njexl.testing.reporting;
 
+import noga.commons.njexl.testing.TestAssert;
 import noga.commons.njexl.testing.TestSuiteRunner;
 import noga.commons.njexl.testing.Utils;
 
@@ -55,6 +56,11 @@ public class SimpleTextReporter implements Reporter {
     @Override
     public String name() {
         return "TextReport.txt";
+    }
+
+    @Override
+    public void onAssertion(TestAssert.AssertionEvent assertionEvent) {
+        printStream.printf("%s|@ %s\n", Utils.ts(), assertionEvent);
     }
 
     @Override

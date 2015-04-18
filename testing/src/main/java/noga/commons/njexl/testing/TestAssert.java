@@ -43,6 +43,15 @@ public final class TestAssert {
             this.value = value ;
         }
 
+        @Override
+        public String toString(){
+            boolean failed = ((TestAssert)getSource()).hasError();
+            String ret = String.format("%s %s => %s", type, value, noga.commons.njexl.Main.strArr(data) );
+            if ( failed ){
+                return "!!!" + ret ;
+            }
+            return ret;
+        }
     }
 
     public interface AssertionEventListener{

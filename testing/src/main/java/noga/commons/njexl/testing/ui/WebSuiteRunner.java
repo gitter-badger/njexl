@@ -80,6 +80,7 @@ public class WebSuiteRunner extends TestSuiteRunner {
         xSelenium = XSelenium.selenium(webTestSuite.webApp.url, webTestSuite.browserType.toString());
         testAssert = new TestAssert();
         testAssert.eventListeners.add(xSelenium);
+        testAssert.eventListeners.addAll(reporters);
     }
 
     @Override
