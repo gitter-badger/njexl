@@ -16,4 +16,4 @@
 #  
 # 
 
-noga.commons.njexl.scripting.JexlScriptEngineFactory
+com.noga.njexl.lang.scripting.JexlScriptEngineFactory

@@ -18,10 +18,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>noga.commons</groupId>
-    <artifactId>njexl</artifactId>
+    <groupId>com.noga</groupId>
+    <artifactId>njexl.lang</artifactId>
     <version>0.1-SNAPSHOT</version>
-    <name>New Jexl Core</name>
+    <name>New Jexl Language Core</name>
     <inceptionYear>2015</inceptionYear>
     <description>
 		The Commons Jexl library is an implementation of the JSTL Expression Language with extensions.
@@ -204,10 +204,10 @@
                     <execution>
                         <id>jexl-jjtree</id>
                         <configuration>
-                            <sourceDirectory>src/main/java/noga/commons/njexl/parser</sourceDirectory>
+                            <sourceDirectory>src/main/java/com/noga/njexl/lang/parser</sourceDirectory>
                             <outputDirectory>${project.build.directory}/generated-sources/java</outputDirectory>
                             <timestampDirectory>${project.build.directory}/generated-sources/javacc-timestamp</timestampDirectory>
-                            <packageName>noga.commons.njexl.parser</packageName>
+                            <packageName>com.noga.njexl.lang.parser</packageName>
                         </configuration>
                         <goals>
                             <goal>jjtree-javacc</goal>
@@ -224,7 +224,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib</classpathPrefix>
-                            <mainClass>noga.commons.njexl.Main</mainClass>
+                            <mainClass>com.noga.njexl.lang.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

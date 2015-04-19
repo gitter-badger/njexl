@@ -1,5 +1,5 @@
 import 'java.lang.System.out' as out
-import 'noga.commons.njexl.extension.dataaccess.DBManager' as db
+import 'com.noga.njexl.lang.extension.dataaccess.DBManager' as db
 
 // which connection profile ? 
 db:init('db.json')
