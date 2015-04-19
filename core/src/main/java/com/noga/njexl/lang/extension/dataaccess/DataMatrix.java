@@ -42,53 +42,70 @@ public class DataMatrix {
         }
     }
 
+    public interface DataLoader{
+
+        DataMatrix matrix(String location,Object...args) throws Exception;
+
+    }
+
+    public static class TextDataLoader implements DataLoader{
+
+        @Override
+        public DataMatrix matrix(String location, Object... args) throws Exception {
+            String sep="\t";
+            boolean header = true ;
+            if ( args.length > 0 ){
+                sep = args[0].toString();
+                if ( args.length > 1 ){
+                    header = TypeUtility.castBoolean(args[1], false);
+                }
+            }
+            List<String> lines = Files.readAllLines(new File(location).toPath());
+            ListSet cols = null;
+            if ( header ){
+                String[] words =  lines.get(0).split(sep);
+                cols = new ListSet(Arrays.asList(words));
+                lines.remove(0);
+            }
+            ArrayList rows = new ArrayList();
+            for ( String line : lines ){
+                String[] words =  line.split(sep);
+                ArrayList row = new ArrayList(Arrays.asList(words));
+                rows.add(row);
+            }
+            if ( header ){
+                return new DataMatrix(rows,cols);
+            }
+            return new DataMatrix(rows);
+        }
+    }
+
+    public static final HashMap<String,DataLoader> dataLoaders = new HashMap<>();
+
+    static {
+
+        final TextDataLoader textDataLoader = new TextDataLoader() ;
+        dataLoaders.put(".tsv", textDataLoader);
+        dataLoaders.put(".csv", textDataLoader);
+        dataLoaders.put(".txt", textDataLoader);
+    }
+
     public ListSet<String> columns;
 
     public ArrayList<ArrayList<String>> rows;
 
     public HashMap<String,ArrayList<Integer>> keys;
 
-    public static DataMatrix loadExcel(String file, Object...args){
-        System.err.println("Excel Not Implemented yet, Noga, the, is thinking");
-        return null;
-    }
-
-    public static DataMatrix loadText(String file, Object...args) throws Exception{
-        String sep="\t";
-        boolean header = true ;
-        if ( args.length > 0 ){
-            sep = args[0].toString();
-            if ( args.length > 1 ){
-                header = TypeUtility.castBoolean(args[1], false);
-            }
-        }
-        List<String> lines = Files.readAllLines(new File(file).toPath());
-        ListSet cols = null;
-        if ( header ){
-            String[] words =  lines.get(0).split(sep);
-            cols = new ListSet(Arrays.asList(words));
-            lines.remove(0);
-        }
-        ArrayList rows = new ArrayList();
-        for ( String line : lines ){
-            String[] words =  line.split(sep);
-            ArrayList row = new ArrayList(Arrays.asList(words));
-            rows.add(row);
-        }
-        if ( header ){
-            return new DataMatrix(rows,cols);
-        }
-        return new DataMatrix(rows);
-    }
 
     public static DataMatrix file2matrix(String file,Object...args) throws Exception{
         String name = file.toLowerCase();
-        if ( name.endsWith(".txt")||name.endsWith(".csv")||name.endsWith(".tsv")){
-            return loadText(file,args);
+        for ( String end : dataLoaders.keySet() ){
+            if ( name.endsWith(end)){
+                DataLoader dataLoader =dataLoaders.get(end);
+                return dataLoader.matrix(file,args);
+            }
         }
-        if ( name.endsWith(".xls")||name.endsWith(".xlsx")){
-            return loadExcel(file, args);
-        }
+        System.err.printf("No Such Extension [%s] for Data Load!\n", name);
         return null;
     }
 
