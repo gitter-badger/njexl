@@ -3,10 +3,10 @@
         <source name="sample"  location ="_/UIData.xlsx" />
     </dataSources>
     <reporters>
-        <reporter name="console" type="noga.commons.njexl.testing.reporting.SimpleTextReporter" />
+        <reporter name="console" type="com.noga.njexl.testing.reporting.SimpleTextReporter" />
 
         <!--
-        <reporter name="text" type="noga.commons.njexl.testing.reporting.SimpleTextReporter" >
+        <reporter name="text" type="SimpleTextReporter" >
             <params>FILE</params>
         </reporter>
         -->
