@@ -1,7 +1,6 @@
+// http://www.mymp3song.com/filedownload/21072/04_-_raabta
 import 'java.lang.Thread' as Thread
-sel:open("/")
-@@sel:type("lst-ib",textValue)
+sel:open("/filedownload/21072/04_-_raabta")
 Thread:sleep(5000)
-assert:test(true,'This should be fine!')
-assert:test(false,'Take a screenshot!')
-assert:abort(true,'This should abort it!')
+sel:downloadTarget("link=04 - Raabta.mp3", "/Users/noga/1.mp3")
+

@@ -5,7 +5,10 @@ import com.noga.njexl.lang.extension.TypeUtility;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -81,5 +84,16 @@ public final class Utils {
 
     public static String ts(){
         return TypeUtility.castString(new Date(), "yyyyMMdd-hhmmss");
+    }
+
+    public static boolean copyFileFromUrl(String url,String dest) {
+        try {
+            URL website = new URL(url);
+            Path target = new File(dest).toPath();
+            long size = Files.copy(website.openStream(), target, StandardCopyOption.REPLACE_EXISTING);
+            return size >= 0 ;
+        }catch (Exception e){
+        }
+        return false;
     }
 }

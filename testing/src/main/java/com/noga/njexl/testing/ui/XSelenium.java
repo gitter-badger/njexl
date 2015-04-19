@@ -1,6 +1,7 @@
 package com.noga.njexl.testing.ui;
 
 import com.noga.njexl.testing.TestAssert;
+import com.noga.njexl.testing.Utils;
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.webdriven.WebDriverCommandProcessor;
@@ -807,7 +808,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     public Object jsa(String script,Object... args){
         JavascriptExecutor executor = (JavascriptExecutor) driver;
-        return executor.executeAsyncScript(script,args);
+        return executor.executeAsyncScript(script, args);
     }
 
     @Override
@@ -829,4 +830,23 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
             System.err.printf("Error Taking Screenshot : %s", e);
         }
     }
+
+    public boolean download(String url, String file){
+        return Utils.copyFileFromUrl(url,file);
+    }
+    public boolean downloadTarget(String locator, String file){
+        By by = getByFromLocator(locator);
+        WebElement element = driver.findElement(by);
+        String tag = element.getTagName();
+        if ( tag.equals("a")){
+            String url = element.getAttribute("href");
+            if ( !url.startsWith("http")){
+                //relative, make it full
+                url = driver.getCurrentUrl()+"/" + url;
+            }
+            return Utils.copyFileFromUrl(url,file);
+        }
+        return false;
+    }
+
 }
