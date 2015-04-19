@@ -207,7 +207,7 @@
                             <sourceDirectory>src/main/java/noga/commons/njexl/parser</sourceDirectory>
                             <outputDirectory>${project.build.directory}/generated-sources/java</outputDirectory>
                             <timestampDirectory>${project.build.directory}/generated-sources/javacc-timestamp</timestampDirectory>
-                            <packageName>noga.commons.njex.parser</packageName>
+                            <packageName>noga.commons.njexl.parser</packageName>
                         </configuration>
                         <goals>
                             <goal>jjtree-javacc</goal>
