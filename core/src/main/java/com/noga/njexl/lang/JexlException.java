@@ -47,9 +47,8 @@ public class JexlException extends RuntimeException {
     }
 
     private void populateFault(){
-        Debugger d = new Debugger();
         if ( mark != null ) {
-            faultyCode = d.data(mark);
+            faultyCode = mark.locationInfo();
         }
     }
 

@@ -138,6 +138,25 @@ public class SimpleNode implements Node {
         return visitor.visit(this, data);
     }
 
+    protected Token firstToken;
+
+    public Token jjtGetFirstToken(){
+        return firstToken ;
+    }
+    public void jjtSetFirstToken(Token token){
+        firstToken = token ;
+    }
+
+    protected Token lastToken;
+
+    public Token jjtGetLastToken(){
+        return lastToken ;
+    }
+    public void jjtSetLastToken(Token token){
+        lastToken = token ;
+    }
+
+
     /**
      * Accept the visitor on all this node's children.
      * @param visitor the visitor

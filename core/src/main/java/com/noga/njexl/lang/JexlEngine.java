@@ -571,8 +571,8 @@ public class JexlEngine {
         //do the implicit "\..." thing.
         scriptText = scriptText.replaceAll("\\\\.\\.\\.[\\r\\n]+", "");
         // Parse the expression
-        ASTJexlScript tree = parse(scriptText, null, new Scope(null));
         String path = f.getCanonicalPath();
+        ASTJexlScript tree = parse(scriptText, createInfo(path, 0, 0), new Scope(null));
         Script script = new ExpressionImpl(path, as, this, scriptText, tree);
         System.out.printf("Script imported : %s@%s\n", as, path);
         imports.put(as, script);

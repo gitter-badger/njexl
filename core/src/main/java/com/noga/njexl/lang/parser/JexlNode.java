@@ -54,6 +54,14 @@ public abstract class JexlNode extends SimpleNode implements JexlInfo {
         return null;
     }
 
+    public String locationInfo(){
+        Token t1 = jjtGetFirstToken();
+        Token t2 = jjtGetLastToken();
+        String locInfo = String.format( "at line %d, col %d to line %d, col %d" ,
+                 t1.beginLine, t1.beginColumn, t2.endLine, t2.endColumn ) ;
+        return locInfo;
+    }
+
     /** {@inheritDoc} */
     public String debugString() {
         DebugInfo info = debugInfo();
