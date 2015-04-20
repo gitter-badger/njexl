@@ -4,10 +4,12 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import com.thoughtworks.xstream.converters.extended.NamedMapConverter;
 import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by noga on 16/04/15.
@@ -150,10 +152,8 @@ public class TestSuite {
         if ( !TestSuite.class.isAssignableFrom(c)){
             throw new Exception("Sorry pal, [" + c + "] is not a TestSuite!" );
         }
-
         XStream xStream = new XStream(new PureJavaReflectionProvider());
         xStream.alias("testSuite", c);
-
         xStream.autodetectAnnotations(true);
         String xml = Utils.readToEnd(xmlFile);
         String location = new File(xmlFile).getCanonicalPath();
@@ -165,5 +165,4 @@ public class TestSuite {
         obj.location = location ;
         return  obj;
     }
-
 }

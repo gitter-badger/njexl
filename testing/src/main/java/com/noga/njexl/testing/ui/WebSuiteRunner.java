@@ -34,11 +34,6 @@ public class WebSuiteRunner extends TestSuiteRunner {
 
     HashMap<String,Object> functions;
 
-    HashSet<Reporter> reporters;
-
-
-    public final HashMap<String,DataSource> dataSources;
-
     protected JexlContext getContext(){
         JexlContext context = com.noga.njexl.lang.Main.getContext();
         context.set(Script.ARGS, new Object[]{});
@@ -55,23 +50,13 @@ public class WebSuiteRunner extends TestSuiteRunner {
         return functions ;
     }
 
-
     public WebSuiteRunner(String file) throws Exception {
         webTestSuite = WebTestSuite.loadFrom(file);
-        dataSources = new HashMap<>();
-        for (TestSuite.DataSource ds : webTestSuite.dataSources ){
-            DataSource dataSource = ProviderFactory.dataSource(ds.location);
-            if ( dataSource == null ){
-                throw new Exception("Can not create data source!");
-            }
-            dataSources.put( ds.name, dataSource );
-        }
-        reporters = new HashSet<>();
-        for (TestSuite.Reporter r : webTestSuite.reporters ){
-            Reporter reporter = (Reporter) Utils.createInstance(r.type);
-            reporter.init( r.params );
-            reporters.add(reporter);
-        }
+    }
+
+    @Override
+    protected TestSuite testSuite() {
+        return webTestSuite;
     }
 
     @Override
@@ -88,11 +73,6 @@ public class WebSuiteRunner extends TestSuiteRunner {
     }
 
     @Override
-    protected Set<Reporter> reporters() {
-        return reporters;
-    }
-
-    @Override
     protected String logLocation(String base, TestSuite.BaseFeature feature) {
         String loc = webTestSuite.webApp.logs + "/" + base +"/" + feature.name ;
         File file = new File(loc);
@@ -101,19 +81,6 @@ public class WebSuiteRunner extends TestSuiteRunner {
         }
         xSelenium.screenShotDir(loc);
         return loc;
-    }
-
-    protected DataSourceTable dataSourceTable(TestSuite.BaseFeature feature) {
-        DataSource source = dataSources.get(feature.ds) ;
-        if ( source == null ){
-            System.err.printf("No Such data source : [%s]\n",feature.ds);
-            return null;
-        }
-        DataSourceTable table = source.tables.get(feature.table);
-        if ( table == null ){
-            System.err.printf("No Such data table in Data Source : [%s] [%s]\n",feature.table, feature.ds);
-        }
-        return table;
     }
 
     @Override

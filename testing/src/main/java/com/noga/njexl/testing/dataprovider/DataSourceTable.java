@@ -12,6 +12,13 @@ public abstract class DataSourceTable {
 
     protected HashMap<String,Integer> columns;
 
+    public HashMap<String,Integer> columns(){
+        if ( columns == null ){
+            populateColumns();
+        }
+        return columns ;
+    }
+
     public abstract String name();
 
     public abstract int length();

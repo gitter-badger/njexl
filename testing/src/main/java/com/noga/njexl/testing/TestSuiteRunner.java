@@ -1,11 +1,13 @@
 package com.noga.njexl.testing;
 
+import com.noga.njexl.lang.extension.TypeUtility;
+import com.noga.njexl.testing.dataprovider.DataSource;
 import com.noga.njexl.testing.dataprovider.DataSourceTable;
+import com.noga.njexl.testing.dataprovider.ProviderFactory;
 import com.noga.njexl.testing.reporting.Reporter;
-
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by noga on 17/04/15.
@@ -53,6 +55,27 @@ public abstract class TestSuiteRunner implements Runnable{
 
     public final HashSet<TestRunEventListener> testRunEventListeners ;
 
+    protected HashSet<Reporter> reporters;
+
+    public static class DataSourceContainer{
+
+        public final TestSuite.DataSource suiteDataSource;
+
+        public final DataSource dataSource;
+
+        public DataSourceContainer(TestSuite.DataSource ds )throws Exception{
+            this.suiteDataSource = ds ;
+            dataSource = ProviderFactory.dataSource(suiteDataSource.location);
+            if ( dataSource == null ){
+                throw new Exception("Can not create data source!");
+            }
+        }
+    }
+
+    protected HashMap<String,DataSourceContainer> dataSources;
+
+    protected HashMap<String,TestSuite.DataSource> tsDataSources;
+
     protected TestSuiteRunner(){
         testRunEventListeners = new HashSet<>();
     }
@@ -72,17 +95,15 @@ public abstract class TestSuiteRunner implements Runnable{
         }
     }
 
-    protected abstract void prepare() throws Exception;
+    protected abstract TestSuite testSuite();
 
     protected abstract TestSuite.Application application();
 
-    protected abstract DataSourceTable dataSourceTable( TestSuite.BaseFeature feature);
-
-    protected abstract String logLocation( String base, TestSuite.BaseFeature feature);
-
-    protected abstract Set<Reporter>  reporters();
+    protected abstract void prepare() throws Exception;
 
     protected abstract void beforeFeature(TestSuite.BaseFeature feature) throws Exception;
+
+    protected abstract String logLocation(String base, TestSuite.BaseFeature feature) ;
 
     protected abstract  TestRunEvent runTest( TestRunEvent runEvent) throws Exception;
 
@@ -90,33 +111,65 @@ public abstract class TestSuiteRunner implements Runnable{
 
     protected abstract void shutdown() throws Exception;
 
-    protected void addReporters(){
-        Set reporters = reporters();
+    protected void prepareDSAndReporters() throws Exception {
+        dataSources = new HashMap<>();
+        tsDataSources = new HashMap<>();
+        for (TestSuite.DataSource ds : testSuite.dataSources ){
+            DataSourceContainer container = new DataSourceContainer(ds);
+            dataSources.put( ds.name, container );
+        }
+        reporters = new HashSet<>();
+        for (TestSuite.Reporter r : testSuite.reporters ){
+            Reporter reporter = (Reporter) Utils.createInstance(r.type);
+            reporter.init( r.params );
+            reporters.add(reporter);
+        }
         testRunEventListeners.addAll(reporters);
-    }
-
-    protected void removeReporters(){
-        Set reporters = reporters();
-        testRunEventListeners.removeAll(reporters);
     }
 
     protected void changeLogDirectory(TestSuite.BaseFeature feature){
         String timeStamp = Utils.ts();
         String logDir = logLocation(timeStamp, feature);
-        Set<Reporter> reporters = reporters();
         for ( Reporter r : reporters ){
             r.location(logDir);
         }
     }
 
+    protected DataSourceTable dataSourceTable(TestSuite.BaseFeature feature) {
+        DataSourceContainer container = dataSources.get(feature.ds) ;
+        if ( container == null ){
+            System.err.printf("No Such data source : [%s]\n",feature.ds);
+            return null;
+        }
+        DataSourceTable table = container.dataSource.tables.get(feature.table);
+        if ( table == null ){
+            System.err.printf("No Such data table in Data Source : [%s] [%s]\n",feature.table, feature.ds);
+        }
+        return table;
+    }
+
+    boolean skipTest(TestSuite.BaseFeature feature, int row){
+        DataSourceContainer container = dataSources.get(feature.ds) ;
+        DataSourceTable t = container.dataSource.tables.get(feature.table);
+        boolean exist = t.columns().containsKey( container.suiteDataSource.testEnableColumn );
+        if ( !exist ){
+            return false ;
+        }
+        boolean result = TypeUtility.castBoolean(t.columnValue(container.suiteDataSource.testEnableColumn, row), false);
+        return result;
+    }
+
+    TestSuite testSuite ;
+
     @Override
     public void run() {
-
+        // get it first...
+        testSuite = testSuite();
         try{
+            prepareDSAndReporters();
             prepare();
-            addReporters();
-        }catch (Exception e){
-             System.err.println(e);
+        }catch (Exception e) {
+            System.err.printf("Failed to prepare test Suite! %d\n", e);
              return;
          }
 
@@ -143,6 +196,9 @@ public abstract class TestSuiteRunner implements Runnable{
                 fireTestEvent(feature.name,TestRunEventType.AFTER_FEATURE, null, -1);
             }
             for ( int row = 1 ; row < table.length() ; row ++){
+                if ( skipTest(feature,row)){
+                    continue;
+                }
                 fireTestEvent(feature.name, TestRunEventType.BEFORE_TEST, table, row);
                 TestRunEvent runEvent = new TestRunEvent(this, TestRunEventType.ERROR_TEST, feature.name, table, row) ;
                 try {
@@ -161,7 +217,7 @@ public abstract class TestSuiteRunner implements Runnable{
             }
         }
         try{
-            removeReporters();
+            testRunEventListeners.clear();
             shutdown();
         }catch (Exception e){
             System.err.println(e);
