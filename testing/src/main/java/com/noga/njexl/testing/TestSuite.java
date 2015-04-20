@@ -23,15 +23,27 @@ public class TestSuite {
     @XStreamAlias("source")
     public static class DataSource{
 
+        public static final String TEST_ID = "#testId#" ;
+
+        public static final String TEST_ENABLE = "#enable#" ;
+
         @XStreamAsAttribute
         public String name;
 
         @XStreamAsAttribute
         public String location;
 
+        @XStreamAsAttribute
+        public String testIdColumn;
+
+        @XStreamAsAttribute
+        public String testEnableColumn;
+
         public DataSource(){
             name="";
             location="";
+            testIdColumn = TEST_ID ;
+            testEnableColumn = TEST_ENABLE ;
         }
     }
 
