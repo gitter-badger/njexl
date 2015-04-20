@@ -28,6 +28,9 @@ public class DebugInfo implements JexlInfo {
     private final int column;
     /** name. */
     private final String name;
+
+    private final Throwable error;
+
     /** 
      * Create info.
      * @param tn template name
@@ -35,9 +38,18 @@ public class DebugInfo implements JexlInfo {
      * @param c column
      */
     public DebugInfo(String tn, int l, int c) {
+        this(tn,l,c,null);
+    }
+
+    public DebugInfo(String tn, int l, int c, Throwable e) {
         name = tn;
         line = l;
         column = c;
+        error = e;
+    }
+
+    public Throwable error(){
+        return error;
     }
 
     /**

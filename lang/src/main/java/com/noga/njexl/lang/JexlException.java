@@ -39,18 +39,14 @@ public class JexlException extends RuntimeException {
     /** Maximum number of characters around exception location. */
     private static final int MAX_EXCHARLOC = 10;
 
-    String faultyCode = "unknown" ;
-
 
     public String getFaultyCode(){
-        return  detailedMessage() + " : " + faultyCode ;
+        if ( info.debugInfo().error()==null && mark!= null ) {
+            return detailedMessage() + " : " + mark.locationInfo();
+        }
+        return info.debugInfo().error().getLocalizedMessage();
     }
 
-    private void populateFault(){
-        if ( mark != null ) {
-            faultyCode = mark.locationInfo();
-        }
-    }
 
     /**
      * Creates a new JexlException.
@@ -61,7 +57,6 @@ public class JexlException extends RuntimeException {
         super(msg);
         mark = node;
         info = node != null ? node.debugInfo() : null;
-        populateFault();
     }
 
     /**
@@ -74,7 +69,6 @@ public class JexlException extends RuntimeException {
         super(msg, unwrap(cause));
         mark = node;
         info = node != null ? node.debugInfo() : null;
-        populateFault();
     }
 
     /**
@@ -175,9 +169,9 @@ public class JexlException extends RuntimeException {
             if (cause == null) {
                 return dbgn;
             } else if (dbgn == null) {
-                return new DebugInfo("", cause.getLine(), cause.getColumn());
+                return new DebugInfo("", cause.getLine(), cause.getColumn(),cause);
             } else {
-                return new DebugInfo(dbgn.getName(), cause.getLine(), cause.getColumn());
+                return new DebugInfo(dbgn.getName(), cause.getLine(), cause.getColumn(),cause);
             }
         }
 
