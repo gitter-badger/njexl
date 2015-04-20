@@ -102,9 +102,13 @@ public class Main {
             }catch (Exception e){
                 context.set("_e_", e);
                 context.set("_o_", null);
-                System.err.println(e.getMessage());
-                if ( e.getCause() != null ){
-                    System.err.println(e.getCause().getMessage());
+                if (e instanceof JexlException) {
+                    System.err.printf( "Error : %s\n", ((JexlException) e).getFaultyCode());
+                } else {
+                    System.err.println(e.getMessage());
+                    if (e.getCause() != null) {
+                        System.err.println(e.getCause().getMessage());
+                    }
                 }
             }
         }
