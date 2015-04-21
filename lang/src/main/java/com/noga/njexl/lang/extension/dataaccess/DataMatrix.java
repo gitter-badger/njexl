@@ -10,6 +10,7 @@ import com.noga.njexl.lang.extension.iterators.RangeIterator;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Created by noga on 03/04/15.
@@ -80,14 +81,14 @@ public class DataMatrix {
         }
     }
 
-    public static final HashMap<String,DataLoader> dataLoaders = new HashMap<>();
+    public static final HashMap<Pattern,DataLoader> dataLoaders = new HashMap<>();
 
     static {
 
         final TextDataLoader textDataLoader = new TextDataLoader() ;
-        dataLoaders.put(".tsv", textDataLoader);
-        dataLoaders.put(".csv", textDataLoader);
-        dataLoaders.put(".txt", textDataLoader);
+        dataLoaders.put(Pattern.compile(".+\\.tsv$",Pattern.CASE_INSENSITIVE), textDataLoader);
+        dataLoaders.put(Pattern.compile(".+\\.csv$",Pattern.CASE_INSENSITIVE), textDataLoader);
+        dataLoaders.put(Pattern.compile(".+\\.txt$",Pattern.CASE_INSENSITIVE), textDataLoader);
     }
 
     public ListSet<String> columns;
@@ -98,14 +99,13 @@ public class DataMatrix {
 
 
     public static DataMatrix file2matrix(String file,Object...args) throws Exception{
-        String name = file.toLowerCase();
-        for ( String end : dataLoaders.keySet() ){
-            if ( name.endsWith(end)){
-                DataLoader dataLoader =dataLoaders.get(end);
+        for ( Pattern p : dataLoaders.keySet() ){
+            if ( p.matcher(file).matches()){
+                DataLoader dataLoader =dataLoaders.get(p);
                 return dataLoader.matrix(file,args);
             }
         }
-        System.err.printf("No Such Extension [%s] for Data Load!\n", name);
+        System.err.printf("No Such Extension [%s] for Data Load!\n", file);
         return null;
     }
 
