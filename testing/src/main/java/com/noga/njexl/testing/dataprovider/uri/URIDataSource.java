@@ -1,5 +1,6 @@
 package com.noga.njexl.testing.dataprovider.uri;
 
+import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.testing.dataprovider.DataSource;
 import com.noga.njexl.testing.dataprovider.DataSourceTable;
 import org.jsoup.Jsoup;
@@ -10,6 +11,7 @@ import org.jsoup.nodes.Document;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 /**
  * Created by noga on 21/04/15.
@@ -70,9 +72,15 @@ public class URIDataSource extends DataSource{
         }
     }
 
+    public static final Pattern LOADER_PATTERN = Pattern.compile("^http[s]?://.+", Pattern.CASE_INSENSITIVE);
+
+    public static final DataMatrix.DataLoader DATA_LOADER = new URIDataSource();
+
     public URIDataSource(String location) throws Exception {
         super(location);
     }
+
+    public URIDataSource(){}
 
     Document doc ;
 

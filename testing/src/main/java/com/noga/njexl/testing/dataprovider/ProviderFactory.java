@@ -1,5 +1,6 @@
 package com.noga.njexl.testing.dataprovider;
 
+import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.testing.Utils;
 import com.noga.njexl.testing.dataprovider.excel.ExcelDataSource;
 import com.noga.njexl.testing.dataprovider.uri.URIDataSource;
@@ -15,11 +16,13 @@ public final class ProviderFactory {
     public static final HashMap<Pattern,String> dataSources = new HashMap<>();
 
     static{
-        dataSources.put(Pattern.compile(".+\\.xls[x]?$", Pattern.CASE_INSENSITIVE),
-                ExcelDataSource.class.getName());
 
-        dataSources.put(Pattern.compile("^http[s]?://.+", Pattern.CASE_INSENSITIVE),
-                URIDataSource.class.getName());
+        dataSources.put(ExcelDataSource.LOADER_PATTERN,ExcelDataSource.class.getName());
+        DataMatrix.dataLoaders.put( ExcelDataSource.LOADER_PATTERN, ExcelDataSource.DATA_LOADER);
+
+        dataSources.put(URIDataSource.LOADER_PATTERN, URIDataSource.class.getName());
+        DataMatrix.dataLoaders.put( URIDataSource.LOADER_PATTERN, URIDataSource.DATA_LOADER);
+
     }
 
     public static DataSource  dataSource(String location){

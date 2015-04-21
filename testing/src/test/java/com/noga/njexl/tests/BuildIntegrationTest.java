@@ -11,36 +11,48 @@ import org.junit.Test;
 
 public class BuildIntegrationTest{
 
+    public static final String URL = "http://www.w3schools.com/html/html_tables.asp" ;
+
+    public static final String SUITE = "samples/webTestSuite.xml" ;
+
+    public static final String EXCEL_FILE = "samples/UIData.xlsx" ;
+
     @BeforeClass
     public static void beforeClass(){
-        //load the class, so that we have it registered with data matrix
-        Object o = ExcelDataSource.ExcelDataLoader.excelDataLoader ;
-        o = null; // do not bother, it is pointless
+        Object o = ProviderFactory.dataSource("");
+        Assert.assertNull(o);
+        // load the class - to ensure that we have extensions loaded!
     }
 
     @Test
     public void suiteLoading() throws Exception {
-        WebTestSuite webTestSuite = WebTestSuite.loadFrom("samples/webTestSuite.xml");
+        WebTestSuite webTestSuite = WebTestSuite.loadFrom(SUITE);
         Assert.assertNotNull(webTestSuite);
     }
 
     @Test
     public void excelDataSourceTest() throws Exception{
-        Object o = ProviderFactory.dataSource("samples/UIData.xlsx");
+        Object o = ProviderFactory.dataSource(EXCEL_FILE);
         Assert.assertTrue(o instanceof ExcelDataSource);
     }
 
     @Test
     public void URIDataSourceTest() throws Exception{
-        Object o = ProviderFactory.dataSource("http://www.w3schools.com/html/html_tables.asp");
+        Object o = ProviderFactory.dataSource(URL);
         Assert.assertTrue( o instanceof URIDataSource);
     }
 
     @Test
     public void excelDataLoading() throws Exception {
         // now just call data matrix
-        DataMatrix matrix = DataMatrix.file2matrix("samples/UIData.xlsx","Data");
+        DataMatrix matrix = DataMatrix.file2matrix(EXCEL_FILE, "Data");
         Assert.assertNotNull(matrix);
     }
 
+    @Test
+    public void URIDataLoading() throws Exception {
+        // now just call data matrix
+        DataMatrix matrix = DataMatrix.file2matrix(URL,"0");
+        Assert.assertNotNull(matrix);
+    }
 }
