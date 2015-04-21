@@ -1,6 +1,7 @@
 package com.noga.njexl.testing.dataprovider;
 
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
+import com.noga.njexl.testing.TestSuite;
 import com.noga.njexl.testing.Utils;
 import com.noga.njexl.testing.dataprovider.excel.ExcelDataSource;
 import com.noga.njexl.testing.dataprovider.uri.URIDataSource;
@@ -25,12 +26,19 @@ public final class ProviderFactory {
 
     }
 
+    // public so that anyone can clear the cache if need be
+    public static final HashMap<String,DataSource> caches = new HashMap<>();
+
     public static DataSource  dataSource(String location){
+        if ( caches.containsKey(location) ){
+            return caches.get(location);
+        }
         for ( Pattern key : dataSources.keySet() ){
             if ( key.matcher(location).matches() ){
                 String className = dataSources.get(key);
                 try {
                     Object ds = Utils.createInstance(className, location);
+                    caches.put(location,(DataSource)ds);
                     return (DataSource) ds;
                 }catch (Exception e){
                     System.err.println("Error creating :" + className );
