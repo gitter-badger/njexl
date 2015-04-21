@@ -1,7 +1,9 @@
 package com.noga.njexl.tests;
 
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
+import com.noga.njexl.testing.dataprovider.ProviderFactory;
 import com.noga.njexl.testing.dataprovider.excel.ExcelDataSource;
+import com.noga.njexl.testing.dataprovider.uri.URIDataSource;
 import com.noga.njexl.testing.ui.WebTestSuite;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -20,6 +22,18 @@ public class BuildIntegrationTest{
     public void suiteLoading() throws Exception {
         WebTestSuite webTestSuite = WebTestSuite.loadFrom("samples/webTestSuite.xml");
         Assert.assertNotNull(webTestSuite);
+    }
+
+    @Test
+    public void excelDataSourceTest() throws Exception{
+        Object o = ProviderFactory.dataSource("samples/UIData.xlsx");
+        Assert.assertTrue(o instanceof ExcelDataSource);
+    }
+
+    @Test
+    public void URIDataSourceTest() throws Exception{
+        Object o = ProviderFactory.dataSource("http://www.w3schools.com/html/html_tables.asp");
+        Assert.assertTrue( o instanceof URIDataSource);
     }
 
     @Test

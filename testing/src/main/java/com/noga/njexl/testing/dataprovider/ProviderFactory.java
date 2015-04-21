@@ -2,25 +2,29 @@ package com.noga.njexl.testing.dataprovider;
 
 import com.noga.njexl.testing.Utils;
 import com.noga.njexl.testing.dataprovider.excel.ExcelDataSource;
+import com.noga.njexl.testing.dataprovider.uri.URIDataSource;
 
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 /**
  * Created by noga on 15/04/15.
  */
 public final class ProviderFactory {
 
-    public static final HashMap<String,String> dataSources = new HashMap<>();
+    public static final HashMap<Pattern,String> dataSources = new HashMap<>();
 
     static{
-        dataSources.put(".xls", ExcelDataSource.class.getName());
-        dataSources.put(".xlsx", ExcelDataSource.class.getName());
+        dataSources.put(Pattern.compile(".+\\.xls[x]?$", Pattern.CASE_INSENSITIVE),
+                ExcelDataSource.class.getName());
+
+        dataSources.put(Pattern.compile("^http[s]?://.+", Pattern.CASE_INSENSITIVE),
+                URIDataSource.class.getName());
     }
 
     public static DataSource  dataSource(String location){
-        String l = location.toLowerCase();
-        for ( String key : dataSources.keySet() ){
-            if ( l.endsWith(key) ){
+        for ( Pattern key : dataSources.keySet() ){
+            if ( key.matcher(location).matches() ){
                 String className = dataSources.get(key);
                 try {
                     Object ds = Utils.createInstance(className, location);
