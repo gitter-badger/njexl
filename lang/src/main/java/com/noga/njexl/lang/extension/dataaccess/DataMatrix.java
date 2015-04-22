@@ -98,14 +98,17 @@ public class DataMatrix {
     public HashMap<String,ArrayList<Integer>> keys;
 
 
-    public static DataMatrix file2matrix(String file,Object...args) throws Exception{
+    public static DataMatrix loc2matrix(String location, Object... args) throws Exception{
+        StringBuffer buffer = new StringBuffer();
         for ( Pattern p : dataLoaders.keySet() ){
-            if ( p.matcher(file).matches()){
+            if ( p.matcher(location).matches()){
                 DataLoader dataLoader =dataLoaders.get(p);
-                return dataLoader.matrix(file,args);
+                return dataLoader.matrix(location,args);
             }
+            buffer.append(p).append(";");
         }
-        System.err.printf("No Such Extension [%s] for Data Load!\n", file);
+        System.err.printf("No pattern matched for [%s] for Data Load!\n Registered Patterns are : %s\n",
+                location, buffer);
         return null;
     }
 

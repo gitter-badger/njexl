@@ -123,10 +123,10 @@ public class ExtendedScriptTest extends JexlTestCase {
 
     @Test
     public void testDataMatrixComparison() throws Exception{
-        DataMatrix m1 = DataMatrix.file2matrix("samples/test.tsv");
+        DataMatrix m1 = DataMatrix.loc2matrix("samples/test.tsv");
         m1 = m1.sub(0,3);
         assertTrue(m1 != null);
-        DataMatrix m2 = DataMatrix.file2matrix("samples/test.tsv");
+        DataMatrix m2 = DataMatrix.loc2matrix("samples/test.tsv");
         m2 = m2.sub(0,3);
         assertTrue(m2 != null );
         m1.keys(0);
