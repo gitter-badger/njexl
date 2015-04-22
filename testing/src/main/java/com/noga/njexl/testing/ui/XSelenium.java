@@ -1,7 +1,10 @@
 package com.noga.njexl.testing.ui;
 
+import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.testing.TestAssert;
 import com.noga.njexl.testing.Utils;
+import com.noga.njexl.testing.dataprovider.DataSource;
+import com.noga.njexl.testing.dataprovider.ProviderFactory;
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.webdriven.WebDriverCommandProcessor;
@@ -834,6 +837,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     public boolean download(String url, String file){
         return Utils.copyFileFromUrl(url,file);
     }
+
     public boolean downloadTarget(String locator, String file){
         By by = getByFromLocator(locator);
         WebElement element = driver.findElement(by);
@@ -849,4 +853,11 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         return false;
     }
 
+    public DataSource dataSource(){
+        return ProviderFactory.dataSource( driver.getCurrentUrl());
+    }
+
+    public DataMatrix table(String tableIndex) throws Exception {
+        return DataMatrix.loc2matrix(tableIndex);
+    }
 }
