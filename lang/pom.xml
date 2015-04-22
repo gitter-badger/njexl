@@ -1,19 +1,18 @@
 <?xml version="1.0"?>
 <!--
-   Licensed to the Apache Software Foundation (ASF) under one or more
-   contributor license agreements.  See the NOTICE file distributed with
-   this work for additional information regarding copyright ownership.
-   The ASF licenses this file to You under the Apache License, Version 2.0
-   (the "License"); you may not use this file except in compliance with
-   the License.  You may obtain a copy of the License at
+   Copyright [2015] [Nabarun Mondal]
 
-       http://www.apache.org/licenses/LICENSE-2.0
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -35,54 +34,8 @@
    </pluginRepositories>
     <developers>
         <developer>
-            <name>dIon Gillard</name>
-            <id>dion</id>
-            <email>dion AT apache DOT org</email>
-            <organization>Apache Software Foundation</organization>
-        </developer>
-        <developer>
-            <name>Geir Magnusson Jr.</name>
-            <id>geirm</id>
-            <email>geirm AT apache DOT org</email>
-            <organization>independent</organization>
-        </developer>
-        <developer>
-            <name>Tim O'Brien</name>
-            <id>tobrien</id>
-            <email>tobrien AT apache DOT org</email>
-            <organization>independent</organization>
-        </developer>
-        <developer>
-            <name>Peter Royal</name>
-            <id>proyal</id>
-            <email>proyal AT apache DOT org</email>
-            <organization>Apache Software Foundation</organization>
-        </developer>
-        <developer>
-            <name>James Strachan</name>
-            <id>jstrachan</id>
-            <email>jstrachan AT apache DOT org</email>
-            <organization>SpiritSoft, Inc.</organization>
-        </developer>
-        <developer>
-            <name>Rahul Akolkar</name>
-            <id>rahul</id>
-            <email>rahul AT apache DOT org</email>
-            <organization>Apache Software Foundation</organization>
-        </developer>
-        <developer>
-            <name>Sebastian Bazley</name>
-            <id>sebb</id>
-            <email>sebb AT apache DOT org</email>
-        </developer>
-        <developer>
-            <name>Henri Biestro</name>
-            <id>henrib</id>
-            <email>henrib AT apache DOT org</email>
-        </developer>
-        <developer>
             <name>Nabarun Mondal</name>
-            <id>mondal</id>
+            <id>nmondal</id>
             <email>nabarun DOT mondal AT gmail DOT com</email>
             <organization>Noga</organization>
         </developer>
@@ -137,16 +90,7 @@
     <properties>
         <maven.compile.source>1.8</maven.compile.source>
         <maven.compile.target>1.8</maven.compile.target>
-        <commons.componentid>jexl</commons.componentid>
-        <commons.release.version>2.1.1</commons.release.version>
-        <!-- The RC version used in the staging repository URL. -->
-        <commons.rc.version>RC1</commons.rc.version>
-        <commons.release.2.version>1.1</commons.release.2.version>
-        <commons.release.2.binary.suffix />
-        <commons.jira.id>JEXL</commons.jira.id>
-        <commons.jira.pid>12310479</commons.jira.pid>
     </properties>
-
     <build>
         <plugins>
             <plugin>
