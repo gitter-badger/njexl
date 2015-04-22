@@ -26,12 +26,19 @@ limitations under the License.
 		The Commons Jexl library is an implementation of the JSTL Expression Language with extensions.
 		This was customized by Noga.
 	</description>
+    <url>https://github.com/nmondal/njexl</url>
     <pluginRepositories>
     <pluginRepository>
         <id>onejar-maven-plugin.googlecode.com</id>
         <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
     </pluginRepository>
    </pluginRepositories>
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
     <developers>
         <developer>
             <name>Nabarun Mondal</name>
@@ -40,7 +47,11 @@ limitations under the License.
             <organization>Noga</organization>
         </developer>
     </developers>
-
+    <scm>
+        <connection>scm:git:git@github.com:nmondal/njexl.git</connection>
+        <developerConnection>scm:git:git@github.com:nmondal/njexl.git</developerConnection>
+        <url>git@github.com:nmondal/njexl.git</url>
+    </scm>
     <dependencies>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -86,7 +97,6 @@ limitations under the License.
 
 
     </dependencies>
-
     <properties>
         <maven.compile.source>1.8</maven.compile.source>
         <maven.compile.target>1.8</maven.compile.target>
@@ -208,7 +218,6 @@ limitations under the License.
             </plugin>
         </plugins>
     </build>
-
     <reporting>
         <plugins>
             <plugin>
