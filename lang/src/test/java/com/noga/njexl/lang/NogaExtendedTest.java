@@ -23,6 +23,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,22 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue((Boolean) o);
     }
 
+    @Test
+    public void testAutoBigDecimalType() throws Exception {
+        Expression e = JEXL.createExpression("x =  0.000000010100");
+        JexlContext jc = new MapContext();
+        Object o = e.evaluate(jc);
+        assertTrue(o instanceof Float );
+
+        e = JEXL.createExpression("x =  0.00000001010000001");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof Double );
+
+        e = JEXL.createExpression("x =  0.000000010100000010000011001010100010011");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof BigDecimal );
+
+    }
 
     @Test
     public void testNumberTypeEquality() throws Exception {

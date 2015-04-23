@@ -136,18 +136,44 @@ public class ASTNumberLiteral extends JexlNode implements JexlNode.Literal<Numbe
             }
             case 'f':
             case 'F':
+                result = Float.valueOf(s);
+                rclass = Float.class ;
+                break;
             default: {
-                rclass = Float.class;
-                try {
-                    result = Float.valueOf(s);
-                } catch (NumberFormatException take2) {
-                    try {
-                        result = Double.valueOf(s);
-                    } catch (NumberFormatException take3) {
-                        result = new BigDecimal(s);
+                Float f = Float.valueOf(s);
+                Double d = Double.valueOf(s);
+                BigDecimal bd = new BigDecimal(s);
+                result = bd;
+                rclass = BigDecimal.class ;
+                if ( s.contains("e")){
+                    if ( bd.toString().equals(f.toString())){
+                        result = f;
+                        rclass = Float.class ;
+                        break;
+                    }
+                    if (  bd.toString().equals(d.toString()) ){
+                        result = f;
+                        rclass = Double.class ;
+                        break;
+                    }
+
+                }else{
+                   //it has dot. find no after dots?
+                    int sig = last - s.indexOf('.');
+                    String formatString = String.format("%%.%df", sig);
+                    String sf = String.format(formatString,f);
+                    String sd = String.format(formatString,d);
+                    if ( s.equals(sf)){
+                        result = f;
+                        rclass = Float.class ;
+                        break;
+                    }
+                    if ( s.equals(sd)){
+                        result = d;
+                        rclass = Double.class ;
+                        break;
                     }
                 }
-                break;
             }
         }
         literal = result;
