@@ -95,4 +95,19 @@ public class ParseException extends Exception {
     public ParseException(String message) {
         super(message);
     }
+
+    /**
+     * Creates a localized description of this throwable.
+     * Subclasses may override this method in order to produce a
+     * locale-specific message.  For subclasses that do not override this
+     * method, the default implementation returns the same result as
+     * {@code getMessage()}.
+     *
+     * @return The localized description of this throwable.
+     * @since JDK1.1
+     */
+    @Override
+    public String getLocalizedMessage() {
+        return String.format("parse error starting at line %d, column %d after '%s'", line, column,after);
+    }
 }

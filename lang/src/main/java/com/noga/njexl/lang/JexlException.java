@@ -41,10 +41,15 @@ public class JexlException extends RuntimeException {
 
 
     public String getFaultyCode(){
-        if ( info.debugInfo().error()==null && mark!= null ) {
+
+        Throwable e = info.debugInfo().error() ;
+        if ( e == null && mark!= null ) {
             return detailedMessage() + " : " + mark.locationInfo();
         }
-        return info.debugInfo().error().getLocalizedMessage();
+        if ( e != null ){
+            return e.getLocalizedMessage() ;
+        }
+        return info.debugInfo().toString();
     }
 
 
@@ -216,7 +221,7 @@ public class JexlException extends RuntimeException {
             } else if (dbgn == null) {
                 return new DebugInfo("", cause.getLine(), cause.getColumn());
             } else {
-                return new DebugInfo(dbgn.getName(), cause.getLine(), cause.getColumn());
+                return new DebugInfo(dbgn.getName(), cause.getLine(), cause.getColumn(),cause);
             }
         }
 

@@ -39,6 +39,16 @@ public class NogaExtendedTest extends JexlTestCase {
         super(testName);
     }
 
+
+    @Test
+    public void testProperMessage() {
+        try {
+            JEXL.createExpression("x = {} ");
+        }catch (JexlException e){
+            System.err.println(e.getFaultyCode());
+        }
+    }
+
     @Test
     public void testNumberEquality() throws Exception {
         Expression e = JEXL.createExpression("1 == '   1   '");
