@@ -1964,21 +1964,15 @@ public class Interpreter implements ParserVisitor {
         JexlNode valNode = node.jjtGetChild(0);
         Object val = valNode.jjtAccept(this, data);
         try {
-            if (val == null) {
-                return 0;
+            try{
+                return sizeOf( node, val);
+            }catch (Exception e) {
+                if (arithmetic.compare(val, 0, ">=") < 0) {
+                    return arithmetic.negate(val);
+                } else {
+                    return val;
+                }
             }
-            if (val instanceof Collection) {
-                return ((Collection) val).size();
-            }
-            if (val.getClass().isArray()) {
-                return Array.getLength(val);
-            }
-            if (arithmetic.compare(val, 0, ">=") < 0) {
-                return arithmetic.negate(val);
-            } else {
-                return val;
-            }
-
         } catch (ArithmeticException xrt) {
             throw new JexlException(valNode, "arithmetic modulus error", xrt);
         }
