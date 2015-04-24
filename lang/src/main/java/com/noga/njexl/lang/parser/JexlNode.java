@@ -57,8 +57,15 @@ public abstract class JexlNode extends SimpleNode implements JexlInfo {
     public String locationInfo(){
         Token t1 = jjtGetFirstToken();
         Token t2 = jjtGetLastToken();
-        String locInfo = String.format( "at line %d, col %d to line %d, col %d" ,
-                 t1.beginLine, t1.beginColumn, t2.endLine, t2.endColumn ) ;
+        String locInfo = "" ;
+        if ( t1.beginLine != t2.endLine ) {
+            locInfo = String.format("at line %d, col %d to line %d, col %d",
+                    t1.beginLine, t1.beginColumn, t2.endLine, t2.endColumn);
+        }
+        else{
+            locInfo = String.format("at line %d, cols %d:%d",
+                    t1.beginLine, t1.beginColumn,t2.endColumn);
+        }
         return locInfo;
     }
 

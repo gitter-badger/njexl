@@ -107,7 +107,7 @@ public class ParseException extends Exception {
      * @since JDK1.1
      */
     @Override
-    public String getLocalizedMessage() {
-        return String.format("parse error starting at line %d, column %d after '%s'", line, column,after);
+    public String getMessage() {
+        return String.format("parse error starting at line %d, column %d near '%s'", line, column,after);
     }
 }

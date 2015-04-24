@@ -818,7 +818,9 @@ public class Interpreter implements ParserVisitor {
             }
             property = narray.jjtGetChild(last).jjtAccept(this, null);
         } else if (!isRegister) {
-            throw new JexlException(objectNode, "illegal assignment form");
+            throw new JexlException(
+                    objectNode!=null?objectNode : node ,  // ensure we have non null markdown!
+                    "illegal assignment form");
         }
         // deal with ant variable; set context
         if (isRegister) {

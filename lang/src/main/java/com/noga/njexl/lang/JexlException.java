@@ -47,7 +47,7 @@ public class JexlException extends RuntimeException {
             return detailedMessage() + " : " + mark.locationInfo();
         }
         if ( e != null ){
-            return e.getLocalizedMessage() ;
+            return e.getMessage() ;
         }
         return info.debugInfo().toString();
     }

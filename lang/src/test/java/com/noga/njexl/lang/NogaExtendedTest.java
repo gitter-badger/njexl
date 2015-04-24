@@ -40,14 +40,19 @@ public class NogaExtendedTest extends JexlTestCase {
         super(testName);
     }
 
-
-    @Test
-    public void testProperMessage() {
+    private void testErrorMessageRun(String expression){
         try {
-            JEXL.createExpression("x = {} ");
+            Expression expr = JEXL.createExpression(expression);
+            expr.evaluate(new MapContext());
         }catch (JexlException e){
             System.err.println(e.getFaultyCode());
         }
+    }
+    @Test
+    public void testProperMessage() {
+        testErrorMessageRun("x={}");
+        testErrorMessageRun("[1,2] = [3,4]");
+        testErrorMessageRun("x=x''");
     }
 
     @Test

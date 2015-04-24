@@ -117,13 +117,16 @@ public class JexlParser extends StringParser {
     void jjtreeCloseNodeScope(JexlNode n) throws ParseException {
         if (n instanceof ASTAmbiguous && n.jjtGetNumChildren() > 0) {
             DebugInfo dbgInfo = null;
+            ParseException e ;
             Token tok = this.getToken(0);
             if (tok != null) {
+                e = new ParseException( tok, null,null);
                 dbgInfo = new DebugInfo(tok.image, tok.beginLine, tok.beginColumn);
             } else {
+                e = new ParseException( );
                 dbgInfo = n.debugInfo();
             }
-            throw new JexlException.Parsing(dbgInfo, "Ambiguous statement, missing ';' between expressions", null);
+            throw new JexlException.Parsing(dbgInfo, "Ambiguous statement, missing ';' between expressions", e);
         }
     }
 }
