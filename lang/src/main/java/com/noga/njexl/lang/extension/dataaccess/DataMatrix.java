@@ -1,5 +1,5 @@
-/*
-*Copyright [2015] [Nabarun Mondal]
+/**
+*Copyright 2015 Nabarun Mondal
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
@@ -28,10 +28,14 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
+ * A generic Data Matrix class to manipulate on data
  * Created by noga on 03/04/15.
  */
 public class DataMatrix {
 
+    /**
+     * A Generic diff for any sort of matrices
+     */
     public static class MatrixDiff{
 
         public boolean diff(){
@@ -58,12 +62,26 @@ public class DataMatrix {
         }
     }
 
+    /**
+     * A standard interface to load data matrices from data sources
+     */
     public interface DataLoader{
 
+        /**
+         * loads a data matrix
+         * @param location the location from where it should load it
+         * @param args corresponding args
+         * @return a data matrix
+         * @throws Exception if fails
+         */
         DataMatrix matrix(String location,Object...args) throws Exception;
 
     }
 
+    /**
+     * A standard implementation of data loader,
+     * used to load text like files
+     */
     public static class TextDataLoader implements DataLoader{
 
         @Override
@@ -96,6 +114,9 @@ public class DataMatrix {
         }
     }
 
+    /**
+     * Various registered data loaders
+     */
     public static final HashMap<Pattern,DataLoader> dataLoaders = new HashMap<>();
 
     static {
@@ -106,13 +127,30 @@ public class DataMatrix {
         dataLoaders.put(Pattern.compile(".+\\.txt$",Pattern.CASE_INSENSITIVE), textDataLoader);
     }
 
+    /**
+     * The columns of the data matrix
+     */
     public ListSet<String> columns;
 
+    /**
+     * The actual data rows, they are not including the column
+     */
     public ArrayList<ArrayList<String>> rows;
 
+    /**
+     * For comparison, one needs to generate the row key.
+     * If confused, see the @link{http://en.wikipedia.org/wiki/Candidate_key}
+     * They generated and gets stored here
+     */
     public HashMap<String,ArrayList<Integer>> keys;
 
-
+    /**
+     * The Factory of data matrix
+     * @param location from where to be loaded
+     * @param args the corresponding args
+     * @return a data matrix
+     * @throws Exception in case fails
+     */
     public static DataMatrix loc2matrix(String location, Object... args) throws Exception{
         StringBuffer buffer = new StringBuffer();
         for ( Pattern p : dataLoaders.keySet() ){
@@ -127,11 +165,20 @@ public class DataMatrix {
         return null;
     }
 
+    /**
+     * Creates a data matrix
+     * @param rows the rows of data
+     * @param cols the column headers
+     */
     public DataMatrix(ArrayList<ArrayList<String>> rows,ListSet<String> cols){
         this.rows = rows;
         this.columns = cols;
     }
 
+    /**
+     * This would be created column header free
+     * @param rows only rows of data
+     */
     public DataMatrix(ArrayList<ArrayList<String>> rows){
         this.rows = rows;
         this.columns = new ListSet<>();
@@ -140,6 +187,12 @@ public class DataMatrix {
         }
     }
 
+    /**
+     * A row, as a tuple structure.
+     * See @link{http://en.wikipedia.org/wiki/Tuple}
+     * @param r the row index
+     * @return the ruple corrseponding to the row
+     */
     public Tuple tuple(int r){
         if ( r >= rows.size() ){
             return null;
@@ -148,10 +201,21 @@ public class DataMatrix {
         return t;
     }
 
+    /**
+     * A column
+     * @param c the column index
+     * @return the whole column row by row
+     */
     public ArrayList<String> c(int c){
         return c(c,null);
     }
 
+    /**
+     * Selects only specific rows,
+     * @param c the column index
+     * @param agg these rows will be selected
+     * @return list of selected row values for the column
+     */
     public ArrayList<String> c(int c, ArrayList<Integer> agg ){
         ArrayList l = new ArrayList();
         for ( int r = 0; r < rows.size() ; r++ ){
@@ -211,6 +275,12 @@ public class DataMatrix {
         return selectSetup;
     }
 
+    /**
+     * The revered select function
+     * @param args
+     * @return
+     * @throws Exception
+     */
     public ArrayList select(Object...args) throws Exception {
         if ( args.length ==  0 ){
             return rows;
@@ -221,6 +291,12 @@ public class DataMatrix {
         return rs;
     }
 
+    /**
+     * The sub-matrix function
+     * @param args
+     * @return
+     * @throws Exception
+     */
     public DataMatrix sub(Object...args) throws Exception {
 
         if ( args.length ==  0 ){
@@ -278,6 +354,12 @@ public class DataMatrix {
         return rs;
     }
 
+    /**
+     * This is how you set key to a data matrix
+     * @param args
+     * @return
+     * @throws Exception
+     */
     public DataMatrix keys(Object...args) throws Exception{
         keys = new HashMap<>();
         SelectSetup setup = setup(args);
@@ -310,6 +392,12 @@ public class DataMatrix {
         return this;
     }
 
+    /**
+     * This is how you aggregate rows, to merge them into effective single row
+     * @param args
+     * @return
+     * @throws Exception
+     */
     public DataMatrix aggregate(Object...args) throws Exception {
         if ( keys == null ){
             keys();
@@ -364,6 +452,13 @@ public class DataMatrix {
         return dm;
     }
 
+    /**
+     * The API to do a matrix key diff
+     * @param d1
+     * @param d2
+     * @return
+     * @throws Exception
+     */
     public static Set[] key_diff( DataMatrix d1, DataMatrix d2 ) throws Exception{
         if ( d1.keys == null ){
             d1.keys();
@@ -377,6 +472,12 @@ public class DataMatrix {
         return retVal ;
     }
 
+    /**
+     * Matrix diff, generates a MatrixDiff structure
+     * @param args
+     * @return
+     * @throws Exception
+     */
     public static MatrixDiff diff (Object... args) throws Exception {
         Interpreter.AnonymousParam anon = null;
         if ( args.length == 0 ){

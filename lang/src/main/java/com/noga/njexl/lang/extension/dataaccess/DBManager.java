@@ -1,5 +1,5 @@
-/*
-*Copyright [2015] [Nabarun Mondal]
+/**
+*Copyright 2015 Nabarun Mondal
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
@@ -27,11 +27,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
+ * Manages Database related affairs
  * Created by noga on 02/04/15.
  */
 public final class DBManager {
 
-    public static String DB_CONFIG_FILE_LOC = "db.json";
+    public static final String DB_CONFIG_FILE_LOC = "db.json";
 
     public static class DatabaseDOM {
 
