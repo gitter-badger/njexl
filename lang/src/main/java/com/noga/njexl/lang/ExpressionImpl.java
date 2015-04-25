@@ -48,7 +48,7 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
     /** The engine for this expression. */
     protected final JexlEngine jexl;
     /**
-     * Original expression stripped from leading & trailing spaces.
+     * Original expression stripped from leading and trailing spaces.
      */
     protected final String expression;
     /**
@@ -270,31 +270,17 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
         };
     }
 
-    /**
-     * From where it was imported
-     *
-     * @return
-     */
     @Override
     public String location() {
         return location;
     }
 
-    /**
-     * The defined methods of the script
-     *
-     * @return
-     */
     @Override
     public HashMap<String, ScriptMethod> methods() {
         return methods;
     }
 
-    /**
-     * The defined classes of the script
-     *
-     * @return
-     */
+
     @Override
     public HashMap<String, ScriptClass> classes() {
         return classes;
@@ -307,11 +293,7 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
 
     @Override
     public ASTJexlScript script(){ return script; }
-    /**
-     * The name under which it was imported
-     *
-     * @return
-     */
+
     @Override
     public String name() {
         return importName;

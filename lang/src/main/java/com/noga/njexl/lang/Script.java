@@ -138,37 +138,41 @@ public interface Script {
     /**
      * The defined methods of the script
      *
-     * @return
+     * @return a map of method name with parsed method object
      */
     HashMap<String, ScriptMethod> methods();
 
     /**
      * The defined classes of the script
      *
-     * @return
+     * @return a map of class name with parsed class object
      */
     HashMap<String, ScriptClass> classes();
 
     /**
      * The defined methods of the script
      *
-     * @return
+     * @return a map of import name with parsed import object
      */
     HashMap<String, ASTImportStatement> imports();
 
+    /**
+     *
+     * @return returns the parsed script object
+     */
     ASTJexlScript script();
 
     /**
      * The name under which it was imported
      *
-     * @return
+     * @return name
      */
     String name();
 
     /**
      * From where it was imported
      *
-     * @return
+     * @return location from where it was imported
      */
     String location();
 
