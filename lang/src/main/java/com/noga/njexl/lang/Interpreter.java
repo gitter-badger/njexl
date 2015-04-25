@@ -303,10 +303,8 @@ public class Interpreter implements ParserVisitor {
     }
 
     /**
-     * Sets the context.
-     * This is very dangerous, but then needed
-     *
-     * @since 2.1
+     * Sets the context : needed but dangerous idea
+     * @param context the context in which it would wrok
      */
     public void setContext(JexlContext context) {
         this.context = context;
@@ -1213,22 +1211,6 @@ public class Interpreter implements ParserVisitor {
         } else {
             return getAttribute(data, name, node);
         }
-    }
-
-    /**
-     * @deprecated Do not use
-     */
-    @Deprecated
-    public Object visit(ASTFloatLiteral node, Object data) {
-        throw new UnsupportedOperationException("Method should not be called; only present for API compatibiltiy");
-    }
-
-    /**
-     * @deprecated Do not use
-     */
-    @Deprecated
-    public Object visit(ASTIntegerLiteral node, Object data) {
-        throw new UnsupportedOperationException("Method should not be called; only present for API compatibiltiy");
     }
 
     /**
