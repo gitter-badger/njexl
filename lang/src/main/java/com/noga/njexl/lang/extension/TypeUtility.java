@@ -492,8 +492,8 @@ public class TypeUtility {
      *     If this is a single element, create a list containing this element
      * </pre>
      *
-     * @param object
-     * @return
+     * @param object input object which needs to be unwinded
+     * @return a list unwinding the object
      */
     public static ArrayList from(Object object) {
         if (object == null) {
@@ -550,8 +550,8 @@ public class TypeUtility {
      *
      * </pre>
      *
-     * @param args
-     * @return
+     * @param args individual objects to be passed
+     * @return a list combining the unwinded args
      */
     public static ArrayList combine(Object... args) {
         AnonymousParam anon = null;

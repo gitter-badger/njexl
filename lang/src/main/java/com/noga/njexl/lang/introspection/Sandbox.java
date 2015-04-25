@@ -24,36 +24,31 @@ import java.util.Set;
 /**
  * A sandbox describes permissions on a class by explicitly allowing or forbidding access to methods and properties
  * through "whitelists" and "blacklists".
- * <p>
- * A <b>whitelist</b> explicitly allows methods/properties for a class;
- * <ul>
- * <li>
- * If a whitelist is empty and thus does not contain any names, all properties/methods are allowed for its class.
- * </li>
- * <li>
- * If it is not empty, the only allowed properties/methods are the ones contained.
- * </li>
- * </ul>
- * </p>
- * <p>
- * A <b>blacklist</b> explicitly forbids methods/properties for a class;
- * <ul>
- * <li>
- * If a blacklist is empty and thus does not contain any names, all properties/methods are forbidden for its class.
- * </li>
- * <li>
- * If it is not empty, the only forbidden properties/methods are the ones contained.
- * </li>
- * </ul>
- * <p>
- * Permissions are composed of three lists, read, write, execute, each being "white" or "black":
- * <ul>
- * <li><b>read</b> controls readable properties </li>
- * <li><b>write</b> controls writeable properties</li>
- * <li><b>execute</b> controls executable methods and constructor</li>
- * </ul>
- * </p>
- * @since 2.1
+ A <b>whitelist</b> explicitly allows methods/properties for a class;
+  <ul>
+  <li>
+  If a whitelist is empty and thus does not contain any names, all properties/methods are allowed for its class.
+  </li>
+  <li>
+  If it is not empty, the only allowed properties/methods are the ones contained.
+  </li>
+  </ul>
+  A <b>blacklist</b> explicitly forbids methods/properties for a class;
+  <ul>
+  <li>
+  If a blacklist is empty and thus does not contain any names, all properties/methods are forbidden for its class.
+  </li>
+  <li>
+  If it is not empty, the only forbidden properties/methods are the ones contained.
+  </li>
+  </ul>
+  Permissions are composed of three lists, read, write, execute, each being "white" or "black":
+  <ul>
+  <li><b>read</b> controls readable properties </li>
+  <li><b>write</b> controls writeable properties</li>
+  <li><b>execute</b> controls executable methods and constructor</li>
+  </ul>
+  @since 2.1
  */
 public final class Sandbox {
     /**

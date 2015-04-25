@@ -38,48 +38,46 @@ import org.apache.commons.logging.LogFactory;
 import com.noga.njexl.lang.introspection.JexlMethod;
 
 /**
- * <p>
- * Creates and evaluates Expression and Script objects.
- * Determines the behavior of Expressions & Scripts during their evaluation with respect to:
- * <ul>
- * <li>Introspection, see {@link Uberspect}</li>
- * <li>Arithmetic & comparison, see {@link JexlArithmetic}</li>
- * <li>Error reporting</li>
- * <li>Logging</li>
- * </ul>
- * </p>
- * <p>The <code>setSilent</code> and <code>setLenient</code> methods allow to fine-tune an engine instance behavior
- * according to various error control needs. The lenient/strict flag tells the engine when and if null as operand is
- * considered an error, the silent/verbose flag tells the engine what to do with the error
- * (log as warning or throw exception).
- * </p>
- * <ul>
- * <li>When "silent" &amp; "lenient":
- * <p> 0 & null should be indicators of "default" values so that even in an case of error,
- * something meaningfull can still be inferred; may be convenient for configurations.
- * </p>
- * </li>
- * <li>When "silent" &amp; "strict":
- * <p>One should probably consider using null as an error case - ie, every object
- * manipulated by JEXL should be valued; the ternary operator, especially the '?:' form
- * can be used to workaround exceptional cases.
- * Use case could be configuration with no implicit values or defaults.
- * </p>
- * </li>
- * <li>When "verbose" &amp; "lenient":
- * <p>The error control grain is roughly on par with JEXL 1.0</p>
- * </li>
- * <li>When "verbose" &amp; "strict":
- * <p>The finest error control grain is obtained; it is the closest to Java code -
- * still augmented by "script" capabilities regarding automated conversions & type matching.
- * </p>
- * </li>
- * </ul>
- * <p>
- * Note that methods that evaluate expressions may throw <em>unchecked</em> exceptions;
- * The {@link JexlException} are thrown in "non-silent" mode but since these are
- * RuntimeException, user-code <em>should</em> catch them wherever most appropriate.
- * </p>
+ Creates and evaluates Expression and Script objects.
+ Determines the behavior of Expressions and Scripts during their evaluation with respect to:
+ <ul>
+  <li>Introspection, see {@link Uberspect}</li>
+  <li>Arithmetic and comparison, see {@link JexlArithmetic}</li>
+  <li>Error reporting</li>
+  <li>Logging</li>
+  </ul>
+
+ The <code>setSilent</code> and <code>setLenient</code> methods allow to fine-tune an engine instance behavior
+  according to various error control needs. The lenient/strict flag tells the engine when and if null as operand is
+  considered an error, the silent/verbose flag tells the engine what to do with the error
+  (log as warning or throw exception).
+
+  <ul>
+  <li>When "silent" &amp; "lenient":
+  0 and null should be indicators of "default" values so that even in an case of error,
+  something meaningfull can still be inferred; may be convenient for configurations.
+
+  </li>
+  <li>When "silent" &amp; "strict":
+ One should probably consider using null as an error case - ie, every object
+  manipulated by JEXL should be valued; the ternary operator, especially the '?:' form
+  can be used to workaround exceptional cases.
+  Use case could be configuration with no implicit values or defaults.
+
+  </li>
+  <li>When "verbose" &amp; "lenient":
+ The error control grain is roughly on par with JEXL 1.0
+  </li>
+  <li>When "verbose" &amp; "strict":
+  The finest error control grain is obtained; it is the closest to Java code -
+  still augmented by "script" capabilities regarding automated conversions and type matching.
+  </li>
+  </ul>
+
+  Note that methods that evaluate expressions may throw <em>unchecked</em> exceptions;
+  The {@link JexlException} are thrown in "non-silent" mode but since these are
+  RuntimeException, user-code <em>should</em> catch them wherever most appropriate.
+
  *
  * @since 2.0
  */
@@ -543,10 +541,11 @@ public class JexlEngine {
     /**
      * Import a script from a location
      *
-     * @param from
-     * @param as
-     * @return
-     * @throws Exception
+     * @param from the location where it needs to be imported
+     * @param as the directive as it needs to be imported
+     * @param base the parent script from where import should happen
+     * @return script
+     * @throws Exception if fails, throws exception
      */
     public Script importScript(String from, String as, Script base) throws Exception {
         String scriptText;
@@ -990,7 +989,7 @@ public class JexlEngine {
      *
      * @param <K>       the key type
      * @param <V>       the value type
-     * @param cacheSize the cache size, must be > 0
+     * @param cacheSize the cache size, must be &gt; 0
      * @return a Map usable as a cache bounded to the given size
      */
     protected <K, V> Map<K, V> createCache(final int cacheSize) {
@@ -1455,7 +1454,7 @@ public class JexlEngine {
     }
 
     /**
-     * Trims the expression from front & ending spaces.
+     * Trims the expression from front and ending spaces.
      *
      * @param str expression to clean
      * @return trimmed expression ending in a semi-colon

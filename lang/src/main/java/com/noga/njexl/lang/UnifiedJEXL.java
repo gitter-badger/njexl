@@ -34,56 +34,54 @@ import com.noga.njexl.lang.introspection.JexlMethod;
 import com.noga.njexl.lang.parser.ASTJexlScript;
 
 /**
- * An evaluator similar to the Unified EL evaluator used in JSP/JSF based on JEXL.
- * It is intended to be used in configuration modules, XML based frameworks or JSP taglibs
- * and facilitate the implementation of expression evaluation.
- * <p>
- * An expression can mix immediate, deferred and nested sub-expressions as well as string constants;
- * <ul>
- * <li>The "immediate" syntax is of the form <code>"...${jexl-expr}..."</code></li>
- * <li>The "deferred" syntax is of the form <code>"...#{jexl-expr}..."</code></li>
- * <li>The "nested" syntax is of the form <code>"...#{...${jexl-expr0}...}..."</code></li>
- * <li>The "composite" syntax is of the form <code>"...${jexl-expr0}... #{jexl-expr1}..."</code></li>
- * </ul>
- * </p>
- * <p>
- * Deferred & immediate expression carry different intentions:
- * <ul>
- * <li>An immediate expression indicate that evaluation is intended to be performed close to
- * the definition/parsing point.</li>
- * <li>A deferred expression indicate that evaluation is intended to occur at a later stage.</li>
- * </ul>
- * </p>
- * <p>
- * For instance: <code>"Hello ${name}, now is #{time}"</code> is a composite "deferred" expression since one
- * of its subexpressions is deferred. Furthermore, this (composite) expression intent is
- * to perform two evaluations; one close to its definition and another one in a later
- * phase.
- * </p>
- * <p>
- * The API reflects this feature in 2 methods, prepare and evaluate. The prepare method
- * will evaluate the immediate subexpression and return an expression that contains only
- * the deferred subexpressions (& constants), a prepared expression. Such a prepared expression
- * is suitable for a later phase evaluation that may occur with a different JexlContext.
- * Note that it is valid to call evaluate without prepare in which case the same JexlContext
- * is used for the 2 evaluation phases.
- * </p>
- * <p>
- * In the most common use-case where deferred expressions are to be kept around as properties of objects,
- * one should parse & prepare an expression before storing it and evaluate it each time
- * the property storing it is accessed.
- * </p>
- * <p>
- * Note that nested expression use the JEXL syntax as in:
- * <code>"#{${bar}+'.charAt(2)'}"</code>
- * The most common mistake leading to an invalid expression being the following:
- * <code>"#{${bar}charAt(2)}"</code>
- * </p>
- * <p>Also note that methods that parse evaluate expressions may throw <em>unchecked</em> exceptions;
- * The {@link UnifiedJEXL.Exception} are thrown when the engine instance is in "non-silent" mode
- * but since these are RuntimeException, user-code <em>should</em> catch them where appropriate.
- * </p>
- * @since 2.0
+  An evaluator similar to the Unified EL evaluator used in JSP/JSF based on JEXL.
+  It is intended to be used in configuration modules, XML based frameworks or JSP taglibs
+  and facilitate the implementation of expression evaluation.
+
+  An expression can mix immediate, deferred and nested sub-expressions as well as string constants;
+  <ul>
+  <li>The "immediate" syntax is of the form <code>"...${jexl-expr}..."</code></li>
+  <li>The "deferred" syntax is of the form <code>"...#{jexl-expr}..."</code></li>
+  <li>The "nested" syntax is of the form <code>"...#{...${jexl-expr0}...}..."</code></li>
+  <li>The "composite" syntax is of the form <code>"...${jexl-expr0}... #{jexl-expr1}..."</code></li>
+  </ul>
+
+  Deferred and immediate expression carry different intentions:
+  <ul>
+  <li>An immediate expression indicate that evaluation is intended to be performed close to
+  the definition/parsing point.</li>
+  <li>A deferred expression indicate that evaluation is intended to occur at a later stage.</li>
+  </ul>
+
+
+  For instance: <code>"Hello ${name}, now is #{time}"</code> is a composite "deferred" expression since one
+  of its subexpressions is deferred. Furthermore, this (composite) expression intent is
+  to perform two evaluations; one close to its definition and another one in a later
+  phase.
+
+
+  The API reflects this feature in 2 methods, prepare and evaluate. The prepare method
+  will evaluate the immediate subexpression and return an expression that contains only
+  the deferred subexpressions (and constants), a prepared expression. Such a prepared expression
+  is suitable for a later phase evaluation that may occur with a different JexlContext.
+  Note that it is valid to call evaluate without prepare in which case the same JexlContext
+  is used for the 2 evaluation phases.
+
+
+  In the most common use-case where deferred expressions are to be kept around as properties of objects,
+  one should parse and prepare an expression before storing it and evaluate it each time
+  the property storing it is accessed.
+
+  Note that nested expression use the JEXL syntax as in:
+  <code>"#{${bar}+'.charAt(2)'}"</code>
+  The most common mistake leading to an invalid expression being the following:
+  <code>"#{${bar}charAt(2)}"</code>
+
+  Also note that methods that parse evaluate expressions may throw <em>unchecked</em> exceptions;
+  The {@link UnifiedJEXL.Exception} are thrown when the engine instance is in "non-silent" mode
+  but since these are RuntimeException, user-code <em>should</em> catch them where appropriate.
+
+  @since 2.0
  */
 public final class UnifiedJEXL {
     /** The JEXL engine instance. */
@@ -332,19 +330,18 @@ public final class UnifiedJEXL {
 
         /**
          * Evaluates the immediate sub-expressions.
-         * <p>
+         *
          * When the expression is dependant upon immediate and deferred sub-expressions,
          * evaluates the immediate sub-expressions with the context passed as parameter
          * and returns this expression deferred form.
-         * </p>
-         * <p>
+         *
          * In effect, this binds the result of the immediate sub-expressions evaluation in the
          * context, allowing to differ evaluation of the remaining (deferred) expression within another context.
-         * This only has an effect to nested & composite expressions that contain differed & immediate sub-expressions.
-         * </p>
-         * <p>
+         * This only has an effect to nested and composite expressions that contain differed and immediate sub-expressions.
+         *
+         *
          * If the underlying JEXL engine is silent, errors will be logged through its logger as warning.
-         * </p>
+         *
          * <b>Note:</b> do not override; will be made final in a future release.
          * @param context the context to use for immediate expression evaluations
          * @return an expression or null if an error occurs and the {@link JexlEngine} is running in silent mode
@@ -410,7 +407,7 @@ public final class UnifiedJEXL {
          * Prepares a sub-expression for interpretation.
          * @param interpreter a JEXL interpreter
          * @return a prepared expression
-         * @throws JexlException (only for nested & composite)
+         * @throws JexlException (only for nested and composite)
          */
         protected Expression prepare(Interpreter interpreter) {
             return this;
@@ -420,7 +417,7 @@ public final class UnifiedJEXL {
          * Intreprets a sub-expression.
          * @param interpreter a JEXL interpreter
          * @return the result of interpretation
-         * @throws JexlException (only for nested & composite)
+         * @throws JexlException (only for nested and composite)
          */
         protected abstract Object evaluate(Interpreter interpreter);
     }
@@ -735,10 +732,10 @@ public final class UnifiedJEXL {
     }
 
     /** Creates a a {@link UnifiedJEXL.Expression} from an expression string.
-     *  Uses & fills up the expression cache if any.
-     * <p>
+     *  Uses and fills up the expression cache if any.
+     *
      * If the underlying JEXL engine is silent, errors will be logged through its logger as warnings.
-     * </p>
+     *
      * @param expression the UnifiedJEXL string expression
      * @return the UnifiedJEXL object expression, null if silent and an error occured
      * @throws UnifiedJEXL.Exception if an error occurs and the {@link JexlEngine} is not silent
@@ -1005,18 +1002,18 @@ public final class UnifiedJEXL {
      * A Template is a script that evaluates by writing its content through a Writer.
      * This is a simplified replacement for Velocity that uses JEXL (instead of OGNL/VTL) as the scripting
      * language.
-     * <p>
+     *
      * The source text is parsed considering each line beginning with '$$' (as default pattern) as JEXL script code
      * and all others as Unified JEXL expressions; those expressions will be invoked from the script during
      * evaluation and their output gathered through a writer. 
      * It is thus possible to use looping or conditional construct "around" expressions generating output.
-     * </p>
+     *
      * For instance:
-     * <p><blockquote><pre>
+     * <blockquote><pre>
      * $$ for(var x : [1, 3, 5, 42, 169]) {
      * $$   if (x == 42) {
      * Life, the universe, and everything
-     * $$   } else if (x > 42) {
+     * $$   } else if (x &gt; 42) {
      * The value $(x} is over fourty-two
      * $$   } else {
      * The value ${x} is under fourty-two
@@ -1024,27 +1021,27 @@ public final class UnifiedJEXL {
      * $$ }
      * </pre></blockquote>
      * Will evaluate as:
-     * <p><blockquote><pre>
+     * <blockquote><pre>
      * The value 1 is under fourty-two
      * The value 3 is under fourty-two
      * The value 5 is under fourty-two
      * Life, the universe, and everything
      * The value 169 is over fourty-two
      * </pre></blockquote>
-     * <p>
+     *
      * During evaluation, the template context exposes its writer as '$jexl' which is safe to use in this case.
      * This allows writing directly through the writer without adding new-lines as in:
-     * <p><blockquote><pre>
+     * <blockquote><pre>
      * $$ for(var cell : cells) { $jexl.print(cell); $jexl.print(';') }
      * </pre></blockquote>
-     * </p>
-     * <p>
+     *
+     *
      * A template is expanded as one JEXL script and a list of UnifiedJEXL expressions; each UnifiedJEXL expression
      * being replace in the script by a call to jexl:print(expr) (the expr is in fact the expr number in the template).
      * This integration uses a specialized JexlContext (TemplateContext) that serves as a namespace (for jexl:)
      * and stores the expression array and the writer (java.io.Writer) that the 'jexl:print(...)'
      * delegates the output generation to.
-     * </p>
+     *
      * @since 2.1
      */
     public final class Template {

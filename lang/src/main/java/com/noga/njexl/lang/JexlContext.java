@@ -53,14 +53,14 @@ public interface JexlContext {
     /**
      * Remove the variable if needed,
      * should never throw exception
-     * @param name
+     * @param name the name of the variable
      */
     void remove(String name);
 
     /**
      * Needed to call methods,
      * Copies the context
-     * @return
+     * @return a copy of the original context, depends on the context
      */
     JexlContext copy();
 }

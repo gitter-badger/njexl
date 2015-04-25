@@ -277,9 +277,9 @@ public class DataMatrix {
 
     /**
      * The revered select function
-     * @param args
-     * @return
-     * @throws Exception
+     * @param args parameters
+     * @return selected rows
+     * @throws Exception in error
      */
     public ArrayList select(Object...args) throws Exception {
         if ( args.length ==  0 ){
@@ -293,9 +293,9 @@ public class DataMatrix {
 
     /**
      * The sub-matrix function
-     * @param args
-     * @return
-     * @throws Exception
+     * @param args parameters
+     * @return a data matrix
+     * @throws Exception in error
      */
     public DataMatrix sub(Object...args) throws Exception {
 
@@ -356,9 +356,9 @@ public class DataMatrix {
 
     /**
      * This is how you set key to a data matrix
-     * @param args
-     * @return
-     * @throws Exception
+     * @param args parameters
+     * @return a keyed matrix
+     * @throws Exception in error
      */
     public DataMatrix keys(Object...args) throws Exception{
         keys = new HashMap<>();
@@ -394,9 +394,9 @@ public class DataMatrix {
 
     /**
      * This is how you aggregate rows, to merge them into effective single row
-     * @param args
-     * @return
-     * @throws Exception
+     * @param args parameters
+     * @return an aggregated matrix based on keys
+     * @throws Exception in error
      */
     public DataMatrix aggregate(Object...args) throws Exception {
         if ( keys == null ){
@@ -454,10 +454,10 @@ public class DataMatrix {
 
     /**
      * The API to do a matrix key diff
-     * @param d1
-     * @param d2
-     * @return
-     * @throws Exception
+     * @param d1 1st data matrix
+     * @param d2 2nd data matrix
+     * @return two sets in array, symmetric delta of d1 and d2 [ (d1-d2) , (d2-d1) ]
+     * @throws Exception in error
      */
     public static Set[] key_diff( DataMatrix d1, DataMatrix d2 ) throws Exception{
         if ( d1.keys == null ){
@@ -474,9 +474,9 @@ public class DataMatrix {
 
     /**
      * Matrix diff, generates a MatrixDiff structure
-     * @param args
-     * @return
-     * @throws Exception
+     * @param args parameters
+     * @return a matrix diff
+     * @throws Exception in error
      */
     public static MatrixDiff diff (Object... args) throws Exception {
         Interpreter.AnonymousParam anon = null;

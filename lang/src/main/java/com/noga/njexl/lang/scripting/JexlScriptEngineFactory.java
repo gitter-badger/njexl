@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright 2015 Nabarun Mondal
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -27,17 +27,16 @@ import com.noga.njexl.lang.parser.StringParser;
 import com.noga.njexl.lang.JexlEngine;
 
 /**
- * Implements the Jexl ScriptEngineFactory for JSF-223.
- * <p>
- * Supports the following:<br.>
- * Language short names: "JEXL", "Jexl", "jexl", "JEXL2", "Jexl2", "jexl2" <br/>
- * File Extensions: ".jexl", ".jexl2"<br/>
- * "jexl2" etc. were added for engineVersion="2.0".
- * </p>
- * <p>
- * See
- * <a href="http://java.sun.com/javase/6/docs/api/javax/script/package-summary.html">Java Scripting API</a>
- * Javadoc.
+ Implements the Jexl ScriptEngineFactory for JSF-223.
+  <pre>
+  Supports the following:
+  Language short names: "JEXL", "Jexl", "jexl", "JEXL2", "Jexl2", "jexl2"
+  File Extensions: ".jexl", ".jexl2"
+  "jexl2" etc. were added for engineVersion="2.0".
+  See
+ </pre>
+  <a href="http://java.sun.com/javase/6/docs/api/javax/script/package-summary.html">Java Scripting API</a>
+  Javadoc.
  * @since 2.0
  */
 public class JexlScriptEngineFactory implements ScriptEngineFactory {

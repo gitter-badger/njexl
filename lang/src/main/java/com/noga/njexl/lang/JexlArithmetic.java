@@ -32,7 +32,7 @@ import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Logic;
 
 /**
  * Perform arithmetic.
- * <p>
+ *
  * All arithmetic operators (+, - , *, /, %) follow the same rules regarding their arguments.
  * <ol>
  * <li>If both are null, result is 0</li>
@@ -47,7 +47,7 @@ import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Logic;
  * </ol>
  * </li>
  * </ol>
- * </p>
+ *
  * Note that the only exception throw by JexlArithmetic is ArithmeticException.
  * @since 2.0
  */
@@ -786,7 +786,7 @@ public class JexlArithmetic {
      * Performs a bitwise and.
      * @param left the left operand
      * @param right the right operator
-     * @return left & right
+     * @return left and right
      * @since 2.1
      */
     public Object bitwiseAnd(Object left, Object right) {
@@ -889,7 +889,7 @@ public class JexlArithmetic {
      * @param left the left operand
      * @param right the right operator
      * @param operator the operator
-     * @return -1 if left  &lt; right; +1 if left &gt > right; 0 if left == right
+     * @return -1 if left  &lt; right; +1 if left &gt; right; 0 if left == right
      * @throws ArithmeticException if either left or right is null
      * @since 2.1
      */
@@ -1007,8 +1007,8 @@ public class JexlArithmetic {
     }
 
     /**
-     * Test if left < right.
-     *
+     * Test if left &lt; right.
+     *s
      * @param left first value
      * @param right second value
      * @return test result.
@@ -1026,7 +1026,7 @@ public class JexlArithmetic {
     }
 
     /**
-     * Test if left > right.
+     * Test if left &gt; right.
      *
      * @param left first value
      * @param right second value
@@ -1045,7 +1045,7 @@ public class JexlArithmetic {
     }
 
     /**
-     * Test if left <= right.
+     * Test if left &lt;= right.
      *
      * @param left first value
      * @param right second value
@@ -1066,7 +1066,7 @@ public class JexlArithmetic {
     }
 
     /**
-     * Test if left >= right.
+     * Test if left &gt;= right.
      *
      * @param left first value
      * @param right second value

@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright 2015 Nabarun Mondal
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -41,22 +41,19 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Implements the Jexl ScriptEngine for JSF-223.
- * <p>
  * This implementation gives access to both ENGINE_SCOPE and GLOBAL_SCOPE bindings.
  * When a JEXL script accesses a variable for read or write,
  * this implementation checks first ENGINE and then GLOBAL scope.
  * The first one found is used. 
  * If no variable is found, and the JEXL script is writing to a variable,
  * it will be stored in the ENGINE scope.
- * </p>
- * <p>
- * The implementation also creates the "JEXL" script object as an instance of the
- * class {@link JexlScriptObject} for access to utility methods and variables.
- * </p>
- * See
- * <a href="http://java.sun.com/javase/6/docs/api/javax/script/package-summary.html">Java Scripting API</a>
- * Javadoc.
- * @since 2.0
+  The implementation also creates the "JEXL" script object as an instance of the
+  class {@link JexlScriptObject} for access to utility methods and variables.
+  See
+  <a href="http://java.sun.com/javase/6/docs/api/javax/script/package-summary.html">Java Scripting API</a>
+  Javadoc.
+
+  @since 2.0
  */
 public class JexlScriptEngine extends AbstractScriptEngine implements Compilable {
     /** The logger. */
@@ -93,17 +90,17 @@ public class JexlScriptEngine extends AbstractScriptEngine implements Compilable
     /**
      * Implements engine and engine context properties for use by JEXL scripts.
      * Those properties are allways bound to the default engine scope context.
-     * <p>
+
      * The following properties are defined:
-     * <ul>
-     * <li>in - refers to the engine scope reader that defaults to reading System.err</li>
-     * <li>out - refers the engine scope writer that defaults to writing in System.out</li>
-     * <li>err - refers to the engine scope writer that defaults to writing in System.err</li>
-     * <li>logger - the JexlScriptEngine logger</li>
-     * <li>System - the System.class</li>
-     * </ul>
-     * </p>
-     * @since 2.0
+     <ul>
+      <li>in - refers to the engine scope reader that defaults to reading System.err</li>
+      <li>out - refers the engine scope writer that defaults to writing in System.out</li>
+      <li>err - refers to the engine scope writer that defaults to writing in System.err</li>
+      <li>logger - the JexlScriptEngine logger</li>
+      <li>System - the System.class</li>
+      </ul>
+
+      @since 2.0
      */
     public class JexlScriptObject {
         /**

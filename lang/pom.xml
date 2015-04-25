@@ -196,7 +196,7 @@ limitations under the License.
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.10.3</version>
                 <configuration>
-                    <excludePackageNames>com.noga.njexl.lang.parser.*</excludePackageNames>
+                    <excludePackageNames>com.noga.njexl.lang.parser:com.noga.njexl.lang.internal</excludePackageNames>
                 </configuration>
                 <executions>
                     <execution>

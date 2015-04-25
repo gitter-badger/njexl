@@ -102,8 +102,8 @@ public class ListSet<T> extends HashSet<T> implements List<T> {
 
     /***
      * This is so that I can still index x['xxx'] and get a true false as if in contains
-     * @param o
-     * @return
+     * @param o the object as index
+     * @return the item in the list
      */
     public boolean get(Object o){
         return super.contains(o);

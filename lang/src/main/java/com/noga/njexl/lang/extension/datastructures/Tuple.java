@@ -64,8 +64,8 @@ public class Tuple  {
 
     /**
      * Get the indexed object
-     * @param index
-     * @return
+     * @param index the index of the item
+     * @return the object at that index
      */
     public Object get(int index){
         return t[index];
@@ -73,9 +73,9 @@ public class Tuple  {
 
     /**
      * Sets the indexed object
-     * @param index
+     * @param index index of the item
      * @param object value to be set
-     * @return
+     * @return the object at that index now after setting
      */
     public Object set(int index,Object object){
         return ( t[index] = object ) ;
@@ -84,7 +84,7 @@ public class Tuple  {
     /**
      * Given name, gets the corresponding object
      * @param name column name
-     * @return
+     * @return the object with name
      */
     public Object get(String name){
         return t[ names.get(name) ] ;
@@ -94,7 +94,7 @@ public class Tuple  {
      * Given name, sets the corresponding object
      * @param name column name
      * @param object value to be set
-     * @return
+     * @return the object after setting
      */
     public Object set(String name, Object object){
         return ( t[names.get(name)] = object ) ;

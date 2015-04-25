@@ -28,12 +28,17 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 
 /**
+ * An instance of nJexl class
  * Created by noga on 09/04/15.
  */
 public class ScriptClassInstance implements Executable, Comparable,Arithmetic, Logic  {
 
     final HashMap<String, Object> fields;
 
+    /**
+     * gets declared fields
+     * @return declared fields of the object
+     */
     public HashMap<String,Object> getFields(){return fields ;}
 
     final HashMap<String,Object> supers;
@@ -48,10 +53,18 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
         supers.put( value.scriptClass.ns +":" + value.scriptClass.name, value);
     }
 
+    /**
+     * Gets the immediate super classes
+     * @return immediate super class instances
+     */
     public HashMap<String,Object> getSupers(){ return supers ; }
 
     boolean hasJSuper;
 
+    /**
+     * If the class has inherited from Java
+     * @return true if it did, false if did not
+     */
     public boolean hasJSuper(){
         return hasJSuper;
     }
@@ -105,11 +118,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
         supers.put(scriptClass.ns + ":" + name,instance);
     }
 
-    /**
-     * replace ancestors
-     * @param sName
-     * @param args
-     */
+
     public void ancestor(Object sName,Object[]args) throws Exception {
         Object old = supers.get(sName);
         if ( old != null && ! interpreter.getContext().has(sName.toString()) ) {
