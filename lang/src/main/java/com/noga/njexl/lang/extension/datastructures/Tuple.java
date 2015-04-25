@@ -23,16 +23,32 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
+ * An implementation of tuple.
+ * See @link{http://en.wikipedia.org/wiki/Tuple}
  * Created by noga on 04/04/15.
  */
 public class Tuple  {
 
+    /**
+     * The names of the data values
+     */
     public final HashMap<String,Integer> names;
 
+    /**
+     * The caches value of mapping
+     */
     private final String mapping ;
 
+    /**
+     * The objects are actually stored in fixed size array
+     */
     public final Object[] t;
 
+    /**
+     * Creates a tuple from
+     * @param n names
+     * @param f a list/array of objects
+     */
     public Tuple( List<String> n, Object f){
         t = TypeUtility.array(f);
         StringBuffer buf = new StringBuffer( "[" ) ;
@@ -46,18 +62,40 @@ public class Tuple  {
         mapping = buf.toString();
     }
 
+    /**
+     * Get the indexed object
+     * @param index
+     * @return
+     */
     public Object get(int index){
         return t[index];
     }
 
+    /**
+     * Sets the indexed object
+     * @param index
+     * @param object value to be set
+     * @return
+     */
     public Object set(int index,Object object){
         return ( t[index] = object ) ;
     }
 
+    /**
+     * Given name, gets the corresponding object
+     * @param name column name
+     * @return
+     */
     public Object get(String name){
         return t[ names.get(name) ] ;
     }
 
+    /**
+     * Given name, sets the corresponding object
+     * @param name column name
+     * @param object value to be set
+     * @return
+     */
     public Object set(String name, Object object){
         return ( t[names.get(name)] = object ) ;
     }

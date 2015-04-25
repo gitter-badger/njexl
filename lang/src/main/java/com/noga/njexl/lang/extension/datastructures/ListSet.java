@@ -1,5 +1,5 @@
-/*
-*Copyright [2015] [Nabarun Mondal]
+/**
+*Copyright 2015 Nabarun Mondal
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
@@ -24,7 +24,10 @@ import java.util.*;
  */
 public class ListSet<T> extends HashSet<T> implements List<T> {
 
-    ArrayList<T> behind;
+    /**
+     * A list to shadow the hash map
+     */
+    protected ArrayList<T> behind;
 
     public ListSet() {
         this.behind = new ArrayList();
