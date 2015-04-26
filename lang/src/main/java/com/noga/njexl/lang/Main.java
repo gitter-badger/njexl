@@ -63,6 +63,8 @@ public class Main {
 
     public static JexlEngine getJexl(JexlContext context){
         JexlEngine jexl = new JexlEngine();
+        jexl.setLenient(false);
+        jexl.setStrict(true);
         HashMap<String,Object> map = getFunction(context);
         jexl.setFunctions(map);
         return jexl;

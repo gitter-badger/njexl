@@ -42,12 +42,18 @@ public class JexlException extends RuntimeException {
 
     public String getFaultyCode(){
 
+        Throwable cause = getCause();
+        String myCause = "" ;
+        if ( cause instanceof JexlException ){
+            myCause = ((JexlException) cause).getFaultyCode() + " <generated> " ;
+        }
+
         Throwable e = info.debugInfo().error() ;
         if ( e == null && mark!= null ) {
-            return detailedMessage() + " : " + mark.locationInfo();
+            return myCause + detailedMessage() + " : " + mark.locationInfo();
         }
         if ( e != null ){
-            return e.getMessage() ;
+            return myCause + e.getMessage() ;
         }
         return info.debugInfo().toString();
     }
