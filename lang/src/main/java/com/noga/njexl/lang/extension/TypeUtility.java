@@ -409,11 +409,14 @@ public class TypeUtility {
         if (args[0] instanceof AnonymousParam) {
             AnonymousParam anon = (AnonymousParam) args[0];
             args = shiftArrayLeft(args, 1);
-            anon.setIterationContext(args[0], args[0], -1);
-            Object ret = anon.execute();
-            anon.removeIterationContext();
-            args[0] = ret; //set it up
-            return castString(args);
+            if ( args.length > 0 ) {
+                anon.setIterationContext(args[0], args[0], -1);
+                Object ret = anon.execute();
+                anon.removeIterationContext();
+                args[0] = ret; //set it up
+                return castString(args);
+            }
+            return  "" ;
         }
 
         if (args[0] instanceof String) {
