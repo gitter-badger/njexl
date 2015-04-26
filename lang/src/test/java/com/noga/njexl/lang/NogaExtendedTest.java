@@ -56,6 +56,23 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testDef() throws Exception {
+        Expression e = JEXL.createExpression("#def x");
+        JexlContext jc = new MapContext();
+        Object o = e.evaluate(jc);
+        assertFalse((Boolean) o);
+
+        e = JEXL.createExpression("#def(10)");
+        o = e.evaluate(jc);
+        assertTrue((Boolean) o);
+        jc.set("x","");
+        e = JEXL.createExpression("#def(x)");
+        o = e.evaluate(jc);
+        assertTrue((Boolean) o);
+
+    }
+
+    @Test
     public void testNumberEquality() throws Exception {
         Expression e = JEXL.createExpression("1 == '   1   '");
         JexlContext jc = new MapContext();
@@ -107,21 +124,6 @@ public class NogaExtendedTest extends JexlTestCase {
         jc.set("y", "y");
         Object o = e.evaluate(jc);
         System.out.printf("%s\n", o);
-    }
-
-    @Test
-    public void testUndefinedVariable() throws Exception {
-        Expression e = JEXL.createExpression("defined x");
-        JexlContext jc = new MapContext();
-        jc.set("x", null);
-        jc.set("y", "10");
-        assertEquals(true, e.evaluate(jc));
-        e = JEXL.createExpression("defined y");
-        assertEquals(true, e.evaluate(jc));
-        e = JEXL.createExpression("defined z");
-        assertEquals(false, e.evaluate(jc));
-
-
     }
 
     @Test

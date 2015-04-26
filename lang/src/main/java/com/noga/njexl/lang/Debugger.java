@@ -436,7 +436,7 @@ public final class Debugger implements ParserVisitor {
 
     /** {@inheritDoc} */
     public Object visit(ASTDefinedFunction node, Object data) {
-        builder.append("defined(");
+        builder.append("#def(");
         accept(node.jjtGetChild(0), data);
         builder.append(")");
         return data;

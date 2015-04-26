@@ -86,7 +86,7 @@ PARSER_END(Parser)
     | < VAR : "var" >
     | < EMPTY : "empty" >
     | < SIZE : "size" >
-    | < DEFINED : "defined" > /* This is to check if any variable is already defined or not */
+    | < DEFINED : "#def" > /* This is to check if any variable is already defined or not */
     | < NULL : "null" >
     | < TRUE : "true" >
     | < FALSE : "false" >
@@ -570,7 +570,7 @@ void EmptyFunction() : {}
 
 void DefinedFunction() : {}
 {
-    LOOKAHEAD(3) <DEFINED> <LPAREN> Expression() <RPAREN>
+    LOOKAHEAD(3) <DEFINED> <LPAREN> Reference() <RPAREN>
 |
     <DEFINED> Reference()
 }

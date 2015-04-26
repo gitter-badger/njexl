@@ -962,9 +962,18 @@ public class Interpreter implements ParserVisitor {
      * {@inheritDoc}
      */
     public Object visit(ASTDefinedFunction node, Object data) {
-        String varName =
+        try{
+            String varName =
                 node.jjtGetChild(0).jjtGetChild(0).image;
-        return context.has(varName);
+            if( varName != null ) {
+                return context.has(varName);
+            }else{
+                node.jjtGetChild(0).jjtGetChild(0).jjtAccept(this,data);
+                return true ;
+            }
+        }catch (Exception e){
+        }
+        return false;
     }
 
     /**
