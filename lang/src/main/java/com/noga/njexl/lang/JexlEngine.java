@@ -111,6 +111,11 @@ public class JexlEngine {
         public JexlContext copy() {
             return this;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public void clear() { /* it is, after all, an epty context !*/ }
+
     };
 
     /**

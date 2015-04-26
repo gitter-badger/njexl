@@ -68,4 +68,9 @@ public class ObjectContext<T> implements JexlContext {
         }
         return null;
     }
+
+    /** {@inheritDoc} */
+    public void clear() {
+        throw new UnsupportedOperationException("not supported!");
+    }
 }

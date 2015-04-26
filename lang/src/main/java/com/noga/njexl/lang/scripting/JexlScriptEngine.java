@@ -341,7 +341,12 @@ public class JexlScriptEngine extends AbstractScriptEngine implements Compilable
         @Override
         public JexlContext copy() {
             // no idea how to copy
-            return null;
+            throw new UnsupportedOperationException("not supported!");
+        }
+
+        /** {@inheritDoc} */
+        public void clear() {
+            throw new UnsupportedOperationException("not supported!");
         }
 
     }

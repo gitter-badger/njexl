@@ -74,4 +74,10 @@ public class MapContext implements JexlContext {
         copy.put(PARENT_CONTEXT, this);
         return new MapContext(copy);
     }
+
+
+    /** {@inheritDoc} */
+    public void clear() {
+        map.clear();
+    }
 }

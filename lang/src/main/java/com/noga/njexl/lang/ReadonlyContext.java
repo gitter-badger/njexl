@@ -60,4 +60,9 @@ public final class ReadonlyContext implements JexlContext {
     public JexlContext copy() {
         return this;
     }
+
+    /** {@inheritDoc} */
+    public void clear() {
+        throw new UnsupportedOperationException("not supported!");
+    }
 }

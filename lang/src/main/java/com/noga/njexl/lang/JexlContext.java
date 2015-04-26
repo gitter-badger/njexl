@@ -63,4 +63,10 @@ public interface JexlContext {
      * @return a copy of the original context, depends on the context
      */
     JexlContext copy();
+
+    /**
+     * Cleans the context to make the individual items
+     * for garbage collection
+     */
+    void clear();
 }
