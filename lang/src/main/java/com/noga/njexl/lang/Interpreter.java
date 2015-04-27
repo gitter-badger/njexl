@@ -516,12 +516,17 @@ public class Interpreter implements ParserVisitor {
                     String fieldName = from.substring(from.lastIndexOf(".") + 1);
                     JexlPropertyGet pg = uberspect.getPropertyGet(c, fieldName, null);
                     Object o = pg.invoke(null);
-                    functions.put(as, o);
-                    context.set(as, o);
-                    return c;
+                    try {
+                        functions.put(as, o);
+                        context.set(as, o);
+                        return c;
+                    }catch (Exception set){
+                        throw new Exception("Exception setting up functions and context -->" +
+                                " am I passed unmodifiable stupidity?");
+                    }
 
                 } catch (Exception ee) {
-
+                    // safely ignore this...
                 }
             }
 
