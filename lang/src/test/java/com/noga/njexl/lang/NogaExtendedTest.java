@@ -95,6 +95,22 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.evaluate(jc);
         assertTrue(o instanceof BigDecimal );
 
+        e = JEXL.createExpression("  0.000000010100000010000011001010100010011 + 0.01 ");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof BigDecimal );
+
+        e = JEXL.createExpression("  0.000000010100000010000011001010100010011 -  0.01 ");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof BigDecimal );
+
+        e = JEXL.createExpression("  0.000000010100000010000011001010100010011 * 0.01 ");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof BigDecimal );
+
+        e = JEXL.createExpression("  0.000000010100000010000011001010100010011 / 0.01 ");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof BigDecimal );
+
     }
 
     @Test
