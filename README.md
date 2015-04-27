@@ -1,4 +1,4 @@
-# njexl
+# nJexl
 A  language based on apache jexl for software testing needs,
 as my experience with software development for over a decade taught me.
 A wise man once told me  "Never build a fool proof software. When you complete building one 1.0 version, 
