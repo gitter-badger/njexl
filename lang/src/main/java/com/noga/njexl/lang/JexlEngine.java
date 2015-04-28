@@ -28,6 +28,8 @@ import java.net.URLConnection;
 import java.lang.ref.SoftReference;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.noga.njexl.lang.introspection.Uberspect;
 import com.noga.njexl.lang.introspection.UberspectImpl;
@@ -543,6 +545,17 @@ public class JexlEngine {
         return importScript(from, as, null);
     }
 
+    public static String processScriptForMultiLine(String text){
+        Matcher m = Script.OPERATOR_END_CONTINUE_NEXT_LINE.matcher(text);
+        while(m.find()){
+            String found = m.group("op");
+            text = m.replaceFirst(found);
+            m = Script.OPERATOR_END_CONTINUE_NEXT_LINE.matcher(text);
+        }
+        text = text.replaceAll(Script.GENERIC_END_CONTINUE_NEXT_LINE, "");
+        return text;
+    }
+
     /**
      * Import a script from a location
      *
@@ -572,8 +585,8 @@ public class JexlEngine {
         // name mangling for linking
         scriptText = scriptText.replaceAll(Script.SELF + ":", as + ":");
         // now create script
-        //do the implicit "\..." thing.
-        scriptText = scriptText.replaceAll("\\\\.\\.\\.[\\r\\n]+", "");
+        //do the multiline thing.
+        scriptText = processScriptForMultiLine(scriptText);
         // Parse the expression
         String path = f.getCanonicalPath();
         ASTJexlScript tree = parse(scriptText, createInfo(path, 0, 0), new Scope(null));
@@ -601,8 +614,8 @@ public class JexlEngine {
         if (scriptText == null) {
             throw new NullPointerException("scriptText is null");
         }
-        //do the implicit "\..." thing.
-        scriptText = scriptText.replaceAll("\\\\.\\.\\.[\\r\\n]+", "");
+        //do the multiline thing.
+        scriptText = processScriptForMultiLine(scriptText);
 
         // Parse the expression
         ASTJexlScript tree = parse(scriptText, info, new Scope(names));

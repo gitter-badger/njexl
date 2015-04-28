@@ -519,7 +519,7 @@ public class Interpreter implements ParserVisitor {
                     try {
                         functions.put(as, o);
                         context.set(as, o);
-                        return c;
+                        return o;
                     }catch (Exception set){
                         throw new Exception("Exception setting up functions and context -->" +
                                 " am I passed unmodifiable stupidity?");

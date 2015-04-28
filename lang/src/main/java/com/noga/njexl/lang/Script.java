@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.regex.Pattern;
 
 /**
  * <p>A JEXL Script.</p>
@@ -48,6 +49,11 @@ public interface Script {
     String RELATIVE = "_";
 
     String ARGS = "__args__";
+
+    Pattern OPERATOR_END_CONTINUE_NEXT_LINE = Pattern.compile("(?<op>[\\+\\-\\|&\\^=\\*/])\\s*[\\r\\n]+") ;
+
+    String GENERIC_END_CONTINUE_NEXT_LINE = "\\\\.\\.\\.\\s*[\\r\\n]+" ;
+
 
     /**
      * Executes the script with the variables contained in the
