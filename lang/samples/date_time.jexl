@@ -1,15 +1,16 @@
 /* 
   Demonstrates date time capabilities 
+  Format is : PyYmMwWdDThHmMsS 
 */
 
 import 'java.lang.System.out' as out
 
 start_time = time()
-end_time = start_time.plusDays(10)
+end_time = start_time + "P10D" 
 
 count = 0 
 
-time_range = [ start_time : end_time : "0000010000" ] 
+time_range = [ start_time : end_time : "PT10H" ] 
 
 for ( m :  time_range ){
     count = count + 1
