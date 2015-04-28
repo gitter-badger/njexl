@@ -1003,6 +1003,13 @@ public class JexlArithmetic {
                     while it should do equals operation on non nulls.
                  */
                 return left.equals(right);
+            }catch (NonComparableCollectionException ncc){
+                /*
+                    Important too, missed it completely earlier!
+                    Checks if the inputs were collections
+                    which can not be compared at all
+                * */
+                return false ;
             }
         }
     }

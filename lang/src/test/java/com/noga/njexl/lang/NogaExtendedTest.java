@@ -214,6 +214,19 @@ public class NogaExtendedTest extends JexlTestCase {
         Assert.assertTrue(SetOperations.is_mset_relation(c, c, "="));
 
     }
+
+    @Test
+    public void testListNotEquals() throws Exception {
+        Expression e = JEXL.createExpression("[0,0,1] == [2,3]");
+        JexlContext jc = new MapContext();
+        Object o = e.evaluate(jc);
+        assertFalse((Boolean)o);
+
+        e = JEXL.createExpression("[0,0,1] != [2,3]");
+        o = e.evaluate(jc);
+        assertTrue((Boolean)o);
+    }
+
     @Test
     public void testJoin() throws Exception{
         int[] l = new int[]{0, 1, 2, 3};
