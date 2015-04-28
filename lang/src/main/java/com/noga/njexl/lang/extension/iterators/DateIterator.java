@@ -17,9 +17,12 @@
 package com.noga.njexl.lang.extension.iterators;
 
 import org.joda.time.*;
+import org.joda.time.Duration;
+import org.joda.time.Period;
 import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
 
+import java.time.*;
 import java.util.Iterator;
 
 /**
@@ -41,6 +44,8 @@ public class DateIterator implements Iterator{
     public final DateTime end;
 
     public final Duration interval ;
+
+    public final Duration duration ;
 
     protected DateTime cur;
 
@@ -114,6 +119,7 @@ public class DateIterator implements Iterator{
         this.interval = interval ;
         // inclusive
         this.cur = this.start  ;
+        this.duration = new Duration(this.start, this.end);
     }
 
     @Override

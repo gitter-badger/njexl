@@ -26,8 +26,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.*;
+
+import com.noga.njexl.lang.extension.iterators.DateIterator;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Arithmetic;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Logic;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
 
 /**
@@ -454,7 +458,17 @@ public class JexlArithmetic {
                 r.putAll((Map)right);
                 return r;
             }
-
+            if ( left instanceof DateTime ){
+                if ( right instanceof Integer ){
+                    return ((DateTime) left).plus((long)right);
+                }
+                if ( right instanceof Duration ){
+                    return ((DateTime) left).plus((Duration)right);
+                }
+                if ( right instanceof String ){
+                    return ((DateTime) left).plus( DateIterator.parseDuration((String)right));
+                }
+            }
             // Well, use strings!
             return toString(left).concat(toString(right));
         }
@@ -712,6 +726,17 @@ public class JexlArithmetic {
             }
             if ( left instanceof Arithmetic){
                 return ((Arithmetic) left).sub(right);
+            }
+            if ( left instanceof DateTime ){
+                if ( right instanceof Integer ){
+                    return ((DateTime) left).minus((long)right);
+                }
+                if ( right instanceof Duration){
+                    return ((DateTime) left).minus((Duration)right);
+                }
+                if ( right instanceof String ){
+                    return ((DateTime) left).minus(DateIterator.parseDuration((String) right));
+                }
             }
 
             throw  e;
