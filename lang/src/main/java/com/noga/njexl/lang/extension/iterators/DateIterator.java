@@ -20,9 +20,6 @@ import org.joda.time.*;
 import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.format.ISOPeriodFormat;
-import org.joda.time.format.PeriodFormatter;
-
-import java.time.*;
 import java.util.Iterator;
 
 /**
@@ -49,61 +46,20 @@ public class DateIterator implements Iterator{
 
     protected DateTime cur;
 
-    /**
-     *
-     * @return elapsed second between end and start
-     */
-    public int seconds(){
-        return Seconds.secondsBetween(start.withTimeAtStartOfDay(), end.withTimeAtStartOfDay()).getSeconds();
-    }
+    public final int seconds;
 
-    /**
-     *
-     * @return elapsed minutes between end and start
-     */
-    public int minutes(){
-        return Minutes.minutesBetween(start.withTimeAtStartOfDay(), end.withTimeAtStartOfDay()).getMinutes();
-    }
+    public final int minutes;
 
-    /**
-     *
-     * @return elapsed hours between end and start
-     */
-    public int hours(){
-        return Hours.hoursBetween(start.withTimeAtStartOfDay(), end.withTimeAtStartOfDay()).getHours();
-    }
+    public final int hours ;
 
-    /**
-     *
-     * @return  elapsed days between end and start
-     */
-    public int days(){
-        return Days.daysBetween(start.withTimeAtStartOfDay(), end.withTimeAtStartOfDay()).getDays() ;
-    }
+    public final int days ;
 
-    /**
-     *
-     * @return  elapsed weeks between end and start
-     */
-    public int weeks(){
-        return Weeks.weeksBetween(start.withTimeAtStartOfDay(), end.withTimeAtStartOfDay()).getWeeks();
-    }
+    public final int weeks ;
 
-    /**
-     *
-     * @return  elapsed months between end and start
-     */
-    public int months(){
-        return Months.monthsBetween(start.withTimeAtStartOfDay(), end.withTimeAtStartOfDay()).getMonths();
-    }
+    public final int months ;
 
-    /**
-     *
-     * @return  elapsed years between end and start
-     */
-    public int years(){
-        return Years.yearsBetween(start.withTimeAtStartOfDay(), end.withTimeAtStartOfDay()).getYears();
-    }
+    public final int years ;
+
 
     public DateIterator(DateTime end){
         this(end, new DateTime());
@@ -120,6 +76,13 @@ public class DateIterator implements Iterator{
         // inclusive
         this.cur = this.start  ;
         this.duration = new Duration(this.start, this.end);
+        years = Years.yearsBetween(start,end).getYears();
+        months = Months.monthsBetween(start, end).getMonths();
+        weeks = Weeks.weeksBetween(start, end).getWeeks();
+        days = Days.daysBetween(start, end).getDays();
+        hours = Hours.hoursBetween(start, end).getHours();
+        minutes = Minutes.minutesBetween(start, end).getMinutes();
+        seconds = Seconds.secondsBetween(start,end).getSeconds();
     }
 
     @Override

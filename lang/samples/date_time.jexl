@@ -17,7 +17,10 @@ for ( m :  time_range ){
 }
 
 out:println(count)
-out:println(time_range.days())
-out:println(time_range.hours())
-out:println(time_range.minutes())
-out:println(time_range.seconds())
+out:println(time_range.years )
+out:println(time_range.months )
+out:println(time_range.weeks )
+out:println(time_range.days )
+out:println(time_range.hours )
+out:println(time_range.minutes )
+out:println(time_range.seconds )
