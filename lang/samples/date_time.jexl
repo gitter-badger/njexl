@@ -1,0 +1,22 @@
+/* 
+  Demonstrates date time capabilities 
+*/
+
+import 'java.lang.System.out' as out
+
+start_time = time()
+end_time = start_time.plusDays(10)
+
+count = 0 
+
+time_range = [ start_time : end_time : "0000010000" ] 
+
+for ( m :  time_range ){
+    count = count + 1
+}
+
+out:println(count)
+out:println(time_range.days())
+out:println(time_range.hours())
+out:println(time_range.minutes())
+out:println(time_range.seconds())

@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright 2015 Nabarun Mondal
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.noga.njexl.lang.extension;
 
 import com.noga.njexl.lang.*;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
+import com.noga.njexl.lang.extension.iterators.DateIterator;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
 import com.noga.njexl.lang.parser.ASTReturnStatement;
 import com.noga.njexl.lang.parser.ASTStringLiteral;
@@ -25,6 +26,7 @@ import com.noga.njexl.lang.parser.JexlNode;
 import com.noga.njexl.lang.extension.iterators.RangeIterator;
 import com.noga.njexl.lang.parser.Parser;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -665,12 +667,32 @@ public class TypeUtility {
         if (args.length == 0) {
             return new RangeIterator();
         }
-
         long end = 42;
         long start = 1;
         long space = 1;
 
         if (args.length > 0) {
+            if ( args[0] instanceof Date || args[0] instanceof DateTime ){
+                // a different iterator ...
+                DateTime et = castTime(args[0]);
+                if ( args.length > 1 ){
+                    if ( args[1] instanceof Date || args[1] instanceof DateTime  ){
+                        DateTime st = castTime(args[1]);
+                        if ( args.length > 2 ){
+                            String d = args[2].toString() ;
+                            try {
+                                long dur = Long.parseLong(d);
+                                return new DateIterator(et, st, new Duration(dur));
+                            }catch (Exception e){
+                                return new DateIterator(et, st, new Duration( DateIterator.parseDuration(d)));
+                            }
+                        }
+                        return new DateIterator(et,st);
+                    }
+                }
+                return new DateIterator(et);
+            }
+
             end = Long.valueOf(args[0].toString());
             if (args.length > 1) {
                 start = Long.valueOf(args[1].toString());

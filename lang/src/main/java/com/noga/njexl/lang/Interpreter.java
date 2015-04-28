@@ -304,6 +304,7 @@ public class Interpreter implements ParserVisitor {
 
     /**
      * Sets the context : needed but dangerous idea
+     *
      * @param context the context in which it would wrok
      */
     public void setContext(JexlContext context) {
@@ -520,7 +521,7 @@ public class Interpreter implements ParserVisitor {
                         functions.put(as, o);
                         context.set(as, o);
                         return o;
-                    }catch (Exception set){
+                    } catch (Exception set) {
                         throw new Exception("Exception setting up functions and context -->" +
                                 " am I passed unmodifiable stupidity?");
                     }
@@ -693,12 +694,12 @@ public class Interpreter implements ParserVisitor {
         // There should be a single map entry hence :
         Object start = node.jjtGetChild(0).jjtAccept(this, data);
         Object end = node.jjtGetChild(1).jjtAccept(this, data);
-        Object step = 1;
-        if (node.jjtGetNumChildren() == 3) {
-            step = node.jjtGetChild(1).jjtAccept(this, data);
-        }
         try {
-            return TypeUtility.range(end, start, step);
+            if (node.jjtGetNumChildren() == 3) {
+                Object step = node.jjtGetChild(2).jjtAccept(this, data);
+                return TypeUtility.range(end, start, step);
+            }
+            return TypeUtility.range(end, start);
         } catch (Exception e) {
             throw new JexlException(node, "Invalid Range!", e);
         }
@@ -822,7 +823,7 @@ public class Interpreter implements ParserVisitor {
             property = narray.jjtGetChild(last).jjtAccept(this, null);
         } else if (!isRegister) {
             throw new JexlException(
-                    objectNode!=null?objectNode : node ,  // ensure we have non null markdown!
+                    objectNode != null ? objectNode : node,  // ensure we have non null markdown!
                     "illegal assignment form");
         }
         // deal with ant variable; set context
@@ -967,16 +968,16 @@ public class Interpreter implements ParserVisitor {
      * {@inheritDoc}
      */
     public Object visit(ASTDefinedFunction node, Object data) {
-        try{
+        try {
             String varName =
-                node.jjtGetChild(0).jjtGetChild(0).image;
-            if( varName != null ) {
+                    node.jjtGetChild(0).jjtGetChild(0).image;
+            if (varName != null) {
                 return context.has(varName);
-            }else{
-                node.jjtGetChild(0).jjtGetChild(0).jjtAccept(this,data);
-                return true ;
+            } else {
+                node.jjtGetChild(0).jjtGetChild(0).jjtAccept(this, data);
+                return true;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
         }
         return false;
     }
@@ -1047,7 +1048,7 @@ public class Interpreter implements ParserVisitor {
                 }
                 return false;
             }
-            if ( left.getClass().equals( right.getClass() )) {
+            if (left.getClass().equals(right.getClass())) {
                 return arithmetic.equals(left, right) ? Boolean.TRUE : Boolean.FALSE;
             }
             return false;
@@ -1962,9 +1963,9 @@ public class Interpreter implements ParserVisitor {
         JexlNode valNode = node.jjtGetChild(0);
         Object val = valNode.jjtAccept(this, data);
         try {
-            try{
-                return sizeOf( node, val);
-            }catch (Exception e) {
+            try {
+                return sizeOf(node, val);
+            } catch (Exception e) {
                 if (arithmetic.compare(val, 0, ">=") < 0) {
                     return arithmetic.negate(val);
                 } else {

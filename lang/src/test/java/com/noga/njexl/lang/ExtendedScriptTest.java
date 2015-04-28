@@ -42,6 +42,11 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testDateTimeScript() throws Exception{
+        runScript(JEXL, "samples/date_time.jexl");
+    }
+
+    @Test
     public void testMultilineScript() throws Exception{
         runScript(JEXL, "samples/multiline.jexl");
     }
