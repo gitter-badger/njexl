@@ -994,6 +994,12 @@ public class JexlArithmetic {
                     default:
                         throw new NonComparableCollectionException(l.toString() + "," +r.toString());
                 }
+            }else if ( left instanceof Date && right instanceof DateTime ||
+                    left instanceof DateTime && right instanceof Date ){
+                // both to dateTime and compare
+                DateTime l = TypeUtility.castTime(left);
+                DateTime r = TypeUtility.castTime(right);
+                return l.compareTo(r);
             }
             else if ("==".equals(operator)) {
                 return left.equals(right) ? 0 : -1;
