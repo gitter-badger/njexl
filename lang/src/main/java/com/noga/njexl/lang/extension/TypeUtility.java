@@ -109,6 +109,8 @@ public class TypeUtility {
     public static final String RANGE = "range";
     public static final String WITHIN = "within";
     public static final String SQLMATH = "sqlmath";
+    public static final String SORT_ASCENDING = "sorta";
+    public static final String SORT_DESCENDING = "sortd";
 
     /**
      * IO calls
@@ -838,6 +840,79 @@ public class TypeUtility {
         return a;
     }
 
+
+    public static class AnonymousComparator implements Comparator{
+
+        public final AnonymousParam anon;
+
+        public final Collection collection;
+
+        public final boolean reverse;
+
+        public AnonymousComparator(AnonymousParam anon,Collection collection,boolean reverse){
+            this.anon = anon ;
+            this.collection = collection ;
+            this.reverse = reverse ;
+        }
+
+        @Override
+        public int compare(Object o1, Object o2) {
+            Object[] pair = new Object[]{ o1, o2 };
+            anon.setIterationContext(collection, pair , -1);
+            Object ret = anon.execute();
+            anon.removeIterationContext();
+            boolean smaller = castBoolean(ret,false);
+            if ( reverse ){
+                if ( smaller ){
+                    return 1 ;
+                }
+                return -1;
+            }
+            if ( smaller ){
+                return -1 ;
+            }
+            return 1 ; // unstable... but fine I suppose
+        }
+    }
+
+    public static Collection ascending(Object...args){
+        if ( args.length == 0 ){
+            return Collections.emptyList();
+        }
+        if ( args.length > 0 ){
+            if ( args[0] instanceof AnonymousParam ){
+                AnonymousParam anon = (AnonymousParam)args[0];
+                args = shiftArrayLeft(args, 1);
+                List l = combine( args);
+                AnonymousComparator comparator = new AnonymousComparator(anon,l,false) ;
+                Collections.sort( l, comparator);
+                return l;
+            }
+        }
+        List l = combine( args);
+        Collections.sort(l);
+        return l;
+    }
+
+    public static Collection descending(Object...args){
+        if ( args.length == 0 ){
+            return Collections.emptyList();
+        }
+        if ( args.length > 0 ){
+            if ( args[0] instanceof AnonymousParam ){
+                AnonymousParam anon = (AnonymousParam)args[0];
+                args = shiftArrayLeft(args, 1);
+                List l = combine( args);
+                AnonymousComparator comparator = new AnonymousComparator(anon,l,true) ;
+                Collections.sort( l, comparator);
+                return l;
+            }
+        }
+        List l = combine(args) ;
+        Collections.sort(l, Collections.reverseOrder());
+        return l;
+    }
+
     public static Object interceptCastingCall(String methodName, Object[] argv, Boolean[] success) throws Exception {
 
         if (success != null) {
@@ -922,6 +997,10 @@ public class TypeUtility {
             case MULTI_SET2:
             case MULTI_SET3:
                 return SetOperations.multiset(argv);
+            case SORT_ASCENDING:
+                return ascending(argv);
+            case SORT_DESCENDING:
+                return descending(argv);
             default:
                 if (success != null) {
                     success[0] = false;

@@ -185,6 +185,36 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testSorting() throws Exception {
+        Script e = JEXL.createScript("x=list(2.2,1.2,1.0,-0.9) ; x = sorta(x);");
+        JexlContext jc = new MapContext();
+        e.execute(jc);
+        List<Comparable> x = (List)jc.get("x");
+        assertTrue( x.get(0).compareTo( x.get(x.size()-1) ) < 0 ) ;
+
+        e = JEXL.createScript("x=list(2.2,1.2,1.0,-0.9) ; x = sortd(x);");
+        e.execute(jc);
+        x = (List)jc.get("x");
+        assertTrue( x.get(0).compareTo( x.get(x.size()-1) ) > 0 ) ;
+
+        // now the anonymous stuff!
+        e = JEXL.createScript("x=list('1.23', 2.0, -0.1,'0.0') ; x = sorta{ double($[0]) < double($[1]) }(x);");
+        e.execute(jc);
+        x = (List)jc.get("x");
+        assertTrue(x.get(0).equals(-0.1f));
+        assertTrue(x.get(x.size()-1).equals(2.0f));
+
+
+        // now the anonymous stuff!
+        e = JEXL.createScript("x=list('1.23', 2.0, -0.1,'0.0') ; x = sortd{ double($[0]) < double($[1]) }(x);");
+        e.execute(jc);
+        x = (List)jc.get("x");
+        assertTrue(x.get(x.size()-1).equals(-0.1f));
+        assertTrue(x.get(0).equals(2.0f));
+
+    }
+
+    @Test
     public void testSetFunctions() throws Exception {
         ListSet oe = TypeUtility.set(new int[]{});
 
