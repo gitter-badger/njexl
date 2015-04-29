@@ -620,11 +620,17 @@ public class JexlArithmetic {
             return controlNullNullOperands();
         }
 
-        // if all are numbers use double
-        if (isNumberable(left) && isNumberable(right)) {
+        // if any of these are float use float
+        if (isFloatingPoint(left) || isFloatingPoint(right)) {
             double l = toDouble(left);
             double r = toDouble(right);
             return Math.pow(l , r);
+        }
+        if ( isNumberable(left) && isNumberable(right)){
+            long l = toLong(left);
+            long r = toLong(right);
+            Double d = Math.pow(l,r);
+            return narrowNumber(d.longValue(), Integer.class) ;
         }
         // if either are bigdecimal use that type
         if (left instanceof BigDecimal || right instanceof BigDecimal) {

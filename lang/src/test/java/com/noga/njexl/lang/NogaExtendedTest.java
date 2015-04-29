@@ -168,6 +168,23 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testPowerStatement() throws Exception {
+        Script e = JEXL.createScript("x=0.1 ; x**2 ");
+        JexlContext jc = new MapContext();
+        Object o = e.execute(jc);
+        assertEquals(0.1*0.1, o);
+
+        e = JEXL.createScript("x=10 ; x**2 ");
+        o = e.execute(jc);
+        assertEquals(100, o);
+
+        e = JEXL.createScript("x=1000000 ; x**2 ");
+        o = e.execute(jc);
+        assertEquals(1000000l*1000000l, o);
+
+    }
+
+    @Test
     public void testSetFunctions() throws Exception {
         ListSet oe = TypeUtility.set(new int[]{});
 
