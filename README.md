@@ -1,39 +1,102 @@
 # nJexl
 A  language based on apache jexl for Business Programming as well as software testing needs.
-This is a result of my experience with software development for over a decade.
+This is a result of my experience and experiment with software development for over a decade.
 A wise man once told me  "Never build a fool proof software. When you complete building one 1.0 version, 
 the fool will release foolishness 2.0.". He was 15 years in Industry then, and is an MBA from IIM-A.
+My team mates in Microsoft judged him the smartest and wisest man in the team.
 
-Summary : The software testing has become messy, stagnant, with record and playback.
-But that is the driving aspect of UI. NONE, and I repeat NONE bothers about the VALIDATION aspect of the software testing.
-NJEXL is a small step in that direction.
-It is quite easy to understand that declarative/functional programming is easy to be implemented as a testing validation language.  Most of the so called *TEST FRAMEWORKS* gives you asserts. To compare objects, nulls, not nulls. If they are smart, really smart, perhaps list even. 
+Summary : Software Testing & Automation has become messy, stagnant  trivial *record and playback*.
+Yes, anyone should be able to automate, that does not really mean *anyone can automate*.
+That actually means : *a great automation engineer can come from anywhere*. 
 
-Sorry. Real software is not about matching nulls, and equaling objects.
-That does not happen.
-Real software testing is testing and validating condition and data. In short they are testing what computer theorists call
-predicate operations ( predicate logic ).
+These tools promise too much, deliver too little. 
+These promises are faulty never the less, because the aspect they tackled is the driving aspect of the UI. 
+NONE, and I repeat, *NO Tool designed ever bothers about the VALIDATION aspect of the software testing*.
 
-The formulation is : IS the STATEMENT "S(x)" true for value "x" ?
+NJEXL is a small step in fixing this. A small step by one random *lone ranger*.
+Perhaps this going to be a big step in the direction of *THINK VALIDATION* philosophy in software testing,
+which none exhibits now.
+
+Declarative/functional programming style is easy to be implemented as a testing validation language.  
+Most of the so called *TEST FRAMEWORKS* only gives you asserts. 
+Those gets used to compare objects, nulls, not nulls. If they designed it real smart, really smart, perhaps 
+they would compare list even. 
+That is a matter of some sorrow. 
+Real software is not about matching nulls, and equaling objects. Yes, 99% of the so called software people believe that.
+But no, what you are doing is a real *tiny winy* part of *Unit Tests*.
+*Real Testing* does not happen using asserts equaling objects.
+Real software testing is validating conditions and data. 
+In short they are what computer theorists call predicate operations ( predicate logic ).
+
+The formulation is : *IS the STATEMENT "S(x)" true for value "x" ?*
 That is indeed the predicate formulation of testing.
+Thus, every test, if exposed in terms of predicate formulation, and the underlying framework supports 
+the predicate formulation, then the TEST code need not to be tested at all!
+All you really would be testing is : whether the formula - or predicate is the correct one.
+The SQL team tests SQL. Users use SQL, and checks that the used SQL is indeed correct.
+Take a look around the expressive power of declarative programming : 
 
-Thus, every test, if expposed in terms of predicate formulation, then the TEST code need not to be tested at all,
-under the assumption, the underlying language is tested. The SQL team tests SQL. Users use SQL, and checks that the used SQL is 
-indeed correct.
 
-On the Business Programming front, people are making a mess of what are trivial business processes.
-No Business Process is beyond Turing Complete, never will be. Java is a very bad choice at business programming, the verbosity makes it a killer on the loose. Python can do things in 10 lines what Java can do in 100. Scala is a good language and utmost geeky - impractical for business use.   
+       // for all i > 0 check if l[i] <  l[i-1] --> then the list is NOT sorted
+       /*  This is how you do it in nJexl */
+       // _ is the index $ is the implicit loop variable 
+       empty ( select{  _ > 0 and $ < $[_-1] }(l) )  // checks if a list is in sorted order    
+       // select select items from a list to a new list, empty() checks if something is size 0 or null  
 
-I rememeber what people told me about XP when I was working on Windows 7. World needs XP on drugs. No fancy stuff, simply XP on drugs. Thus, a langauge, which is a de facto EXCEL on the drugs solves every business need. No, not software development need.
-I am not for that. This is to end what become a senseless fad to squeeze moeny out of enterprise customers.
-This : http://projects.haykranen.nl/java/
 
-Convolute simple ideas with so much extra layer that the end user is bound to hell : all hopes abandoned ye who entered here.
+That begs a bigger question. If the test code can be written in such small pieces of predicate logic,
+how the actual code is so much more complex and bigger than the test code? There is something obviously wrong.
+The Business Programming front, people are actually making a complete mess of what are actually pretty trivial business processes.
 
-That is indeed the desciption of what NJEXL is NOT. It is not going to convolute simple ideas into software hell.
-It is a full feldged language with complete focus on bsuiness process automation and software testing.
+No Business Process is beyond Turing Complete, never will be. So do not preach complexity.
+A big industry problem is over dependence on Java, which is a very bad choice at business programming (in fact any programming), 
+the verbosity makes it a killer on the loose. Python can do things in 10 lines what Java can do in 100. Scala is a good language and utmost geeky - impractical for business user and use. Python can not talk to Java business objects (Jython does not count, really), 
+and then Python is not a business process automation language or a software testing language.
+But it is a beautiful language never the less.  
+Testing and Business Programming should be less talk, more work. Who tests the test code? 
+Who watches the watchers?
 
-I am mostly working with the language core part now, but a full fledged Selenium RC kind of extension is available to jump start web testing. The WIKI page showcases syntax and power of NJEXL. A language, like ABAP to ensure anyone can write effective business code, with a little bit of training. Yes, connect to DB get Business Data and manipulate them, like you do in excel.
-YES. ANYONE can do it. That is the motto. It works.
 
-The language is written in Java, and has no resemblence to Java at all. Although it is shipped as an unified JAR, and can be made to run with standard java -jar <jarfile>.jar syntax. Java is too much talk, to less work. Testing should be less talk, more work. Hence, I wrote it so that I can use a language that makes sense to ME and I can use it for daily work. Let me know what you think. 
+I remember what people told me about XP when I was working on Windows 7. 
+*World SIMPLY needs XP on drugs*. No fancy stuff, simply XP on drugs. 
+That works.
+
+Thus, a language, which is a de-facto EXCEL on the drugs (with data in back-end) solves every business need. 
+This is to end what become a senseless fad to squeeze money out of enterprise customers - to sustain the misconception 
+that technology is JavaScript and Web and what not. 
+
+I am, personally, unabashedly utterly against this fad : http://projects.haykranen.nl/java/
+Engineering is about taking complex ideas, and making them simply usable and reusable to customer.
+Todays industry does quite the opposite :  convolute simple ideas with so much extra layer that the end user and end business is bound to enter the gateway of hell : *all hopes abandoned ye who entered here*. 
+Convince users and money payers that what is being accomplished is so complex
+that no human but only programmers and developers can achieve it. Sorry to disappoint. 
+Git was developed in 14 days by a single Guy who shall not be named. This document is live in git-hub. 
+Ring a bell?
+
+What can be accomplished by 1 person in 7 days, takes 7 persons 7 months and more. That is what the sham has become.
+The mythical man-month is not a symptom any more, it is a Frankenstein monster now.
+News just came that TCS is firing 40,000 employees. 
+
+That is indeed the description of what NJEXL is NEVER going to be. 
+It is not going to convolute simple ideas into software and jargon hell.
+It is a full fledged language with complete focus on *Business Process Automation and Software Testing & Validation*.
+
+I am mostly done with the language core part now, but a full fledged Selenium RC extension is available to jump start web testing. The WIKI page showcases syntax and power of NJEXL. 
+This is a language, like SAP's ABAP to ensure anyone can write effective business code, with a little bit of training. 
+Yes, connect to DB get Business Data and manipulate them, like you do in excel. It is better than ABAP.
+YES. ANYONE can do it. That is the motto. It should just work. You do not need be *special people* anymore.
+
+Will the special people go away? No. They are still special, the programmers. They are smart. They are simply misdirected.
+They seem to believe that *writing more code makes them superior*. No, the opposite is what great developers think.
+Thus, the aim is to give them the push they need : *any code is faulty code!* . Thus, *less code written is less bugs added*.
+That is the motto of NJEXL. Reduce the coding effort to such a minimum that nothing extra remains.
+Make things simple but not simpler.
+
+
+The language is (unfortunately) written in Java, and mostly bears no resemblance with Java, some occasional use Java DNA
+can be seen when we use imported Java Objects and fields. Why not C/C++? Lack of time. This was entirely written
+when at home, holidaying ( no, a real Engineer never goes in a Holiday, ask Donald Knuth about his honeymoon )
+, and after office at home, 7p.m to 2a.m in the nights one can check the statistics of the check-ins.
+
+I wrote this so that I, personally can use a language that makes sense to ME 
+and I can use it for my own daily work - automation validation. Let me know what you think of the style of the language. 
