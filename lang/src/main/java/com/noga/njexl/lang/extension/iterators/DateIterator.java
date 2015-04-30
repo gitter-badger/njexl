@@ -60,6 +60,7 @@ public class DateIterator implements Iterator{
 
     public final int years ;
 
+    public final String stringRep;
 
     public DateIterator(DateTime end){
         this(end, new DateTime());
@@ -82,7 +83,8 @@ public class DateIterator implements Iterator{
         days = Days.daysBetween(start, end).getDays();
         hours = Hours.hoursBetween(start, end).getHours();
         minutes = Minutes.minutesBetween(start, end).getMinutes();
-        seconds = Seconds.secondsBetween(start,end).getSeconds();
+        seconds = Seconds.secondsBetween(start, end).getSeconds();
+        stringRep = String.format("%s : %s : %s", start.toDate(), end.toDate(), interval);
     }
 
     @Override
@@ -94,5 +96,10 @@ public class DateIterator implements Iterator{
     public Object next() {
         cur = cur.plus(interval);
         return cur;
+    }
+
+    @Override
+    public String toString(){
+        return stringRep ;
     }
 }
