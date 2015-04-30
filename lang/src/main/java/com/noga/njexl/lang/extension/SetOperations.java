@@ -278,6 +278,33 @@ public final class SetOperations {
         return SetRelation.is(relation, actual);
     }
 
+    public static SetRelation dict_relation(Map m1, Map m2){
+        SetRelation setRelation = set_relation(m1.keySet(), m2.keySet());
+        if ( SetRelation.INDEPENDENT == setRelation || SetRelation.OVERLAP == setRelation ){
+            return setRelation ;
+        }
+        Map s = m1;
+        Map b = m2;
+        if ( SetRelation.SUPERSET == setRelation ){
+            s = m2;
+            b = m1;
+        }
+        for ( Object k : s.keySet() ){
+            Object l = s.get(k);
+            Object r = b.get(k);
+            if ( ! Objects.equals(l,r) ){
+                return SetRelation.OVERLAP ;
+            }
+        }
+
+        return setRelation ;
+    }
+
+    public static boolean is_dict_relation(Map m1, Map m2,String relation){
+        SetRelation actual = dict_relation(m1,m2);
+        return SetRelation.is(relation,actual);
+    }
+
     public static List list_i(Object l1, Object l2) {
         HashMap m1 = multiset(l1);
         HashMap m2 = multiset(l2);
@@ -463,18 +490,17 @@ public final class SetOperations {
             }
             return ((Set) c2).contains(c1);
         }
+        if ( c2 instanceof Map ){
+            if ( c1 instanceof Map ){
+                return is_dict_relation((Map)c1,(Map)c2,"<=");
+            }
+            return ((Map) c2).containsKey(c1);
+        }
         if (c2 instanceof Collection || c2.getClass().isArray()) {
             if (c1 != null && (c1 instanceof Collection || c1.getClass().isArray())) {
                 Map m1 = multiset(c1);
                 Map m2 = multiset(c2);
-                Map diff = mset_diff(m2, m1);
-                for (Object key : diff.keySet()) {
-                    int[] val = (int[]) diff.get(key);
-                    if (val[0] == 0) {
-                        return false;
-                    }
-                }
-                return true;
+                return is_mset_relation(m1,m2,"<=");
             }
             if (c2 instanceof Collection) {
                 return ((Collection) c2).contains(c1);
