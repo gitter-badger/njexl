@@ -20,6 +20,9 @@ import org.joda.time.*;
 import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.format.ISOPeriodFormat;
+
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 
 /**
@@ -34,6 +37,42 @@ public class DateIterator implements Iterator{
     public static Duration parseDuration(String text){
         Period p = ISOPeriodFormat.standard().parsePeriod(text);
         return p.toStandardDuration();
+    }
+
+    /**
+     * http://stackoverflow.com/questions/4600034/calculate-number-of-weekdays-between-two-dates-in-java
+     * @param start starting date
+     * @param end  ending date
+     * @return number of week days in between
+     */
+    static long weekDays(Date start, Date end){
+        //Ignore argument check
+
+        Calendar c1 = Calendar.getInstance();
+        c1.setTime(start);
+        int w1 = c1.get(Calendar.DAY_OF_WEEK);
+        c1.add(Calendar.DAY_OF_WEEK, -w1);
+
+        Calendar c2 = Calendar.getInstance();
+        c2.setTime(end);
+        int w2 = c2.get(Calendar.DAY_OF_WEEK);
+        c2.add(Calendar.DAY_OF_WEEK, -w2);
+
+        //end Saturday to start Saturday
+        long days = (c2.getTimeInMillis()-c1.getTimeInMillis())/(1000*60*60*24);
+        long daysWithoutWeekendDays = days-(days*2/7);
+
+        // Adjust w1 or w2 to 0 since we only want a count of *weekdays*
+        // to add onto our daysWithoutWeekendDays
+        if (w1 == Calendar.SUNDAY) {
+            w1 = Calendar.MONDAY;
+        }
+
+        if (w2 == Calendar.SUNDAY) {
+            w2 = Calendar.MONDAY;
+        }
+
+        return daysWithoutWeekendDays-w1+w2;
     }
 
     public final DateTime start;
@@ -60,6 +99,8 @@ public class DateIterator implements Iterator{
 
     public final int years ;
 
+    public final long weekDays;
+
     public final String stringRep;
 
     public DateIterator(DateTime end){
@@ -84,6 +125,7 @@ public class DateIterator implements Iterator{
         hours = Hours.hoursBetween(start, end).getHours();
         minutes = Minutes.minutesBetween(start, end).getMinutes();
         seconds = Seconds.secondsBetween(start, end).getSeconds();
+        weekDays = weekDays( start.toDate(), end.toDate());
         stringRep = String.format("%s : %s : %s", start.toDate(), end.toDate(), interval);
     }
 
