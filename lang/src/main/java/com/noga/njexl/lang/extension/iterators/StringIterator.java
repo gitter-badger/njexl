@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright 2015 Nabarun Mondal
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 package com.noga.njexl.lang.extension.iterators;
 
-import java.util.Iterator;
 import java.util.function.Consumer;
 
 /**
  * Created by noga on 31/03/15.
  */
-public class StringIterator implements Iterator {
+public class StringIterator extends YieldedIterator {
 
     int cur;
     int end ;
@@ -39,8 +38,16 @@ public class StringIterator implements Iterator {
         this.step = step;
     }
 
+    public StringIterator(String text,int end,int start){
+        this(text,end,start,1);
+    }
+
+    public StringIterator(String text,int end){
+        this(text,end,0);
+    }
+
     public StringIterator(String text){
-        this(text,text.length(),0,1);
+        this(text,text.length());
     }
 
     @Override

@@ -16,13 +16,12 @@
 
 package com.noga.njexl.lang.extension.iterators;
 
-import java.util.Iterator;
 import java.util.function.Consumer;
 
 /**
  * Created by noga on 31/03/15.
  */
-public  class RangeIterator implements Iterator {
+public  class RangeIterator extends YieldedIterator {
     protected long e;
     protected long b;
     protected long s;

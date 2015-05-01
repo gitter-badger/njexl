@@ -23,12 +23,11 @@ import org.joda.time.format.ISOPeriodFormat;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 
 /**
  * Created by noga on 28/04/15.
  */
-public class DateIterator implements Iterator{
+public class DateIterator extends YieldedIterator{
 
     public static final long DAY_IN_MILLIS = 24 * 60 * 60 * 1000 ;
 
