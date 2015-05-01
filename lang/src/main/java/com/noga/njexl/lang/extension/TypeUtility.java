@@ -126,9 +126,8 @@ public class TypeUtility {
 
     public static final String _ITEM_ = "$";
     public static final String _CONTEXT_ = "$$";
-
-
     public static final String _INDEX_ = "_";
+    public static final String _PARTIAL_ = "_$_";
 
 
     /**
@@ -584,7 +583,7 @@ public class TypeUtility {
             ArrayList l = new ArrayList();
             int i = 0;
             for (Object o : list) {
-                anon.setIterationContext(list, o, i);
+                anon.setIterationContextWithPartial(list, o, i,l);
                 Object ret = anon.execute();
                 if (castBoolean(ret, false)) {
                     //should add _ITEM_ 's value, if anyone modified it

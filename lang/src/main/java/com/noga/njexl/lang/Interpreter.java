@@ -1354,10 +1354,16 @@ public class Interpreter implements ParserVisitor {
             interpreter.context.set(TypeUtility._INDEX_, i);
         }
 
+        public void setIterationContextWithPartial(Object con, Object o, Object i,Object p) {
+            setIterationContext(con,o,i);
+            interpreter.context.set( TypeUtility._PARTIAL_, p );
+        }
+
         public void removeIterationContext() {
             interpreter.context.remove(TypeUtility._CONTEXT_);
             interpreter.context.remove(TypeUtility._ITEM_);
             interpreter.context.remove(TypeUtility._INDEX_);
+            interpreter.context.remove(TypeUtility._PARTIAL_);
         }
 
         public Object execute() {
