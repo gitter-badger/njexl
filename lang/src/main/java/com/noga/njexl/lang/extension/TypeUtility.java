@@ -86,6 +86,8 @@ public class TypeUtility {
     public static final String LIST = "list";
     public static final String FILTER = "filter";
     public static final String SELECT = "select";
+    public static final String PARTITION = "partition";
+
 
     public static final String FIND = "find";
     public static final String INDEX = "index";
@@ -522,33 +524,6 @@ public class TypeUtility {
 
     public static HashMap<String, Method> methodHashMap = new HashMap<>();
 
-    public static Object callAnonMethod(String name, Object val) {
-        if (!methodHashMap.containsKey(name)) {
-            String[] arr = name.split("__");
-            String className = arr[0];
-            try {
-                Class c = Class.forName(className);
-                Method[] methods = c.getDeclaredMethods();
-                for (Method m : methods) {
-                    if (m.getName().equals(name)) {
-                        methodHashMap.put(name, m);
-                        break;
-                    }
-                }
-            } catch (Exception e) {
-                System.err.println(e);
-            }
-        }
-        Method m = methodHashMap.get(name);
-        Object o = null;
-        try {
-            o = m.invoke(null, val);
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-        return o;
-    }
-
     /**
      * <pre>
      *     Very important list combine routine
@@ -591,7 +566,7 @@ public class TypeUtility {
         return list;
     }
 
-    public static ArrayList filter(Object... args) {
+    public static ArrayList[] partition(Object... args) {
         AnonymousParam anon = null;
         ArrayList list = new ArrayList();
         if (args.length > 1) {
@@ -604,6 +579,7 @@ public class TypeUtility {
             List l = from(args[i]);
             list.addAll(l);
         }
+        ArrayList reject = new ArrayList();
         if (anon != null) {
             ArrayList l = new ArrayList();
             int i = 0;
@@ -613,13 +589,20 @@ public class TypeUtility {
                 if (castBoolean(ret, false)) {
                     //should add _ITEM_ 's value, if anyone modified it
                     l.add(anon.interpreter.getContext().get(_ITEM_));
+                }else{
+                    reject.add( anon.interpreter.getContext().get(_ITEM_) );
                 }
                 i++;
             }
             list = l;
             anon.removeIterationContext();
         }
-        return list;
+        return new ArrayList[]{ list , reject};
+    }
+
+    public static ArrayList filter(Object... args) {
+        ArrayList[] partition = partition(args);
+        return partition[0];
     }
 
     public static int index(Object... args) {
@@ -958,6 +941,8 @@ public class TypeUtility {
             case FILTER:
             case SELECT:
                 return filter(argv);
+            case PARTITION:
+                return partition(argv);
             case FIND:
             case INDEX:
                 return index(argv);
