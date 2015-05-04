@@ -1,15 +1,16 @@
 import 'java.lang.Thread' as Thread
 
-def type(text){
+def type_ui(text){
     selenium.type("lst-ib",text)
     Thread.sleep(3000)
 }
 
 selenium.open("/")
-type("aa$vv")
-type("aa%bb")
-type("a(b")
-type("a{b")
-type("c#d")
-type("a&b")
-type("hi-hello-the}re!")
+
+type_ui("aa$vv")
+type_ui("aa%bb")
+type_ui("a(b")
+type_ui("a{b")
+type_ui("c#d")
+type_ui("a&b")
+type_ui("hi-hello-the}re!")
