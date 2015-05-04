@@ -29,6 +29,7 @@ import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
@@ -171,6 +172,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     public enum BrowserType{
         FIREFOX,
+        HTML_UNIT,
         CHROME,
         SAFARI
     }
@@ -179,6 +181,9 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         BrowserType type = Enum.valueOf(BrowserType.class,browserType);
         WebDriver driver = null;
         switch (type){
+            case HTML_UNIT:
+                driver = new HtmlUnitDriver();
+                break;
             case CHROME:
                 break;
             case SAFARI:
@@ -371,10 +376,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     public String replaceSpecialCharacters(String value) {
         value = value.replaceAll("\\(", Keys.chord(Keys.SHIFT, "9"));
-        /*value=value.replaceAll("#", Keys.chord(Keys.SHIFT,"3"));
-        value=value.replaceAll("-", Keys.SUBTRACT.toString());
-        value=value.replaceAll("}", Keys.chord(Keys.SHIFT,"]"));
-        */
+        value = value.replaceAll("&", Keys.chord(Keys.SHIFT, "7"));
         return value;
     }
 
@@ -391,7 +393,9 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     @Override
     public void typeKeys(String locator, String value) {
-        type(locator, value);
+        By by = getByFromLocator(locator);
+        WebElement element = driver.findElement(by);
+        element.sendKeys(value);
     }
 
 
@@ -780,8 +784,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
             }
             driver.switchTo().window(current);
         } catch (Exception e) {
-            System.out.println("Exception found in switching windows: " + e);
-            System.exit(1);
+            System.err.println("Exception found in switching windows: " + e);
         }
         return specsList;
     }

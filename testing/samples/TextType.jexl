@@ -1,0 +1,15 @@
+import 'java.lang.Thread' as Thread
+
+def type(text){
+    selenium.type("lst-ib",text)
+    Thread.sleep(3000)
+}
+
+selenium.open("/")
+type("aa$vv")
+type("aa%bb")
+type("a(b")
+type("a{b")
+type("c#d")
+type("a&b")
+type("hi-hello-the}re!")

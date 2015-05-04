@@ -21,6 +21,8 @@ import com.noga.njexl.testing.dataprovider.DataSourceTable;
 import java.util.ListIterator;
 
 /**
+ * A class that takes a finite list and makes
+ * an infinite stream out of it
  * Created by noga on 15/04/15.
  */
 
@@ -28,16 +30,28 @@ public class XStreamIterator implements ListIterator {
 
     protected boolean stop = true ;
 
+    /**
+     * Sets the infinite streaming
+     * @param stop if true it stops, if false it never does stop
+     */
     public void setMode(boolean stop){
         this.stop = stop;
     }
 
     protected int index;
 
+    /**
+     * gets the index
+     * @return the index at which the stream is
+     */
     public int index() {
         return index ;
     }
 
+    /**
+     * Size of the stream
+     * @return stream size
+     */
     public int size() {
         return dataSourceTable.length() ;
     }
@@ -114,6 +128,10 @@ public class XStreamIterator implements ListIterator {
 
     protected DataSourceTable dataSourceTable ;
 
+    /**
+     * Creates one
+     * @param table using this data source table
+     */
     public XStreamIterator(DataSourceTable table){
         dataSourceTable = table;
     }
