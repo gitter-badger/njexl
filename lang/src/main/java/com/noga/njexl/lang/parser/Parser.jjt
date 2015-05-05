@@ -90,6 +90,8 @@ PARSER_END(Parser)
     | < NULL : "null" >
     | < TRUE : "true" >
     | < FALSE : "false" >
+    | < BREAK : "break" >
+    | < CONTINUE : "continue" >
     | < RETURN : "return" >
     | < DEF : "def" >
     | < IMPORT : "import" >
@@ -218,11 +220,24 @@ void Statement() #void : {}
     | WhereStatement()
     | ExpressionStatement()
     | ReturnStatement()
+    | BreakStatement()
+    | ContinueStatement()
     | Var()
     | LOOKAHEAD(3) MethodDef()
     | ImportStatement()
     | LOOKAHEAD(3) ClassDef()
 }
+
+void BreakStatement() #BreakStatement : {}
+{
+    <BREAK>
+}
+
+void ContinueStatement() #ContinueStatement : {}
+{
+    <CONTINUE>
+}
+
 
 void Block() #Block : {}
 {

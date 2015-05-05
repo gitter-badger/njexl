@@ -435,6 +435,18 @@ public final class Debugger implements ParserVisitor {
     }
 
     /** {@inheritDoc} */
+    public Object visit(ASTBreakStatement node, Object data) {
+        builder.append(" break ");
+        return data;
+    }
+
+    /** {@inheritDoc} */
+    public Object visit(ASTContinueStatement node, Object data) {
+        builder.append(" continue ");
+        return data;
+    }
+
+    /** {@inheritDoc} */
     public Object visit(ASTDefinedFunction node, Object data) {
         builder.append("#def(");
         accept(node.jjtGetChild(0), data);

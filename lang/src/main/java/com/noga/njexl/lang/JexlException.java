@@ -367,6 +367,34 @@ public class JexlException extends RuntimeException {
     }
 
     /**
+     * Thrown to continue in a loop
+     * @since 0.1
+     */
+    public static class Continue extends JexlException {
+        /**
+         * Creates a new instance of Continue.
+         * @param node the node where the Continue was detected
+         */
+        public Continue(JexlNode node) {
+            super(node, "loop continued", null);
+        }
+    }
+
+    /**
+     * Thrown to break from a loop
+     * @since 0.1
+     */
+    public static class Break extends JexlException {
+        /**
+         * Creates a new instance of Break.
+         * @param node the node where the Break was detected
+         */
+        public Break(JexlNode node) {
+            super(node, "loop broken", null);
+        }
+    }
+
+    /**
      * Gets information about the cause of this error.
      * <p>
      * The returned string represents the outermost expression in error.

@@ -926,6 +926,22 @@ public class Interpreter implements ParserVisitor {
     /**
      * {@inheritDoc}
      */
+    public Object visit(ASTBreakStatement node, Object data) {
+        //raise BreakException at parent
+        throw new JexlException.Break(node.jjtGetParent());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object visit(ASTContinueStatement node, Object data) {
+        //raise ContinueException
+        throw new JexlException.Continue(node.jjtGetParent());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Object visit(ASTDivNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
@@ -1108,8 +1124,16 @@ public class Interpreter implements ParserVisitor {
                     } else {
                         registers[register] = value;
                     }
-                    // execute statement
-                    result = statement.jjtAccept(this, data);
+                    try {
+                        // execute statement
+                        result = statement.jjtAccept(this, data);
+                    }catch (JexlException.Break b){
+                        result = b ;
+                        break;
+                    }catch (JexlException.Continue c){
+                        result = c;
+                        continue;
+                    }
                 }
             }
         }
@@ -2014,7 +2038,15 @@ public class Interpreter implements ParserVisitor {
             }
             // execute statement
             if (node.jjtGetNumChildren() > 1) {
-                result = node.jjtGetChild(1).jjtAccept(this, data);
+                try {
+                    result = node.jjtGetChild(1).jjtAccept(this, data);
+                }catch (JexlException.Continue c){
+                    result = c ;
+                    continue;
+                }catch (JexlException.Break b){
+                    result = b ;
+                    break;
+                }
             }
         }
         return result;

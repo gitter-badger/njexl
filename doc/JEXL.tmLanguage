@@ -38,10 +38,9 @@
 			<key>name</key>
 			<string>constant.numeric</string>
 		</dict>
-
 		<dict>
 			<key>match</key>
-			<string>\btype\b|\bisa\b|\bnew\b|\bif\b|\belse\b|\bwhile\b|\bwhere\b|\bfor\b|\breturn\b|\bvar\b</string>
+			<string>\btype\b|\bisa\b|\bnew\b|\bif\b|\belse\b|\bwhile\b|\bwhere\b|\bfor\b|\breturn\b|\bvar\b|\bbreak\b|\bcontinue\b|;</string>
 			<key>name</key>
 			<string>keyword.control.jexl</string>
 		</dict>
