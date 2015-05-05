@@ -368,9 +368,17 @@ public class TypeUtility {
 
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyyMMdd");
         try {
+            dateTimeFormatter.setLenient(false);
             if (args.length > 1) {
                 dateTimeFormatter = new SimpleDateFormat(args[1].toString());
+                if (args.length > 2) {
+                    dateTimeFormatter.setLenient(castBoolean(args[2],false));
+                    if ( args.length > 3 ){
+                        dateTimeFormatter.setTimeZone(TimeZone.getTimeZone(args[3].toString()));
+                    }
+                }
             }
+
             return dateTimeFormatter.parse(args[0].toString());
         } catch (Exception e) {
         }
