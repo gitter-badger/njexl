@@ -72,6 +72,7 @@ PARSER_END(Parser)
     | " "
     | "\t"
     | "\f"
+    | < "\\" ("\n" | "\r" | "\r\n") > /* ignore line : continue on next line  */
 }
 
 <*> TOKEN : /* KEYWORDS */
@@ -110,15 +111,15 @@ PARSER_END(Parser)
     | < COLON : ":" >
     | < COMMA : "," >
     | < DOT : "." >
-    | <NL : "\n" >
-    | <CR : "\r">
+    | <LINE : (" "|"\t")* ( "\n" | "\r" | "\r\n" ) >
+
 }
 
 <*> TOKEN : { /* CONDITIONALS */
       < QMARK : "?" >
     | < ELVIS : "?:" >
-    | < AND : "&&" | "and" >
-    | < OR : "||" | "or" >
+    | < AND : ("&&" | "and" ) (<LINE>)? >
+    | < OR : ( "||" | "or" ) (<LINE>)? >
 }
 
 <*> TOKEN : { /* COMPARISONS */
@@ -140,8 +141,8 @@ PARSER_END(Parser)
     | < mod : "%" | "mod" >
     | < div : "/" | "div" >
     | < not : "!" | "not" >
-    | < plus : "+" >
-    | < minus : "-" >
+    | < plus : "+" (<LINE>)? >
+    | < minus : "-" (<LINE>)? >
     | < mult : "*" >
     | < tilda : "~" >
     | < and : "&" >
@@ -211,8 +212,7 @@ ASTJexlScript JexlScript() : {}
 void Statement() #void : {}
 {
     <SEMICOL>
-    |<NL>
-    |<CR>
+    |<LINE>
     | LOOKAHEAD(3) Block()
     | IfStatement()
     | ForeachStatement()

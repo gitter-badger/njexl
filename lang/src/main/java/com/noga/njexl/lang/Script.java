@@ -50,10 +50,6 @@ public interface Script {
 
     String ARGS = "__args__";
 
-    Pattern OPERATOR_END_CONTINUE_NEXT_LINE = Pattern.compile("(?<op>[\\+\\-\\|&\\^=\\*/])\\s*[\\r\\n]+") ;
-
-    String GENERIC_END_CONTINUE_NEXT_LINE = "\\\\.\\.\\.\\s*[\\r\\n]+" ;
-
 
     /**
      * Executes the script with the variables contained in the

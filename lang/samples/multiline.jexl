@@ -1,46 +1,42 @@
 /*
   Showing how implicitly one can split sentences into lines.
-  The line should ideally be and with an operator : |,&,*,+,- 
-  If not then the standard \... should work .
-  DO NOT line comment there in the end. 
-  That would break it. Clearly.
+  The line should ideally be and with an operator : ||,&&,+,- 
+  If not then the standard  escape end of line : \ should work . No space after "\" is allowed.
 */
 
 import  'java.lang.System.out' as out
+
+s = true || 
+     false   
+out:println(s)
+
+s = true and  
+     false   
+out:println(s)
+
 
 s = " "  + 
    "aaa aa "  + 
    "xxxx" + 
    "z"
-
 out:println(s)
+
 
 s = 10 -   
      2
 out:println(s)
 
-s = 10 **
+
+s = 10 ** \
  2
 out:println(s)
 
-s = 10 /  
-    
-    
- 2
+
+s = 10 /  \
+    2
 out:println(s)
 
-s = true ||
-
-false 
-out:println(s)
-
-
-s = true &&    	
-
-false 
-out:println(s)
-
-if (   \...     
+if (  \
 	true ){
 	out:println("This also works!")
 }
