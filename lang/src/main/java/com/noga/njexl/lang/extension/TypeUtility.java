@@ -114,6 +114,8 @@ public class TypeUtility {
     public static final String SORT_ASCENDING = "sorta";
     public static final String SORT_DESCENDING = "sortd";
 
+    public static final String TRY = "try";
+
     /**
      * IO calls
      */
@@ -830,7 +832,6 @@ public class TypeUtility {
         return a;
     }
 
-
     public static class AnonymousComparator implements Comparator{
 
         public final AnonymousParam anon;
@@ -901,6 +902,25 @@ public class TypeUtility {
         List l = combine(args) ;
         Collections.sort(l, Collections.reverseOrder());
         return l;
+    }
+
+    public static Object guardedBlock(Object...args){
+        if ( args.length == 0 ){
+            return null;
+        }
+        if ( !(args[0] instanceof AnonymousParam) ){
+            return args[0];
+        }
+        AnonymousParam anon = (AnonymousParam)args[0];
+        args = shiftArrayLeft(args,1);
+        try{
+            return anon.execute();
+        }catch (Throwable throwable){
+            if ( args.length == 0 ){
+                return throwable.getCause() ;
+            }
+            return args[0];
+        }
     }
 
     public static Object interceptCastingCall(String methodName, Object[] argv, Boolean[] success) throws Exception {
@@ -993,6 +1013,8 @@ public class TypeUtility {
                 return ascending(argv);
             case SORT_DESCENDING:
                 return descending(argv);
+            case TRY:
+                return guardedBlock(argv);
             default:
                 if (success != null) {
                     success[0] = false;
@@ -1023,6 +1045,7 @@ public class TypeUtility {
     }
 
     public static class XNumber extends Number implements Comparable {
+
         Number number;
 
         public XNumber() {
@@ -1040,11 +1063,15 @@ public class TypeUtility {
                 this.number = ((DateTime) number).toDate().getTime();
             } else if (number instanceof Boolean) {
                 this.number = (Boolean) number ? 1 : 0;
-            } else {
-                throw new ClassCastException("Can not convert to Number!");
+            } else if ( number instanceof BigInteger ){
+                this.number = (BigInteger)number;
+            } else if ( number instanceof BigDecimal ){
+                this.number = (BigDecimal)number;
+            } else if ( number instanceof String ){
+                this.number = new BigDecimal(number.toString());
             }
+            this.number = 0;
         }
-
 
         @Override
         public int intValue() {
