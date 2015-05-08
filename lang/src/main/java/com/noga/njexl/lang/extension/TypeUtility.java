@@ -561,7 +561,7 @@ public class TypeUtility {
      * @param args individual objects to be passed
      * @return a list combining the unwinded args
      */
-    public static XList combine(Object... args) {
+    public static List combine(Object... args) {
         AnonymousParam anon = null;
         XList list = new XList();
         if (args.length > 1) {
@@ -592,7 +592,7 @@ public class TypeUtility {
         return list;
     }
 
-    public static XList[] partition(Object... args) {
+    public static List[] partition(Object... args) {
         AnonymousParam anon = null;
         XList list = new XList();
         if (args.length > 1) {
@@ -626,8 +626,8 @@ public class TypeUtility {
         return new XList[]{ list , reject};
     }
 
-    public static XList filter(Object... args) {
-        XList[] partition = partition(args);
+    public static List filter(Object... args) {
+        List[] partition = partition(args);
         return partition[0];
     }
 
@@ -728,14 +728,14 @@ public class TypeUtility {
     }
 
     public static ListSet set(Object... args) {
-        ArrayList list = combine(args);
+        List list = combine(args);
         ListSet set = new ListSet();
         set.addAll(list);
         return set;
     }
 
     public static Boolean within(Object... args) throws Exception {
-        XList list = combine(args);
+        List list = combine(args);
 
         if (list.size() < 3) {
             throw new Exception("At least 3 args are needed for within ");
@@ -791,7 +791,7 @@ public class TypeUtility {
     public static Object[] sqlmath(Object... argv) {
         Object[] math = new Object[]{null, null, null};
         JexlArithmetic arithmetic = new JexlArithmetic(false);
-        ArrayList list = combine(argv);
+        List list = combine(argv);
         if (list.size() > 0) {
             int index = 0;
             Object obj = list.get(index);
@@ -843,7 +843,7 @@ public class TypeUtility {
     }
 
     public static Object[] array(Object... args) {
-        ArrayList l = combine(args);
+        List l = combine(args);
         Object[] a = new Object[l.size()];
         l.toArray(a);
         return a;

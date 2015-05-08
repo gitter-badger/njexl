@@ -17,11 +17,10 @@
 package com.noga.njexl.lang.extension.datastructures;
 
 import com.noga.njexl.lang.Interpreter;
+import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Created by noga on 08/05/15.
@@ -86,7 +85,6 @@ public class XList<T> extends ArrayList<T> {
             anon.setIterationContextWithPartial( this, item ,i, xList);
             Object ret = anon.execute();
             if (TypeUtility.castBoolean(ret,false)){
-                anon.removeIterationContext();
                 // ensure update to the variable is considered
                 item = anon.getVar( TypeUtility._ITEM_);
                 xList.add(item);
@@ -95,6 +93,56 @@ public class XList<T> extends ArrayList<T> {
         }
         anon.removeIterationContext();
         return xList;
+    }
+
+    public ListSet set(){
+        return set(null);
+    }
+
+    public ListSet set(Interpreter.AnonymousParam anon){
+        if ( anon == null ){
+            return new ListSet(this);
+        }
+        ListSet listSet = new ListSet();
+        int i = 0;
+        Iterator iterator = iterator();
+        while(iterator.hasNext()){
+            Object item = iterator.next();
+            anon.setIterationContextWithPartial( this, item ,i, listSet);
+            Object ret = anon.execute();
+            listSet.add(ret);
+            i++;
+        }
+        anon.removeIterationContext();
+        return listSet;
+    }
+
+    public HashMap<Object,List> mset(){
+        return mset(null);
+    }
+
+    public HashMap<Object,List> mset(Interpreter.AnonymousParam anon){
+        if ( anon == null ){
+            return SetOperations.multiset(this);
+        }
+        HashMap<Object,List> map = new HashMap<>();
+        Iterator iterator = iterator();
+        int i = 0;
+        while(iterator.hasNext()){
+            Object item = iterator.next();
+            anon.setIterationContextWithPartial(this, item, i, map);
+            Object key = anon.execute();
+            if ( map.containsKey(key)){
+                map.get(key).add(item);
+            }else{
+                XList list = new XList();
+                list.add(item);
+                map.put(key,list);
+            }
+            i++;
+        }
+        anon.removeIterationContext();
+        return map;
     }
 
 }
