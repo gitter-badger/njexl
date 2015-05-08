@@ -23,6 +23,7 @@ import com.noga.njexl.lang.extension.dataaccess.XmlMap;
 import com.noga.njexl.lang.extension.datastructures.Tuple;
 import org.junit.Test;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by noga on 28/03/15.
@@ -40,6 +41,13 @@ public class ExtendedScriptTest extends JexlTestCase {
         System.out.println("=============END==========");
         return o;
     }
+
+    @Test
+    public void testMSETDiffScript() throws Exception{
+        Object o = runScript(JEXL, "samples/mset.jexl");
+        assertTrue(((Map)o).isEmpty());
+    }
+
 
     @Test
     public void testDateTimeScript() throws Exception{

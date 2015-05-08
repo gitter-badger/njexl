@@ -1,0 +1,9 @@
+/* 
+ Using predicate formulation to check the list diff - with key value pair
+*/
+ms1 = mset(1,2,3)
+ms2 = mset(2,1,3)
+
+set:mset_diff{ 
+   $[0][0] == $[1][0]
+}(ms1,ms2)

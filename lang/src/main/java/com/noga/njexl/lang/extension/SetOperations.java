@@ -27,7 +27,7 @@ import java.util.*;
  */
 public final class SetOperations {
 
-    public static enum SetRelation {
+    public  enum SetRelation {
         INDEPENDENT,
         SUBSET,
         SUPERSET,
@@ -198,6 +198,27 @@ public final class SetOperations {
         Map<Object, ArrayList> mset1 = multiset(l);
         Map<Object, ArrayList> mset2 = multiset(r);
         return mset_diff(mset1,mset2);
+    }
+
+    public static HashMap mset_diff(Interpreter.AnonymousParam anon,
+                                                    Map<Object, ArrayList> mset1, Map<Object, ArrayList> mset2) {
+        HashMap diff = mset_diff(mset1, mset2);
+        if ( anon == null ){
+            return diff;
+        }
+        Object context = new Object[]{ mset1, mset2 };
+        HashMap result = new HashMap();
+        for ( Object k : diff.keySet() ){
+            Object[] values = new Object[]{ mset1.get(k) , mset2.get(k) } ;
+            anon.setIterationContext(context, values, k);
+            Object ret = anon.execute();
+            boolean same = TypeUtility.castBoolean(ret,false) ;
+            if ( !same ){
+                result.put(k,values);
+            }
+        }
+        anon.removeIterationContext();
+        return result;
     }
 
     public static HashMap<Object, int[]> mset_diff(Map<Object, ArrayList> mset1, Map<Object, ArrayList> mset2) {
