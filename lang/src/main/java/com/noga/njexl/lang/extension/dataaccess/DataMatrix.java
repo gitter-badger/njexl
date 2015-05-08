@@ -20,6 +20,7 @@ import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.datastructures.Tuple;
 import com.noga.njexl.lang.extension.TypeUtility;
+import com.noga.njexl.lang.extension.datastructures.XList;
 import com.noga.njexl.lang.extension.iterators.RangeIterator;
 
 import java.io.File;
@@ -135,14 +136,14 @@ public class DataMatrix {
     /**
      * The actual data rows, they are not including the column
      */
-    public ArrayList<ArrayList<String>> rows;
+    public List<List<String>> rows;
 
     /**
      * For comparison, one needs to generate the row key.
      * If confused, see the @link{http://en.wikipedia.org/wiki/Candidate_key}
      * They generated and gets stored here
      */
-    public HashMap<String,ArrayList<Integer>> keys;
+    public Map<String,List<Integer>> keys;
 
     /**
      * The Factory of data matrix
@@ -170,7 +171,7 @@ public class DataMatrix {
      * @param rows the rows of data
      * @param cols the column headers
      */
-    public DataMatrix(ArrayList<ArrayList<String>> rows,ListSet<String> cols){
+    public DataMatrix(List<List<String>> rows,ListSet<String> cols){
         this.rows = rows;
         this.columns = cols;
     }
@@ -179,7 +180,7 @@ public class DataMatrix {
      * This would be created column header free
      * @param rows only rows of data
      */
-    public DataMatrix(ArrayList<ArrayList<String>> rows){
+    public DataMatrix(List<List<String>> rows){
         this.rows = rows;
         this.columns = new ListSet<>();
         for ( Integer i = 0 ; i < rows.get(0).size(); i++ ){
@@ -206,7 +207,7 @@ public class DataMatrix {
      * @param c the column index
      * @return the whole column row by row
      */
-    public ArrayList<String> c(int c){
+    public List<String> c(int c){
         return c(c,null);
     }
 
@@ -216,8 +217,8 @@ public class DataMatrix {
      * @param agg these rows will be selected
      * @return list of selected row values for the column
      */
-    public ArrayList<String> c(int c, ArrayList<Integer> agg ){
-        ArrayList l = new ArrayList();
+    public List<String> c(int c, List<Integer> agg ){
+        XList l = new XList();
         for ( int r = 0; r < rows.size() ; r++ ){
             if ( agg == null ||
                     agg!= null && agg.contains( r ) ){
@@ -281,13 +282,13 @@ public class DataMatrix {
      * @return selected rows
      * @throws Exception in error
      */
-    public ArrayList select(Object...args) throws Exception {
+    public List select(Object...args) throws Exception {
         if ( args.length ==  0 ){
             return rows;
         }
         SelectSetup setup = setup(args);
         // now do the stuff
-        ArrayList rs = _select_op_(setup.anon, setup.colIndexes);
+        List rs = _select_op_(setup.anon, setup.colIndexes);
         return rs;
     }
 
@@ -312,19 +313,19 @@ public class DataMatrix {
                 nColumns.add(columns.get(j));
             }
         }
-        ArrayList rs = _select_op_(setup.anon,setup.colIndexes);
+        List rs = _select_op_(setup.anon,setup.colIndexes);
 
         return new DataMatrix(rs,nColumns);
     }
 
-    private ArrayList  _select_op_(Interpreter.AnonymousParam anon, HashSet<Integer> colIndexes ) throws Exception{
+    private List  _select_op_(Interpreter.AnonymousParam anon, Set<Integer> colIndexes ) throws Exception{
         // now do the stuff
-        ArrayList rs = new ArrayList();
+        XList rs = new XList();
         HashMap<Integer,Tuple> selectedRows = new HashMap<>();
         for ( int i = 0 ; i < rows.size();i++ ){
             if ( anon != null ){
                 //process this ...
-                anon.setIterationContext(this, tuple(i),i);
+                anon.setIterationContextWithPartial(this, tuple(i),i,rs);
                 Object ret = anon.execute();
                 if ( !TypeUtility.castBoolean(ret,false)){
                     continue;
@@ -333,7 +334,7 @@ public class DataMatrix {
                 selectedRows.put(i,(Tuple)anon.getVar(TypeUtility._ITEM_));
             }
             ArrayList cs = new ArrayList();
-            ArrayList<String> dataRow = rows.get(i);
+            List<String> dataRow = rows.get(i);
             for ( int j = 0 ;j < columns.size();j++ ) {
                 if (colIndexes.contains(j)) {
                     Object val = dataRow.get(j) ;
@@ -415,16 +416,16 @@ public class DataMatrix {
             }
         }
 
-        HashMap<String,ArrayList<Integer>> aKey = new HashMap<>();
+        HashMap<String,List<Integer>> aKey = new HashMap<>();
         ArrayList aRows = new ArrayList();
         // aggregate rows
         int rowNum = 0 ;
         for ( String key : keys.keySet() ){
-            ArrayList rowData = new ArrayList();
-            ArrayList<Integer> agg = keys.get(key);
+            XList rowData = new XList();
+            List<Integer> agg = keys.get(key);
             for ( int c = 0 ; c < columns.size() ; c++  ){
                 if ( colIndexes.contains(c)){
-                    ArrayList<String> data = c(c,agg);
+                    List<String> data = c(c,agg);
                     String value ;
                     if ( anon != null ){
                         anon.setIterationContext(this,data,c);
@@ -510,12 +511,12 @@ public class DataMatrix {
         }
         matrixDiff.lr = d1;
         matrixDiff.rl = d2 ;
-        ArrayList diff = new ArrayList();
+        List diff = new ArrayList();
         //now the rest
         Set intersection = SetOperations.set_i(  left.keys.keySet(), right.keys.keySet() );
         for ( Object i : intersection ){
-            ArrayList<Integer> l = left.keys.get(i);
-            ArrayList<Integer> r = right.keys.get(i);
+            List<Integer> l = left.keys.get(i);
+            List<Integer> r = right.keys.get(i);
             if ( l.size() != r.size() && l.size() != 1 ){
                 throw new Exception("After Keying, multiple rows with same key! did you forget aggregate?");
             }
