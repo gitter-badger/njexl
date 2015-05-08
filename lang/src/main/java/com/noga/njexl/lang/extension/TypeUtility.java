@@ -18,6 +18,7 @@ package com.noga.njexl.lang.extension;
 
 import com.noga.njexl.lang.*;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
+import com.noga.njexl.lang.extension.datastructures.XList;
 import com.noga.njexl.lang.extension.iterators.DateIterator;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
 import com.noga.njexl.lang.parser.ASTReturnStatement;
@@ -39,7 +40,6 @@ import java.math.MathContext;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -213,10 +213,10 @@ public class TypeUtility {
         return readToEnd(args[0].toString());
     }
 
-    public static ArrayList<String> readLines(Object... args) throws Exception {
-        ArrayList<String> lines = null;
+    public static XList<String> readLines(Object... args) throws Exception {
+        XList<String> lines = null;
         if (args.length == 0) {
-            lines = new ArrayList<String>();
+            lines = new XList<>();
             while (true) {
                 String l = System.console().readLine();
                 if (l == null) {
@@ -226,7 +226,7 @@ public class TypeUtility {
             }
             return lines;
         }
-        lines = (ArrayList) Files.readAllLines(new File(args[0].toString()).toPath());
+        lines = new XList<>( Files.readAllLines(new File(args[0].toString()).toPath()) );
         return lines;
     }
 
@@ -491,8 +491,8 @@ public class TypeUtility {
         return args[0].toString();
     }
 
-    public static ArrayList makeLiteralList(Object... argv) {
-        ArrayList list = new ArrayList();
+    public static XList makeLiteralList(Object... argv) {
+        XList list = new XList();
         for (int i = 0; i < argv.length; i++) {
             list.add(argv[i]);
         }
@@ -530,11 +530,11 @@ public class TypeUtility {
      * @param object input object which needs to be unwinded
      * @return a list unwinding the object
      */
-    public static ArrayList from(Object object) {
+    public static XList from(Object object) {
         if (object == null) {
             return null;
         }
-        ArrayList list = new ArrayList();
+        XList list = new XList();
         if (object instanceof Collection) {
             Collection l = (Collection) object;
             list.addAll(l);
@@ -561,9 +561,9 @@ public class TypeUtility {
      * @param args individual objects to be passed
      * @return a list combining the unwinded args
      */
-    public static ArrayList combine(Object... args) {
+    public static XList combine(Object... args) {
         AnonymousParam anon = null;
-        ArrayList list = new ArrayList();
+        XList list = new XList();
         if (args.length > 1) {
             if (args[0] instanceof AnonymousParam) {
                 anon = (AnonymousParam) args[0];
@@ -577,7 +577,7 @@ public class TypeUtility {
         }
 
         if (anon != null) {
-            ArrayList l = new ArrayList();
+            XList l = new XList();
             int i = 0;
             for (Object o : list) {
                 anon.setIterationContext(list, o, i);
@@ -592,9 +592,9 @@ public class TypeUtility {
         return list;
     }
 
-    public static ArrayList[] partition(Object... args) {
+    public static XList[] partition(Object... args) {
         AnonymousParam anon = null;
-        ArrayList list = new ArrayList();
+        XList list = new XList();
         if (args.length > 1) {
             if (args[0] instanceof AnonymousParam) {
                 anon = (AnonymousParam) args[0];
@@ -605,9 +605,9 @@ public class TypeUtility {
             List l = from(args[i]);
             list.addAll(l);
         }
-        ArrayList reject = new ArrayList();
+        XList reject = new XList();
         if (anon != null) {
-            ArrayList l = new ArrayList();
+            XList l = new XList();
             int i = 0;
             for (Object o : list) {
                 anon.setIterationContextWithPartial(list, o, i,l);
@@ -623,17 +623,17 @@ public class TypeUtility {
             list = l;
             anon.removeIterationContext();
         }
-        return new ArrayList[]{ list , reject};
+        return new XList[]{ list , reject};
     }
 
-    public static ArrayList filter(Object... args) {
-        ArrayList[] partition = partition(args);
+    public static XList filter(Object... args) {
+        XList[] partition = partition(args);
         return partition[0];
     }
 
     public static int index(Object... args) {
         AnonymousParam anon = null;
-        ArrayList list = new ArrayList();
+        XList list = new XList();
         if (args.length > 1) {
             if (args[0] instanceof AnonymousParam) {
                 anon = (AnonymousParam) args[0];
@@ -735,7 +735,7 @@ public class TypeUtility {
     }
 
     public static Boolean within(Object... args) throws Exception {
-        ArrayList list = combine(args);
+        XList list = combine(args);
 
         if (list.size() < 3) {
             throw new Exception("At least 3 args are needed for within ");
@@ -775,8 +775,8 @@ public class TypeUtility {
         if (args.length != 2) {
             return map;
         }
-        ArrayList keyList = from(args[0]);
-        ArrayList valueList = from(args[1]);
+        XList keyList = from(args[0]);
+        XList valueList = from(args[1]);
         if (keyList.size() != valueList.size()) {
             throw new Exception("Key and Value Arrays/Lists are not of same length!");
         }
@@ -1054,7 +1054,7 @@ public class TypeUtility {
                 end = castInteger(args[2], end);
             }
         }
-        ArrayList r = new ArrayList();
+        XList r = new XList();
         for (int i = start; i <= end; i++) {
             r.add(l.get(i));
         }
