@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright 2015 Nabarun Mondal
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.noga.njexl.lang.extension;
 
 import com.noga.njexl.lang.Interpreter;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
+import com.noga.njexl.lang.extension.datastructures.XList;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -64,7 +65,7 @@ public final class SetOperations {
         }
     }
 
-    public static ListSet set_i(Set s1, Set s2) {
+    public static Set set_i(Set s1, Set s2) {
         ListSet i = new ListSet();
         Set b = s1;
         Set s = s2;
@@ -80,7 +81,7 @@ public final class SetOperations {
         return i;
     }
 
-    public static ListSet set_u(Set s1, Set s2) {
+    public static Set set_u(Set s1, Set s2) {
         Set b = s1;
         Set s = s2;
         if (s2.size() > s1.size()) {
@@ -96,7 +97,7 @@ public final class SetOperations {
         return u;
     }
 
-    public static ListSet set_d(Set s1, Set s2) {
+    public static Set set_d(Set s1, Set s2) {
         ListSet d = new ListSet(s1);
         for (Object o : s2) {
             if (s1.contains(o)) {
@@ -106,10 +107,10 @@ public final class SetOperations {
         return d;
     }
 
-    public static ListSet set_sym_d(Set s1, Set s2) {
-        ListSet d12 = set_d(s1, s2);
-        ListSet d21 = set_d(s2, s1);
-        ListSet ssd = set_u(d12, d21);
+    public static Set set_sym_d(Set s1, Set s2) {
+        Set d12 = set_d(s1, s2);
+        Set d21 = set_d(s2, s1);
+        Set ssd = set_u(d12, d21);
         return ssd;
     }
 
@@ -121,7 +122,7 @@ public final class SetOperations {
 
     public static SetRelation set_relation(Set s1, Set s2) {
 
-        ListSet ssd = set_sym_d(s1, s2);
+        Set ssd = set_sym_d(s1, s2);
         if (ssd.isEmpty()) {
             return SetRelation.EQUAL;
         }
@@ -133,16 +134,16 @@ public final class SetOperations {
             return SetRelation.SUPERSET;
         }
 
-        ListSet i = set_i(s1, s2);
+        Set i = set_i(s1, s2);
         if (i.isEmpty()) {
             return SetRelation.INDEPENDENT;
         }
 
-        ListSet ssd_1_i = set_sym_d(i, s1);
+        Set ssd_1_i = set_sym_d(i, s1);
         if (ssd_1_i.isEmpty()) {
             return SetRelation.SUBSET;
         }
-        ListSet ssd_2_i = set_sym_d(i, s2);
+        Set ssd_2_i = set_sym_d(i, s2);
         if (ssd_2_i.isEmpty()) {
             return SetRelation.SUPERSET;
         }
@@ -154,9 +155,9 @@ public final class SetOperations {
         return SetRelation.is(relation, actual);
     }
 
-    public static HashMap<Object, ArrayList> multiset(Object... args) {
+    public static HashMap<Object, List> multiset(Object... args) {
         Interpreter.AnonymousParam anon = null;
-        ArrayList list = new ArrayList();
+        XList list = new XList();
         if (args.length > 1) {
             if (args[0] instanceof Interpreter.AnonymousParam) {
                 anon = (Interpreter.AnonymousParam) args[0];
@@ -168,16 +169,16 @@ public final class SetOperations {
             List l = TypeUtility.from(args[i]);
             list.addAll(l);
         }
-        HashMap<Object, ArrayList> m = new HashMap();
+        HashMap<Object, List> m = new HashMap();
         if (anon != null) {
             int i = 0;
             for (Object o : list) {
                 anon.setIterationContext(list, o, i);
                 Object ret = anon.execute();
                 if (!m.containsKey(ret)) {
-                    m.put(ret, new ArrayList());
+                    m.put(ret, new XList());
                 }
-                ArrayList values = m.get(ret);
+                List values = m.get(ret);
                 values.add(o);
                 i++;
             }
@@ -185,9 +186,9 @@ public final class SetOperations {
         } else {
             for (Object o : list) {
                 if (!m.containsKey(o)) {
-                    m.put(o, new ArrayList());
+                    m.put(o, new XList());
                 }
-                ArrayList values = m.get(o);
+                List values = m.get(o);
                 values.add(o);
             }
         }
@@ -195,13 +196,13 @@ public final class SetOperations {
     }
 
     public static HashMap<Object, int[]> list_diff(Object l, Object r) {
-        Map<Object, ArrayList> mset1 = multiset(l);
-        Map<Object, ArrayList> mset2 = multiset(r);
+        Map<Object, List> mset1 = multiset(l);
+        Map<Object, List> mset2 = multiset(r);
         return mset_diff(mset1,mset2);
     }
 
     public static HashMap mset_diff(Interpreter.AnonymousParam anon,
-                                                    Map<Object, ArrayList> mset1, Map<Object, ArrayList> mset2) {
+                                                    Map<Object, List> mset1, Map<Object, List> mset2) {
         HashMap diff = mset_diff(mset1, mset2);
         if ( anon == null ){
             return diff;
@@ -221,7 +222,7 @@ public final class SetOperations {
         return result;
     }
 
-    public static HashMap<Object, int[]> mset_diff(Map<Object, ArrayList> mset1, Map<Object, ArrayList> mset2) {
+    public static HashMap<Object, int[]> mset_diff(Map<Object, List> mset1, Map<Object,List> mset2) {
         HashMap<Object, int[]> diff = new HashMap<>();
         for (Object k : mset1.keySet()) {
             int[] v = new int[2];
@@ -249,7 +250,7 @@ public final class SetOperations {
         return mset_relation(m1,m2);
     }
 
-    public static SetRelation mset_relation(Map<Object, ArrayList> mset1, Map<Object, ArrayList> mset2) {
+    public static SetRelation mset_relation(Map<Object, List> mset1, Map<Object, List> mset2) {
         HashMap<Object, int[]> d = mset_diff(mset1, mset2);
         if (d.isEmpty()) {
             return SetRelation.EQUAL;
@@ -294,7 +295,7 @@ public final class SetOperations {
         return SetRelation.OVERLAP;
     }
 
-    public static boolean is_mset_relation(Map<Object, ArrayList> mset1, Map<Object, ArrayList> mset2, String relation) {
+    public static boolean is_mset_relation(Map<Object, List> mset1, Map<Object, List> mset2, String relation) {
         SetRelation actual = mset_relation(mset1, mset2);
         return SetRelation.is(relation, actual);
     }
@@ -330,7 +331,7 @@ public final class SetOperations {
         HashMap m1 = multiset(l1);
         HashMap m2 = multiset(l2);
         HashMap<Object, int[]> d = mset_diff(m1, m2);
-        ArrayList l = new ArrayList();
+        XList l = new XList();
         for (Object o : d.keySet()) {
             int[] var = d.get(o);
             int t = Math.min(var[0], var[1]);
@@ -345,7 +346,7 @@ public final class SetOperations {
         HashMap m1 = multiset(l1);
         HashMap m2 = multiset(l2);
         HashMap<Object, int[]> d = mset_diff(m1, m2);
-        ArrayList l = new ArrayList();
+        XList l = new XList();
         for (Object o : d.keySet()) {
             int[] var = d.get(o);
             int t = Math.max(var[0], var[1]);
@@ -360,7 +361,7 @@ public final class SetOperations {
         HashMap m1 = multiset(l1);
         HashMap m2 = multiset(l2);
         HashMap<Object, int[]> d = mset_diff(m1, m2);
-        ArrayList l = new ArrayList();
+        XList l = new XList();
         for (Object o : d.keySet()) {
             int[] var = d.get(o);
             int t = var[0] - var[1];
@@ -393,11 +394,11 @@ public final class SetOperations {
         if (rs == 0) {
             return left;
         }
-        ArrayList r = new ArrayList();
+        XList r = new XList();
         for (int i = 0; i < ls; i++) {
-            ArrayList item = TypeUtility.from(left.get(i));
+            List item = TypeUtility.from(left.get(i));
             for (int j = 0; j < rs; j++) {
-                ArrayList l = new ArrayList(item);
+                XList l = new XList(item);
                 l.add(right.get(j));
                 r.add(l);
             }
@@ -407,7 +408,7 @@ public final class SetOperations {
 
     public static List join_c(Object... args) {
         Interpreter.AnonymousParam anon = null;
-        ArrayList join = new ArrayList();
+        XList join = new XList();
         if (args.length > 1) {
             if (args[0] instanceof Interpreter.AnonymousParam) {
                 anon = (Interpreter.AnonymousParam) args[0];
@@ -415,7 +416,7 @@ public final class SetOperations {
             }
         }
         // the list of lists over which join would happen
-        ArrayList[] argsList = new ArrayList[args.length];
+        XList[] argsList = new XList[args.length];
 
         for (int i = 0; i < args.length; i++) {
             argsList[i] = TypeUtility.from(args[i]);
@@ -436,14 +437,14 @@ public final class SetOperations {
             anon.setIterationContext(argsList, tuple, c++);
             Object r = anon.execute();
             if (TypeUtility.castBoolean(r, false)) {
-                ArrayList t = new ArrayList();
+                XList t = new XList();
                 for (int i = 0; i < tuple.length; i++) {
                     t.add(tuple[i]);
                 }
                 join.add(t);
             }
         } else {
-            ArrayList t = new ArrayList();
+            XList t = new XList();
             for (int i = 0; i < tuple.length; i++) {
                 t.add(tuple[i]);
             }
@@ -475,14 +476,14 @@ public final class SetOperations {
                 anon.setIterationContext(argsList, tuple, c++);
                 Object r = anon.execute();
                 if (TypeUtility.castBoolean(r, false)) {
-                    ArrayList t = new ArrayList();
+                    XList t = new XList();
                     for (int i = 0; i < tuple.length; i++) {
                         t.add(tuple[i]);
                     }
                     join.add(t);
                 }
             } else {
-                ArrayList t = new ArrayList();
+                XList t = new XList();
                 for (int i = 0; i < tuple.length; i++) {
                     t.add(tuple[i]);
                 }
