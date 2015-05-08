@@ -27,10 +27,10 @@ public class ListSet<T> extends HashSet<T> implements List<T> {
     /**
      * A list to shadow the hash map
      */
-    protected ArrayList<T> behind;
+    protected List<T> behind;
 
     public ListSet() {
-        this.behind = new ArrayList();
+        this.behind = new XList<>();
     }
 
     public ListSet(Collection<? extends T> c) {
@@ -40,12 +40,12 @@ public class ListSet<T> extends HashSet<T> implements List<T> {
 
     public ListSet(int initialCapacity) {
         super(initialCapacity);
-        this.behind = new ArrayList(initialCapacity);
+        this.behind = new XList(initialCapacity);
     }
 
     public ListSet(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
-        this.behind = new ArrayList(initialCapacity);
+        this.behind = new XList(initialCapacity);
     }
 
     @Override
