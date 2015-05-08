@@ -81,6 +81,33 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testFloatString() throws Exception {
+        Expression e = JEXL.createExpression("str(0.0001,1)");
+        JexlContext jc = new MapContext();
+        Object o = e.evaluate(jc);
+        assertTrue(o.equals("0.0"));
+
+        e = JEXL.createExpression("str(0.0001,6)");
+        o = e.evaluate(jc);
+        assertTrue(o.equals("0.000100"));
+
+        e = JEXL.createExpression("str(0.0081,2)");
+        o = e.evaluate(jc);
+        assertTrue(o.equals("0.01"));
+
+        // test for double
+        e = JEXL.createExpression("str(0.0081d,2)");
+        o = e.evaluate(jc);
+        assertTrue(o.equals("0.01"));
+
+        // test for big decimal
+        e = JEXL.createExpression("str(0.0081b,2)");
+        o = e.evaluate(jc);
+        assertTrue(o.equals("0.01"));
+
+    }
+
+    @Test
     public void testAutoBigDecimalType() throws Exception {
         Expression e = JEXL.createExpression("x =  0.000000010100");
         JexlContext jc = new MapContext();

@@ -13,7 +13,7 @@ out:println(1.0 @ dummy_list)
 
 
 // how to filter based on condition?
-filter_list = filter{ int($) >= 3 }(dummy_list)
+filter_list = select{ int($) >= 3 }(dummy_list)
 out:println(filter_list)
 
 // how to create a set ?

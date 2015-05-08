@@ -38,6 +38,8 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.nio.file.Files;
 import java.security.MessageDigest;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -445,8 +447,9 @@ public class TypeUtility {
             try {
                 return dateTimeFormatter.print((DateTime) args[0]);
             } catch (Exception e) {
+                return args[0].toString() ; // make it return faster...
             }
-        } else if (args[0] instanceof Date) {
+        } if (args[0] instanceof Date) {
             SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyyMMdd");
             if (args.length > 1 && args[1] != null) {
                 dateTimeFormatter = new SimpleDateFormat(args[1].toString());
@@ -454,8 +457,22 @@ public class TypeUtility {
             try {
                 return dateTimeFormatter.format(args[0]);
             } catch (Exception e) {
-
+                return args[0].toString() ;
             }
+        } if ( args[0] instanceof Float ||
+                args[0] instanceof Double ||
+                 args[0] instanceof BigDecimal){
+            if ( args.length > 1 ){
+                if ( args[1] instanceof Integer ){
+                    String fmt = String.format("%%.%df", args[1]);
+                     return String.format(fmt, args[0]);
+                }
+                if ( args[1] instanceof String ){
+                    DecimalFormat format = new DecimalFormat(args[1].toString());
+                    return format.format( args[0] );
+                }
+            }
+            return args[0].toString();
         }
         Class c = args[0].getClass();
         if (List.class.isAssignableFrom(c) || c.isArray()) {
