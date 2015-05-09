@@ -20,12 +20,14 @@ import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.testing.dataprovider.ProviderFactory;
 import com.noga.njexl.testing.dataprovider.excel.ExcelDataSource;
 import com.noga.njexl.testing.dataprovider.uri.URIDataSource;
+import com.noga.njexl.testing.ocr.OCR;
 import com.noga.njexl.testing.ui.WebTestSuite;
+import com.noga.njexl.testing.ui.XRobot;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class BuildIntegrationTest{
+public class IntegrationTest {
 
     public static final String URL = "http://www.w3schools.com/html/html_tables.asp" ;
 
@@ -33,11 +35,23 @@ public class BuildIntegrationTest{
 
     public static final String EXCEL_FILE = "samples/UIData.xlsx" ;
 
+    public static final String IMAGE_FILE = "samples/sampleImage.png" ;
+
+    public static final String TRAINING_DIR = "samples/ocr_training" ;
+
+
     @BeforeClass
     public static void beforeClass(){
         Object o = ProviderFactory.dataSource("");
         Assert.assertNull(o);
         // load the class - to ensure that we have extensions loaded!
+    }
+
+    @Test
+    public void testOCR() throws Exception{
+        OCR.train(TRAINING_DIR);
+        String text = OCR.text( IMAGE_FILE);
+        System.out.println(text);
     }
 
     @Test
