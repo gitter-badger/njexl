@@ -54,7 +54,7 @@ public class IntegrationTest {
         System.out.println(text);
     }
 
-    @Test
+    //@Test
     public void suiteLoading() throws Exception {
         WebTestSuite webTestSuite = WebTestSuite.loadFrom(SUITE);
         Assert.assertNotNull(webTestSuite);

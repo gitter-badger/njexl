@@ -1,3 +1,19 @@
+/**
+ * Copyright 2015 Nabarun Mondal
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.noga.njexl.testing.ocr;
 
 import net.sourceforge.javaocr.scanner.PixelImage;
@@ -17,6 +33,10 @@ public final class OCR {
 
     public static final OCRScanner scanner = new OCRScanner();
 
+    /**
+     * Given directory - trains the system
+     * @param trainingImageDir the image directory
+     */
     public static void train(String trainingImageDir)
     {
 
@@ -60,11 +80,22 @@ public final class OCR {
         }
     }
 
+    /**
+     * OCRs the text from the image file
+     * @param file image file
+     * @return text from the file
+     * @throws Exception if error occurred while opening file
+     */
     public static String text(String file) throws Exception {
         Image image = ImageIO.read(new File(file));
         return text(image);
     }
 
+    /**
+     * OCRs the text from image
+     * @param image image object
+     * @return text from the image
+     */
     public static String text(Image image) {
         PixelImage pixelImage = new PixelImage(image);
         pixelImage.toGrayScale(true);
@@ -73,6 +104,11 @@ public final class OCR {
         return text;
     }
 
+    /**
+     * OCRs current screen
+     * @return text from the screen
+     * @throws Exception
+     */
     public static String screen() throws Exception {
         // capture the whole screen
         BufferedImage capture = new Robot().createScreenCapture(
