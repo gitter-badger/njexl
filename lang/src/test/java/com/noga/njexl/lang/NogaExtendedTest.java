@@ -220,20 +220,29 @@ public class NogaExtendedTest extends JexlTestCase {
 
         e = JEXL.createScript("x={1:2} ; y ={ 1:2  } ; x @ y ;");
         o = e.execute(jc);
-        assertTrue((Boolean)o);
+        assertTrue((Boolean) o);
 
         e = JEXL.createScript("x={1:2} ; y ={ 1:2 , 3:4 } ; x @ y ;");
         o = e.execute(jc);
-        assertTrue((Boolean)o);
+        assertTrue((Boolean) o);
 
 
         e = JEXL.createScript("x={1:2} ; y ={ 1:2 , 3:4 } ; y @ x ;");
         o = e.execute(jc);
-        assertFalse((Boolean)o);
+        assertFalse((Boolean) o);
 
     }
 
-        @Test
+    @Test
+    public void testEventing() throws Exception{
+        Script e = JEXL.createScript("import 'java.lang.System.out' as out ; @@out.println('hi'); ");
+        JEXL.setFunctions(new HashMap<>());
+        JexlContext jc = new MapContext();
+        e.execute(jc);
+
+    }
+
+    @Test
     public void testSorting() throws Exception {
         Script e = JEXL.createScript("x=list(2.2,1.2,1.0,-0.9) ; x = sorta(x);");
         JexlContext jc = new MapContext();

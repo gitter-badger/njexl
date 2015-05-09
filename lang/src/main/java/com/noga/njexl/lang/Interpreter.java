@@ -1554,13 +1554,24 @@ public class Interpreter implements ParserVisitor {
         if (data == null) {
             // if the method node is the first child of the (ASTReference) parent,
             // it is considered as calling a 'top level' function
-            if (node.jjtGetParent().jjtGetChild(0) == node) {
+            JexlNode firstChild = node.jjtGetParent().jjtGetChild(0) ;
+            if (firstChild == node) {
                 data = resolveNamespace(null, node);
                 if (data == null) {
                     data = context;
                 }
             } else {
-                throw new JexlException(node, "attempting to call method on null");
+                // OK, we may have @@|$$ etc ... so?
+                if ( firstChild.image != null ) {
+                    isEventing = Eventing.EVENTS.matcher(firstChild.image).matches();
+                    if (isEventing) {
+                        eventingPattern = firstChild.image.substring(0, 2);
+                        String objName = firstChild.image.substring(2);
+                        data = context.get(objName);
+                    }
+                }else {
+                    throw new JexlException(node, "attempting to call method on null");
+                }
             }
         }
         // objectNode 0 is the identifier (method name), the others are parameters.
