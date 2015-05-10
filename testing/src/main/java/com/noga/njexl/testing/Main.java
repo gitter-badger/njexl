@@ -32,11 +32,17 @@ public class Main {
 
     static final boolean __DEBUG__ = true ;
 
-    static void executeScriptUI(String[] args){
-        if ( args.length < 2 ){
-            System.exit(1);
-        }
+    static void executeScript(String[] args){
+
         String file = args[0];
+        if ( args.length > 1 ){
+            // is this having http[s]:// start?
+            if ( !args[1].startsWith("http")){
+                com.noga.njexl.lang.Main.executeScript(args);
+                return;
+            }
+        }
+        // now I should be this ...
         String url = args[1];
 
         JexlContext context = com.noga.njexl.lang.Main.getContext();
@@ -94,10 +100,17 @@ public class Main {
 
     public static void main(String[] args) {
         if ( args.length ==  0 ){
+            try {
+                com.noga.njexl.lang.Main.interpret();
+            }catch (Exception e){
+                if ( __DEBUG__ ){
+                    System.err.println(e);
+                }
+            }
             return;
         }
         if ( args[0].endsWith(".jexl") ){
-            executeScriptUI(args);
+            executeScript(args);
             return;
         }
         if ( args[0].endsWith(".xml") ){
