@@ -16,6 +16,12 @@ def XString : String {
      def __str__(me){
         me.supers['String']
      }
+     def something(me){
+        // time it out 
+    for ( i : [0:1000000] ){ /*  do nothing */ }
+        out:println("Eventing Demo!")
+
+     }
 }
 
 cs = new ('XString',"hello, world!")
@@ -23,3 +29,5 @@ out:println(cs)
 out:println(cs.length())
 out:println(cs.charAt(3))
 out:println(cs isa String)
+// eventing demo 
+@@cs.something()

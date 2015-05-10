@@ -64,6 +64,16 @@ public final class ScriptClassBehaviour {
     public interface Eventing {
 
         /**
+         * Method name for before event
+         */
+        String BEFORE = "__before__" ;
+
+        /**
+         * Method name for after event
+         */
+        String AFTER = "__after__" ;
+
+        /**
          * Thus, only 4 types of waiting pattern are possible
          * You should choose wisely
          */
@@ -90,7 +100,7 @@ public final class ScriptClassBehaviour {
          */
         final class Timer implements Eventing{
 
-            public static Timer TIMER = new Timer();
+            public static final Timer TIMER = new Timer();
 
             long t;
 

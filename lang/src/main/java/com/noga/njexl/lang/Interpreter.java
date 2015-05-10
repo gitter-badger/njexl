@@ -1454,6 +1454,11 @@ public class Interpreter implements ParserVisitor {
             eventing = getEventing(bean);
             eventing.before(eventingPattern, methodName, argv);
         }
+        // save eventing states, when we do not have a stack
+        boolean wasEventing = isEventing ;
+        Eventing curEventing = eventing ;
+        String curEventingPattern = eventingPattern ;
+
         try {
             // attempt to reuse last executor cached in volatile JexlNode.value
             if (cache) {
@@ -1529,12 +1534,10 @@ public class Interpreter implements ParserVisitor {
         } catch (Exception e) {
             xjexl = new JexlException(node, "method error", e);
         } finally {
-            if (isEventing) {
-                eventing.after(eventingPattern, methodName, argv);
+            if (wasEventing) {
+                curEventing.after(curEventingPattern, methodName, argv);
             }
-            isEventing = false;
-            eventing = null;
-            eventingPattern = null;
+
         }
         return invocationFailed(xjexl);
     }

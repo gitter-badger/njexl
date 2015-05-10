@@ -31,7 +31,7 @@ import java.util.HashMap;
  * An instance of nJexl class
  * Created by noga on 09/04/15.
  */
-public class ScriptClassInstance implements Executable, Comparable,Arithmetic, Logic  {
+public class ScriptClassInstance implements Executable, Comparable,Arithmetic, Logic, Eventing  {
 
     final HashMap<String, Object> fields;
 
@@ -163,7 +163,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
                         return jexlMethod.invoke(sups[0], args);
                     }
                 }
-                throw new Exception("Method : '" + method + "' is not found in class : " + this.scriptClass.name);
+                throw new NoSuchMethodException("Method : '" + method + "' is not found in class : " + this.scriptClass.name);
             }
             if (methodDef.instance) {
                 return methodDef.invoke(this, interpreter, args);
@@ -305,5 +305,27 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     @Override
     public Object xor(Object o)  {
         return execMethod(Logic.XOR, new Object[]{o});
+    }
+
+    @Override
+    public void before(String pattern, String method, Object[] args) {
+        try{
+            execMethod(BEFORE, args);
+        }catch (Throwable t){
+            if ( t.getCause() instanceof NoSuchMethodException ) {
+                Timer.TIMER.before(pattern, method, args);
+            }
+        }
+    }
+
+    @Override
+    public void after(String pattern, String method, Object[] args) {
+        try{
+            execMethod(AFTER, args);
+        }catch (Throwable t){
+            if ( t.getCause() instanceof NoSuchMethodException ) {
+                Timer.TIMER.after(pattern, method, args);
+            }
+        }
     }
 }
