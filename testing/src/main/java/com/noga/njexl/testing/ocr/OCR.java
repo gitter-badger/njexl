@@ -33,6 +33,28 @@ public final class OCR {
 
     public static final OCRScanner scanner = new OCRScanner();
 
+    public static boolean image(String fileName){
+        String name = fileName.toLowerCase();
+        int li = name.lastIndexOf(".") + 1;
+        if ( li <= 0 ) return false ;
+        String ext = name.substring(li );
+        switch (ext){
+            case "png":
+            case "jpg":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static CharacterRange characterRange(String fileName){
+        String name = fileName.toLowerCase();
+        if ( name.contains("digits")){
+            return new CharacterRange('0','9');
+        }
+        return new CharacterRange('!','~');
+    }
+
     /**
      * Given directory - trains the system
      * @param trainingImageDir the image directory
@@ -40,36 +62,22 @@ public final class OCR {
     public static void train(String trainingImageDir)
     {
 
-        if (!trainingImageDir.endsWith(File.separator))
-        {
-            trainingImageDir += File.separator;
-        }
         try
         {
             scanner.clearTrainingImages();
             TrainingImageLoader loader = new TrainingImageLoader();
-            HashMap<Character, ArrayList<TrainingImage>> trainingImageMap = new HashMap<Character, ArrayList<TrainingImage>>();
+            HashMap<Character, ArrayList<TrainingImage>> trainingImageMap = new HashMap<>();
 
-            loader.load(
-                    trainingImageDir + "ascii.png",
-                    new CharacterRange('!', '~'),
-                    trainingImageMap);
+            File dir = new File(trainingImageDir);
 
-            loader.load(
-                    trainingImageDir + "hpljPica.jpg",
-                    new CharacterRange('!', '~'),
-                    trainingImageMap);
+            for ( File file : dir.listFiles() ){
+                String fullName = file.getCanonicalPath();
+                boolean img = image(fullName);
+                if ( !img ){ continue; }
+                CharacterRange cr = characterRange( fullName);
+                loader.load( fullName, cr, trainingImageMap);
 
-
-            loader.load(
-                    trainingImageDir + "sublime.png",
-                    new CharacterRange('!', '~'),
-                    trainingImageMap);
-
-            loader.load(
-                    trainingImageDir + "digits.jpg",
-                    new CharacterRange('0', '9'),
-                    trainingImageMap);
+            }
 
             scanner.addTrainingImages(trainingImageMap);
 
