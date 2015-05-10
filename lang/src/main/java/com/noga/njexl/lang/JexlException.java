@@ -44,8 +44,13 @@ public class JexlException extends RuntimeException {
 
         Throwable cause = getCause();
         String myCause = "" ;
-        if ( cause instanceof JexlException ){
-            myCause = ((JexlException) cause).getFaultyCode() + " <generated> " ;
+        if ( cause != null ) {
+            if (cause instanceof JexlException) {
+                myCause = ((JexlException) cause).getFaultyCode();
+            } else {
+                myCause = cause.toString();
+            }
+            myCause += " <generated> ";
         }
 
         Throwable e = info.debugInfo().error() ;

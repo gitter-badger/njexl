@@ -1528,11 +1528,11 @@ public class Interpreter implements ParserVisitor {
                 return eval;
             }
         } catch (InvocationTargetException e) {
-            xjexl = new JexlException(node, "method invocation error", e.getCause());
+            xjexl = new JexlException(node, "method invocation error : '" + methodName +"'", e.getCause());
         } catch (JexlException.Return | JexlException.Cancel e) {
             throw e;
         } catch (Exception e) {
-            xjexl = new JexlException(node, "method error", e);
+            xjexl = new JexlException(node, "method '" + methodName +"' in error", e);
         } finally {
             if (wasEventing) {
                 curEventing.after(curEventingPattern, methodName, argv);
