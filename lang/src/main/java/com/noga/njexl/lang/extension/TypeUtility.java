@@ -32,6 +32,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -117,6 +118,9 @@ public class TypeUtility {
     public static final String SORT_DESCENDING = "sortd";
 
     public static final String TRY = "try";
+
+    public static final String SYSTEM = "system";
+
 
     /**
      * IO calls
@@ -1032,6 +1036,8 @@ public class TypeUtility {
                 return descending(argv);
             case TRY:
                 return guardedBlock(argv);
+            case SYSTEM:
+                return system(argv);
             default:
                 if (success != null) {
                     success[0] = false;
@@ -1059,6 +1065,16 @@ public class TypeUtility {
             r.add(l.get(i));
         }
         return r;
+    }
+
+    public static int system(Object...args) throws Exception {
+
+        if ( args.length ==  1 ){
+            Process p = Runtime.getRuntime().exec(args[0].toString());
+            return p.exitValue();
+        }
+
+        return 0;
     }
 
     public static class XNumber extends Number implements Comparable {
