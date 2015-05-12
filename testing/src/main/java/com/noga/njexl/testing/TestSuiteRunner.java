@@ -30,6 +30,8 @@ import java.util.HashSet;
  */
 public abstract class TestSuiteRunner implements Runnable{
 
+    public static final String SCRIPT_OUT = "_o_" ;
+
     public enum TestRunEventType{
         BEFORE_FEATURE,
         BEFORE_TEST,

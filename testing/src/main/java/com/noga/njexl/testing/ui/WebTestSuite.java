@@ -36,8 +36,12 @@ public class WebTestSuite extends TestSuite {
         @XStreamAsAttribute
         public String url;
 
+        @XStreamAsAttribute
+        public String method;
+
         public WebApplication(){
             url = "" ;
+            method = "" ;
         }
     }
 

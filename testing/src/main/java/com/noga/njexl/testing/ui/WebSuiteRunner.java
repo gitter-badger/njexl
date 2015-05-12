@@ -42,13 +42,17 @@ public class WebSuiteRunner extends TestSuiteRunner {
 
     public XSelenium xSelenium ;
 
-    Script script ;
+    protected Script before;
 
-    TestAssert testAssert;
+    protected Script script ;
 
-    JexlContext jexlContext ;
+    protected Script after;
 
-    HashMap<String,Object> functions;
+    protected TestAssert testAssert;
+
+    protected JexlContext jexlContext ;
+
+    protected HashMap<String,Object> functions;
 
     protected JexlContext getContext(){
         JexlContext context = com.noga.njexl.lang.Main.getContext();
@@ -95,7 +99,9 @@ public class WebSuiteRunner extends TestSuiteRunner {
         if ( !file.exists() ){
             file.mkdirs();
         }
-        xSelenium.screenShotDir(loc);
+        if ( xSelenium != null ) {
+            xSelenium.screenShotDir(loc);
+        }
         return loc;
     }
 
@@ -104,7 +110,22 @@ public class WebSuiteRunner extends TestSuiteRunner {
         jexlContext = null;
         functions.clear();
         functions = null;
+        before = null;
         script = null;
+        after = null;
+    }
+
+    protected void createScripts(JexlEngine engine, TestSuite.BaseFeature feature) throws Exception{
+        if ( !feature.script.isEmpty() ) {
+            String scriptLocation = webTestSuite.webApp.scriptDir + "/" + feature.script;
+            script = engine.importScript(scriptLocation);
+        }if ( !feature.beforeScript.isEmpty() ) {
+            String scriptLocation = webTestSuite.webApp.scriptDir + "/" + feature.beforeScript;
+            script = engine.importScript(scriptLocation);
+        }if ( !feature.afterScript.isEmpty() ) {
+            String scriptLocation = webTestSuite.webApp.scriptDir + "/" + feature.afterScript;
+            script = engine.importScript(scriptLocation);
+        }
     }
 
     @Override
@@ -113,8 +134,7 @@ public class WebSuiteRunner extends TestSuiteRunner {
         functions = getFunctions();
         JexlEngine engine = new JexlEngine();
         engine.setFunctions(functions);
-        String scriptLocation = webTestSuite.webApp.scriptDir + "/" + feature.script ;
-        script = engine.importScript(scriptLocation);
+        createScripts(engine,feature);
     }
 
     @Override
