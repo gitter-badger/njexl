@@ -33,6 +33,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -41,6 +42,7 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -191,6 +193,22 @@ public class TypeUtility {
         return sc.execute(context);
     }
 
+    public static String readStream(InputStream inputStream) throws Exception {
+        StringBuffer buf = new StringBuffer();
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(inputStream));
+        String inputLine;
+        while ((inputLine = in.readLine()) != null) {
+            buf.append(inputLine);
+        }
+        in.close();
+        return buf.toString();
+    }
+
+    public static String readUrl(URL url) throws Exception{
+        return readStream(url.openStream());
+    }
+
     public static String readToEnd(String location) throws Exception {
         // if the fileName is URL?
         String name = location.toLowerCase();
@@ -198,16 +216,7 @@ public class TypeUtility {
                 name.startsWith("https://") ||
                 name.startsWith("ftp://") ){
             URL url = new URL(location);
-            StringBuffer buf = new StringBuffer();
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(url.openStream()));
-
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                buf.append(inputLine);
-            }
-            in.close();
-            return buf.toString();
+            return readUrl(url);
         }
 
         List<String> lines = Files.readAllLines(new File(location).toPath());
@@ -234,7 +243,19 @@ public class TypeUtility {
         if (args.length == 0) {
             return System.console().readLine();
         }
-        return readToEnd(args[0].toString());
+        if ( args[0] instanceof InputStream ){
+            return readStream((InputStream) args[0]);
+        }
+        if ( args[0] instanceof String ) {
+            return readToEnd((String) args[0]);
+        }
+        if ( args[0] instanceof URL ) {
+            return readUrl((URL) args[0]);
+        }
+        if ( args[0] instanceof Path) {
+            return readToEnd( ((Path)args[0]).toFile().getCanonicalPath() ) ;
+        }
+        return null;
     }
 
     public static XList<String> readLines(Object... args) throws Exception {
