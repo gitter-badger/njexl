@@ -22,7 +22,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 import com.noga.njexl.lang.extension.TypeUtility;
-import org.apache.commons.logging.Log;
+import com.noga.njexl.lang.internal.logging.Log;
 
 /**
  * A cache of introspection information for a specific class instance.

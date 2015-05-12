@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright 2015 Nabarun Mondal
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import java.lang.reflect.Field;
 
 import com.noga.njexl.lang.internal.introspection.MethodKey;
 import com.noga.njexl.lang.internal.introspection.IntrospectorBase;
+import com.noga.njexl.lang.internal.logging.Log;
 
-import org.apache.commons.logging.Log;
 
 /**
  *  Default introspection services.

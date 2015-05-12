@@ -16,6 +16,9 @@
 
 package com.noga.njexl.lang;
 
+import com.noga.njexl.lang.internal.logging.Log;
+import com.noga.njexl.lang.internal.logging.LogFactory;
+
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -25,8 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Test cases for the UnifiedEL.

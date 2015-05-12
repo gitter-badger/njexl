@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright 2015 Nabarun Mondal
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 package com.noga.njexl.lang.internal.introspection;
 
+import com.noga.njexl.lang.internal.logging.Log;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.*;
 
-import org.apache.commons.logging.Log;
 
 /**
  * This basic function of this class is to return a Method object for a

@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright 2015 Nabarun Mondal
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package com.noga.njexl.lang.introspection;
 
 import com.noga.njexl.lang.JexlInfo;
-import org.apache.commons.logging.Log;
+import com.noga.njexl.lang.internal.logging.Log;
 
 /**
  * An uberspect that controls usage of properties, methods and contructors through a sandbox.

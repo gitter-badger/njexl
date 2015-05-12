@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright 2015 Nabarun Mondal
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import com.noga.njexl.lang.extension.iterators.StringIterator;
 import com.noga.njexl.lang.internal.AbstractExecutor;
 import com.noga.njexl.lang.internal.EnumerationIterator;
 import com.noga.njexl.lang.internal.introspection.MethodKey;
+import com.noga.njexl.lang.internal.logging.Log;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -38,7 +39,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
 
 /**
  * Implementation of Uberspect to provide the default introspective

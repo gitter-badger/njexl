@@ -35,9 +35,9 @@ import javax.script.SimpleBindings;
 import com.noga.njexl.lang.JexlContext;
 import com.noga.njexl.lang.JexlEngine;
 import com.noga.njexl.lang.Script;
+import com.noga.njexl.lang.internal.logging.Log;
+import com.noga.njexl.lang.internal.logging.LogFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Implements the Jexl ScriptEngine for JSF-223.

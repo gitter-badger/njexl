@@ -16,6 +16,9 @@
 
 package com.noga.njexl.lang;
 
+import com.noga.njexl.lang.internal.logging.Log;
+import com.noga.njexl.lang.internal.logging.LogFactory;
+
 import java.io.File;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
@@ -23,8 +26,6 @@ import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Basic check on automated class creation

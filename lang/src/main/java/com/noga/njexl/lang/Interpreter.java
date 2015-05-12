@@ -20,12 +20,12 @@ import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.oop.ScriptClass;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
+import com.noga.njexl.lang.internal.logging.Log;
 import com.noga.njexl.lang.introspection.*;
 import com.noga.njexl.lang.parser.*;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Executable;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Eventing;
 import com.noga.njexl.lang.introspection.JexlPropertySet;
-import org.apache.commons.logging.Log;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;

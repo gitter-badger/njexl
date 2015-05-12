@@ -31,11 +31,11 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.noga.njexl.lang.internal.logging.Log;
+import com.noga.njexl.lang.internal.logging.LogFactory;
 import com.noga.njexl.lang.introspection.Uberspect;
 import com.noga.njexl.lang.introspection.UberspectImpl;
 import com.noga.njexl.lang.parser.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.noga.njexl.lang.introspection.JexlMethod;
 
