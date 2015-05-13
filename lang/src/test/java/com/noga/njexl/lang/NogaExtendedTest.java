@@ -19,15 +19,13 @@ package com.noga.njexl.lang;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
+import com.noga.njexl.lang.parser.ASTBitwiseXorNode;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Tests for while statement.
@@ -409,10 +407,11 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     private static class XClass {
-        private int i;
+
+        private long i;
 
         private XClass() {
-            i = 420;
+            i = System.nanoTime() ;
         }
 
         private void m(String message){
@@ -431,8 +430,22 @@ public class NogaExtendedTest extends JexlTestCase {
         String s = String.format("x = new('%s') ; x.i = 204 ; x.i", XClass.class.getName());
         Script e = JEXL.createScript(s);
         Object o = e.execute(jc);
-        assertTrue(o.equals(204));
+        assertTrue(o.equals(204l));
     }
+
+    @Test
+    public void testDict() throws Exception {
+        JexlContext jc = new MapContext();
+        jc.set("l", new Object[]{  new XClass(),new XClass() , new XClass() }  );
+        JEXL.setFunctions(Main.getFunction(jc));
+
+        Script e = JEXL.createScript("dict{ _ = { $.i : $ } }(l)");
+        Object o = e.execute(jc);
+        assertTrue(o instanceof Map);
+        assertTrue(((Map)o).size() == 3);
+
+    }
+
 
     @Test
     public void testWithPrivateMethods() throws Exception {

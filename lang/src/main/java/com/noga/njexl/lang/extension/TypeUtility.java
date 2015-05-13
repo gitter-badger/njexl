@@ -811,17 +811,72 @@ public class TypeUtility {
 
     public static HashMap makeDict(Object... args) throws Exception {
         HashMap map = new HashMap();
-
+        // empty dict
+        if ( args.length == 0 ){
+            return map;
+        }
+        // clone the dict
         if (args.length == 1 &&
                 Map.class.isAssignableFrom(args[0].getClass())) {
             map.putAll((Map) args[0]);
             return map;
         }
+        if ( args[0] instanceof AnonymousParam ){
+            // now what we do?
+            AnonymousParam anon = (AnonymousParam)args[0];
+            args = shiftArrayLeft(args,1);
+            if ( args.length == 1 ) {
+                List list = from(args[0]);
+                for ( int i = 0 ; i < list.size();i++ ){
+                    Object o = list.get(i);
+                    anon.setIterationContext(list,o,i);
+                    Object ret = anon.execute();
+                    if ( ret == null ){
+                        map.put(o,null);
+                    }
+                    else if ( ret instanceof Map ){
+                        map.putAll( (Map)ret );
+                    }else if ( ret.getClass().isArray() ){
+                        Object key = Array.get( ret, 0 );
+                        Object value = Array.get( ret, 1 );
+                        map.put(key,value);
+                    }
+                }
+            }else{
+                List keyList = from(args[0]);
+                List valueList = from(args[1]);
+                if ( keyList.size() != valueList.size()){
+                    return map;
+                }
+                int size = keyList.size();
+                for ( int i = 0 ; i < size ;i++ ){
+                    Object k = keyList.get(i);
+                    Object v = valueList.get(i);
+
+                    anon.setIterationContext(new Object[]{ keyList,valueList}
+                            ,new Object[]{k,v},i);
+                    Object ret = anon.execute();
+                    if ( ret == null ){
+                        break;
+                    }
+                    if ( ret instanceof Map ){
+                        map.putAll( (Map)ret );
+                    }else if ( ret.getClass().isArray() ){
+                        Object key = Array.get( ret, 0 );
+                        Object value = Array.get( ret, 1 );
+                        map.put(key,value);
+                    }
+                }
+            }
+            anon.removeIterationContext();
+            return map;
+        }
+
         if (args.length != 2) {
             return map;
         }
-        XList keyList = from(args[0]);
-        XList valueList = from(args[1]);
+        List keyList = from(args[0]);
+        List valueList = from(args[1]);
         if (keyList.size() != valueList.size()) {
             throw new Exception("Key and Value Arrays/Lists are not of same length!");
         }

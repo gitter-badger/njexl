@@ -47,10 +47,13 @@ public class JexlException extends RuntimeException {
         if ( cause != null ) {
             if (cause instanceof JexlException) {
                 myCause = ((JexlException) cause).getFaultyCode();
+                myCause += " <generated> ";
             } else {
                 myCause = cause.toString();
+                if ( myCause.contains(".njexl.")){
+                    myCause = "" ; // ignore
+                }
             }
-            myCause += " <generated> ";
         }
 
         Throwable e = info.debugInfo().error() ;
