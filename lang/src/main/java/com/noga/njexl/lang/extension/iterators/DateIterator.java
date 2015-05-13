@@ -102,6 +102,8 @@ public class DateIterator extends YieldedIterator{
 
     public final String stringRep;
 
+    public final int hashCode;
+
     public DateIterator(DateTime end){
         this(end, new DateTime());
     }
@@ -126,6 +128,21 @@ public class DateIterator extends YieldedIterator{
         seconds = Seconds.secondsBetween(start, end).getSeconds();
         weekDays = weekDays( start.toDate(), end.toDate());
         stringRep = String.format("%s : %s : %s", start.toDate(), end.toDate(), interval);
+        hashCode =  ( 31* (( 31 * end.hashCode() ) + start.hashCode()) + interval.hashCode());
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( !(obj instanceof DateIterator) ) return false ;
+        DateIterator o = (DateIterator)obj;
+        if ( end == o.end && start == o.start && interval == o.interval ) return true ;
+        return false ;
+    }
+
+    @Override
+    public int hashCode() {
+        return hashCode ;
     }
 
     @Override

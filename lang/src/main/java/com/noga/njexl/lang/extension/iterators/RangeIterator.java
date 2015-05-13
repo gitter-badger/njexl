@@ -48,6 +48,24 @@ public  class RangeIterator extends YieldedIterator {
     }
 
     @Override
+    public String toString(){
+        return String.format("[%d:%d:%d]", b,e,s);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( !(obj instanceof RangeIterator) ) return false ;
+        RangeIterator o = (RangeIterator)obj;
+        if ( e == o.e && b == o.b && s == o.s ) return true ;
+        return false ;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) ( 31* (( 31 * e ) + b) + s);
+    }
+
+    @Override
     public void forEachRemaining(Consumer action) {
 
     }
