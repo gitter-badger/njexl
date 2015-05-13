@@ -460,11 +460,9 @@ public class Interpreter implements ParserVisitor {
             namespace = ((NamespaceResolver) context).resolveNamespace(prefix);
         }
         if (namespace == null) {
-            String methodName = "";
-            if (prefix == null) {
-                methodName = node.jjtGetChild(0).image;
-            } else {
-                methodName = node.jjtGetChild(1).image;
+            String methodName = node.jjtGetChild(0).image ;
+            if (prefix != null) {
+                methodName = node.jjtGetChild(0).image.split(":")[1];
             }
             namespace = resolveScriptForFunction(prefix, methodName);
             if (namespace != null) {
@@ -1255,6 +1253,17 @@ public class Interpreter implements ParserVisitor {
     /**
      * {@inheritDoc}
      */
+    public Object visit(ASTNSIdentifier node, Object data) {
+        if (isCancelled()) {
+            throw new JexlException.Cancel(node);
+        }
+        String name = node.image;
+        return name.split(":");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Object visit(ASTVar node, Object data) {
         return visit((ASTIdentifier) node, data);
     }
@@ -1586,12 +1595,13 @@ public class Interpreter implements ParserVisitor {
      * {@inheritDoc}
      */
     public Object visit(ASTFunctionNode node, Object data) {
-        // objectNode 0 is the prefix
-        String prefix = node.jjtGetChild(0).image;
+        // objectNode 0 is the NSIdentifier
+        String[] arr = (String[])node.jjtGetChild(0).jjtAccept(this,data);
+        String prefix = arr[0];
         Object namespace = resolveNamespace(prefix, node);
-        // objectNode 1 is the identifier , the others are parameters.
-        ASTIdentifier functionNode = (ASTIdentifier) node.jjtGetChild(1);
-        return call(node, namespace, functionNode, 2);
+        ASTIdentifier methodNode = new ASTIdentifier(Parser.IDENTIFIER);
+        methodNode.image = arr[1]; // set the name of the function
+        return call(node, namespace, methodNode, 1);
     }
 
     /**
