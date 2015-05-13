@@ -164,12 +164,6 @@ PARSER_END(Parser)
   < #DIGIT: [ "0"-"9"] >
 }
 
-<*> TOKEN : /* NAME SPACED IDENTIFIERS i.e. with ":" in between */
-{
-  < NS_IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* ":" <LETTER> (<LETTER>|<DIGIT>)* >
-}
-
-
 <REGISTERS> TOKEN : /* REGISTERS: parser.ALLOW_REGISTER must be set to true before calling parse */
 {
   < REGISTER: "#" (["0"-"9"])+ >
@@ -472,14 +466,6 @@ void Identifier(boolean top) :
     t=<REGISTER> { jjtThis.image = t.image; jjtThis.setRegister(t.image); }
 }
 
-void NSIdentifier() :
-{
-    Token t;
-}
-{
-    t=<NS_IDENTIFIER> { jjtThis.image = t.image; }
-}
-
 void StringIdentifier() #Identifier : 
 {
     Token t;
@@ -611,7 +597,7 @@ void SizeFunction() : {}
 
 void Function() #FunctionNode: {}
 {
-   NSIdentifier() ( Block() )? <LPAREN>[ ArgDef() ( <COMMA> ArgDef() )* ] <RPAREN>
+   Identifier() <COLON> Identifier() ( Block() )? <LPAREN>[ ArgDef() ( <COMMA> ArgDef() )* ] <RPAREN>
 }
 
 void Method() #MethodNode: {}
@@ -692,9 +678,9 @@ void Reference() : {}
 |
    LOOKAHEAD(Identifier() <LBRACKET> ) ArrayAccess()
 |
-   LOOKAHEAD(NSIdentifier()  <LPAREN>) Function()
+   LOOKAHEAD(Identifier() <COLON> Identifier()  <LPAREN>) Function()
 |
-   LOOKAHEAD(NSIdentifier() Block() <LPAREN>) Function()
+   LOOKAHEAD(Identifier() <COLON> Identifier() Block() <LPAREN>) Function()
 |
    LOOKAHEAD(Identifier() <LPAREN>) Method()
 |

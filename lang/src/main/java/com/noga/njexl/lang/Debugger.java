@@ -521,12 +521,6 @@ public final class Debugger implements ParserVisitor {
     }
 
     /** {@inheritDoc} */
-    public Object visit(ASTNSIdentifier node, Object data) {
-        String image = node.image;
-        return check(node, image, data);
-    }
-
-    /** {@inheritDoc} */
     public Object visit(ASTIfStatement node, Object data) {
         builder.append("if (");
         accept(node.jjtGetChild(0), data);
@@ -574,10 +568,10 @@ public final class Debugger implements ParserVisitor {
     public Object visit(ASTArrayRange node, Object data) {
         builder.append("[");
         accept(node.jjtGetChild(0), data);
-        builder.append(" : ");
+        builder.append(":");
         accept(node.jjtGetChild(1), data);
         if ( node.jjtGetNumChildren() == 3 ){
-            builder.append(" : ");
+            builder.append(":");
             accept(node.jjtGetChild(2), data);
         }
         builder.append("]");
@@ -626,14 +620,16 @@ public final class Debugger implements ParserVisitor {
     public Object visit(ASTFunctionNode node, Object data) {
         int num = node.jjtGetNumChildren();
         accept(node.jjtGetChild(0), data);
+        builder.append(":");
+        accept(node.jjtGetChild(1), data);
 
         JexlNode n ;
-        int start = 1;
-        if ( num > 1 ) {
-            n = node.jjtGetChild(1);
+        int start = 2;
+        if ( num > 2 ) {
+            n = node.jjtGetChild(2);
             if (n instanceof ASTBlock) {
                 accept(n,data);
-                start = 2;
+                start = 3;
             }
         }
 
