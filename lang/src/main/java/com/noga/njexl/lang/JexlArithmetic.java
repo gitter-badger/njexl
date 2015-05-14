@@ -608,12 +608,56 @@ public class JexlArithmetic {
             throw e;
         }
     }
+
+
     public BigDecimal pow(Object left, Object right){
         BigDecimal l = toBigDecimal(left);
         BigDecimal r = toBigDecimal(right);
-        return null;
+        MathContext mc = getMathContext();
+        try{
+            BigInteger power = r.toBigIntegerExact();
+            if ( power.equals( BigInteger.ZERO )){
+                return BigDecimal.ONE ;
+            }
+            if ( power.equals( BigInteger.ONE )){
+                return l ;
+            }
+            BigDecimal result;
+
+            if ( power.compareTo( BigInteger.ZERO ) > 0 ) {
+                result = l ;
+                // +ve power
+                while (power.compareTo(BigInteger.ONE) > 0) {
+                    result = result.multiply(l, mc);
+                    power = power.subtract(BigInteger.ONE);
+                }
+            }else{
+                result = BigDecimal.ONE ;
+                // -ve power
+                while (power.compareTo(BigInteger.ZERO) < 0) {
+                    result = result.divide(l, mc);
+                    power = power.add(BigInteger.ONE);
+                }
+            }
+            return result;
+        }catch (ArithmeticException e){
+            /* now that is what we think is fractional
+            * Do a total hack * */
+            if ( r.compareTo(BigDecimal.ZERO) < 0 ){
+                l = BigDecimal.ONE.divide(l,mc);
+                r = r.negate();
+            }
+            BigDecimal intPart = new BigDecimal(r.toBigInteger());
+            BigDecimal fraction = r.subtract( intPart );
+
+            BigDecimal a = pow(l,intPart);
+            double ext = Math.pow( l.doubleValue(), fraction.doubleValue());
+            BigDecimal result = a.multiply( new BigDecimal(ext));
+            return result ;
+        }
 
     }
+
     /**
      * Power of the left value by the right.
      * @param left first value
@@ -624,20 +668,25 @@ public class JexlArithmetic {
         if (left == null && right == null) {
             return controlNullNullOperands();
         }
-        // if any of these are float use float
-        if (isFloatingPoint(left) || isFloatingPoint(right)) {
-            BigDecimal pow = pow(left,right);
-            return narrowNumber(pow,Double.class);
-        }
-        if ( isNumberable(left) || isNumberable(right)){
-            BigDecimal pow = pow(left, right);
-            return narrowNumber(pow, Long.class);
-        }
-        // if either are bigdecimal use that type
+        // if either are big decimal use that type
         if (left instanceof BigDecimal || right instanceof BigDecimal) {
             BigDecimal pow = pow(left, right);
-            return narrowBigDecimal(left, right, pow);
+            return pow;
         }
+        // if any of these are float use Double
+        if (isFloatingPoint(left) || isFloatingPoint(right)) {
+            BigDecimal pow = pow(left,right);
+            return narrowNumber(pow, Double.class);
+        }
+        if ( isNumberable(left) && isNumberable(right)){
+            BigDecimal pow = pow(left, right);
+            Object o = narrowNumber(pow, Integer.class);
+            if ( o instanceof  BigDecimal ){
+                return narrowNumber(pow,Long.class);
+            }
+            return o;
+        }
+
         if ( left instanceof String ){
             if ( right instanceof Integer ) {
                 int r = (int) right;
@@ -1442,7 +1491,13 @@ public class JexlArithmetic {
                     && value >= Float.MIN_VALUE) {
                 result = Float.valueOf(result.floatValue());
             }
-            // else it fits in a double only
+            /* else it fits in a double only
+               Just check if it was a BigDecimal
+               Then return the double value, we narrowed it
+             */
+            if ( original instanceof BigDecimal){
+                return value;
+            }
         } else {
             if (original instanceof BigInteger) {
                 BigInteger bigi = (BigInteger) original;

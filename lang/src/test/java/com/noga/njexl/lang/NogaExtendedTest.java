@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright 2015 Nabarun Mondal
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -136,6 +136,11 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.evaluate(jc);
         assertTrue(o instanceof BigDecimal );
 
+
+        e = JEXL.createExpression("-3.12b ");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof BigDecimal );
+
     }
 
     @Test
@@ -197,15 +202,53 @@ public class NogaExtendedTest extends JexlTestCase {
         Script e = JEXL.createScript("x=0.1 ; x**2 ");
         JexlContext jc = new MapContext();
         Object o = e.execute(jc);
-        assertEquals(0.1*0.1, o);
-
-        e = JEXL.createScript("x=10 ; x**2 ");
+        assertEquals(0.01, o);
+        // classic eqvp  cases
+        e = JEXL.createScript("x=0.1 ; x**1 ");
         o = e.execute(jc);
-        assertEquals(100, o);
+        assertEquals(0.1, o);
 
-        e = JEXL.createScript("x=1000000 ; x**2 ");
+        e = JEXL.createScript("x=0.1 ; x**0 ");
         o = e.execute(jc);
-        assertEquals(1000000l*1000000l, o);
+        assertEquals(1.0, o);
+
+        e = JEXL.createScript("x=10 ; x**-1 ");
+        o = e.execute(jc);
+        assertEquals(0.1, o);
+
+        e = JEXL.createScript("x=10 ; x**-2 ");
+        o = e.execute(jc);
+        assertEquals(0.01, o);
+
+        e = JEXL.createScript("x=10 ; x**1 ");
+        o = e.execute(jc);
+        assertEquals(10, o);
+
+        e = JEXL.createScript("x=10 ; x**0 ");
+        o = e.execute(jc);
+        assertEquals(1, o);
+
+        e = JEXL.createScript("x=10 ; x**3 ");
+        o = e.execute(jc);
+        assertEquals(1000, o);
+
+
+        e = JEXL.createScript("x=0.1 ; x**0.1 ");
+        o = e.execute(jc);
+        assertTrue(o instanceof Double);
+
+        e = JEXL.createScript("x=0.1 ; x**0.1b ");
+        o = e.execute(jc);
+        assertTrue(o instanceof BigDecimal);
+
+
+        e = JEXL.createScript("x=0.00000010102 ; x**-3.12 ");
+        o = e.execute(jc);
+        assertTrue(o instanceof Double);
+
+        e = JEXL.createScript("x=0.00000010102 ; x**-3.12b ");
+        o = e.execute(jc);
+        assertTrue(o instanceof BigDecimal);
 
     }
 

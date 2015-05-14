@@ -2031,7 +2031,7 @@ public class Interpreter implements ParserVisitor {
         try {
             Object number = arithmetic.negate(val);
             // attempt to recoerce to literal class
-            if (valNode instanceof ASTNumberLiteral && number instanceof Number) {
+            if (valNode instanceof ASTNumberLiteral && arithmetic.isNumberable(number)) {
                 number = arithmetic.narrowNumber((Number) number, ((ASTNumberLiteral) valNode).getLiteralClass());
             }
             return number;
