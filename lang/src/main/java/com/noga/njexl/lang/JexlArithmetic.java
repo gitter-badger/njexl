@@ -32,6 +32,8 @@ import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Arithmetic;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Logic;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.nevec.rjm.BigDecimalMath;
+import org.nevec.rjm.BigIntegerMath;
 
 
 /**
@@ -621,22 +623,23 @@ public class JexlArithmetic {
         }
 
         // if any of these are float use float
-        if (isFloatingPoint(left) || isFloatingPoint(right)) {
+        if (isFloatingPoint(left) && isFloatingPoint(right)) {
             double l = toDouble(left);
             double r = toDouble(right);
             return Math.pow(l , r);
         }
-        if ( isNumberable(left) && isNumberable(right)){
-            long l = toLong(left);
-            long r = toLong(right);
-            Double d = Math.pow(l,r);
-            return narrowNumber(d.longValue(), Integer.class) ;
+        if ( isNumberable(left) || isNumberable(right)){
+            BigDecimal l = toBigDecimal(left);
+            BigDecimal r = toBigDecimal(right);
+            BigDecimal pow = BigDecimalMath.pow(l,r);
+            BigInteger result = pow.toBigInteger();
+            return narrowNumber(result,Long.class);
         }
         // if either are bigdecimal use that type
         if (left instanceof BigDecimal || right instanceof BigDecimal) {
             BigDecimal l = toBigDecimal(left);
             BigDecimal r = toBigDecimal(right);
-            BigDecimal result = l.pow(r.intValue(), getMathContext());
+            BigDecimal result = BigDecimalMath.pow(l,r);
             return narrowBigDecimal(left, right, result);
         }
         if ( left instanceof String ){
