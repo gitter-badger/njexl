@@ -1963,7 +1963,8 @@ public class Interpreter implements ParserVisitor {
             Object c = curry.execute(context);
             return c;
         } catch (Exception e) {
-            return toBeCurried;
+            // return whatever got substituted as of now...
+            return ret;
         }
     }
 

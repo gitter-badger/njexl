@@ -105,6 +105,11 @@ public class ExtendedScriptTest extends JexlTestCase {
         Expression e = JEXL.createExpression("`2 #{op} 3`");
         Object o = e.evaluate(jc);
         assertTrue(o.equals(5));
+        // now the string substitution test
+        e = JEXL.createExpression("`a #{op} b`");
+        o = e.evaluate(jc);
+        assertTrue(o.equals("a + b"));
+
     }
 
 
