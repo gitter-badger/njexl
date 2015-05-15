@@ -1954,7 +1954,8 @@ public class Interpreter implements ParserVisitor {
                 ret = m.replaceFirst(val);
                 m = CURRY_PATTERN.matcher(ret);
             } catch (Exception e) {
-                return toBeCurried;
+                // return whatever we could...
+                return ret;
             }
         }
         // now, in here, finally execute all ....

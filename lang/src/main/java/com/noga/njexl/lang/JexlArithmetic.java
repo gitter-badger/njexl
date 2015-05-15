@@ -668,77 +668,60 @@ public class JexlArithmetic {
         if (left == null && right == null) {
             return controlNullNullOperands();
         }
-        try {
+        // if either are big decimal use that type
+        if (left instanceof BigDecimal || right instanceof BigDecimal) {
             BigDecimal pow = pow(left, right);
+            return pow;
+        }
+        // if any of these are float use Double
+        if (isFloatingPoint(left) || isFloatingPoint(right)) {
+            BigDecimal pow = pow(left,right);
+            return narrowNumber(pow, Double.class);
+        }
+        if ( isNumberable(left) && isNumberable(right)){
+            BigDecimal pow = pow(left, right);
+            Object o = narrowNumber(pow, Integer.class);
+            if ( o instanceof  BigDecimal ){
+                return narrowNumber(pow,Long.class);
+            }
+            return o;
+        }
 
-            // if either are big decimal use that type
-            if (left instanceof BigDecimal || right instanceof BigDecimal) {
-                return pow;
-            }
-            // for big integer types
-            if (right instanceof BigInteger) {
-                if (left instanceof BigInteger) {
-                    return pow.toBigInteger();
-                }
-                if (isNumberable(left)) {
-                    return pow.toBigInteger();
-                }
-                return pow;
-            }
-            // take care of left BigInteger
-            if (left instanceof BigInteger) {
-                if (isNumberable(right)) {
-                    return pow.toBigInteger();
-                }
-                return pow;
-            }
-            // if any of these are float use Double
-            if (isFloatingPoint(left) || isFloatingPoint(right)) {
-                return narrowNumber(pow, Double.class);
-            }
-            if (isNumberable(left) && isNumberable(right)) {
-                Object o = narrowNumber(pow, Integer.class);
-                if (o instanceof BigDecimal) {
-                    return narrowNumber(pow, Long.class);
-                }
-                return o;
-            }
-        }catch (Exception e) {
-            if (left instanceof String) {
-                if (right instanceof Integer) {
-                    int r = (int) right;
-                    if (r >= 0) {
-                        StringBuffer buf = new StringBuffer();
-                        if (r > 0) {
-                            buf.append(left);
-                        }
-                        for (int i = 1; i < r; i++) {
-                            buf.append(left);
-                        }
-                        return buf.toString();
-                    } else {
-                        StringBuilder sb = new StringBuilder(left.toString());
-                        sb.reverse();
-                        r = -r;
-                        StringBuffer buf = new StringBuffer(sb);
-                        for (int i = 1; i < r; i++) {
-                            buf.append(sb);
-                        }
-                        return buf.toString();
+        if ( left instanceof String ){
+            if ( right instanceof Integer ) {
+                int r = (int) right;
+                if ( r >= 0 ) {
+                    StringBuffer buf = new StringBuffer();
+                    if ( r> 0 ){
+                        buf.append(left);
                     }
+                    for (int i = 1; i < r; i++) {
+                        buf.append(left);
+                    }
+                    return buf.toString();
+                }
+                else{
+                    StringBuilder sb = new StringBuilder(left.toString());
+                    sb.reverse();
+                    r = -r;
+                    StringBuffer buf = new StringBuffer(sb);
+                    for (int i = 1; i < r; i++) {
+                        buf.append(sb);
+                    }
+                    return buf.toString();
                 }
             }
-            if (isListOrArray(left) && right instanceof Integer) {
-                int n = (int) right;
-                List l = TypeUtility.from(left);
-                while (--n > 0) {
-                    l = SetOperations.join(l, left);
-                }
-                return l;
+        }
+        if ( isListOrArray(left) && right instanceof Integer ){
+            int n = (int)right;
+            List l = TypeUtility.from(left);
+            while ( --n > 0 ){
+                l = SetOperations.join(l,left);
             }
-            if (left instanceof Arithmetic) {
-                return ((Arithmetic) left).exp(right);
-            }
+            return l;
+        }
+        if ( left instanceof Arithmetic ){
+            return ((Arithmetic) left).exp(right);
         }
         throw new ArithmeticException("Power can not be computed!");
     }
