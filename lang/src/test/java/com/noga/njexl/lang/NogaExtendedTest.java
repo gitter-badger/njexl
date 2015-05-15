@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 /**
@@ -249,6 +250,27 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript("x=0.00000010102 ; x**-3.12b ");
         o = e.execute(jc);
         assertTrue(o instanceof BigDecimal);
+
+        e = JEXL.createScript("10h**3");
+        o = e.execute(jc);
+        assertTrue(o instanceof BigInteger);
+
+        e = JEXL.createScript("10h**3h");
+        o = e.execute(jc);
+        assertTrue(o instanceof BigInteger);
+
+        e = JEXL.createScript("10**3h");
+        o = e.execute(jc);
+        assertTrue(o instanceof BigInteger);
+
+        e = JEXL.createScript("10h**3.0");
+        o = e.execute(jc);
+        assertTrue(o instanceof BigDecimal);
+
+        e = JEXL.createScript("10h**3.0b");
+        o = e.execute(jc);
+        assertTrue(o instanceof BigDecimal);
+
 
     }
 
