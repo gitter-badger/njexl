@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 /**
@@ -250,6 +251,27 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.execute(jc);
         assertTrue(o instanceof BigDecimal);
 
+        e = JEXL.createScript("10h**3");
+        o = e.execute(jc);
+        assertTrue(o instanceof BigInteger);
+
+        e = JEXL.createScript("10h**3h");
+        o = e.execute(jc);
+        assertTrue(o instanceof BigInteger);
+
+        e = JEXL.createScript("10**3h");
+        o = e.execute(jc);
+        assertTrue(o instanceof BigInteger);
+
+        e = JEXL.createScript("10h**3.0");
+        o = e.execute(jc);
+        assertTrue(o instanceof BigDecimal);
+
+        e = JEXL.createScript("10h**3.0b");
+        o = e.execute(jc);
+        assertTrue(o instanceof BigDecimal);
+
+        
     }
 
     @Test
@@ -480,13 +502,10 @@ public class NogaExtendedTest extends JexlTestCase {
     public void testDict() throws Exception {
         JexlContext jc = new MapContext();
         jc.set("l", new Object[]{  new XClass(),new XClass() , new XClass() }  );
-        JEXL.setFunctions(Main.getFunction(jc));
-
         Script e = JEXL.createScript("dict{ _ = { $.i : $ } }(l)");
         Object o = e.execute(jc);
         assertTrue(o instanceof Map);
         assertTrue(((Map)o).size() == 3);
-
     }
 
 
