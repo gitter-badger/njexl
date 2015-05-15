@@ -679,12 +679,18 @@ public class JexlArithmetic {
             return narrowNumber(pow, Double.class);
         }
         if ( isNumberable(left) && isNumberable(right)){
-            BigDecimal pow = pow(left, right);
-            Object o = narrowNumber(pow, Integer.class);
-            if ( o instanceof  BigDecimal ){
-                return narrowNumber(pow,Long.class);
+            BigDecimal res = pow(left, right);
+            try {
+                BigInteger pow = res.toBigIntegerExact();
+                Object o = narrowNumber(pow, Integer.class);
+                if (o instanceof BigDecimal) {
+                    return narrowNumber(pow, Long.class);
+                }
+                return o;
+            }catch (Exception e){
+
             }
-            return o;
+            return narrowNumber(res, Double.class);
         }
 
         if ( left instanceof String ){
