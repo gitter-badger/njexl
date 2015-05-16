@@ -316,7 +316,17 @@ public class NogaExtendedTest extends JexlTestCase {
         JEXL.setFunctions(new HashMap<>());
         JexlContext jc = new MapContext();
         e.execute(jc);
+    }
 
+    @Test
+    public void testNULLInSize() throws Exception{
+        Script e = JEXL.createScript("size(null) == -1");
+        JexlContext jc = new MapContext();
+        Object o = e.execute(jc);
+        assertTrue((Boolean)o);
+        e = JEXL.createScript("#|null| == 0");
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
     }
 
     @Test

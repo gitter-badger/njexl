@@ -1915,7 +1915,7 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTSizeFunction node, Object data) {
         Object val = node.jjtGetChild(0).jjtAccept(this, data);
         if (val == null) {
-            throw new JexlException(node, "size() : argument is null", null);
+            return -1; // should be fine?
         }
         return Integer.valueOf(sizeOf(node, val));
     }
@@ -2008,6 +2008,7 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTUnarySizeNode node, Object data) {
         JexlNode valNode = node.jjtGetChild(0);
         Object val = valNode.jjtAccept(this, data);
+        if ( val == null ) return 0 ; // null gets a modulus of 0
         try {
             try {
                 return sizeOf(node, val);
