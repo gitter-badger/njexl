@@ -199,6 +199,20 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testShuffle() throws Exception{
+        Script e = JEXL.createScript("x=[1,2,3,4,5] ; shuffle(x) ");
+        JexlContext jc = new MapContext();
+        e.execute(jc);
+        Object o = jc.get("x");
+        assertTrue(o != null);
+
+        e = JEXL.createScript("x=list(1,2,3,4,5) ; shuffle(x) ");
+        e.execute(jc);
+        o = jc.get("x");
+        assertTrue(o != null);
+    }
+
+    @Test
     public void testPowerStatement() throws Exception {
         Script e = JEXL.createScript("x=0.1 ; x**2 ");
         JexlContext jc = new MapContext();

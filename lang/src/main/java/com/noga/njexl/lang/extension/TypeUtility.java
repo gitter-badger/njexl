@@ -44,6 +44,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -121,6 +122,9 @@ public class TypeUtility {
     public static final String SORT_ASCENDING = "sorta";
     public static final String SORT_DESCENDING = "sortd";
 
+    public static final String RANDOM = "random";
+    public static final String SHUFFLE = "shuffle";
+
     public static final String TRY = "try";
 
     public static final String SYSTEM = "system";
@@ -151,6 +155,65 @@ public class TypeUtility {
     public static final Class<?>[] ARRAY_PRIMITIVE_TYPES = {
             int[].class, float[].class, double[].class, boolean[].class,
             byte[].class, short[].class, long[].class, char[].class};
+
+
+    /**
+     * http://en.wikipedia.org/wiki/Fisher–Yates_shuffle#The_modern_algorithm
+     * @param args the argument
+     * @return true if did shuffle, false if could not
+     */
+    public static boolean shuffle(Object... args){
+
+        if ( args.length == 0 ) return false;
+        if ( args[0] == null ) return false;
+
+        SecureRandom random = new SecureRandom();
+
+        if ( args[0] instanceof List ){
+            List l = (List)args[0];
+            int size = l.size();
+            for ( int i = size-1; i>=0;i--){
+                int j = random.nextInt(i+1);
+                Object tmp = l.get(j);
+                l.set(j, l.get(i));
+                l.set(i,tmp);
+            }
+        }
+        if ( args[0].getClass().isArray() ){
+            //different treatment
+            int size = Array.getLength(args[0]);
+            for ( int i = size-1; i>=0;i--){
+                int j = random.nextInt(i+1);
+                Object tmp = Array.get(args[0], j);
+                Array.set( args[0], j, Array.get(args[0],i));
+                Array.set( args[0], i,tmp);
+            }
+        }
+        return true;
+    }
+
+    public static Object random(Object...args){
+        SecureRandom random = new SecureRandom();
+        if ( args.length == 0 ) return random ;
+        if ( args[0] == null ) return random ;
+
+        if ( args[0] instanceof List){
+            List l = (List)args[0];
+            int index = random.nextInt(  l.size() );
+            return l.get(index);
+        }
+        if ( args[0].getClass().isArray()){
+            int size = Array.getLength(args[0]);
+            int index = random.nextInt( size );
+            return Array.get( args[0], index);
+        }
+        if ( args[0].getClass().isEnum()){
+            Object[] values = args[0].getClass().getEnumConstants();
+            int index = random.nextInt( values.length );
+            return values[index];
+        }
+        return null;
+    }
 
     public static Object type(Object...args){
         if ( args.length == 0 ){
@@ -1134,6 +1197,10 @@ public class TypeUtility {
                 return guardedBlock(argv);
             case SYSTEM:
                 return system(argv);
+            case SHUFFLE:
+                return shuffle(argv);
+            case RANDOM:
+                return random(argv);
             default:
                 if (success != null) {
                     success[0] = false;
