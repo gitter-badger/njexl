@@ -845,19 +845,21 @@ public class IssuesTest extends JexlTestCase {
 
     }
 
-    // Test to check if within works, also should print proper.
-    public void testWithin() throws Exception {
+    // Test to check if minmax works, also should print proper.
+    public void testMinMax() throws Exception {
         JexlEngine jexl = new JexlEngine();
         JexlContext jc = new MapContext();
-        jc.set("all", new int[]{ 1,   3 , 4 , 5 } );
-        jc.set("me", new Double(4.5) );
 
-        Script s = jexl.createScript("within( me , all ); ");
-        Object ret = s.execute(jc);
-        assertEquals(Boolean.TRUE , ret );
+        Script s = jexl.createScript("minmax( 1 , 2, 3, 4 , 10 ); ");
+        Object[] ret = (Object[])s.execute(jc);
+        assertTrue(ret[0].equals(1) );
+        assertTrue(ret[1].equals(10) );
 
+        s = jexl.createScript("minmax{ int($[0]) < int($[1])  }( '1' , 2, 3, 4, '10' ); ");
+        ret = (Object[])s.execute(jc);
+        assertTrue(ret[0].equals("1") );
+        assertTrue(ret[1].equals("10") );
     }
-
 
     public void testBadSQL() {
 

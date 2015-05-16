@@ -117,7 +117,7 @@ public class TypeUtility {
 
     public static final String DICTIONARY = "dict";
     public static final String RANGE = "range";
-    public static final String WITHIN = "within";
+    public static final String MINMAX = "minmax";
     public static final String SQLMATH = "sqlmath";
     public static final String SORT_ASCENDING = "sorta";
     public static final String SORT_DESCENDING = "sortd";
@@ -842,34 +842,52 @@ public class TypeUtility {
         return set;
     }
 
-    public static Boolean within(Object... args) throws Exception {
-        List list = combine(args);
-
-        if (list.size() < 3) {
-            throw new Exception("At least 3 args are needed for within ");
-        }
-        XNumber item = new XNumber(list.get(0));
-        XNumber minItem = new XNumber(list.get(1));
-        XNumber maxItem = minItem;
-        for (int i = 2; i < list.size(); i++) {
-            XNumber listItem = new XNumber(list.get(i));
-            if (listItem.compareTo(minItem) < 0) {
-                minItem = listItem;
-                continue;
+    public static Object[] minmax(Object... args) throws Exception {
+        if ( args.length == 0 ) return null ;
+        if ( args[0] instanceof AnonymousParam ){
+            AnonymousParam  anon = (AnonymousParam)args[0];
+            args = shiftArrayLeft(args,1);
+            List l = combine(args);
+            if ( l.size() == 0 ) return  null;
+            Object min = l.get(0);
+            Object max = min;
+            for ( int i = 1 ; i < l.size() ;i++ ){
+                Object item = l.get(i);
+                Object o = new Object[]{ item , min };
+                anon.setIterationContext(l, o ,i);
+                Object ret = anon.execute();
+                boolean lt = castBoolean(ret,false);
+                if ( lt ){
+                    // change min
+                    min = item ;
+                }
+                o = new Object[]{ max , item };
+                anon.setIterationContext(l, o ,i);
+                ret = anon.execute();
+                lt = castBoolean(ret,false);
+                if ( lt ){
+                    // change max
+                    max = item ;
+                }
             }
-            if (listItem.compareTo(maxItem) > 0) {
-                maxItem = listItem;
+            Object[] container = new Object[]{ min, max };
+            return container ;
+        }
+        List l = combine(args);
+        if ( l.size() == 0 ) return  null;
+        Object min = l.get(0);
+        Object max = min;
+        for ( int i = 1 ; i < l.size() ;i++ ){
+            Comparable item = (Comparable)l.get(i);
+            if ( item.compareTo(min) < 0 ){
+                min = item ;
+            }
+            if ( item.compareTo(max) > 0 ){
+                max = item ;
             }
         }
-        try {
-            boolean result = item.compareTo(minItem) >= 0 && item.compareTo(maxItem) <= 0;
-            return result;
-        } catch (Exception e) {
-            System.err.printf("The item you passed is not comparable with the items in the list. Check types!\n");
-            System.err.printf("Item Type : %s\n", item.getClass().getName());
-            System.err.printf("List of Type : %s\n", minItem.getClass().getName());
-        }
-        return false;
+        Object[] container = new Object[]{ min, max };
+        return container ;
     }
 
     public static HashMap makeDict(Object... args) throws Exception {
@@ -1165,8 +1183,8 @@ public class TypeUtility {
                 return range(argv);
             case ARRAY_FROM_LIST:
                 return getArray(makeLiteralList(argv));
-            case WITHIN:
-                return within(argv);
+            case MINMAX:
+                return minmax(argv);
             case SQLMATH:
                 return sqlmath(argv);
             case READ:
@@ -1240,81 +1258,4 @@ public class TypeUtility {
         return 0;
     }
 
-    public static class XNumber extends Number implements Comparable {
-
-        Number number;
-
-        public XNumber() {
-            super();
-            number = 0;
-        }
-
-        public XNumber(Object number) {
-            super();
-            if (number instanceof Number) {
-                this.number = (Number) number;
-            } else if (number instanceof Date) {
-                this.number = ((Date) number).getTime();
-            } else if (number instanceof DateTime) {
-                this.number = ((DateTime) number).toDate().getTime();
-            } else if (number instanceof Boolean) {
-                this.number = (Boolean) number ? 1 : 0;
-            } else if ( number instanceof BigInteger ){
-                this.number = (BigInteger)number;
-            } else if ( number instanceof BigDecimal ){
-                this.number = (BigDecimal)number;
-            } else if ( number instanceof String ){
-                this.number = new BigDecimal(number.toString());
-            }
-            this.number = 0;
-        }
-
-        @Override
-        public int intValue() {
-            return number.intValue();
-        }
-
-        @Override
-        public long longValue() {
-            return number.longValue();
-        }
-
-        @Override
-        public float floatValue() {
-            return number.floatValue();
-        }
-
-        @Override
-        public double doubleValue() {
-            return number.doubleValue();
-        }
-
-        @Override
-        public byte byteValue() {
-            return number.byteValue();
-        }
-
-        @Override
-        public short shortValue() {
-            return number.shortValue();
-        }
-
-        @Override
-        public int compareTo(Object o) {
-
-            try {
-                double that = new XNumber(o).doubleValue();
-                double thisValue = doubleValue();
-                if (that > thisValue) {
-                    return -1;
-                } else if (that < thisValue) {
-                    return 1;
-                }
-                return 0;
-
-            } catch (Exception e) {
-            }
-            return 0;
-        }
-    }
 }
