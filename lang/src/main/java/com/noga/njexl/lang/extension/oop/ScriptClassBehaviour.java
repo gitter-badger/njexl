@@ -16,6 +16,8 @@
 
 package com.noga.njexl.lang.extension.oop;
 
+import com.noga.njexl.lang.Main;
+
 import java.util.regex.Pattern;
 
 /**
@@ -81,19 +83,15 @@ public final class ScriptClassBehaviour {
 
         /**
          * Before event call
-         * @param pattern what pattern was passed
-         * @param method name of the method what was called
-         * @param args the arguments passed to the methods
+         * @param event what event occurred
          */
-        void before(String pattern, String method ,Object[] args) ;
+        void before(Event event) ;
 
         /**
          * After event call
-         * @param pattern what pattern was passed
-         * @param method name of the method what was called
-         * @param args the arguments passed to the methods
+         * @param event what event occurred
          */
-        void after(String pattern, String method, Object[] args) ;
+        void after(Event event) ;
 
         /**
          * an implementation of the eventing
@@ -105,14 +103,58 @@ public final class ScriptClassBehaviour {
             long t;
 
             @Override
-            public void after(String pattern, String method, Object[] args) {
+            public void after(Event event) {
                 long ts = System.currentTimeMillis() - t ;
-                System.out.printf("<<%s%s:%d>>\n", pattern, method, ts);
+                System.out.printf("<<%s%s:%d>>\n", event.pattern, event.method, ts);
             }
 
             @Override
-            public void before(String pattern, String method, Object[] args) {
+            public void before(Event event) {
                  t = System.currentTimeMillis();
+            }
+        }
+
+        /**
+         * Event container
+         */
+        final class Event{
+
+            /**
+             * the pattern
+             */
+            public final String pattern;
+
+            /**
+             * the method
+             */
+            public final String method;
+
+            /**
+             * the arguments to the method
+             */
+            public final Object[] args;
+
+            /**
+             * cached copy of the description
+             */
+            public final String description;
+
+            /**
+             * Creates an event object
+             * @param p what pattern was used
+             * @param m what method was called
+             * @param a what argument was passed
+             */
+            public Event(String p, String m, Object[] a){
+                pattern = p;
+                method = m;
+                args = a;
+                description = String.format( "%s | %s | %s" , p,m, Main.strArr(a));
+            }
+
+            @Override
+            public String toString(){
+                return description;
             }
         }
     }

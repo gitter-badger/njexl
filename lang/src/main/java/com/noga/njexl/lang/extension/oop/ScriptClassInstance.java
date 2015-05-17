@@ -307,24 +307,27 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
         return execMethod(Logic.XOR, new Object[]{o});
     }
 
+
     @Override
-    public void before(String pattern, String method, Object[] args) {
+    public void before(Event event) {
         try{
-            execMethod(BEFORE, args);
+            Object[] params = new Object[]{ event  } ;
+            execMethod(BEFORE, params );
         }catch (Throwable t){
             if ( t.getCause() instanceof NoSuchMethodException ) {
-                Timer.TIMER.before(pattern, method, args);
+                Timer.TIMER.before(event);
             }
         }
     }
 
     @Override
-    public void after(String pattern, String method, Object[] args) {
+    public void after(Event event) {
         try{
-            execMethod(AFTER, args);
+            Object[] params = new Object[]{ event } ;
+            execMethod(AFTER, params );
         }catch (Throwable t){
             if ( t.getCause() instanceof NoSuchMethodException ) {
-                Timer.TIMER.after(pattern, method, args);
+                Timer.TIMER.after(event);
             }
         }
     }

@@ -1450,15 +1450,17 @@ public class Interpreter implements ParserVisitor {
             }
         }
         JexlException xjexl = null;
-        if (isEventing) {
-            eventing = getEventing(bean);
-            eventing.before(eventingPattern, methodName, argv);
-        }
         // save eventing states, when we do not have a stack
         boolean wasEventing = isEventing ;
-        Eventing curEventing = eventing ;
-        String curEventingPattern = eventingPattern ;
+        Eventing curEventing = null ;
+        Eventing.Event event = null ;
 
+        if (isEventing) {
+            eventing = getEventing(bean);
+            curEventing = eventing ; // set it here
+            event = new Eventing.Event( eventingPattern , methodName, argv);
+            eventing.before(event);
+        }
         try {
             // attempt to reuse last executor cached in volatile JexlNode.value
             if (cache) {
@@ -1535,9 +1537,8 @@ public class Interpreter implements ParserVisitor {
             xjexl = new JexlException(node, "method '" + methodName +"' in error", e);
         } finally {
             if (wasEventing) {
-                curEventing.after(curEventingPattern, methodName, argv);
+                curEventing.after(event);
             }
-
         }
         return invocationFailed(xjexl);
     }
