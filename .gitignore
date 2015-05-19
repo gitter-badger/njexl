@@ -19,6 +19,9 @@
 *.rar
 *.tar
 *.zip
+# Maven Generated 
+#
+target/
 
 # Logs and databases #
 ######################
