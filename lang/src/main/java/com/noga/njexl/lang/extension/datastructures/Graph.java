@@ -77,6 +77,10 @@ public class Graph {
             }
             script = text ;
             id = id(name);
+            // remove specific properties :
+            properties.remove( SCRIPT );
+            properties.remove( NODES );
+
         }
 
         public Object execute(JexlContext context){
