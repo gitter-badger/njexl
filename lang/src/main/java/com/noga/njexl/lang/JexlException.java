@@ -47,7 +47,6 @@ public class JexlException extends RuntimeException {
         if ( cause != null ) {
             if (cause instanceof JexlException) {
                 myCause = ((JexlException) cause).getFaultyCode();
-                myCause += " <generated> ";
             } else {
                 myCause = cause.toString();
                 if ( myCause.contains(".njexl.")){
@@ -56,12 +55,16 @@ public class JexlException extends RuntimeException {
             }
         }
 
+        if ( !myCause.isEmpty() ){
+            myCause = "\nCaused By : " + myCause ;
+        }
+
         Throwable e = info.debugInfo().error() ;
         if ( e == null && mark!= null ) {
-            return myCause + detailedMessage() + " : " + mark.locationInfo();
+            return detailedMessage() + " : " + mark.locationInfo() + myCause ;
         }
         if ( e != null ){
-            return myCause + e.getMessage() ;
+            return e.getMessage() + myCause ;
         }
         return info.debugInfo().toString();
     }

@@ -16,6 +16,7 @@
 
 package com.noga.njexl.lang;
 
+import com.noga.njexl.lang.extension.datastructures.Graph;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
@@ -327,6 +328,13 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript("#|null| == 0");
         o = e.execute(jc);
         assertTrue((Boolean)o);
+    }
+
+    @Test
+    public void testGraph() throws Exception{
+        Graph g = new Graph( "samples/graph.json");
+        assertNotNull(g);
+        assertFalse(g.nodes.isEmpty());
     }
 
     @Test

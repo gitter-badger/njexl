@@ -31,10 +31,7 @@ import org.joda.time.Duration;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -1252,10 +1249,20 @@ public class TypeUtility {
 
         if ( args.length ==  1 ){
             Process p = Runtime.getRuntime().exec(args[0].toString());
+            p.waitFor();
+
+            // terrible nomenclature in Java
+            BufferedReader or = new BufferedReader( new InputStreamReader(p.getInputStream()));
+            BufferedReader er = new BufferedReader( new InputStreamReader(p.getErrorStream()));
+            String line ;
+            while( (line = or.readLine())!= null ){
+                System.out.println(line);
+            }
+            while( (line = er.readLine())!= null ){
+                System.err.println(line);
+            }
             return p.exitValue();
         }
-
         return 0;
     }
-
 }
