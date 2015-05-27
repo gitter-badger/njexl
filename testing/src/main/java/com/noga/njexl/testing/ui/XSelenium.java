@@ -17,6 +17,7 @@
 package com.noga.njexl.testing.ui;
 
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
+import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour;
 import com.noga.njexl.testing.TestAssert;
 import com.noga.njexl.testing.Utils;
 import com.noga.njexl.testing.dataprovider.DataSource;
@@ -140,33 +141,17 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     public static final String DISAPPEAR = "$$" ;
 
-    /**
-     * After event call
-     *
-     * @param pattern
-     * @param method
-     * @param args
-     * @throws Exception
-     */
     @Override
-    public void after(String pattern, String method, Object[] args) {
-        if ( DISAPPEAR.equals(pattern) && args.length > 1 ){
-            waitForDisappear( args[0].toString() );
+    public void after(Event event) {
+        if ( DISAPPEAR.equals(event.pattern) && event.args.length > 1 ){
+            waitForDisappear( event.args[0].toString() );
         }
     }
 
-    /**
-     * Before event call
-     *
-     * @param pattern
-     * @param method
-     * @param args
-     * @throws Exception
-     */
     @Override
-    public void before(String pattern, String method, Object[] args) {
-        if ( APPEAR.equals(pattern) && args.length > 1 ){
-            waitForAppear(args[0].toString());
+    public void before(Event event) {
+        if ( APPEAR.equals(event.pattern) && event.args.length > 1 ){
+            waitForAppear(event.args[0].toString());
         }
     }
 

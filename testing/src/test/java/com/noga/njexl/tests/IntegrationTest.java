@@ -17,15 +17,17 @@
 package com.noga.njexl.tests;
 
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
+import com.noga.njexl.testing.api.Annotations;
 import com.noga.njexl.testing.dataprovider.ProviderFactory;
 import com.noga.njexl.testing.dataprovider.excel.ExcelDataSource;
 import com.noga.njexl.testing.dataprovider.uri.URIDataSource;
 import com.noga.njexl.testing.ocr.OCR;
 import com.noga.njexl.testing.ui.WebTestSuite;
-import com.noga.njexl.testing.ui.XRobot;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.lang.reflect.Method;
 
 public class IntegrationTest {
 
@@ -84,5 +86,18 @@ public class IntegrationTest {
         // now just call data matrix
         DataMatrix matrix = DataMatrix.loc2matrix(URL,"0");
         Assert.assertNotNull(matrix);
+    }
+
+    @Test
+    public void annotationTest() throws Exception {
+        Class c = NApiAnnotationSample.class ;
+        Assert.assertNotNull(Annotations.NApiService(c));
+        Method[] methods = c.getDeclaredMethods();
+        for ( Method m : methods ){
+            Annotations.NApi nApi = Annotations.NApi(m);
+            if ( nApi != null ){
+                System.out.println("Found a nApi : " + m.getName() );
+            }
+        }
     }
 }
