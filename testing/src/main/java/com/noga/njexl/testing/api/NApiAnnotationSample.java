@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.noga.njexl.tests;
+package com.noga.njexl.testing.api;
 
 import com.noga.njexl.testing.api.Annotations.*;
 import com.noga.njexl.testing.api.junit.JClassRunner;
@@ -37,5 +37,4 @@ public class NApiAnnotationSample {
     public void testMethod(String a, int b) {
         System.out.printf("%s , %d\n", a, b);
     }
-
 }

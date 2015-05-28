@@ -19,6 +19,7 @@ package com.noga.njexl.testing.dataprovider;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.testing.TestSuite;
 import com.noga.njexl.testing.Utils;
+import com.noga.njexl.testing.dataprovider.dir.DirectoryDataSource;
 import com.noga.njexl.testing.dataprovider.excel.ExcelDataSource;
 import com.noga.njexl.testing.dataprovider.uri.URIDataSource;
 
@@ -33,6 +34,9 @@ public final class ProviderFactory {
     public static final HashMap<Pattern,String> dataSources = new HashMap<>();
 
     static{
+
+        dataSources.put(DirectoryDataSource.LOADER_PATTERN,DirectoryDataSource.class.getName());
+        DataMatrix.dataLoaders.put( DirectoryDataSource.LOADER_PATTERN, DirectoryDataSource.DATA_LOADER);
 
         dataSources.put(ExcelDataSource.LOADER_PATTERN,ExcelDataSource.class.getName());
         DataMatrix.dataLoaders.put( ExcelDataSource.LOADER_PATTERN, ExcelDataSource.DATA_LOADER);

@@ -35,11 +35,6 @@ public final class Annotations {
     public @interface NApiService {
 
         String base() default "" ;
-
-        String beforeClass() default "";
-
-        String afterClass() default "";
-
     }
 
     @Retention( RetentionPolicy.RUNTIME )

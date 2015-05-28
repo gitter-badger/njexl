@@ -18,6 +18,7 @@ package com.noga.njexl.tests;
 
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.testing.api.Annotations;
+import com.noga.njexl.testing.api.NApiAnnotationSample;
 import com.noga.njexl.testing.dataprovider.ProviderFactory;
 import com.noga.njexl.testing.dataprovider.excel.ExcelDataSource;
 import com.noga.njexl.testing.dataprovider.uri.URIDataSource;
@@ -26,12 +27,9 @@ import com.noga.njexl.testing.ui.WebTestSuite;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import java.lang.reflect.Method;
 
-@RunWith(Parameterized.class)
 public class IntegrationTest {
 
     public static final String URL = "http://www.w3schools.com/html/html_tables.asp" ;

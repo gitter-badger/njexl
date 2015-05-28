@@ -22,7 +22,7 @@ import com.noga.njexl.lang.extension.dataaccess.DataMatrix.DataLoader;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by noga on 15/04/15.
@@ -33,9 +33,9 @@ public abstract class DataSource implements DataLoader {
 
     public String location(){ return  loc ; }
 
-    public HashMap<String,DataSourceTable> tables;
+    public Map<String,DataSourceTable> tables;
 
-    protected abstract HashMap<String,DataSourceTable> init(String location) throws Exception;
+    protected abstract Map<String,DataSourceTable> init(String location) throws Exception;
 
     @Override
     public DataMatrix matrix(String location, Object... args) throws Exception {

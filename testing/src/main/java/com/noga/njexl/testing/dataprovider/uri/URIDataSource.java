@@ -27,6 +27,7 @@ import org.jsoup.nodes.Document;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -101,7 +102,7 @@ public class URIDataSource extends DataSource{
     Document doc ;
 
     @Override
-    protected HashMap<String, DataSourceTable> init(String location) throws Exception {
+    protected Map<String, DataSourceTable> init(String location) throws Exception {
 
         HashMap<String,DataSourceTable> tables = new HashMap<>();
         URL url = new URL(location);

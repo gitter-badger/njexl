@@ -21,6 +21,7 @@ import com.noga.njexl.testing.dataprovider.DataSourceTable;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix.DataLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -39,7 +40,6 @@ public class ExcelDataSource extends DataSource {
         String name;
 
         ArrayList<String[]> data;
-
 
         @Override
         public String name() {
@@ -85,7 +85,7 @@ public class ExcelDataSource extends DataSource {
     }
 
     @Override
-    protected HashMap<String, DataSourceTable> init(String location) throws Exception {
+    protected Map<String, DataSourceTable> init(String location) throws Exception {
         HashMap<String, DataSourceTable> tables = new HashMap<>();
         String l = location.toLowerCase();
         ExcelReader reader ;
