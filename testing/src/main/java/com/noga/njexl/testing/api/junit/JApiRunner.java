@@ -36,15 +36,15 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
     public static class ProxyTest{
 
         public static final String INPUT = "_cc_" ;
-        public static final JexlEngine engine = new JexlEngine();
 
         LogFactory.LogImpl logger = new LogFactory.LogImpl( ProxyTest.class );
 
         CallContainer callContainer;
 
         public boolean script(String file) {
+            JexlContext context = Main.getContext();
+            JexlEngine engine = Main.getJexl(context);
             try {
-                JexlContext context = Main.getContext();
                 Script script = engine.importScript(file);
                 context.set(INPUT, callContainer );
                 Object o = script.execute(context);
@@ -52,6 +52,10 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
             }catch (Throwable t){
                 logger.error(
                         String.format("Error running script : [ %s ] ", file), t);
+            }
+            finally {
+                context.clear();
+                System.gc(); //collect...
             }
             return false;
         }
