@@ -26,9 +26,12 @@ import com.noga.njexl.testing.ui.WebTestSuite;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.lang.reflect.Method;
 
+@RunWith(Parameterized.class)
 public class IntegrationTest {
 
     public static final String URL = "http://www.w3schools.com/html/html_tables.asp" ;

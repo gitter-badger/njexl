@@ -19,6 +19,10 @@ package com.noga.njexl.testing.api;
 import java.lang.annotation.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -29,6 +33,8 @@ public final class Annotations {
     @Retention( RetentionPolicy.RUNTIME )
     @Target( ElementType.TYPE )
     public @interface NApiService {
+
+        String base() default "" ;
 
         String beforeClass() default "";
 
@@ -87,19 +93,48 @@ public final class Annotations {
         String validatorCreationMode() default "";
     }
 
+    public static class MethodRunInformation{
+        public String base;
+        public Method method;
+        public NApi nApi;
+        public NApiThread nApiThread ;
+    }
+
     public static NApiService NApiService(Class c){
         return (NApiService) c.getAnnotation( NApiService.class);
     }
     public static NApiServiceCreator NApiServiceCreator(Class c){
         return (NApiServiceCreator) c.getAnnotation(NApiServiceCreator.class);
     }
+
     public static NApiServiceInit NApiServiceInit(Constructor c){
         return (NApiServiceInit) c.getAnnotation(NApiServiceInit.class);
     }
+
     public static NApi NApi(Method m){
         return  m.getAnnotation(NApi.class);
     }
+
     public static NApiThread NApiThread(Method m){
         return m.getAnnotation(NApiThread.class);
+    }
+
+    public static List<MethodRunInformation> runs( Class c ){
+        NApiService ns = NApiService(c);
+        if ( ns == null ) { return Collections.emptyList() ; }
+        Method[] methods = c.getDeclaredMethods();
+        ArrayList<MethodRunInformation> l = new ArrayList();
+        for ( int i = 0 ; i < methods.length; i++ ){
+            NApi nApi = NApi(methods[i]);
+            if ( nApi == null ){  continue; }
+            NApiThread nApiThread = NApiThread(methods[i]);
+            MethodRunInformation methodRunInformation = new MethodRunInformation();
+            methodRunInformation.base = ns.base();
+            methodRunInformation.method = methods[i];
+            methodRunInformation.nApi = nApi ;
+            methodRunInformation.nApiThread = nApiThread ;
+            l.add(methodRunInformation);
+        }
+        return l;
     }
 }

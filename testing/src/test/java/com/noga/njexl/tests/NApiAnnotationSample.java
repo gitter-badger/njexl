@@ -16,19 +16,23 @@
 package com.noga.njexl.tests;
 
 import com.noga.njexl.testing.api.Annotations.*;
+import com.noga.njexl.testing.api.junit.JClassRunner;
+import org.junit.runner.RunWith;
 
 /**
  * Created by noga on 27/05/15.
  */
-@NApiService
+
+@RunWith(JClassRunner.class)
+@NApiService(base = "samples/")
 @NApiServiceCreator(name="c1")
 public class NApiAnnotationSample {
 
     @NApiServiceInit(creator = "c1")
-    public NApiAnnotationSample(){
-    }
+    public NApiAnnotationSample(){}
 
-    @NApi(dataSource = "sample.xlsx", dataTable = "sheet1")
+    @NApi(dataSource = "UIData.xlsx", dataTable = "Sheet1" ,
+            before = "pre.jexl", after = "post.jexl" )
     @NApiThread
     public void testMethod(String a, int b) {
         System.out.printf("%s , %d\n", a, b);
