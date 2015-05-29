@@ -31,10 +31,22 @@ public class NApiAnnotationSample {
     @NApiServiceInit(creator = "c1")
     public NApiAnnotationSample(){}
 
-    @NApi(dataSource = "UIData.xlsx", dataTable = "Sheet1" ,
+    @NApi( dataSource = "UIData.xlsx", dataTable = "add" ,
             before = "pre.jexl", after = "post.jexl" )
     @NApiThread
-    public void testMethod(String a, int b) {
-        System.out.printf("%s , %d\n", a, b);
+    public int add(int a, int b) {
+        int r = a + b ;
+        System.out.printf("%d + %d = %d \n", a, b, r );
+        return r;
     }
+
+    @NApi(dataSource = "UIData.xlsx", dataTable = "sub" ,
+            before = "pre.jexl", after = "post.jexl" )
+    @NApiThread
+    public int subtract(int a, int b) {
+        int r = a - b ;
+        System.out.printf("%d - %d = %d \n", a, b, r );
+        return r;
+    }
+
 }

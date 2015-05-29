@@ -1,3 +1,13 @@
+/**
+  A demo of after method - how to test a method
+*/
 import 'java.lang.System.out' as out
-out:println("Post Validator")
-return _cc_ != null
+
+// _cc_ stores the call container
+actual = _cc_.result
+// `` is the currying, allows you to operate a string as if it is a function
+expected = `_cc_.parameters[0] #{_cc_.column('op')} _cc_.parameters[1]`
+// access arbitrary java object as namespace
+out:printf("Expected %s , Actual %s\n", actual, expected)
+// return can be made implicit
+expected == actual

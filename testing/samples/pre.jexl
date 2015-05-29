@@ -1,3 +1,6 @@
+/**
+  A demo of before method - how to say go no-go for a method
+*/
 import 'java.lang.System.out' as out
 out:println("Pre Validator")
-return _cc_ != null
+return _cc_ != null // this is just a place holder

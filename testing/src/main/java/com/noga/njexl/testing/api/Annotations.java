@@ -16,6 +16,8 @@
 
 package com.noga.njexl.testing.api;
 
+import org.junit.Test;
+
 import java.lang.annotation.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
