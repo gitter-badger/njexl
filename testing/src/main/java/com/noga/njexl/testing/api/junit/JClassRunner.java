@@ -44,14 +44,39 @@ public class JClassRunner extends Suite {
         return clazz.newInstance();
     }
 
+    public static String dictEntry(String s){
+        String[] pairs = s.split("=");
+        if ( pairs.length != 2 ){
+            return "null:null" ; // defaults
+        }
+        String ret = String.format("'%s' : '%s'", pairs[0],pairs[1]);
+        return ret;
+    }
+
+    public static String globals(String[] arr){
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("{");
+        if ( arr.length > 0 ) {
+            buffer.append(dictEntry(arr[0]));
+            for (int i = 1; i < arr.length; i++) {
+                buffer.append(",");
+                buffer.append(dictEntry(arr[i]));
+            }
+        }
+        buffer.append("}");
+        return buffer.toString();
+    }
+
     protected List<JApiRunner> runners(MethodRunInformation mi, Object service) throws Exception{
         ArrayList l = new ArrayList();
         ArgConverter converter = new ArgConverter(mi);
+        String globals =  globals( mi.nApi.globals() );
         CallContainer[] containers = converter.allContainers();
         for ( int i = 0 ; i < containers.length; i++ ){
             containers[i].service = service ;
             containers[i].pre = mi.base + "/" + mi.nApi.before() ;
             containers[i].post = mi.base + "/" + mi.nApi.after() ;
+            containers[i].globals = globals ;
             JApiRunner runner = JApiRunner.createRunner( containers[i]);
             l.add(runner);
         }

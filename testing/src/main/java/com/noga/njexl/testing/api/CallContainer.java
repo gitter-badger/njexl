@@ -37,6 +37,10 @@ public class CallContainer implements Serializable, Cloneable {
 
     public static final String TEST_DISABLED = "TEST_DISABLED" ;
 
+
+    @XStreamOmitField
+    public String globals ;
+
     @XStreamOmitField
     public String pre = "" ;
 

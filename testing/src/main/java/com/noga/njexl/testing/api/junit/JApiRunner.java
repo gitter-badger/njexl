@@ -37,6 +37,8 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
 
         public static final String INPUT = "_cc_" ;
 
+        public static final String GLOBALS = "_g_" ;
+
         LogFactory.LogImpl logger = new LogFactory.LogImpl( ProxyTest.class );
 
         CallContainer callContainer;
@@ -45,6 +47,16 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
             JexlContext context = Main.getContext();
             JexlEngine engine = Main.getJexl(context);
             try {
+                try{
+                    Expression expression = engine.createExpression( callContainer.globals);
+                    Object g = expression.evaluate( context );
+                    context.set(GLOBALS,g);
+
+                }catch (Exception e){
+                    logger.error(
+                            String.format("Error generating global : '%s' ",
+                                    callContainer.globals), e);
+                }
                 Script script = engine.importScript(file);
                 context.set(INPUT, callContainer );
                 Object o = script.execute(context);

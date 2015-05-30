@@ -21,10 +21,7 @@ import org.junit.Test;
 import java.lang.annotation.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -86,6 +83,8 @@ public final class Annotations {
         String before() default "";
 
         String after() default "";
+
+        String[] globals() default {};
 
         String validatorCreationMode() default "";
     }
