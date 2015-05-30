@@ -8,6 +8,6 @@ actual = _cc_.result
 // `` is the currying, allows you to operate a string as if it is a function
 expected = `_cc_.parameters[0] #{_g_.op} _cc_.parameters[1]`
 // access arbitrary java object as namespace
-out:printf("Expected %s , Actual %s\n", actual, expected)
+out:printf("Expected %s , Actual %s\n", expected, actual)
 // return can be made implicit
 expected == actual
