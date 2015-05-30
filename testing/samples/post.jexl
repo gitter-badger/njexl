@@ -6,7 +6,7 @@ import 'java.lang.System.out' as out
 // _cc_ stores the call container
 actual = _cc_.result
 // `` is the currying, allows you to operate a string as if it is a function
-expected = `_cc_.parameters[0] #{_g_['op']} _cc_.parameters[1]`
+expected = `_cc_.parameters[0] #{_g_.op} _cc_.parameters[1]`
 // access arbitrary java object as namespace
 out:printf("Expected %s , Actual %s\n", actual, expected)
 // return can be made implicit
