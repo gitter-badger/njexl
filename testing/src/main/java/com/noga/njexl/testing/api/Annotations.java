@@ -16,8 +16,6 @@
 
 package com.noga.njexl.testing.api;
 
-import org.junit.Test;
-
 import java.lang.annotation.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -60,15 +58,35 @@ public final class Annotations {
     @Target( ElementType.METHOD )
     public @interface NApiThread {
 
+        /**
+         *  Whether or not use threaded mode
+         * @return true/false
+         */
         boolean use() default false;
 
+        /**
+         * Number of threads
+         * @return no of threads, default 2
+         */
         int numThreads() default 2 ;
 
+        /**
+         *
+         * @return no of call per thread, default 2
+         */
         int numCallPerThread() default 2 ;
 
-        int pacingTime() default 1000 ;
+        /**
+         * In Milliseconds
+         * @return time in ms to spawn threads
+         */
+        int spawnTime() default  1000 ;
 
-        String shareMode() default "" ;
+        /**
+         * In Milliseconds
+         * @return time between two calls in same thread
+         */
+        int pacingTime() default 1000 ;
 
     }
 

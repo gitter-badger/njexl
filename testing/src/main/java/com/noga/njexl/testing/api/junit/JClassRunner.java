@@ -73,11 +73,14 @@ public class JClassRunner extends Suite {
         String globals =  globals( mi.nApi.globals() );
         CallContainer[] containers = converter.allContainers();
         for ( int i = 0 ; i < containers.length; i++ ){
+            // in case I am disabled
+            if ( containers[i].disabled() ) {  continue; }
+
             containers[i].service = service ;
             containers[i].pre = mi.base + "/" + mi.nApi.before() ;
             containers[i].post = mi.base + "/" + mi.nApi.after() ;
             containers[i].globals = globals ;
-            JApiRunner runner = JApiRunner.createRunner( containers[i]);
+            JApiRunner runner = JApiRunner.createRunner( containers[i], mi.nApiThread );
             l.add(runner);
         }
         return l;

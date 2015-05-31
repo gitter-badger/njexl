@@ -18,7 +18,9 @@ package com.noga.njexl.testing.api.junit;
 import com.noga.njexl.lang.*;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.internal.logging.LogFactory;
+import com.noga.njexl.testing.api.Annotations;
 import com.noga.njexl.testing.api.CallContainer;
+import jdk.nashorn.internal.codegen.CompilerConstants;
 import org.junit.*;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
@@ -27,13 +29,46 @@ import org.junit.runners.parameterized.TestWithParameters;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by noga on 27/05/15.
  */
 public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
 
-    public static class ProxyTest{
+
+    public static class WorkerThread implements Runnable{
+
+        final CallContainer cc;
+
+        final int delay;
+
+        final int numCalls;
+
+        public static void delay(int ms){
+            try{
+                Thread.sleep(ms);
+            }catch (Exception e){
+            }
+        }
+
+        public WorkerThread(CallContainer c, int d, int nc ){
+            cc = c ;
+            delay = d ;
+            numCalls = nc;
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < numCalls ; i++) {
+                delay( delay );
+                cc.call();
+            }
+        }
+    }
+
+    public static class ProxyTest {
 
         public static final String INPUT = "_cc_" ;
 
@@ -42,6 +77,7 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
         LogFactory.LogImpl logger = new LogFactory.LogImpl( ProxyTest.class );
 
         CallContainer callContainer;
+        Annotations.NApiThread nApiThread ;
 
         public boolean script(String file) {
             JexlContext context = Main.getContext();
@@ -72,18 +108,39 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
             return false;
         }
 
-        public ProxyTest(CallContainer callContainer){
+        public ProxyTest(CallContainer callContainer, Annotations.NApiThread nApiThread){
             this.callContainer = callContainer ;
+            this.nApiThread = nApiThread ;
         }
+
 
         @Test
         public void callMethod() throws Exception{
-            callContainer.call();
+            if ( nApiThread.use() ){
+               // make use of multi threading
+                int nT = nApiThread.numThreads() ;
+                ExecutorService executor = Executors.newFixedThreadPool(nT);
+                int pt = nApiThread.pacingTime();
+                int sd = nApiThread.spawnTime() ;
+                int nc = nApiThread.numCallPerThread() ;
+                for (int i = 0; i < nT ; i++) {
+                    WorkerThread.delay( sd );
+                    Runnable worker = new WorkerThread( callContainer , pt, nc);
+                    executor.execute(worker);//calling execute method of ExecutorService
+                }
+                executor.shutdown();
+                while (!executor.isTerminated()) {   }
+            }else {
+                callContainer.call();
+            }
         }
 
         @Before
         public void before()throws Exception{
             if ( callContainer.pre.isEmpty() ) return;
+            // no pre/post for Threaded/this is for performance testing only
+            if ( nApiThread.use() ) return;
+
             callContainer.validationResult = false ;
             if ( callContainer.pre.endsWith(".jexl") ){
                 callContainer.validationResult = script(callContainer.pre);
@@ -96,6 +153,9 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
         @After
         public void after()throws Exception{
             if ( callContainer.post.isEmpty() ) return;
+            // no pre/post for Threaded/this is for performance testing only
+            if ( nApiThread.use() ) return;
+
             callContainer.validationResult = false ;
             if ( callContainer.post.endsWith(".jexl") ){
                 callContainer.validationResult = script(callContainer.post);
@@ -104,15 +164,17 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
                 }
             }
         }
+
     }
 
     public static final Class proxy = ProxyTest.class ;
 
-    public static JApiRunner createRunner(CallContainer container) throws Exception{
+    public static JApiRunner createRunner(CallContainer container, Annotations.NApiThread nApiThread) throws Exception{
         TestClass testClass = new TestClass(proxy);
         String name = container.method.toGenericString();
         List<Object> parameters = new ArrayList<>();
         parameters.add( container );
+        parameters.add( nApiThread );
         TestWithParameters test = new TestWithParameters( name, testClass, parameters);
         return new JApiRunner(test);
     }
