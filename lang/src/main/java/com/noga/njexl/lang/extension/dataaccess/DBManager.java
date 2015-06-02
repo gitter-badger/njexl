@@ -34,20 +34,44 @@ public final class DBManager {
 
     public static final String DB_CONFIG_FILE_LOC = "db.json";
 
+    /**
+     * The data base dom, which stores database connection properties
+     */
     public static class DatabaseDOM {
 
-        public String name;
+        /**
+         * Name of the connection
+         */
+        public final String name;
 
-        public String dbName;
+        /**
+         * Database name
+         */
+        public final String dbName;
 
-        public String driverClass;
+        /**
+         * The driver class to connect
+         */
+        public final String driverClass;
 
-        public String url;
+        /**
+         * URL of the data base
+         */
+        public final String url;
 
-        public String user;
+        /**
+         * User name of th user
+         */
+        public final String user;
 
-        public String pass;
+        /**
+         * Password of the user
+         */
+        public final String pass;
 
+        /**
+         * creates a dom, useless one
+         */
         public DatabaseDOM() {
             name = "";
             dbName = "";
@@ -57,6 +81,11 @@ public final class DBManager {
             pass = "";
         }
 
+        /**
+         * Create from a map
+         * @param n the name of the entry
+         * @param entry the map
+         */
         public DatabaseDOM(String n, Map<String,String> entry) {
             name = n;
             dbName = entry.get("dbName");
@@ -72,10 +101,22 @@ public final class DBManager {
         }
     }
 
+    /**
+     * The database connectiondoms with names
+     */
     public static ConcurrentHashMap<String,DatabaseDOM> dataBaseDOMHash ;
 
-    public static ConcurrentHashMap<String, Connection> connectionMap = new ConcurrentHashMap<>();
+    /**
+     * Current connections - cached
+     */
+    public static final ConcurrentHashMap<String, Connection> connectionMap = new ConcurrentHashMap<>();
 
+    /**
+     * Creates the database dom
+     * @param jsonFile the file from where the dom would be created
+     * @return the db dom hash @{dataBaseDOMHash}
+     * @throws Exception in case of any error
+     */
     public static ConcurrentHashMap<String, DatabaseDOM> getDatabaseDetails(String jsonFile) throws Exception {
 
         ConcurrentHashMap<String,DatabaseDOM> mapOfDoms = new ConcurrentHashMap<>();
@@ -91,6 +132,11 @@ public final class DBManager {
     public static Pattern SELECT_PATTERN = Pattern.compile("^\\s*select\\s+.*",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
+    /**
+     * Initialize the db connectivity
+     * @param configFile the json file
+     * @return true if done, false if failed
+     */
     public static boolean init(String configFile) {
         try {
             dataBaseDOMHash = getDatabaseDetails(configFile);
@@ -104,6 +150,12 @@ public final class DBManager {
         return false;
     }
 
+    /**
+     * On the fly add new connection
+     * @param n name of the connection
+     * @param entry map entry
+     * @return true if successful, false if already exist
+     */
     public static boolean addCon(String n, Map entry){
         DatabaseDOM dom = new DatabaseDOM(n, entry);
         if ( dataBaseDOMHash.containsKey(dom.name )){
@@ -113,6 +165,12 @@ public final class DBManager {
         return true;
     }
 
+    /**
+     * Gets connection using id
+     * @param dbConnectionId the id
+     * @return the connection
+     * @throws Exception in case of error
+     */
     private static Connection getConnection(String dbConnectionId) throws Exception {
 
         Connection conn = null;
@@ -144,6 +202,13 @@ public final class DBManager {
         return conn;
     }
 
+    /**
+     * Executes sql
+     * @param dbConnectionId the connection
+     * @param sql the text sql
+     * @return either a result set or an int
+     * @throws Exception in case of error
+     */
     public static Object exec(String dbConnectionId, String sql) throws Exception {
 
         Connection conn = getConnection(dbConnectionId);
@@ -163,6 +228,13 @@ public final class DBManager {
         }
     }
 
+    /**
+     * Slightly better return values
+     * @param dbConnectionId the id
+     * @param sql the sql text
+     * @return Returns @{DataMatrix} or int
+     * @throws Exception in case of error
+     */
     public static Object results(String dbConnectionId, String sql) throws Exception {
         Object retObject = exec(dbConnectionId, sql);
 

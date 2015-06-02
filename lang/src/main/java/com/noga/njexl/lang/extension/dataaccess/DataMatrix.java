@@ -35,10 +35,14 @@ import java.util.regex.Pattern;
 public class DataMatrix {
 
     /**
-     * A Generic diff for any sort of matrices
+     * A Generic diff structure for any sort of matrices
      */
     public static class MatrixDiff{
 
+        /**
+         * Is this diff qualifies as a diff or not
+         * @return true if it is, false if it is not
+         */
         public boolean diff(){
 
             if ( lr != null && !lr.isEmpty() ){
@@ -53,8 +57,18 @@ public class DataMatrix {
             return false ;
         }
 
+        /**
+         * where the  key list : left - right did not match
+         */
         public List lr ;
+        /**
+         * The the key list : right - left did not match
+         */
         public List rl ;
+        /**
+         * The key intersection portion if any,
+         * but where the equality broke down
+         */
         public List id ;
 
         @Override

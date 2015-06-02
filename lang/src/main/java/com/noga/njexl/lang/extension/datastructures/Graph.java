@@ -23,34 +23,73 @@ import com.noga.njexl.lang.extension.TypeUtility;
 import java.util.HashMap;
 
 /**
+ * A Standard Graph Data Structure,
+ * capable enough to achieve generic stuff
  * Created by noga on 24/05/15.
  */
 public class Graph {
 
+    /**
+     * Generates a identifier from a name
+     * @param name the name
+     * @return the identifier
+     */
     public static String id(String name){
         String id = name.replace(' ', '_');
         id = "$" + id;
         return id;
     }
 
+    /**
+     * Individual nodes of a Graph
+     */
     public static class Node{
 
+        /**
+         * Property name which is script
+         */
         public static final String SCRIPT = "@X" ;
 
+        /**
+         * Property name which is list of nodes
+         */
         public static final String NODES = "@N" ;
 
+        /**
+         * If this is there, that means redirect for script
+         */
         public static final String REDIRECT = "@" ;
 
+        /**
+         * Name of the node
+         */
         public final String name;
 
+        /**
+         * Auto-generated id of the node
+         */
         public final String id;
 
+        /**
+         * The bucket of properties
+         */
         public final HashMap<String,Object> properties;
 
+        /**
+         * The set of nodes
+         */
         public final ListSet<String> nodes;
 
+        /**
+         * The executable code for the node
+         */
         public final String script;
 
+        /**
+         * Get a property from the node
+         * @param p the property name , if not found, tries to get a node
+         * @return the value of the property
+         */
         public Object get(String p){
             if ( properties.containsKey(p)){
                 return properties.get(p);
@@ -58,6 +97,11 @@ public class Graph {
             return nodes.get(p);
         }
 
+        /**
+         * Sets the property
+         * @param p name of the property
+         * @param v value of the propery
+         */
         public void set(String p, Object v){
             if ( properties.containsKey(p)){
                 properties.put(p, v);
@@ -65,6 +109,12 @@ public class Graph {
             }
         }
 
+        /**
+         * Creates a node
+         * @param n name of the node
+         * @param m the property bag including the child nodes
+         * @throws Exception in case of error
+         */
         public Node(String n, HashMap m) throws Exception {
             name = n;
             nodes = new ListSet( TypeUtility.from( m.get(NODES) ) );
@@ -83,6 +133,11 @@ public class Graph {
 
         }
 
+        /**
+         * Executes the script associated with the node
+         * @param context the context of the script
+         * @return the result
+         */
         public Object execute(JexlContext context){
             context.set( TypeUtility._ITEM_ , this );
             JexlEngine jexlEngine = new JexlEngine();
@@ -91,8 +146,16 @@ public class Graph {
         }
     }
 
+    /**
+     * The nodes of the graph
+     */
     public final HashMap<String,Node> nodes;
 
+    /**
+     * Creates a graph
+     * @param file from the json file
+     * @throws Exception in case of any error
+     */
     public Graph(String file) throws Exception {
         nodes = new HashMap<>();
         HashMap<String,HashMap> m = (HashMap)TypeUtility.json(file);
