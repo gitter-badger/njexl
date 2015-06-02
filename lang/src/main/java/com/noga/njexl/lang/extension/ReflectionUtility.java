@@ -22,10 +22,18 @@ import java.io.File;
 import java.net.URL;
 
 /**
+ * Some Jar loading Utility Functions
+ *
  * Created by noga on 15/03/15.
  */
 public class ReflectionUtility {
 
+    /**
+     * Loads a specific jar from a path
+     * @param arg the path to the jar
+     *            can be a file, a string path or an URL
+     * @return true if success, false if failed
+     */
     public static boolean load_jar(Object  arg){
         try {
             if ( arg instanceof String) {
@@ -47,6 +55,11 @@ public class ReflectionUtility {
         return false;
     }
 
+    /**
+     * Load multiple jars one by one
+     * @param args list of jars
+     * @return true if all successful, false if at least one failed loading
+     */
     public static boolean load(Object... args){
         boolean ret = true ;
         for ( Object o :args ){
@@ -55,6 +68,11 @@ public class ReflectionUtility {
         return ret;
     }
 
+    /**
+     * Searches directories and loads jars : only one level
+     * @param args the list of directories
+     * @return true if all is well, false if one failed
+     */
     public static boolean load_path(Object...args){
         if ( args.length == 0){
             return false;
@@ -77,6 +95,14 @@ public class ReflectionUtility {
         return ret;
     }
 
+    /**
+     * Gets a class loader
+     * @param args strings :
+     *             "ctx" : ContextClassLoader
+     *             "sys" : SystemClassLoader
+     *             anything else : DefaultClassLoader
+     * @return the class loader
+     */
     public static ClassLoader loader(Object...args){
         if ( args.length > 0 ){
             if ( args[0].toString().equalsIgnoreCase("ctx")){
@@ -89,6 +115,11 @@ public class ReflectionUtility {
         return ClassLoaderUtil.getDefaultClassLoader();
     }
 
+    /**
+     * Reloads a class
+     * @param args the name of the class, using the class loader
+     * @return true if successful, false if failed
+     */
     public static boolean reload(Object... args){
         if ( args.length > 0 ){
             String className = args[0].toString();

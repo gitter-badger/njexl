@@ -24,17 +24,50 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 /**
+ * Class to handle Logical Collection Operations
  * Created by noga on 10/03/15.
  */
 public final class SetOperations {
 
     public  enum SetRelation {
+        /**
+         * Independent
+         */
         INDEPENDENT,
+        /**
+         * Subset
+         */
         SUBSET,
+        /**
+         * Superset
+         */
         SUPERSET,
+        /**
+         * Equal
+         */
         EQUAL,
+        /**
+         * Overlapping Sets
+         */
         OVERLAP;
 
+        /**
+         * Finds if String "s" is a representation of relation "r" or not
+         * @param s the string :
+         *          <pre>
+         *
+         *          "&gt;&lt;" , "I" : independent
+         *          "&lt;&gt;" , "O" : overlap
+         *          "=","==" , "E" : equal
+         *          "&lt;" , "SUB" : subset
+         *          "&lt;=" , "SUBEQ" : subset equals
+         *          "&gt;" , "SUP" : superset
+         *          "&gt;=" , "SUPEQ" : superset equals
+         *
+         *          </pre>
+         * @param r set relation
+         * @return true if it is, false if it is not
+         */
         public static boolean is(String s, SetRelation r) {
             switch (s.trim().toUpperCase()) {
                 case "><":
@@ -65,6 +98,12 @@ public final class SetOperations {
         }
     }
 
+    /**
+     * Set Intersection
+     * @param s1 set 1
+     * @param s2 set 2
+     * @return Intersection of the sets
+     */
     public static Set set_i(Set s1, Set s2) {
         ListSet i = new ListSet();
         Set b = s1;
@@ -81,6 +120,12 @@ public final class SetOperations {
         return i;
     }
 
+    /**
+     * Set Union
+     * @param s1 set 1
+     * @param s2 set 2
+     * @return Union of the sets
+     */
     public static Set set_u(Set s1, Set s2) {
         Set b = s1;
         Set s = s2;
@@ -97,6 +142,12 @@ public final class SetOperations {
         return u;
     }
 
+    /**
+     * Set Difference
+     * @param s1 set 1
+     * @param s2 set 2
+     * @return difference of the sets : s1 - s2
+     */
     public static Set set_d(Set s1, Set s2) {
         ListSet d = new ListSet(s1);
         for (Object o : s2) {
@@ -107,6 +158,12 @@ public final class SetOperations {
         return d;
     }
 
+    /**
+     * Set Symmetric Difference : s1-s2 Union s2-s1
+     * @param s1 set 1
+     * @param s2 set 2
+     * @return Symmetric Difference of the sets
+     */
     public static Set set_sym_d(Set s1, Set s2) {
         Set d12 = set_d(s1, s2);
         Set d21 = set_d(s2, s1);
@@ -114,12 +171,25 @@ public final class SetOperations {
         return ssd;
     }
 
+    /**
+     * Finds set relation between two objects,
+     * after casting them into set
+     * @param o1 object 1
+     * @param o2 object 2
+     * @return the relation between them
+     */
     public static SetRelation set_relation(Object o1, Object o2) {
         Set s1 = TypeUtility.set(o1);
         Set s2 = TypeUtility.set(o2);
         return set_relation(s1,s2);
     }
 
+    /**
+     * Finds relation between two sets
+     * @param s1 set 1
+     * @param s2 set 2
+     * @return the relation between them
+     */
     public static SetRelation set_relation(Set s1, Set s2) {
 
         Set ssd = set_sym_d(s1, s2);
@@ -150,11 +220,23 @@ public final class SetOperations {
         return SetRelation.OVERLAP;
     }
 
+    /**
+     * Given two sets, finds if the relation passed holds for them
+     * @param s1 set 1
+     * @param s2 set 2
+     * @param relation the relation
+     * @return true if s1 and s2 abide by relation, else false
+     */
     public static boolean is_set_relation(Set s1, Set s2, String relation) {
         SetRelation actual = set_relation(s1, s2);
         return SetRelation.is(relation, actual);
     }
 
+    /**
+     * Converts a list into a multi-set
+     * @param args the arguments
+     * @return a multi-set
+     */
     public static HashMap<Object, List> multiset(Object... args) {
         Interpreter.AnonymousParam anon = null;
         XList list = new XList();
@@ -195,12 +277,25 @@ public final class SetOperations {
         return m;
     }
 
+    /**
+     * Finds difference of two lists
+     * @param l left side list
+     * @param r right side list
+     * @return the difference in multi-set-diff form, key : ( left_count, right_count)
+     */
     public static HashMap<Object, int[]> list_diff(Object l, Object r) {
         Map<Object, List> mset1 = multiset(l);
         Map<Object, List> mset2 = multiset(r);
         return mset_diff(mset1,mset2);
     }
 
+    /**
+     * Finds list diff with anonymous parameter
+     * @param anon the anonymous parameter
+     * @param mset1 multi-set 1
+     * @param mset2 multi-set 2
+     * @return the difference
+     */
     public static HashMap mset_diff(Interpreter.AnonymousParam anon,
                                                     Map<Object, List> mset1, Map<Object, List> mset2) {
         HashMap diff = mset_diff(mset1, mset2);
@@ -222,6 +317,12 @@ public final class SetOperations {
         return result;
     }
 
+    /**
+     * Finds diff between two multi-sets
+     * @param mset1 multi-set 1
+     * @param mset2 mutli-set 2
+     * @return the diff
+     */
     public static HashMap<Object, int[]> mset_diff(Map<Object, List> mset1, Map<Object,List> mset2) {
         HashMap<Object, int[]> diff = new HashMap<>();
         for (Object k : mset1.keySet()) {
@@ -244,12 +345,24 @@ public final class SetOperations {
         return diff;
     }
 
+    /**
+     * Finds relation between two lists
+     * @param o1 left object to be casted as list
+     * @param o2 right object to be casted as list
+     * @return the relation between them : left R right
+     */
     public static SetRelation list_relation(Object o1, Object o2) {
         HashMap m1 = multiset(o1);
         HashMap m2 = multiset(o2);
         return mset_relation(m1,m2);
     }
 
+    /**
+     * Finds multi-set relation
+     * @param mset1 multi-set 1
+     * @param mset2 multi-set 2
+     * @return the relation
+     */
     public static SetRelation mset_relation(Map<Object, List> mset1, Map<Object, List> mset2) {
         HashMap<Object, int[]> d = mset_diff(mset1, mset2);
         if (d.isEmpty()) {
@@ -295,11 +408,24 @@ public final class SetOperations {
         return SetRelation.OVERLAP;
     }
 
+    /**
+     * Finds if the two multi-sets are related by relation
+     * @param mset1 left multi-set
+     * @param mset2 right multi-set
+     * @param relation
+     * @return true if left R right, else false
+     */
     public static boolean is_mset_relation(Map<Object, List> mset1, Map<Object, List> mset2, String relation) {
         SetRelation actual = mset_relation(mset1, mset2);
         return SetRelation.is(relation, actual);
     }
 
+    /**
+     * Finds relationship between two dictionaries
+     * @param m1 left dict
+     * @param m2 right dict
+     * @return relation
+     */
     public static SetRelation dict_relation(Map m1, Map m2){
         SetRelation setRelation = set_relation(m1.keySet(), m2.keySet());
         if ( SetRelation.INDEPENDENT == setRelation || SetRelation.OVERLAP == setRelation ){
@@ -322,11 +448,24 @@ public final class SetOperations {
         return setRelation ;
     }
 
+    /**
+     * Checks if two dicts are abiding relation
+     * @param m1 left dict
+     * @param m2 right dict
+     * @param relation relation between them
+     * @return true if m1 R m2, else false
+     */
     public static boolean is_dict_relation(Map m1, Map m2,String relation){
         SetRelation actual = dict_relation(m1,m2);
         return SetRelation.is(relation,actual);
     }
 
+    /**
+     * Finds list intersection
+     * @param l1 list 1
+     * @param l2 list 2
+     * @return intersection
+     */
     public static List list_i(Object l1, Object l2) {
         HashMap m1 = multiset(l1);
         HashMap m2 = multiset(l2);
@@ -342,6 +481,12 @@ public final class SetOperations {
         return l;
     }
 
+    /**
+     * Finds list union
+     * @param l1 list 1
+     * @param l2 list 2
+     * @return union
+     */
     public static List list_u(Object l1, Object l2) {
         HashMap m1 = multiset(l1);
         HashMap m2 = multiset(l2);
@@ -357,6 +502,12 @@ public final class SetOperations {
         return l;
     }
 
+    /**
+     * Finds list difference
+     * @param l1 list 1
+     * @param l2 list 2
+     * @return difference
+     */
     public static List list_d(Object l1, Object l2) {
         HashMap m1 = multiset(l1);
         HashMap m2 = multiset(l2);
@@ -372,12 +523,24 @@ public final class SetOperations {
         return l;
     }
 
+    /**
+     * Finds list symmetric difference
+     * @param l1 list 1
+     * @param l2 list 2
+     * @return symmetric difference
+     */
     public static List list_sym_d(Object l1, Object l2) {
         List i = list_i(l1, l2);
         List u = list_u(l1, l2);
         return list_d(u, i);
     }
 
+    /**
+     * Finds list join
+     * @param a list 1
+     * @param b list 2
+     * @return join of the two lists
+     */
     public static List join(Object a, Object b) {
         List left = TypeUtility.from(a);
         List right = TypeUtility.from(b);
@@ -406,6 +569,11 @@ public final class SetOperations {
         return r;
     }
 
+    /**
+     * Arbitrary list join
+     * @param args the lists
+     * @return a joined list of lists
+     */
     public static List join_c(Object... args) {
         Interpreter.AnonymousParam anon = null;
         XList join = new XList();
@@ -496,6 +664,12 @@ public final class SetOperations {
         return join;
     }
 
+    /**
+     * Given object c1 does it in some sense inside c2 or not
+     * @param c1 the object which is to be inside
+     * @param c2 the proposed container
+     * @return true if it is, false otherwise
+     */
     public static Boolean in(Object c1, Object c2) {
         if (c2 == null) {
             return false;
