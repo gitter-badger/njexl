@@ -14,12 +14,14 @@
 # limitations under the License.
 #########################################################################
 
-#!/bin/bash
+#!/usr/local/bin/bash
 
 
 function call_script(){
-    echo "Invoking script : $1 [with] data : $2"
-    $BASE$1 $2
+    arg_array=( "$@" )
+    arg=( "${arg_array[@]:1}" )
+    echo "Invoking script : $1 [with] data : ${arg[@]}"
+    $BASE$1 ${arg[@]}
 }
 
 function run_tests(){
