@@ -16,9 +16,11 @@
 
 package com.noga.njexl.tests;
 
+import com.noga.njexl.lang.Main;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.testing.api.Annotations;
 import com.noga.njexl.testing.api.NApiAnnotationSample;
+import com.noga.njexl.testing.dataprovider.DataSourceTable;
 import com.noga.njexl.testing.dataprovider.ProviderFactory;
 import com.noga.njexl.testing.dataprovider.excel.ExcelDataSource;
 import com.noga.njexl.testing.dataprovider.uri.URIDataSource;
@@ -37,6 +39,9 @@ public class IntegrationTest {
     public static final String SUITE = "samples/webTestSuite.xml" ;
 
     public static final String EXCEL_FILE = "samples/UIData.xlsx" ;
+
+    public static final String FORMULA_SHEET = "Formula" ;
+
 
     public static final String IMAGE_FILE = "samples/sampleImage.png" ;
 
@@ -67,6 +72,10 @@ public class IntegrationTest {
     public void excelDataSourceTest() throws Exception{
         Object o = ProviderFactory.dataSource(EXCEL_FILE);
         Assert.assertTrue(o instanceof ExcelDataSource);
+        ExcelDataSource eds = (ExcelDataSource)o;
+        DataSourceTable table = eds.tables.get(FORMULA_SHEET);
+        String[] row0 = table.row(0);
+        Assert.assertNotNull(row0[1]);
     }
 
     @Test

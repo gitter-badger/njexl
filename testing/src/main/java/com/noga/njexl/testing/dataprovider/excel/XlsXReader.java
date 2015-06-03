@@ -16,6 +16,8 @@
 
 package com.noga.njexl.testing.dataprovider.excel;
 
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileInputStream;
@@ -30,8 +32,11 @@ public class XlsXReader implements ExcelReader {
 
     String[] sheetNames;
 
-    public static String readCellValueAsString(XSSFCell cell) {
-        switch (cell.getCellType()) {
+    final FormulaEvaluator evaluator ;
+
+    public  String readCellValueAsString(XSSFCell cell) {
+        CellValue cellValue = evaluator.evaluate(cell);
+        switch (cellValue.getCellType()) {
             case XSSFCell.CELL_TYPE_BLANK:
                 return "";
             case XSSFCell.CELL_TYPE_BOOLEAN:
@@ -69,6 +74,7 @@ public class XlsXReader implements ExcelReader {
     public XlsXReader(String fileName) {
         try {
             workbook = new XSSFWorkbook(new FileInputStream(fileName));
+            evaluator = workbook.getCreationHelper().createFormulaEvaluator();
             init();
 
         } catch (Exception e) {
