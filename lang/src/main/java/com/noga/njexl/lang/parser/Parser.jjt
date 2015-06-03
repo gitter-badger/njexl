@@ -109,7 +109,7 @@ PARSER_END(Parser)
     | < RBRACKET : "]" >
     | < SEMICOL : ";" >
     | < COLON : ":" >
-    | < COMMA : "," >
+    | < COMMA : (",")(" "|"\t")* ( "\n" | "\r" | "\r\n" )? >
     | < DOT : "." >
     | <LINE : (" "|"\t")* ( "\n" | "\r" | "\r\n" ) >
 

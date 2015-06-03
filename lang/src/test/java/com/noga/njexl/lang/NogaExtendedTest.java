@@ -200,6 +200,15 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testCommaLineStatement() throws Exception {
+        Script e = JEXL.createScript("minmax(1,\n2  ,  \n3)");
+        JexlContext jc = new MapContext();
+        Object[] o = (Object[])e.execute(jc);
+        assertEquals(1, o[0]);
+        assertEquals(3, o[1]);
+    }
+
+    @Test
     public void testShuffle() throws Exception{
         Script e = JEXL.createScript("x=[1,2,3,4,5] ; shuffle(x) ");
         JexlContext jc = new MapContext();
