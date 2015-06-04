@@ -258,25 +258,25 @@ void ExpressionStatement() #void : {}
 
 void IfStatement() : {}
 {
-    <IF> <LPAREN> Expression() <RPAREN> Statement() ( LOOKAHEAD(1) <ELSE> Statement() )?
+    <IF> <LPAREN> Expression() <RPAREN> (LOOKAHEAD(2) <LINE>)? Statement() ( LOOKAHEAD(2) (<LINE>)?  <ELSE> Statement() )?
 }
 
 
 void WhileStatement() : {}
 {
-    <WHILE> <LPAREN> Expression() <RPAREN> Statement()
+    <WHILE> <LPAREN> Expression() <RPAREN> (LOOKAHEAD(2) <LINE>)? Statement()
 }
 
 void WhereStatement() : {}
 {
-    <WHERE> <LPAREN> Expression() <RPAREN> Statement()
+    <WHERE> <LPAREN> Expression() <RPAREN> (LOOKAHEAD(2) <LINE>)? Statement()
 }
 
 void ForeachStatement() : {}
 {  
-    <FOR> <LPAREN> LValueVar() <COLON>  Expression() <RPAREN> Statement()
+    <FOR> <LPAREN> LValueVar() <COLON>  Expression() <RPAREN> (LOOKAHEAD(2) <LINE>)? Statement()
 |
-    <FOREACH> <LPAREN> LValueVar() <COLON>  Expression() <RPAREN> Statement()
+    <FOREACH> <LPAREN> LValueVar() <COLON>  Expression() <RPAREN> (LOOKAHEAD(2) <LINE>)? Statement()
 }
 
 void ReturnStatement() : {}

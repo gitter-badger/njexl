@@ -6,12 +6,11 @@ import 'java.lang.System.out' as out
 def some_method(param1='1',param2='2'){
      out:printf('p1 is : %s\tp2 is %s\n', param1,param2)
 }
-
 // should take defaults 
 some_method()
 // only the fist parameter
 some_method(2)
-// both the positional paramater
+// both the positional parameter
 some_method(3,4)
 // specific parameter : 1 
 some_method(param2='42')

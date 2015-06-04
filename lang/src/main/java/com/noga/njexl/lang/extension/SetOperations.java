@@ -412,7 +412,7 @@ public final class SetOperations {
      * Finds if the two multi-sets are related by relation
      * @param mset1 left multi-set
      * @param mset2 right multi-set
-     * @param relation
+     * @param relation the relation R to be used to compare
      * @return true if left R right, else false
      */
     public static boolean is_mset_relation(Map<Object, List> mset1, Map<Object, List> mset2, String relation) {

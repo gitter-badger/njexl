@@ -40,3 +40,26 @@ if (  \
 	true ){
 	out:println("This also works!")
 }
+
+// test the if and else with lines spaced ( 1 line allowed )
+x = 0 
+if ( x == 1 )
+{
+    out:println("a")    
+}
+else
+{
+    out:println("b")
+}
+
+// test while loop
+while ( x < 5 )
+{
+    x = x + 1 
+    out:println(x)
+}
+// for loop 
+for ( i : [0:5] )
+{
+   out:println(i)
+}
