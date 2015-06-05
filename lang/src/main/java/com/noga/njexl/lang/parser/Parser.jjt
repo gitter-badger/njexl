@@ -78,7 +78,7 @@ PARSER_END(Parser)
 <*> TOKEN : /* KEYWORDS */
 {
       < IF : "if" >
-    | < ELSE : "else" >
+    | < ELSE : ( (" "|"\t")* ( "\n" | "\r" | "\r\n" ) )? ( "else" ) ( (" "|"\t")* ( "\n" | "\r" | "\r\n" ) )? >
     | < FOR : "for" >
     | < FOREACH : "foreach" >
     | < WHILE : "while" >
@@ -258,7 +258,7 @@ void ExpressionStatement() #void : {}
 
 void IfStatement() : {}
 {
-    <IF> <LPAREN> Expression() <RPAREN> (LOOKAHEAD(2) <LINE>)? Statement() ( LOOKAHEAD(2) (<LINE>)?  <ELSE> Statement() )?
+    <IF> <LPAREN> Expression() <RPAREN> (LOOKAHEAD(2) <LINE>)? Statement() ( LOOKAHEAD(1) <ELSE> Statement() )?
 }
 
 
@@ -273,7 +273,7 @@ void WhereStatement() : {}
 }
 
 void ForeachStatement() : {}
-{  
+{
     <FOR> <LPAREN> LValueVar() <COLON>  Expression() <RPAREN> (LOOKAHEAD(2) <LINE>)? Statement()
 |
     <FOREACH> <LPAREN> LValueVar() <COLON>  Expression() <RPAREN> (LOOKAHEAD(2) <LINE>)? Statement()
@@ -313,8 +313,8 @@ void DeclareVar() #Var :
 }
 
 void LValueVar() #Reference : {}
-{   
-    LOOKAHEAD(1) <VAR> DeclareVar() DotReference() 
+{
+    LOOKAHEAD(1) <VAR> DeclareVar() DotReference()
 |
     LOOKAHEAD(1) Identifier(true) DotReference()
 }
@@ -466,7 +466,7 @@ void Identifier(boolean top) :
     t=<REGISTER> { jjtThis.image = t.image; jjtThis.setRegister(t.image); }
 }
 
-void StringIdentifier() #Identifier : 
+void StringIdentifier() #Identifier :
 {
     Token t;
 }
