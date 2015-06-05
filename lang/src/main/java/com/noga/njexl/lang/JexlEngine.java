@@ -566,10 +566,13 @@ public class JexlEngine {
                 from = base.location() + from.substring(1);
             }
         }
-        if (!from.endsWith(Script.DEFAULT_EXTENSION)) {
-            from += Script.DEFAULT_EXTENSION;
-        }
         File f = new File(from);
+        String n = f.getName();
+        if ( !n.contains(".")){
+            // I do not have extension :
+            from += Script.DEFAULT_EXTENSION;
+            f = new File(from);
+        }
         BufferedReader reader = new BufferedReader(new FileReader(f));
         scriptText = readerToString(reader);
         // name mangling for linking

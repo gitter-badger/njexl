@@ -19,6 +19,7 @@ package com.noga.njexl.lang;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 
+import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.parser.JexlNode;
 import com.noga.njexl.lang.parser.ParseException;
 import com.noga.njexl.lang.parser.TokenMgrError;
@@ -278,7 +279,7 @@ public class JexlException extends RuntimeException {
 
         @Override
         protected String detailedMessage() {
-            return "undefined variable " + getVariable();
+            return String.format( "undefined variable : '%s' " , getVariable() );
         }
     }
 
@@ -303,9 +304,23 @@ public class JexlException extends RuntimeException {
             return super.detailedMessage();
         }
 
+        public String getContainer() {
+            if ( mark == null ){
+                return "";
+            }
+            JexlNode p = mark.jjtGetParent();
+            return  p.jjtGetFirstToken().image ;
+        }
+
         @Override
         protected String detailedMessage() {
-            return "inaccessible or unknown property " + getProperty();
+            String p = getProperty();
+            String c = getContainer() ;
+            String m = " inaccessible or unknown property : '%s' of '%s'" ;
+            if (TypeUtility.castInteger(p) != null){
+                m = " index out of bound ? '%s' of '%s'";
+            }
+            return String.format( m , p, c);
         }
     }
 

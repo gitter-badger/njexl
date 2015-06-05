@@ -41,7 +41,7 @@ public class ArithmeticTest extends JexlTestCase {
     }
 
     public void testUndefinedVar() throws Exception {
-        asserter.failExpression("objects[1].status", ".* undefined variable objects.*");
+        asserter.failExpression("objects[1].status", ".* undefined variable : 'objects'.*");
     }
 
     public void testLeftNullOperand() throws Exception {
