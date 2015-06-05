@@ -21,6 +21,7 @@ import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.parser.ASTBitwiseXorNode;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -516,6 +517,8 @@ public class NogaExtendedTest extends JexlTestCase {
 
         private long i;
 
+        public Long L = null ;
+
         private XClass() {
             i = System.nanoTime() ;
         }
@@ -527,6 +530,24 @@ public class NogaExtendedTest extends JexlTestCase {
         public static void printHello(String message){
             System.out.println(message);
         }
+    }
+
+    @Test
+    public void testWithNullField() throws Exception {
+        JexlContext jc = new MapContext();
+        HashMap x = new HashMap();
+        x.put("y",null);
+        jc.set("x", x );
+        jc.set( "X", new XClass());
+
+        Expression e = JEXL.createExpression("z = ( x.y == null )");
+        Object o = e.evaluate(jc);
+        assertTrue((Boolean)o);
+
+        e = JEXL.createExpression("z = ( X.L == null )");
+        o = e.evaluate(jc);
+        assertTrue((Boolean)o);
+
     }
 
     @Test

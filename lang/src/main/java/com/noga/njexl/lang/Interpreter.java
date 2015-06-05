@@ -1867,6 +1867,9 @@ public class Interpreter implements ParserVisitor {
                 return unknownVariable(xjexl);
             }
         }
+        if ( result instanceof Null ){
+            return null;
+        }
         return result;
     }
 
@@ -2136,6 +2139,14 @@ public class Interpreter implements ParserVisitor {
         return getAttribute(object, attribute, null);
     }
 
+
+    /**
+     * Shows that result was a valid null
+     */
+    public static class Null{}
+
+    public static final Null NULL = new Null();
+
     /**
      * Gets an attribute of an object.
      *
@@ -2179,10 +2190,16 @@ public class Interpreter implements ParserVisitor {
                     if (field != null) {
                         JexlPropertyGet fg = new UberspectImpl.FieldPropertyGet(field);
                         value = fg.invoke(object);
-                        if (value != null) {
-                            vg = fg;
+                        vg = fg;
+                        if ( value == null ){
+                            // the actual value of the property is null !
+                            return NULL ;
                         }
                     } else {
+                        if ( ex == null ){
+                            // the actual value of the property is null!
+                            return NULL ;
+                        }
                         // null field, raise ex
                         throw ex;
                     }
