@@ -719,9 +719,9 @@ void ExtendsDef() #ExtendsDef : {}
 
 void ClassDef() #ClassDef : {}
 {
-    LOOKAHEAD(3) <DEF>  Identifier()  <COLON>  ExtendsDef() ( <COMMA> ExtendsDef() )*  Block()
+    LOOKAHEAD(3) <DEF>  Identifier()  <COLON>  ExtendsDef() ( <COMMA> ExtendsDef() )*  (<LINE>)? Block()
     |
-    <DEF>  Identifier() Block()
+    <DEF>  Identifier()  (<LINE>)?  Block()
 }
 
 void ParamDef() #ParamDef : {}
@@ -740,9 +740,9 @@ void ArgDef() #ArgDef : {}
 
 void MethodDef() #MethodDef : {}
 {
-    LOOKAHEAD(3) <DEF>  Identifier()  <LPAREN>[  ParamDef() ( <COMMA> ParamDef()  )* ] <RPAREN> Block()
+    LOOKAHEAD(3) <DEF>  Identifier()  <LPAREN>[  ParamDef() ( <COMMA> ParamDef()  )* ] <RPAREN> (<LINE>)? Block()
     |
-    <DEF>  ParamDef()  <LPAREN>  <RPAREN> Block()
+    <DEF>  ParamDef()  <LPAREN>  <RPAREN>  (<LINE>)? Block()
 }
 
 
