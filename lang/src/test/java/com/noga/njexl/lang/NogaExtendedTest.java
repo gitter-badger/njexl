@@ -20,8 +20,6 @@ import com.noga.njexl.lang.extension.datastructures.Graph;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
-import com.noga.njexl.lang.parser.ASTBitwiseXorNode;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.junit.Assert;
 import org.junit.Test;
 
