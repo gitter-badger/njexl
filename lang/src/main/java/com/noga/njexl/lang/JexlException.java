@@ -304,23 +304,16 @@ public class JexlException extends RuntimeException {
             return super.detailedMessage();
         }
 
-        public String getContainer() {
+        @Override
+        protected String detailedMessage() {
             if ( mark == null ){
                 return "";
             }
-            JexlNode p = mark.jjtGetParent();
-            return  p.jjtGetFirstToken().image ;
-        }
+            Debugger d  = new Debugger();
+            String a = d.data(mark);
 
-        @Override
-        protected String detailedMessage() {
-            String p = getProperty();
-            String c = getContainer() ;
-            String m = " inaccessible or unknown property : '%s' of '%s'" ;
-            if (TypeUtility.castInteger(p) != null){
-                m = " index out of bound ? '%s' of '%s'";
-            }
-            return String.format( m , p, c);
+            String m = " inaccessible or unknown property access at : '%s' " ;
+            return String.format( m , a );
         }
     }
 
