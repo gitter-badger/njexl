@@ -84,6 +84,8 @@ import com.noga.njexl.lang.introspection.JexlMethod;
  * @since 2.0
  */
 public class JexlEngine {
+
+    private static final Log LOGGER = LogFactory.getLog(JexlEngine.class);
     /**
      * An empty/static/non-mutable JexlContext used instead of null context.
      */
@@ -582,7 +584,7 @@ public class JexlEngine {
         String path = f.getCanonicalPath();
         ASTJexlScript tree = parse(scriptText, createInfo(path, 0, 0), new Scope(null));
         Script script = new ExpressionImpl(path, as, this, scriptText, tree);
-        System.out.printf("Script imported : %s@%s\n", as, path);
+        LOGGER.trace( String.format("Script imported : %s@%s\n", as, path));
         imports.put(as, script);
         return script;
     }

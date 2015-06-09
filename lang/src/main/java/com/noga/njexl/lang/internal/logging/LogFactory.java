@@ -16,6 +16,8 @@
 
 package com.noga.njexl.lang.internal.logging;
 
+import com.noga.njexl.lang.extension.TypeUtility;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,10 +32,26 @@ public final class LogFactory {
 
     public static class LogImpl implements Log{
 
+        public static short J_LOG_LEVEL = 1 ;
+
+        public static final String LOG_PROP = "J_LOG_LEVEL" ;
+
+        static {
+            String v = System.getProperty(LOG_PROP);
+            J_LOG_LEVEL = TypeUtility.castShort(v,1);
+
+        }
+
         protected Logger logger;
 
-        public LogImpl(Class c){
+        private LogImpl(Class c){
             logger = Logger.getLogger(c.getName());
+            if ( isDebugEnabled()  || isInfoEnabled() ){
+                logger.setLevel( Level.INFO );
+            }
+            if ( isTraceEnabled()  ){
+                logger.setLevel( Level.FINE );
+            }
         }
 
         @Override
@@ -43,12 +61,12 @@ public final class LogFactory {
 
         @Override
         public boolean isDebugEnabled() {
-            return true;
+            return J_LOG_LEVEL > 4  ;
         }
 
         @Override
         public boolean isErrorEnabled() {
-            return true;
+            return J_LOG_LEVEL > 0 ;
         }
 
         @Override
@@ -58,17 +76,17 @@ public final class LogFactory {
 
         @Override
         public boolean isInfoEnabled() {
-            return true;
+            return J_LOG_LEVEL > 3 ;
         }
 
         @Override
         public boolean isTraceEnabled() {
-            return true;
+            return J_LOG_LEVEL > 4 ;
         }
 
         @Override
         public boolean isWarnEnabled() {
-            return true;
+            return J_LOG_LEVEL > 2 ;
         }
 
         @Override
