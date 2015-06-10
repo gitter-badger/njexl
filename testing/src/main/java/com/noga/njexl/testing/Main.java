@@ -22,32 +22,57 @@ import com.noga.njexl.lang.JexlException;
 import com.noga.njexl.lang.Script;
 import com.noga.njexl.testing.ui.WebSuiteRunner;
 import com.noga.njexl.testing.ui.XSelenium;
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+import static org.kohsuke.args4j.ExampleMode.ALL;
 
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by noga on 15/04/15.
  */
 public class Main {
 
-    static final boolean __DEBUG__ = true ;
+    @Option(name="-X",usage="run with full debug information")
+    boolean __DEBUG__ = false ;
 
-    static void executeScript(String[] args){
+    @Option(name="-u",usage="url to run script against")
+    private String url = "" ;
 
-        String file = args[0];
-        if ( args.length > 1 ){
-            // is this having http[s]:// start?
-            if ( !args[1].startsWith("http")){
-                com.noga.njexl.lang.Main.executeScript(args);
-                return;
-            }
+    @Option(name="-s",usage="Test Suite Xml file")
+    private String suite = "" ;
+
+    @Option(name="-b",usage="Browser Type to Use")
+    private XSelenium.BrowserType  browserType = XSelenium.BrowserType.FIREFOX  ;
+
+    // receives other command line parameters than options
+    @Argument
+    private List<String> arguments = new ArrayList<>();
+
+    private void executeScript(){
+
+        if ( arguments.isEmpty()) {
+            System.err.println("No args given to run!");
+            return;
         }
-        // now I should be this ...
-        String url = args[1];
+
+        String[] args = new String[ arguments.size() ];
+        args =  arguments.toArray(args);
+
+        if ( url.isEmpty() ){
+            com.noga.njexl.lang.Main.executeScript(args);
+            return;
+        }
+        String file = arguments.get(0);
 
         JexlContext context = com.noga.njexl.lang.Main.getContext();
         context.set(Script.ARGS, args);
-        XSelenium xSelenium = XSelenium.selenium(url, XSelenium.BrowserType.FIREFOX.toString());
+        XSelenium xSelenium = XSelenium.selenium(url, browserType.toString());
         context.set("selenium", xSelenium);
         HashMap<String,Object> functions = com.noga.njexl.lang.Main.getFunction(context);
         functions.put("sel", xSelenium);
@@ -84,9 +109,9 @@ public class Main {
         }
     }
 
-    private static void executeUISuite(String[] args) {
+    private void executeUISuite(String suiteFile) {
         try {
-            WebSuiteRunner runner = new WebSuiteRunner(args[0]);
+            WebSuiteRunner runner = new WebSuiteRunner(suiteFile);
             runner.run();
 
         }catch (Throwable t){
@@ -98,24 +123,49 @@ public class Main {
         }
     }
 
-    public static void main(String[] args) {
-        if ( args.length ==  0 ){
-            try {
-                com.noga.njexl.lang.Main.interpret();
-            }catch (Exception e){
-                if ( __DEBUG__ ){
-                    System.err.println(e);
-                }
+    private void usage(CmdLineParser parser){
+        System.err.println("java -jar <jar-file> [options...] arguments...");
+        // print the list of available options
+        parser.printUsage(System.err);
+        System.err.println();
+
+        // print option sample. This is useful some time
+        System.err.println("  Example: java -jar <jar-file> " + parser.printExample(ALL));
+        System.exit(-1);
+
+    }
+
+    private void run(String[] args){
+        CmdLineParser parser = new CmdLineParser(this);
+        parser.setUsageWidth(80);
+        try {
+            // parse the arguments.
+            parser.parseArgument(args);
+            if ( !suite.isEmpty() ){
+                executeUISuite( suite );
+                return;
             }
-            return;
+            if ( !url.isEmpty() ){
+                executeScript();
+                return;
+            }
+            // go with free call
+            com.noga.njexl.lang.Main.main(args);
+
+        } catch( Exception e ) {
+            // if there's a problem in the command line,
+            // you'll get this exception. this will report
+            // an error message.
+            System.err.println(e.getMessage());
+            usage(parser);
         }
-        if ( args[0].endsWith(".jexl") ){
-            executeScript(args);
-            return;
-        }
-        if ( args[0].endsWith(".xml") ){
-            executeUISuite(args);
-            return;
-        }
+
+    }
+
+    private Main(){}
+
+    public static void main(String[] args) {
+        Main main = new Main();
+        main.run(args);
     }
 }

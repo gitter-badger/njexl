@@ -16,6 +16,7 @@
 
 package com.noga.njexl.testing.ui;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour;
 import com.noga.njexl.testing.TestAssert;
@@ -167,7 +168,9 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         WebDriver driver = null;
         switch (type){
             case HTML_UNIT:
-                driver = new HtmlUnitDriver();
+                //set javascript support : with chrome mode on
+                driver = new HtmlUnitDriver(BrowserVersion.CHROME);
+                ((HtmlUnitDriver)driver).setJavascriptEnabled(true);
                 break;
             case CHROME:
                 break;
