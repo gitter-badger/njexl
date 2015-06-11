@@ -126,6 +126,8 @@ public class TypeUtility {
 
     public static final String SYSTEM = "system";
 
+    public static final String THREAD = "thread";
+
 
     /**
      * IO calls
@@ -1216,6 +1218,8 @@ public class TypeUtility {
                 return shuffle(argv);
             case RANDOM:
                 return random(argv);
+            case THREAD:
+                return thread(argv);
             default:
                 if (success != null) {
                     success[0] = false;
@@ -1264,5 +1268,20 @@ public class TypeUtility {
             return p.exitValue();
         }
         return 0;
+    }
+
+    public static Thread thread(Object...args) throws Exception{
+        if ( args.length == 0 ){
+            return Thread.currentThread();
+        }
+        if ( args[0] instanceof AnonymousParam ){
+            AnonymousParam anonymousParam = (AnonymousParam)args[0];
+            args = shiftArrayLeft(args,1);
+            Thread t = new Thread(anonymousParam);
+            anonymousParam.setIterationContext(args, t, t.getId() );
+            t.run();
+            return t;
+        }
+        return Thread.currentThread();
     }
 }

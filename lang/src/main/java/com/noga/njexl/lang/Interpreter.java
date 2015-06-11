@@ -1361,28 +1361,54 @@ public class Interpreter implements ParserVisitor {
         return map;
     }
 
-    public static class AnonymousParam {
+    /**
+     * The class to handle anonymous method calls
+     */
+    public static class AnonymousParam implements Runnable {
 
+        // the underlying interpreter
         public Interpreter interpreter;
 
+        // the method block
         public ASTBlock block;
 
+        /**
+         * Constructs a anonymous parameter
+         * @param i the interpreter
+         * @param block the block
+         */
         public AnonymousParam(Interpreter i, ASTBlock block) {
             this.interpreter = i;
             this.block = block;
         }
 
+        /**
+         * Sets the iteration context
+         * @param con context of iteration, the whole object, in case of a collection the collection
+         * @param o the individual object, elements of the collection
+         * @param i the index - of the element in the collection
+         */
         public void setIterationContext(Object con, Object o, Object i) {
             interpreter.context.set(TypeUtility._CONTEXT_, con);
             interpreter.context.set(TypeUtility._ITEM_, o);
             interpreter.context.set(TypeUtility._INDEX_, i);
         }
 
+        /**
+         * Sets the iteration context with partial updated result
+         * @param con context of iteration, the whole object, in case of a collection the collection
+         * @param o the individual object, elements of the collection
+         * @param i the index - of the element in the collection
+         * @param p the partial result as of current iteration
+         */
         public void setIterationContextWithPartial(Object con, Object o, Object i,Object p) {
             setIterationContext(con,o,i);
             interpreter.context.set( TypeUtility._PARTIAL_, p );
         }
 
+        /**
+         * Cleans up the context by removing all context variables
+         */
         public void removeIterationContext() {
             interpreter.context.remove(TypeUtility._CONTEXT_);
             interpreter.context.remove(TypeUtility._ITEM_);
@@ -1390,6 +1416,10 @@ public class Interpreter implements ParserVisitor {
             interpreter.context.remove(TypeUtility._PARTIAL_);
         }
 
+        /**
+         * Executes the anonymous function
+         * @return the result of the call
+         */
         public Object execute() {
             try {
                 Object ret = block.jjtAccept(interpreter, null);
@@ -1399,8 +1429,23 @@ public class Interpreter implements ParserVisitor {
             }
         }
 
+        /**
+         * Gets a variable
+         * @param name of the variable
+         * @return variable value on the running context
+         */
         public Object getVar(String name) {
             return interpreter.context.get(name);
+        }
+
+        @Override
+        public void run() {
+            try {
+                execute();
+            }
+            finally {
+                removeIterationContext();
+            }
         }
     }
 
