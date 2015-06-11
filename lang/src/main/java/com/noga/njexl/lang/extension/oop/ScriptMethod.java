@@ -96,8 +96,9 @@ public class ScriptMethod {
                 throw new Exception("All Parameters are not using '=' ");
             }
         }
+        boolean __args__ = map.containsKey( Script.ARGS) ;
 
-        if ( namedArgs ) {
+        if ( namedArgs && ! __args__ ) {
             // now put the back stuff
             Set<String> remaining = SetOperations.set_d(defaultValues.keySet(), map.keySet());
             for (String name : remaining) {
@@ -106,6 +107,10 @@ public class ScriptMethod {
             }
         }
         else{
+            if ( __args__ ){
+                // I specified an array to overwrite, so :
+                args =  (Object[])map.get(Script.ARGS) ; // unwrap!
+            }
             for ( int i = 0 ; i < params.size();i++ ){
                 String name = params.get(i);
                 if ( i < args.length ){

@@ -1,0 +1,22 @@
+import 'java.lang.System.out' as out 
+
+def thread_func( a, b){
+   c = a + b 
+   out:printf("hello! : %s\n" , c )
+   return c 
+}
+
+def main(){
+    // get current thread 
+    ct = thread() 
+    r = 0
+    // create another 
+    t = thread{  r = thread_func( __args__=$$ ) } ( 1, 2)
+    while ( t.isAlive() ){
+       ct.sleep(1000)
+    }
+    return r // this is the return value 
+}
+
+// call main 
+main()

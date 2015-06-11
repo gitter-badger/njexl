@@ -197,6 +197,12 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
 
+    @Test
+    public void testThreading() throws Exception{
+        Object o = runScript(JEXL, "samples/thread_demo.jxl");
+        assertEquals(3,o);
+    }
+
     /****
     @Test
     public void testDB() throws Exception{
