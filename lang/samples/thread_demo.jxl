@@ -9,11 +9,18 @@ def thread_func( a, b){
 def main(){
     // get current thread 
     ct = thread() 
+    out:printf("Thread id is : %d\n", ct.getId() )
+
     r = 0
     // create another 
-    t = thread{  r = thread_func( __args__=$$ ) } ( 1, 2)
+    t = thread{ 
+       // note that "_" defines the thread id 
+       out:printf("Child Thread id is : %d\n", _ )
+       // note the parameter passing by assigning into __args__ 
+       r = thread_func( __args__=$$ ) 
+       } ( 1, 2) // these would be passed 
     while ( t.isAlive() ){
-       ct.sleep(1000)
+       ct.sleep(1000) 
     }
     return r // this is the return value 
 }
