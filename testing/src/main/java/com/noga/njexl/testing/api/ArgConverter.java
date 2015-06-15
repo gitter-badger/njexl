@@ -14,6 +14,7 @@
  */
 
 package com.noga.njexl.testing.api;
+import com.noga.njexl.lang.internal.logging.Log;
 import com.noga.njexl.lang.internal.logging.LogFactory;
 import com.noga.njexl.testing.Utils;
 import com.noga.njexl.testing.dataprovider.DataSource;
@@ -29,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ArgConverter {
 
-    private static LogFactory.LogImpl logger = new LogFactory.LogImpl( ArgConverter.class );
+    private static Log logger = LogFactory.getLog( ArgConverter.class );
 
     public static String TLN(Class clazz){
         return clazz.getName().toLowerCase();

@@ -17,6 +17,7 @@ package com.noga.njexl.testing.api.junit;
 
 import com.noga.njexl.lang.*;
 import com.noga.njexl.lang.extension.TypeUtility;
+import com.noga.njexl.lang.internal.logging.Log;
 import com.noga.njexl.lang.internal.logging.LogFactory;
 import com.noga.njexl.testing.api.Annotations;
 import com.noga.njexl.testing.api.CallContainer;
@@ -74,7 +75,7 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
 
         public static final String GLOBALS = "_g_" ;
 
-        LogFactory.LogImpl logger = new LogFactory.LogImpl( ProxyTest.class );
+        Log logger =  LogFactory.getLog( ProxyTest.class );
 
         CallContainer callContainer;
         Annotations.NApiThread nApiThread ;
