@@ -112,6 +112,7 @@ PARSER_END(Parser)
     | < COMMA : (",")(" "|"\t")* ( "\n" | "\r" | "\r\n" )? >
     | < DOT : "." >
     | <LINE : (" "|"\t")* ( "\n" | "\r" | "\r\n" ) >
+    | <LINE_COMMENT : (" "|"\t")* ("##" | "//" ) (~["\n","\r"])* >
 
 }
 
@@ -212,7 +213,7 @@ ASTJexlScript JexlScript() : {}
 void Statement() #void : {}
 {
     <SEMICOL>
-    |<LINE>
+    |( <LINE_COMMENT> )? <LINE>
     | LOOKAHEAD(3) Block()
     | IfStatement()
     | ForeachStatement()

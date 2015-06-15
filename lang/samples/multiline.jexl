@@ -12,8 +12,8 @@ out:println(s)
 
 s = true and  
      false   
-out:println(s)
-
+out:println(s) // we can make comment here 
+out:println("I am still here")
 
 s = " "  + 
    "aaa aa "  + 
