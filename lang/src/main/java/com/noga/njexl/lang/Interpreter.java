@@ -1599,6 +1599,7 @@ public class Interpreter implements ParserVisitor {
      * {@inheritDoc}
      */
     public Object visit(ASTMethodNode node, Object data) {
+        isEventing = false ;
         // the object to invoke the method on should be in the data argument
         if (data == null) {
             // if the method node is the first child of the (ASTReference) parent,
