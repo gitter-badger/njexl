@@ -656,6 +656,17 @@ public final class SetOperations {
             if (anon != null) {
                 anon.setIterationContext(argsList, tuple, c++);
                 Object r = anon.execute();
+                if ( r instanceof JexlException.Continue ){
+                    r = false ;
+                }
+                else if ( r instanceof JexlException.Break ){
+                    JexlException.Break br = (JexlException.Break)r;
+                    r = true ;
+                    if ( br.hasValue ){
+                        r = br.value ;
+                    }
+                    broken = true ;
+                }
                 if (TypeUtility.castBoolean(r, false)) {
                     XList t = new XList();
                     for (int i = 0; i < tuple.length; i++) {
