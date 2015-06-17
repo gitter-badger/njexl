@@ -16,6 +16,8 @@
 
 package com.noga.njexl.lang.extension.datastructures;
 
+import com.noga.njexl.lang.extension.SetOperations;
+
 import java.util.*;
 
 /**
@@ -178,5 +180,24 @@ public class ListSet<T> extends HashSet<T> implements List<T> {
         s = s.substring(0,s.length()-1);
         s += " }";
         return s;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if ( o == null ) return false ;
+        if ( o instanceof Set ){
+            return SetOperations.set_relation(this,(Set)o)
+                    == SetOperations.SetRelation.EQUAL ;
+        }
+        if ( o instanceof List ){
+            return SetOperations.list_relation(this, o)
+                    == SetOperations.SetRelation.EQUAL ;
+        }
+        return false ;
+    }
+
+    @Override
+    public int hashCode() {
+       return super.hashCode();
     }
 }
