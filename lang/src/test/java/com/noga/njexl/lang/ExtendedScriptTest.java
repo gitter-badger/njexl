@@ -23,6 +23,7 @@ import com.noga.njexl.lang.extension.dataaccess.XmlMap;
 import com.noga.njexl.lang.extension.datastructures.Tuple;
 import org.junit.Test;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -196,6 +197,16 @@ public class ExtendedScriptTest extends JexlTestCase {
 
     }
 
+
+    @Test
+    public void testMethodArgOverWrite() throws Exception{
+        Object o = runScript(JEXL, "samples/combination.jxl");
+        Object[] r = (Object[])o;
+        // 4P2 : 12
+        assertEquals(12, ((List)r[0]).size() );
+        //4C2 : 6
+        assertEquals(6, ((List)r[1]).size() );
+    }
 
     @Test
     public void testThreading() throws Exception{

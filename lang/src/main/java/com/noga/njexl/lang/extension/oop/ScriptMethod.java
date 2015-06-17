@@ -21,6 +21,7 @@ import com.noga.njexl.lang.JexlContext;
 import com.noga.njexl.lang.JexlException;
 import com.noga.njexl.lang.Script;
 import com.noga.njexl.lang.extension.SetOperations;
+import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.parser.ASTBlock;
 import com.noga.njexl.lang.parser.ASTMethodDef;
@@ -109,7 +110,7 @@ public class ScriptMethod {
         else{
             if ( __args__ ){
                 // I specified an array to overwrite, so :
-                args =  (Object[])map.get(Script.ARGS) ; // unwrap!
+                args = TypeUtility.array(map.get(Script.ARGS)); // unwrap!
             }
             for ( int i = 0 ; i < params.size();i++ ){
                 String name = params.get(i);

@@ -1125,6 +1125,24 @@ public class TypeUtility {
         if (success != null) {
             success[0] = true;
         }
+        // when length is non zero and last arg is this __args__ then we are overwriting
+        if ( argv.length > 0 && argv[argv.length-1] instanceof Interpreter.NamedArgs ){
+            Interpreter.NamedArgs na = (Interpreter.NamedArgs)argv[argv.length-1];
+            if ( !Script.ARGS.equals(na.name )) { throw new Exception("Named Args is not " + Script.ARGS ) ; }
+            Object[] args = array(na.value );
+            if ( argv.length == 2 && argv[0] instanceof AnonymousParam ){
+                AnonymousParam anon = ( AnonymousParam)argv[0];
+                argv = new Object[args.length + 1];
+                argv[0] = anon ;
+                for ( int i = 1 ; i < argv.length ;i++){
+                    argv[i] = args[i-1];
+                }
+            }else{
+                // overwrite everything
+                argv = args ;
+            }
+        }
+
         switch (methodName) {
             case TYPE :
                 return type(argv);
