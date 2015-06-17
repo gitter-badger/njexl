@@ -209,6 +209,12 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testExtendedBreak() throws Exception{
+        Object o = runScript(JEXL, "samples/break.jxl");
+        assertTrue(o instanceof List);
+    }
+
+    @Test
     public void testThreading() throws Exception{
         Object o = runScript(JEXL, "samples/thread_demo.jxl");
         assertEquals(3,o);

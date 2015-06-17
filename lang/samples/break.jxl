@@ -1,0 +1,10 @@
+/*
+ showcases interesting breaks 
+*/
+
+import 'java.lang.System.out' as out
+
+x = [1,2,3,4,5]
+y = select{ continue ( $ > 3 ) ; true }(x)
+out:println(y)
+y

@@ -18,8 +18,6 @@ package com.noga.njexl.lang;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
-
-import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.parser.JexlNode;
 import com.noga.njexl.lang.parser.ParseException;
 import com.noga.njexl.lang.parser.TokenMgrError;
@@ -404,12 +402,29 @@ public class JexlException extends RuntimeException {
      * @since 0.1
      */
     public static class Break extends JexlException {
+
+        public final Object value;
+
+        public final boolean hasValue;
+
+        /**
+         * Creates a new instance of Break.
+         * @param node the node where the Break was detected
+         * @param value the value of the break
+         */
+        public Break(JexlNode node, Object value) {
+            super(node, "loop broken", null);
+            this.value = value ;
+            this.hasValue = true ;
+        }
         /**
          * Creates a new instance of Break.
          * @param node the node where the Break was detected
          */
         public Break(JexlNode node) {
             super(node, "loop broken", null);
+            this.value = null ;
+            this.hasValue = false ;
         }
     }
 

@@ -655,8 +655,6 @@ public class TypeUtility {
         return list;
     }
 
-    public static HashMap<String, Method> methodHashMap = new HashMap<>();
-
     /**
      * <pre>
      *     Very important list combine routine
@@ -689,6 +687,16 @@ public class TypeUtility {
             for (Object o : list) {
                 anon.setIterationContext(list, o, i);
                 Object ret = anon.execute();
+                if ( ret instanceof JexlException.Continue ){
+                    continue;
+                }
+                if ( ret instanceof JexlException.Break ){
+                    JexlException.Break br = ((JexlException.Break)ret) ;
+                    if ( br.hasValue ){
+                        l.add(br.value);
+                    }
+                    break;
+                }
                 l.add(ret);
                 i++;
             }
@@ -717,14 +725,28 @@ public class TypeUtility {
             XList l = new XList();
             int i = 0;
             for (Object o : list) {
+                boolean broken = false ;
                 anon.setIterationContextWithPartial(list, o, i,l);
                 Object ret = anon.execute();
+                if ( ret instanceof JexlException.Continue ){
+                    continue;
+                }
+                if ( ret instanceof JexlException.Break ){
+                    JexlException.Break br = (JexlException.Break)ret;
+                    ret = true ;
+                    if ( br.hasValue ){
+                        ret = br.value ;
+                    }
+                    broken = true ;
+                }
+
                 if (castBoolean(ret, false)) {
                     //should add _ITEM_ 's value, if anyone modified it
                     l.add(anon.interpreter.getContext().get(_ITEM_));
                 }else{
                     reject.add( anon.interpreter.getContext().get(_ITEM_) );
                 }
+                if ( broken ){ break; }
                 i++;
             }
             list = l;

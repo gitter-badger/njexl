@@ -437,12 +437,27 @@ public final class Debugger implements ParserVisitor {
     /** {@inheritDoc} */
     public Object visit(ASTBreakStatement node, Object data) {
         builder.append(" break ");
+        int c = node.jjtGetNumChildren() ;
+        if ( c > 0 ){
+            builder.append(" ( ");
+            accept( node.jjtGetChild(0), data );
+            builder.append(" )");
+            if ( c > 1 ){
+                accept( node.jjtGetChild(1), data );
+            }
+        }
         return data;
     }
 
     /** {@inheritDoc} */
     public Object visit(ASTContinueStatement node, Object data) {
         builder.append(" continue ");
+        int c = node.jjtGetNumChildren() ;
+        if ( c > 0 ) {
+            builder.append(" ( ");
+            accept(node.jjtGetChild(0), data);
+            builder.append(" )");
+        }
         return data;
     }
 

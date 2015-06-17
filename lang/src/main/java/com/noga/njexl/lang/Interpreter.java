@@ -927,16 +927,41 @@ public class Interpreter implements ParserVisitor {
      * {@inheritDoc}
      */
     public Object visit(ASTBreakStatement node, Object data) {
-        //raise BreakException at parent
-        throw new JexlException.Break(node.jjtGetParent());
+        int c = node.jjtGetNumChildren();
+        if ( c == 0 ) {
+            //raise BreakException at parent -- not it's own condition
+            throw new JexlException.Break(node.jjtGetParent());
+        }
+        // conditional break
+        Object value = node.jjtGetChild(0).jjtAccept( this, data );
+        boolean b = TypeUtility.castBoolean( value , false );
+        if ( b ){
+            if ( c > 1 ){
+                value = node.jjtGetChild(1).jjtAccept( this, data );
+                throw new JexlException.Break(node.jjtGetParent(), value );
+            }
+            // signifies breaking on condition, not returning value
+            throw new JexlException.Break(node.jjtGetParent() );
+        }
+        return data ;
     }
 
     /**
      * {@inheritDoc}
      */
     public Object visit(ASTContinueStatement node, Object data) {
-        //raise ContinueException
-        throw new JexlException.Continue(node.jjtGetParent());
+        int c = node.jjtGetNumChildren();
+        if ( c == 0 ) {
+            //raise ContinueException
+            throw new JexlException.Continue(node.jjtGetParent());
+        }
+        // conditional continue
+        Object value = node.jjtGetChild(0).jjtAccept( this, data );
+        boolean b = TypeUtility.castBoolean( value , false );
+        if ( b ){
+            throw new JexlException.Continue(node.jjtGetParent());
+        }
+        return data ;
     }
 
     /**
@@ -1426,6 +1451,12 @@ public class Interpreter implements ParserVisitor {
                 return ret;
             } catch (JexlException.Return r) {
                 return r.getValue();
+            } catch (JexlException.Break b){
+                // important to return itself...
+                return b ;
+            } catch (JexlException.Continue c){
+                // important to return itself...
+                return c ;
             }
         }
 

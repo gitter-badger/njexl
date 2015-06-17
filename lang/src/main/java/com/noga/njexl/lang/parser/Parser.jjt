@@ -231,11 +231,15 @@ void Statement() #void : {}
 
 void BreakStatement() #BreakStatement : {}
 {
-    <BREAK>
+      LOOKAHEAD(2) <BREAK> <LPAREN> ExpressionStatement() <RPAREN> ( LOOKAHEAD(2) Block() )?
+      |
+       <BREAK>
 }
 
 void ContinueStatement() #ContinueStatement : {}
 {
+    LOOKAHEAD(2) <CONTINUE> <LPAREN> ExpressionStatement() <RPAREN>
+    |
     <CONTINUE>
 }
 
