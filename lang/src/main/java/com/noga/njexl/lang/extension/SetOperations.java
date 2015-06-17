@@ -17,6 +17,7 @@
 package com.noga.njexl.lang.extension;
 
 import com.noga.njexl.lang.Interpreter;
+import com.noga.njexl.lang.JexlException;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.datastructures.XList;
 
@@ -601,9 +602,21 @@ public final class SetOperations {
             tuple[i] = iterators[i].next();
         }
         int c = 0;
+        boolean broken = false ;
         if (anon != null) {
             anon.setIterationContext(argsList, tuple, c++);
             Object r = anon.execute();
+            if ( r instanceof JexlException.Continue ){
+                r = false ;
+            }
+            else if ( r instanceof JexlException.Break ){
+                JexlException.Break br = (JexlException.Break)r;
+                r = true ;
+                if ( br.hasValue ){
+                    r = br.value ;
+                }
+                broken = true ;
+            }
             if (TypeUtility.castBoolean(r, false)) {
                 XList t = new XList();
                 for (int i = 0; i < tuple.length; i++) {
@@ -621,7 +634,7 @@ public final class SetOperations {
 
         boolean emptied = false;
 
-        while (true) {
+        while (!broken) {
 
             emptied = true;
             for (int i = iterators.length - 1; i >= 0; i--) {
