@@ -190,7 +190,8 @@ public class Interpreter implements ParserVisitor {
         this.logger = jexl.logger;
         this.uberspect = jexl.uberspect;
         this.arithmetic = jexl.arithmetic;
-        this.functions = jexl.functions;
+        // why this? Because use *clone* not the same object
+        this.functions = new HashMap<>(jexl.functions);
         this.strict = strictFlag;
         this.silent = silentFlag;
         this.cache = jexl.cache != null;
@@ -211,7 +212,8 @@ public class Interpreter implements ParserVisitor {
         this.logger = base.logger;
         this.uberspect = base.uberspect;
         this.arithmetic = base.arithmetic;
-        this.functions = base.functions;
+        // use *clone* not the actual
+        this.functions = new HashMap<>(base.functions);
         this.strict = base.strict;
         this.silent = base.silent;
         this.cache = base.cache;
