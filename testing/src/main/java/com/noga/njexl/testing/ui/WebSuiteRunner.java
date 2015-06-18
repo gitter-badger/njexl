@@ -121,10 +121,10 @@ public class WebSuiteRunner extends TestSuiteRunner {
             script = engine.importScript(scriptLocation);
         }if ( !feature.beforeScript.isEmpty() ) {
             String scriptLocation = webTestSuite.webApp.scriptDir + "/" + feature.beforeScript;
-            script = engine.importScript(scriptLocation);
+            before = engine.importScript(scriptLocation);
         }if ( !feature.afterScript.isEmpty() ) {
             String scriptLocation = webTestSuite.webApp.scriptDir + "/" + feature.afterScript;
-            script = engine.importScript(scriptLocation);
+            after = engine.importScript(scriptLocation);
         }
     }
 

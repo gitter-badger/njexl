@@ -1,0 +1,15 @@
+<testSuite version="4.2">
+    <dataSources>
+        <source name="sample" location ="_/UIData.xlsx" />
+    </dataSources>
+    <reporters>
+        <reporter name="console"
+                  type="com.noga.njexl.testing.reporting.SimpleTextReporter" />
+    </reporters>
+    <webApp name="NSEApp" build="4.2" scriptDir="_/"
+            url = "http://live-nse.herokuapp.com/"
+            logs="reports/NSEApp" method="GET" >
+        <feature name="GetFeed" ds="sample" table="APIData" afterScript="apiDemo.jxl"
+                 owner="nmondal" enabled="true"/>
+    </webApp>
+</testSuite>

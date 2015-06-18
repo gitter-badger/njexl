@@ -31,12 +31,21 @@ import java.util.Map;
  */
 public class RestCaller {
 
+    public enum CallType{
+        GET,
+        POST
+    }
+
     public static final String ENCODING = "UTF-8";
 
     protected URL base;
 
-    public RestCaller(String url) throws Exception{
+    //disabling switching... probably makes sense this way?
+    public final CallType method;
+
+    public RestCaller(String url, String method) throws Exception{
         base = new URL(url) ;
+        this.method = Enum.valueOf( CallType.class, method);
     }
 
     public String createRequest(Map<String,String> args) throws Exception{
@@ -66,7 +75,6 @@ public class RestCaller {
      * @return the response
      * @throws Exception in case of any issue
      */
-
     public String post(Map<String,String> args) throws Exception {
         URLConnection  connection =  base.openConnection();
         connection.setDoOutput(true); // make it post
@@ -77,5 +85,16 @@ public class RestCaller {
         outputStream.write( query.getBytes(ENCODING) );
         InputStream inputStream = connection.getInputStream();
         return TypeUtility.readStream(inputStream);
+    }
+
+    public String call(Map<String,String> args) throws Exception {
+        switch ( method ){
+            case GET:
+                return get(args);
+            case POST:
+                return post(args);
+            default:
+                return "Unsupported Protocol!" ;
+        }
     }
 }

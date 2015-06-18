@@ -22,8 +22,8 @@ import com.noga.njexl.lang.JexlException;
 import com.noga.njexl.lang.Script;
 import com.noga.njexl.testing.ui.WebSuiteRunner;
 import com.noga.njexl.testing.ui.XSelenium;
+import com.noga.njexl.testing.ws.WebServiceRunner;
 import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import static org.kohsuke.args4j.ExampleMode.ALL;
@@ -109,9 +109,18 @@ public class Main {
         }
     }
 
-    private void executeUISuite(String suiteFile) {
+    public static TestSuiteRunner runner(String suiteFile) throws Exception {
+        if ( suiteFile.endsWith(".api.xml")){
+            return new WebServiceRunner(suiteFile);
+        }
+        return new WebSuiteRunner(suiteFile);
+    }
+
+    private void executeTestSuite(String suiteFile) {
         try {
-            WebSuiteRunner runner = new WebSuiteRunner(suiteFile);
+            // get a runner...
+            TestSuiteRunner runner = runner(suiteFile);
+            // get on with the show...
             runner.run();
 
         }catch (Throwable t){
@@ -142,7 +151,7 @@ public class Main {
             // parse the arguments.
             parser.parseArgument(args);
             if ( !suite.isEmpty() ){
-                executeUISuite( suite );
+                executeTestSuite(suite);
                 return;
             }
             if ( !url.isEmpty() ){
