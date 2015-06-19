@@ -119,13 +119,13 @@ public abstract class TestSuiteRunner implements Runnable{
 
     protected abstract void prepare() throws Exception;
 
-    protected abstract void beforeFeature(TestSuite.BaseFeature feature) throws Exception;
+    protected abstract void beforeFeature(TestSuite.Feature feature) throws Exception;
 
-    protected abstract String logLocation(String base, TestSuite.BaseFeature feature) ;
+    protected abstract String logLocation(String base, TestSuite.Feature feature) ;
 
     protected abstract  TestRunEvent runTest( TestRunEvent runEvent) throws Exception;
 
-    protected abstract void afterFeature(TestSuite.BaseFeature feature) throws Exception;
+    protected abstract void afterFeature(TestSuite.Feature feature) throws Exception;
 
     protected abstract void shutdown() throws Exception;
 
@@ -145,7 +145,7 @@ public abstract class TestSuiteRunner implements Runnable{
         testRunEventListeners.addAll(reporters);
     }
 
-    protected void changeLogDirectory(TestSuite.BaseFeature feature){
+    protected void changeLogDirectory(TestSuite.Feature feature){
         String timeStamp = Utils.ts();
         String logDir = logLocation(timeStamp, feature);
         for ( Reporter r : reporters ){
@@ -153,7 +153,7 @@ public abstract class TestSuiteRunner implements Runnable{
         }
     }
 
-    protected DataSourceTable dataSourceTable(TestSuite.BaseFeature feature) {
+    protected DataSourceTable dataSourceTable(TestSuite.Feature feature) {
         DataSourceContainer container = dataSources.get(feature.ds) ;
         if ( container == null ){
             System.err.printf("No Such data source : [%s]\n",feature.ds);
@@ -166,7 +166,7 @@ public abstract class TestSuiteRunner implements Runnable{
         return table;
     }
 
-    boolean skipTest(TestSuite.BaseFeature feature, int row){
+    boolean skipTest(TestSuite.Feature feature, int row){
         DataSourceContainer container = dataSources.get(feature.ds) ;
         DataSourceTable t = container.dataSource.tables.get(feature.table);
         boolean exist = t.columns().containsKey( container.suiteDataSource.testEnableColumn );
@@ -194,7 +194,7 @@ public abstract class TestSuiteRunner implements Runnable{
         TestSuite.Application application = application();
         for ( int i = 0 ; i < application.features.size() ;i++){
 
-            TestSuite.BaseFeature feature = application.features.get(i);
+            TestSuite.Feature feature = application.features.get(i);
             if ( !feature.enabled ){
                 continue;
             }

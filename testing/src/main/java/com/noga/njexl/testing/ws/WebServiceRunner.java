@@ -20,6 +20,7 @@ import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.internal.logging.Log;
 import com.noga.njexl.lang.internal.logging.LogFactory;
 import com.noga.njexl.testing.TestAssert;
+import com.noga.njexl.testing.TestSuite;
 import com.noga.njexl.testing.ui.WebSuiteRunner;
 
 import java.util.Map;
@@ -33,10 +34,34 @@ public class WebServiceRunner extends WebSuiteRunner {
 
     protected RestCaller restCaller;
 
+    protected void createCaller(TestSuite.Feature feature) throws Exception{
+        String callUrl = webTestSuite.webApp.url;
+        if (!feature.base.isEmpty()) {
+            callUrl += "/" + feature.base + "/";
+        }
+        String method = webTestSuite.webApp.method;
+        if (!feature.method.isEmpty()) {
+            method = feature.method;
+        }
+        restCaller = new RestCaller(callUrl, method);
+
+    }
+
+    @Override
+    protected void beforeFeature(TestSuite.Feature feature) throws Exception {
+        createCaller(feature);
+        super.beforeFeature(feature);
+    }
+
+    @Override
+    protected void afterFeature(TestSuite.Feature feature) throws Exception {
+        restCaller = null;
+        super.afterFeature(feature);
+    }
+
     public WebServiceRunner(String file) throws Exception {
         super(file);
-        restCaller = new RestCaller(webTestSuite.webApp.url,
-                webTestSuite.webApp.method);
+        restCaller = null;
     }
 
     @Override

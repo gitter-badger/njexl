@@ -21,17 +21,9 @@ import com.noga.njexl.lang.JexlEngine;
 import com.noga.njexl.lang.Script;
 import com.noga.njexl.testing.TestAssert;
 import com.noga.njexl.testing.TestSuite;
-import com.noga.njexl.testing.Utils;
-import com.noga.njexl.testing.dataprovider.DataSourceTable;
-import com.noga.njexl.testing.dataprovider.ProviderFactory;
-import com.noga.njexl.testing.reporting.Reporter;
 import com.noga.njexl.testing.TestSuiteRunner;
-import com.noga.njexl.testing.dataprovider.DataSource;
-
 import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by noga on 17/04/15.
@@ -93,7 +85,7 @@ public class WebSuiteRunner extends TestSuiteRunner {
     }
 
     @Override
-    protected String logLocation(String base, TestSuite.BaseFeature feature) {
+    protected String logLocation(String base, TestSuite.Feature feature) {
         String loc = webTestSuite.webApp.logs + "/" + base +"/" + feature.name ;
         File file = new File(loc);
         if ( !file.exists() ){
@@ -106,7 +98,7 @@ public class WebSuiteRunner extends TestSuiteRunner {
     }
 
     @Override
-    protected void afterFeature(TestSuite.BaseFeature feature) throws Exception {
+    protected void afterFeature(TestSuite.Feature feature) throws Exception {
         jexlContext = null;
         functions.clear();
         functions = null;
@@ -115,7 +107,7 @@ public class WebSuiteRunner extends TestSuiteRunner {
         after = null;
     }
 
-    protected void createScripts(JexlEngine engine, TestSuite.BaseFeature feature) throws Exception{
+    protected void createScripts(JexlEngine engine, TestSuite.Feature feature) throws Exception{
         if ( !feature.script.isEmpty() ) {
             String scriptLocation = webTestSuite.webApp.scriptDir + "/" + feature.script;
             script = engine.importScript(scriptLocation);
@@ -129,7 +121,8 @@ public class WebSuiteRunner extends TestSuiteRunner {
     }
 
     @Override
-    protected void beforeFeature(TestSuite.BaseFeature feature) throws Exception {
+    protected void beforeFeature(TestSuite.Feature feature) throws Exception {
+
         jexlContext = getContext();
         functions = getFunctions();
         JexlEngine engine = new JexlEngine();

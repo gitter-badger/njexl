@@ -1,0 +1,15 @@
+/*
+ Tests the polymer sample :
+ http://1.daily-stock-forecast.appspot.com
+*/
+import 'java.lang.System.out' as out 
+import 'java.lang.Thread' as Thread
+
+selenium.open("/") ;  ## Open the URL 
+
+@@selenium.click("search-dialog-button")
+
+@@selenium.type("symbol_search" , "MSFT\n")
+
+Thread.sleep(6000)
+

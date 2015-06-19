@@ -20,12 +20,10 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import com.thoughtworks.xstream.converters.extended.NamedMapConverter;
 import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by noga on 16/04/15.
@@ -86,10 +84,16 @@ public class TestSuite {
     @XStreamAlias("reporter")
     public static class Reporter extends ObjectInit{}
 
-    public static class BaseFeature{
+    public static class Feature {
 
         @XStreamAsAttribute
         public String name ;
+
+        @XStreamAsAttribute
+        public String base ;
+
+        @XStreamAsAttribute
+        public String method ;
 
         @XStreamAsAttribute
         public String ds ;
@@ -112,8 +116,10 @@ public class TestSuite {
         @XStreamAsAttribute
         public String afterScript ;
 
-        public BaseFeature(){
+        public Feature(){
             name = "" ;
+            base = "" ;
+            method = "" ;
             ds = "" ;
             table = "" ;
             owner = "" ;
@@ -141,7 +147,7 @@ public class TestSuite {
 
 
         @XStreamImplicit(itemFieldName = "feature")
-        public ArrayList<BaseFeature> features;
+        public ArrayList<Feature> features;
 
         public Application(){
             features = new ArrayList<>();

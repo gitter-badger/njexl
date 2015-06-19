@@ -7,9 +7,11 @@
                   type="com.noga.njexl.testing.reporting.SimpleTextReporter" />
     </reporters>
     <webApp name="NSEApp" build="4.2" scriptDir="_/"
-            url = "http://live-nse.herokuapp.com/"
-            logs="reports/NSEApp" method="GET" >
-        <feature name="GetFeed" ds="sample" table="APIData" afterScript="apiDemo.jxl"
+            url = "http://jsonplaceholder.typicode.com"
+            logs="reports/json" method="GET" >
+        <feature name="GetPostByUser" base="posts" method="GET"
+                 ds="sample" table="userId" afterScript="apiDemo.jxl"
                  owner="nmondal" enabled="true"/>
+
     </webApp>
 </testSuite>
