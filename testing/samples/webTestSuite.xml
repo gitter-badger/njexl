@@ -1,18 +1,37 @@
+<!--  The browser to use for  -->
 <testSuite version="4.2" browser="FIREFOX">
+    <!-- From where to load data -->
     <dataSources>
+        <!--  
+            notice the "_", that means from
+            the directory of the suite itself 
+            load the xlsx file 
+        -->
         <source name="sample"  location ="_/UIData.xlsx" />
     </dataSources>
+    <!--  The reports would be generated - 
+    this is simple text stuff writing it to console
+    type is the class name 
+     -->
     <reporters>
-        <reporter name="console" type="com.noga.njexl.testing.reporting.SimpleTextReporter" />
-
-        <!--
-        <reporter name="text" type="SimpleTextReporter" >
-            <params>FILE</params>
-        </reporter>
-        -->
-
+        <reporter name="console" 
+            type="com.noga.njexl.testing.reporting.SimpleTextReporter" />
     </reporters>
-    <webApp name="DemoApp" build="4.2" scriptDir="_/" url = "http://google.co.in" logs="reports/DemoApp"  >
-        <feature name="Demo1" ds="sample" table="Data" script="selenium_demo" owner="nmondal" enabled="true"/>
+    <!-- 
+        The actual testing stuff, 
+        the url to hit, 
+        directory of the script 
+        log dir 
+    -->
+    <webApp name="DemoApp" build="4.2" scriptDir="_/" 
+          url = "http://google.co.in" logs="reports/DemoApp"  >
+        <!--
+           They are broken into features, 
+           relying on data source connection, data  table 
+           and the script to execute, 
+           which can call other scripts methods or Java code    
+        -->  
+        <feature name="Demo1" ds="sample" table="Data" 
+            script="selenium_demo" owner="nmondal" enabled="true"/>
     </webApp>
 </testSuite>

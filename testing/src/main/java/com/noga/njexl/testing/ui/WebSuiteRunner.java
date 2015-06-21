@@ -66,6 +66,20 @@ public class WebSuiteRunner extends TestSuiteRunner {
         webTestSuite = WebTestSuite.loadFrom(file);
     }
 
+    /**
+     * Sets up variable for local context
+     * @param local the local context
+     * @param runEvent run event, which encapsulates the data source
+     */
+    public void setLocalContext(JexlContext local, TestRunEvent runEvent){
+        String[] columns = runEvent.table.row(0);
+        String[] values = runEvent.table.row(runEvent.row);
+        // put into context
+        for ( int i = 0 ; i < columns.length;i++ ){
+            local.set(columns[i],values[i]);
+        }
+    }
+
     @Override
     protected TestSuite testSuite() {
         return webTestSuite;
@@ -133,13 +147,8 @@ public class WebSuiteRunner extends TestSuiteRunner {
     @Override
     protected TestRunEvent runTest(TestRunEvent runEvent) throws Exception {
         testAssert.setError(false);
-        String[] columns = runEvent.table.row(0);
-        String[] values = runEvent.table.row(runEvent.row);
         JexlContext local = jexlContext.copy();
-        // put into context
-        for ( int i = 0 ; i < columns.length;i++ ){
-            local.set(columns[i],values[i]);
-        }
+        setLocalContext(local,runEvent);
         // set output if need be?
         runEvent.runObject = script.execute(local);
 

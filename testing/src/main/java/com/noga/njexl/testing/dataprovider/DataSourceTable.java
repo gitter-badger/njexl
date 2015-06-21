@@ -16,9 +16,12 @@
 
 package com.noga.njexl.testing.dataprovider;
 
+import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.testing.dataprovider.collection.XStreamIterator;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by noga on 15/04/15.
@@ -28,17 +31,34 @@ public abstract class DataSourceTable {
 
     protected HashMap<String,Integer> columns;
 
-    public HashMap<String,Integer> columns(){
+    /**
+     * Gets the columns
+     * @return a Map : column name with index
+     */
+    public Map<String,Integer> columns(){
         if ( columns == null ){
             populateColumns();
         }
         return columns ;
     }
 
+    /**
+     * Gets the name of the data source
+     * @return the name
+     */
     public abstract String name();
 
+    /**
+     * The size of the data source
+     * @return number of rows
+     */
     public abstract int length();
 
+    /**
+     * Gets a row
+     * @param rowIndex the index
+     * @return a string array - corresponding to the row values
+     */
     public abstract String[] row(int rowIndex);
 
     public abstract DataSource dataSource();
@@ -51,6 +71,12 @@ public abstract class DataSourceTable {
         }
     }
 
+    /**
+     * Gets the columns value
+     * @param column name of the column ( header )
+     * @param rowIndex the row index
+     * @return column value
+     */
     public String columnValue(String column, int rowIndex){
         if ( columns == null ){
             populateColumns();
@@ -63,6 +89,26 @@ public abstract class DataSourceTable {
         return data[columns.get(column)] ;
     }
 
+    /**
+     * A Tuple of column name to value for a row
+     * @param rowIndex the row index
+     * @return a map header : column value mapping
+     */
+    public Map<String,String> tuple(int rowIndex){
+        String[] columns = row(0);
+        String[] values = row(rowIndex);
+        try {
+            return TypeUtility.makeDict(columns, values);
+        }
+        catch (Exception e){
+            return Collections.EMPTY_MAP ;
+        }
+    }
+
+    /**
+     * A potential infinite iterator
+     * @return iterator
+     */
     public XStreamIterator iterator(){
         return new XStreamIterator(this);
     }

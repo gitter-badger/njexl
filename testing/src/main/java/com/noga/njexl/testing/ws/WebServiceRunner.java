@@ -73,13 +73,8 @@ public class WebServiceRunner extends WebSuiteRunner {
     @Override
     protected TestRunEvent runTest(TestRunEvent runEvent) throws Exception {
         testAssert.setError(false);
-        String[] columns = runEvent.table.row(0);
-        String[] values = runEvent.table.row(runEvent.row);
         JexlContext local = jexlContext.copy();
-        // put into context
-        for (int i = 0; i < columns.length; i++) {
-            local.set(columns[i], values[i]);
-        }
+        setLocalContext(local,runEvent);
         boolean run = true;
         //run before test
         if (before != null) {
@@ -99,10 +94,8 @@ public class WebServiceRunner extends WebSuiteRunner {
         }
         Object result = null;
         try {
-            //make a dict using two Arrays...
-            Map args = TypeUtility.makeDict(columns, values);
+            Map args = runEvent.table.tuple( runEvent.row );
             result = restCaller.call(args);
-
         } catch (Throwable t) {
             run = false;
             runEvent.error = t;
