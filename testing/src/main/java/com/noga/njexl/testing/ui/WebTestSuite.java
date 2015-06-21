@@ -20,6 +20,8 @@ import com.noga.njexl.testing.TestSuite;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
+import java.util.Map;
+
 /**
  * Created by noga on 15/04/15.
  */
@@ -52,8 +54,8 @@ public class WebTestSuite extends TestSuite {
         webApp = new WebApplication();
     }
 
-    public static WebTestSuite loadFrom(String file) throws Exception{
-        return loadFrom(WebTestSuite.class , file);
+    public static WebTestSuite loadFrom(String file, Map<String,String> variables) throws Exception{
+        return loadFrom(WebTestSuite.class , file, variables);
     }
 
 }

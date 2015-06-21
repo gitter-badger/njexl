@@ -24,6 +24,7 @@ import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by noga on 16/04/15.
@@ -169,7 +170,9 @@ public class TestSuite {
         reporters = new ArrayList<>();
     }
 
-    protected static <T extends TestSuite> T loadFrom(Class c , String xmlFile) throws Exception{
+    protected static <T extends TestSuite> T loadFrom(
+            Class c , String xmlFile, Map<String,String> variables)
+            throws Exception{
 
         if ( !TestSuite.class.isAssignableFrom(c)){
             throw new Exception("Sorry pal, [" + c + "] is not a TestSuite!" );
@@ -178,6 +181,9 @@ public class TestSuite {
         xStream.alias("testSuite", c);
         xStream.autodetectAnnotations(true);
         String xml = Utils.readToEnd(xmlFile);
+        // now replace all variables
+        xml  = Utils.substituteVariableInXml(xml,variables);
+        // now replace the paths
         String location = new File(xmlFile).getCanonicalPath();
         location = location.replace('\\','/');
         String dir = location.substring(0, location.lastIndexOf("/"));

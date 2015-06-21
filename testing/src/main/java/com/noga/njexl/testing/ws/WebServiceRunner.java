@@ -23,6 +23,7 @@ import com.noga.njexl.testing.TestAssert;
 import com.noga.njexl.testing.TestSuite;
 import com.noga.njexl.testing.ui.WebSuiteRunner;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -59,9 +60,13 @@ public class WebServiceRunner extends WebSuiteRunner {
         super.afterFeature(feature);
     }
 
-    public WebServiceRunner(String file) throws Exception {
-        super(file);
+    public WebServiceRunner(String file, Map<String,String> variables) throws Exception {
+        super(file,variables);
         restCaller = null;
+    }
+
+    public WebServiceRunner(String file) throws Exception {
+        this(file, Collections.EMPTY_MAP);
     }
 
     @Override

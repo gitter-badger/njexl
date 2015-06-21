@@ -23,7 +23,9 @@ import com.noga.njexl.testing.TestAssert;
 import com.noga.njexl.testing.TestSuite;
 import com.noga.njexl.testing.TestSuiteRunner;
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by noga on 17/04/15.
@@ -62,9 +64,15 @@ public class WebSuiteRunner extends TestSuiteRunner {
         return functions ;
     }
 
-    public WebSuiteRunner(String file) throws Exception {
-        webTestSuite = WebTestSuite.loadFrom(file);
+    public WebSuiteRunner(String file, Map<String,String> variables) throws Exception {
+        super(variables);
+        webTestSuite = WebTestSuite.loadFrom(file,variables);
     }
+
+    public WebSuiteRunner(String file) throws Exception {
+        this(file, Collections.EMPTY_MAP);
+    }
+
 
     /**
      * Sets up variable for local context

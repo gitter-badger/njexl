@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,7 +38,12 @@ public final class Utils {
 
     public static final String REDIRECT_TO_FILE = "@" ;
 
-    public static final Pattern RELOCATE_PATH_PATTERN = Pattern.compile("\"_/(?<path>[^\"]*)\"", Pattern.MULTILINE);
+    public static final Pattern RELOCATE_PATH_PATTERN
+            = Pattern.compile("\"_/(?<path>[^\"]*)\"", Pattern.MULTILINE);
+
+    public static final Pattern VAR_SUBST =
+            Pattern.compile("\\$\\{(?<name>[_a-zA-Z][_a-zA-Z\\.0-9]*)\\}",
+                    Pattern.MULTILINE);
 
     public static Object createInstance(String className, Object... params) {
         try {
@@ -94,6 +100,24 @@ public final class Utils {
             path = path.replace('\\','/');
             xml = matcher.replaceFirst("\"" + path + "\"" );
             matcher = RELOCATE_PATH_PATTERN.matcher(xml);
+        }
+        return xml ;
+    }
+
+    public static String substituteVariableInXml(String xml, Map<String,String> variables)
+            throws Exception{
+        // there is no point?
+        if ( variables.isEmpty() ) { return xml ; }
+        // if not, perhaps...?
+        Matcher matcher = VAR_SUBST.matcher(xml);
+        while(matcher.find()){
+            String varName = matcher.group("name");
+            if ( !variables.containsKey( varName ) ){
+                throw new Exception(String.format("[%s] is not there in the context", varName));
+            }
+            String value = variables.get(varName);
+            xml = matcher.replaceFirst( value );
+            matcher = VAR_SUBST.matcher(xml);
         }
         return xml ;
     }

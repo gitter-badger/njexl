@@ -71,9 +71,9 @@ public abstract class TestSuiteRunner implements Runnable{
 
     }
 
-    public final HashSet<TestRunEventListener> testRunEventListeners ;
+    public final Set<TestRunEventListener> testRunEventListeners ;
 
-    protected HashSet<Reporter> reporters;
+    protected Set<Reporter> reporters;
 
     public static class DataSourceContainer{
 
@@ -90,13 +90,17 @@ public abstract class TestSuiteRunner implements Runnable{
         }
     }
 
-    protected HashMap<String,DataSourceContainer> dataSources;
+    protected Map<String,DataSourceContainer> dataSources;
 
-    protected HashMap<String,TestSuite.DataSource> tsDataSources;
+    protected Map<String,TestSuite.DataSource> tsDataSources;
 
-    protected TestSuiteRunner(){
+    protected Map<String,String> relocationVariables;
+
+    protected TestSuiteRunner(Map<String,String> v){
         testRunEventListeners = new HashSet<>();
+        relocationVariables = v;
     }
+
 
     protected void fireTestEvent(String feature, TestRunEventType type, DataSourceTable table, int row){
         TestRunEvent event = new TestRunEvent( this, type, feature, table, row);
