@@ -21,9 +21,9 @@ import com.noga.njexl.testing.dataprovider.DataSource;
 import com.noga.njexl.testing.dataprovider.DataSourceTable;
 import com.noga.njexl.testing.dataprovider.ProviderFactory;
 import com.noga.njexl.testing.reporting.Reporter;
-import java.util.EventObject;
-import java.util.HashMap;
-import java.util.HashSet;
+
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * Created by noga on 17/04/15.
@@ -104,6 +104,18 @@ public abstract class TestSuiteRunner implements Runnable{
     }
 
     protected void fireTestEvent(TestRunEvent event){
+
+        switch (event.type ){
+            case ABORT_TEST:
+                aborts.add( event );
+                break;
+            case ERROR_TEST:
+                errors.add(event);
+                break;
+            default:
+                break;
+        }
+
         for (TestRunEventListener listener : testRunEventListeners ){
             try {
                 listener.onTestRunEvent( event );
@@ -143,6 +155,8 @@ public abstract class TestSuiteRunner implements Runnable{
             reporters.add(reporter);
         }
         testRunEventListeners.addAll(reporters);
+        aborts = new ArrayList<>();
+        errors = new ArrayList<>();
     }
 
     protected void changeLogDirectory(TestSuite.Feature feature){
@@ -177,7 +191,15 @@ public abstract class TestSuiteRunner implements Runnable{
         return result;
     }
 
-    TestSuite testSuite ;
+    protected TestSuite testSuite ;
+
+    protected Collection<TestRunEvent> aborts;
+
+    public Collection<TestRunEvent> aborts(){ return aborts; }
+
+    protected Collection<TestRunEvent> errors;
+
+    public Collection<TestRunEvent> errors(){ return errors; }
 
     @Override
     public void run() {
@@ -214,7 +236,9 @@ public abstract class TestSuiteRunner implements Runnable{
                 fireTestEvent(feature.name,TestRunEventType.AFTER_FEATURE, null, -1);
             }
             for ( int row = 1 ; row < table.length() ; row ++){
-                if ( skipTest(feature,row)){
+                boolean skip = skipTest(feature,row) ;
+                if ( skip ){
+                    fireTestEvent(feature.name, TestRunEventType.IGNORE_TEST, table, row);
                     continue;
                 }
                 fireTestEvent(feature.name, TestRunEventType.BEFORE_TEST, table, row);

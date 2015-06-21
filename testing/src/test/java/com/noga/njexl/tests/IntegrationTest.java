@@ -16,8 +16,8 @@
 
 package com.noga.njexl.tests;
 
-import com.noga.njexl.lang.Main;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
+import com.noga.njexl.testing.TestSuiteRunner;
 import com.noga.njexl.testing.api.Annotations;
 import com.noga.njexl.testing.api.NApiAnnotationSample;
 import com.noga.njexl.testing.dataprovider.DataSourceTable;
@@ -25,7 +25,6 @@ import com.noga.njexl.testing.dataprovider.ProviderFactory;
 import com.noga.njexl.testing.dataprovider.excel.ExcelDataSource;
 import com.noga.njexl.testing.dataprovider.uri.URIDataSource;
 import com.noga.njexl.testing.ocr.OCR;
-import com.noga.njexl.testing.ui.WebTestSuite;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,17 +35,24 @@ public class IntegrationTest {
 
     public static final String URL = "http://www.w3schools.com/html/html_tables.asp" ;
 
-    public static final String SUITE = "samples/webTestSuite.xml" ;
+    public static final String SIMPLE_WEB_SUITE = "samples/webTestSuite.xml" ;
+
+    public static final String API_WEB_SUITE = "samples/webAPITestSuite.api.xml" ;
 
     public static final String EXCEL_FILE = "samples/UIData.xlsx" ;
 
     public static final String FORMULA_SHEET = "Formula" ;
 
-
     public static final String IMAGE_FILE = "samples/sampleImage.png" ;
 
     public static final String TRAINING_DIR = "samples/ocr_training" ;
 
+    public static void runSuiteAndTest(String file) throws Exception {
+        TestSuiteRunner runner = com.noga.njexl.testing.Main.runner( file);
+        runner.run();
+        Assert.assertTrue( runner.aborts().isEmpty() );
+        Assert.assertTrue( runner.errors().isEmpty() );
+    }
 
     @BeforeClass
     public static void beforeClass(){
@@ -62,10 +68,14 @@ public class IntegrationTest {
         System.out.println(text);
     }
 
-    //@Test
-    public void suiteLoading() throws Exception {
-        WebTestSuite webTestSuite = WebTestSuite.loadFrom(SUITE);
-        Assert.assertNotNull(webTestSuite);
+    @Test
+    public void simpleSuiteRun() throws Exception {
+        runSuiteAndTest(SIMPLE_WEB_SUITE);
+    }
+
+    @Test
+    public void apiWebSuiteRun() throws Exception {
+        runSuiteAndTest(API_WEB_SUITE);
     }
 
     @Test
