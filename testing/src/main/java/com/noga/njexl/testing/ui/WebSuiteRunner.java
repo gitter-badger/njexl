@@ -146,7 +146,7 @@ public class WebSuiteRunner extends TestSuiteRunner {
 
     @Override
     protected TestRunEvent runTest(TestRunEvent runEvent) throws Exception {
-        testAssert.setError(false);
+        testAssert.clearError();
         JexlContext local = jexlContext.copy();
         setLocalContext(local,runEvent);
         // set output if need be?

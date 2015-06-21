@@ -38,7 +38,7 @@ public final class TestAssert {
         return error;
     }
 
-    public void setError(boolean err){ error = err ; }
+    public void clearError(){ error = false ; }
 
     public enum AssertionType {
         TEST,

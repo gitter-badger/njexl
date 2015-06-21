@@ -187,8 +187,9 @@ public abstract class TestSuiteRunner implements Runnable{
         if ( !exist ){
             return false ;
         }
-        boolean result = TypeUtility.castBoolean(t.columnValue(container.suiteDataSource.testEnableColumn, row), false);
-        return result;
+        String value = t.columnValue(container.suiteDataSource.testEnableColumn, row) ;
+        boolean enable = TypeUtility.castBoolean(value, false);
+        return !enable;
     }
 
     protected TestSuite testSuite ;

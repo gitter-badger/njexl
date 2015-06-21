@@ -97,11 +97,18 @@ public class SimpleTextReporter implements Reporter {
             case AFTER_FEATURE:
                 printStream.printf("%s|%s|%s\n", Utils.ts(), testRunEvent.feature, testRunEvent.type);
                 break;
+
+            case IGNORE_TEST:
+                dsTable = testRunEvent.table.name() ;
+                row = testRunEvent.row ;
+                printStream.printf("%s|%s|%s:%d|%s\n", Utils.ts(),
+                        testRunEvent.feature, dsTable, row , testRunEvent.type);
+                break;
+
             case BEFORE_TEST:
                 dsTable = testRunEvent.table.name() ;
                 row = testRunEvent.row ;
             case ABORT_TEST:
-            case IGNORE_TEST:
                 printStream.printf("%s|%s|%s:%d|%s\n", Utils.ts(),
                         testRunEvent.feature, dsTable, row , testRunEvent.type);
                 break;

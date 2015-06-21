@@ -72,7 +72,7 @@ public class WebServiceRunner extends WebSuiteRunner {
 
     @Override
     protected TestRunEvent runTest(TestRunEvent runEvent) throws Exception {
-        testAssert.setError(false);
+        testAssert.clearError();
         JexlContext local = jexlContext.copy();
         setLocalContext(local,runEvent);
         boolean run = true;
@@ -101,10 +101,16 @@ public class WebServiceRunner extends WebSuiteRunner {
             runEvent.error = t;
             logger.error("Web Service Call encountered error", t);
         }
+        // any assertions failed?
+        if ( run ){
+            run = !testAssert.hasError();
+        }
+
         if (!run) {
             runEvent.type = TestRunEventType.ERROR_TEST;
             return runEvent;
         }
+
         if (after != null) {
             //set up nicely
             local.set(SCRIPT_OUT, result);
