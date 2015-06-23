@@ -26,6 +26,8 @@ import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.parser.ASTBlock;
 import com.noga.njexl.lang.parser.ASTMethodDef;
 import com.noga.njexl.lang.parser.JexlNode;
+import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Eventing.Event;
+import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Eventing;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -65,6 +67,33 @@ public class ScriptMethod {
         if ( instance ) {
             // This was always dummy...
             params.remove(0);
+        }
+        before = new ListSet<>();
+        after = new ListSet<>();
+    }
+
+    public final ListSet before;
+
+    public final ListSet after;
+
+    private void dispatch(String p, Interpreter interpreter, Object[] args, ListSet listeners){
+        Event event = new Event( p, this, args );
+        Object[] argv = new Object[]{ event } ;
+        for ( Object l : listeners ){
+            if ( l instanceof ScriptClassInstance ){
+                ScriptClassInstance i = (ScriptClassInstance)l;
+                try {
+                    i.execMethod( p , argv );
+                }catch (Throwable t){
+                }
+            }
+            else if ( l instanceof ScriptMethod ){
+                ScriptMethod m = (ScriptMethod)l;
+                try {
+                    m.invoke( null , interpreter, argv );
+                }catch (Throwable t){
+                }
+            }
         }
     }
 
@@ -148,6 +177,7 @@ public class ScriptMethod {
         addToContext(context, map);
         try {
             interpreter.setContext(context);
+            dispatch(Eventing.BEFORE, interpreter,args,before);
             Object ret = astBlock.jjtAccept(interpreter,null);
             return ret;
         }catch (Exception e){
@@ -157,9 +187,18 @@ public class ScriptMethod {
             e.printStackTrace(); // ensure that we have an issue which is to be noted down...
         }
         finally {
+            dispatch(Eventing.AFTER, interpreter,args,after);
             //finally remove
             interpreter.setContext(oldContext);
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "ScriptMethod{" +
+                " name='" + name + '\'' +
+                ", instance=" + instance +
+                '}';
     }
 }

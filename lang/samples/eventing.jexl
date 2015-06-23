@@ -4,6 +4,15 @@
 */
 import 'java.lang.System.out' as out
 
+def generic(){
+   out:println("I am generic function")
+}
+
+def gen_event(){
+   event = __args__[0]
+   out:printf("I am generic %s \n", event )
+}
+
 def  MyEventClass {
      //  before hook
      def __before__(){
@@ -19,6 +28,31 @@ def  MyEventClass {
      }
 }
 x = new ( 'MyEventClass' )
+// get the say_hello method 
+m = x.NClass.method.say_hello
+out:println(m)
+// this get's the method 
+e = #def( 'my:gen_event' )
+out:println(e)
+m.before.add(e)
 // before this method __before__ would be called 
 @@x.say_hello(" I am Eventing ")
 // __after__ would be called after this 
+
+
+m = #def( 'my:generic' )
+out:println(m)
+
+// add before handler 
+m.before.add(e)
+// call and see what happens ?
+generic()
+// remove before handler 
+m.before.remove(e)
+// add a programmatic handler with MyEventClass
+// __before__ would be called 
+m.before.add(x)
+// add to after 
+m.after.add(e)
+// call and see what happens ?
+generic()

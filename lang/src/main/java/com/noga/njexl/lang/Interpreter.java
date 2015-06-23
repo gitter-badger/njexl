@@ -20,6 +20,7 @@ import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.oop.ScriptClass;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
+import com.noga.njexl.lang.extension.oop.ScriptMethod;
 import com.noga.njexl.lang.internal.logging.Log;
 import com.noga.njexl.lang.introspection.*;
 import com.noga.njexl.lang.parser.*;
@@ -1007,18 +1008,52 @@ public class Interpreter implements ParserVisitor {
         return Boolean.FALSE;
     }
 
+    protected Object findScriptObject(String name){
+        String[] arr = name.split(":");
+        Object so = null ;
+        if ( arr.length == 1 ){
+            name = arr[0].trim();
+            so =  current.classes().get(name);
+            if ( so != null ){
+                return so;
+            }
+            so = current.methods().get( name );
+            return so;
+        }
+        String ns = arr[0].trim();
+        name = arr[1].trim();
+        Script script = imports.get(ns);
+        if ( script == null ){ return  null ; }
+        so =  script.classes().get(name);
+        if ( so != null ){
+            return so;
+        }
+        so = script.methods().get( name );
+        return  so;
+    }
+
     /**
      * {@inheritDoc}
      */
     public Object visit(ASTDefinedFunction node, Object data) {
         try {
-            String varName =
-                    node.jjtGetChild(0).jjtGetChild(0).image;
-            if (varName != null) {
+
+            JexlNode n = node.jjtGetChild(0).jjtGetChild(0) ;
+            if ( n instanceof ASTIdentifier ){
+                String varName = n.image ;
                 return context.has(varName);
-            } else {
-                node.jjtGetChild(0).jjtGetChild(0).jjtAccept(this, data);
-                return true;
+            }
+            else {
+                int num = n.jjtGetNumChildren();
+                // null is defined
+                if ( num > 0 && n.jjtGetChild(0) instanceof ASTNullLiteral ) { return true ; }
+                Object o = n.jjtAccept(this, data);
+                if ( o instanceof String ){
+                    // used to get the Function or class
+                    String name  = (String)o;
+                    return findScriptObject(name);
+                }
+                return o != null ;
             }
         } catch (Exception e) {
         }

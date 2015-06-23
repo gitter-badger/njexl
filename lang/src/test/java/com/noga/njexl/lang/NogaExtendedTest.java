@@ -64,6 +64,11 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createExpression("#def(10)");
         o = e.evaluate(jc);
         assertTrue((Boolean) o);
+
+        e = JEXL.createExpression("#def(null)");
+        o = e.evaluate(jc);
+        assertTrue((Boolean) o);
+
         jc.set("x","");
         e = JEXL.createExpression("#def(x)");
         o = e.evaluate(jc);

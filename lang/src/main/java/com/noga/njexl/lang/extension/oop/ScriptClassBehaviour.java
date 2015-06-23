@@ -127,7 +127,7 @@ public final class ScriptClassBehaviour {
             /**
              * the method
              */
-            public final String method;
+            public final Object method;
 
             /**
              * the arguments to the method
@@ -145,7 +145,7 @@ public final class ScriptClassBehaviour {
              * @param m what method was called
              * @param a what argument was passed
              */
-            public Event(String p, String m, Object[] a){
+            public Event(String p, Object m, Object[] a){
                 pattern = p;
                 method = m;
                 args = a;
