@@ -25,10 +25,10 @@ import org.junit.runner.RunWith;
 
 @RunWith(JClassRunner.class)
 @NApiService(base = "samples/")
-@NApiServiceCreator(name="c1")
+@NApiServiceCreator
 public class NApiAnnotationSample {
 
-    @NApiServiceInit(creator = "c1")
+    @NApiServiceInit
     public NApiAnnotationSample(){}
 
     @NApi( dataSource = "UIData.xlsx", dataTable = "add" ,

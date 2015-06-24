@@ -19,6 +19,8 @@ import com.noga.njexl.testing.api.Annotations;
 import com.noga.njexl.testing.api.Annotations.* ;
 import com.noga.njexl.testing.api.ArgConverter;
 import com.noga.njexl.testing.api.CallContainer;
+import com.noga.njexl.testing.api.ServiceCreatorFactory;
+import com.noga.njexl.testing.api.ServiceCreatorFactory.ServiceCreator ;
 import org.junit.runner.Runner;
 import org.junit.runners.Suite;
 import java.util.ArrayList;
@@ -39,9 +41,10 @@ public class JClassRunner extends Suite {
         createRunners();
     }
 
-    Object service(NApiServiceCreator creator, Class clazz) throws Exception{
-        // we would do fancy creation later...
-        return clazz.newInstance();
+    public Object service(NApiServiceCreator creator, Class clazz) throws Exception{
+        ServiceCreator serviceCreator = ServiceCreatorFactory.creator(creator);
+        Object service = serviceCreator.create( clazz );
+        return service;
     }
 
     public static String dictEntry(String s){

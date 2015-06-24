@@ -38,9 +38,7 @@ public final class Annotations {
     @Target( ElementType.TYPE )
     public @interface NApiServiceCreator {
 
-        String name();
-
-        String type() default  "simple" ;
+        Class type() default  ServiceCreatorFactory.SimpleCreator.class ;
 
         String[] args() default {};
     }
@@ -49,9 +47,10 @@ public final class Annotations {
     @Target( ElementType.CONSTRUCTOR )
     public @interface NApiServiceInit {
 
-        String creator();
+        String bean() default "";
 
         String[] args() default {};
+
     }
 
     @Retention( RetentionPolicy.RUNTIME )
