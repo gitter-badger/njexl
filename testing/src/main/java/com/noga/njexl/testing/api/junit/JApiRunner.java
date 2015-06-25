@@ -29,6 +29,8 @@ import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
 import org.junit.runners.parameterized.TestWithParameters;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -58,13 +60,17 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
             cc = c ;
             delay = d ;
             numCalls = nc;
+            timings = new double[numCalls];
         }
+
+        public double[] timings;
 
         @Override
         public void run() {
             for (int i = 0; i < numCalls ; i++) {
                 delay( delay );
                 cc.call();
+                timings[i] = cc.timing / 1000000.0  ;
             }
         }
     }
@@ -78,6 +84,7 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
         Log logger =  LogFactory.getLog( ProxyTest.class );
 
         CallContainer callContainer;
+
         Annotations.NApiThread nApiThread ;
 
         public boolean script(String file) {
@@ -114,23 +121,58 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
             this.nApiThread = nApiThread ;
         }
 
+        public boolean doPerformanceCheck(WorkerThread[] workers, double ninetyPercentile) {
+            ArrayList<Double> results = new ArrayList<>();
+            for ( int i = 0 ; i < workers.length;i++ ){
+                for ( int j = 0 ; j < workers[i].timings.length ; j++ ){
+                    double d = workers[i].timings[j] ;
+                    if ( d > 0 ){
+                        results.add(d);
+                    }
+                    System.out.printf("%s -> %f \n", workers[i].cc.uniqueId() , d);
+                }
+            }
+            Collections.sort( results );
+            int s  = results.size() ;
+            double m = results.get( s -1 ); // the max
+            if ( s > 10 ){
+                s = (int)Math.ceil(0.9 * s);
+                m = results.get(s);
+            }
+            results.clear();
+            System.out.printf("Expected ( %f ) , Actual ( %f )\n", ninetyPercentile, m );
+            return ( m < ninetyPercentile );
+        }
 
         @Test
         public void callMethod() throws Exception{
             if ( nApiThread.use() ){
                // make use of multi threading
                 int nT = nApiThread.numThreads() ;
+                WorkerThread[] workers = new WorkerThread[nT];
                 ExecutorService executor = Executors.newFixedThreadPool(nT);
                 int pt = nApiThread.pacingTime();
                 int sd = nApiThread.spawnTime() ;
                 int nc = nApiThread.numCallPerThread() ;
                 for (int i = 0; i < nT ; i++) {
                     WorkerThread.delay( sd );
-                    Runnable worker = new WorkerThread( callContainer , pt, nc);
-                    executor.execute(worker);//calling execute method of ExecutorService
+                    workers[i] = new WorkerThread( callContainer , pt, nc);
+                    //calling execute method of ExecutorService
+                    executor.execute(workers[i]);
                 }
                 executor.shutdown();
-                while (!executor.isTerminated()) {   }
+                while (!executor.isTerminated()) {  WorkerThread.delay(100); }
+                // if it was performance ...
+                if ( nApiThread.performance() ){
+                    Double ninetyPercentile = callContainer.ninetyPercentile();
+                    if ( ninetyPercentile == null ){
+                        ninetyPercentile = nApiThread.ninetyPercentile() ;
+                    }
+                    boolean passed = doPerformanceCheck( workers, ninetyPercentile );
+                    if ( !passed ){
+                        throw new Exception("Performance Test Failed!");
+                    }
+                }
             }else {
                 callContainer.call();
             }

@@ -87,6 +87,18 @@ public final class Annotations {
          */
         int pacingTime() default 1000 ;
 
+        /**
+         * Is this a performance test
+         * @return true if it is, false if it is not
+         */
+        boolean performance() default  false ;
+
+        /**
+         * 90% for performance
+         * @return the percentile value
+         */
+        double ninetyPercentile() default  CallContainer.DEFAULT_NINETY_PERCENTILE  ;
+
     }
 
     @Retention( RetentionPolicy.RUNTIME )

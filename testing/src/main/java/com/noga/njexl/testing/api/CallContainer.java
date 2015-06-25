@@ -15,6 +15,7 @@
 
 package com.noga.njexl.testing.api;
 
+import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.testing.dataprovider.DataSourceTable;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -33,10 +34,13 @@ public class CallContainer implements Serializable, Cloneable {
 
     public static final String TEST_DESCRIPTION = "TEST_DESCRIPTION" ;
 
+    public static final String NINETY_PERCENTILE = "90%" ;
+
+    public static final double DEFAULT_NINETY_PERCENTILE = 10000.0 ;
+
     public static final String EXPECTED_EXCEPTION = "EXPECTED_EXCEPTION" ;
 
     public static final String TEST_DISABLED = "TEST_DISABLED" ;
-
 
     @XStreamOmitField
     public String globals ;
@@ -147,13 +151,21 @@ public class CallContainer implements Serializable, Cloneable {
         return false;
     }
 
-
     public String testId(){
         if ( dataTable == null ){
             return Integer.toString(rowId) ;
         }
         String t = dataTable.columnValue( TEST_ID, rowId);
         return (t!=null) ? t : Integer.toString(rowId) ;
+    }
+
+    public Double ninetyPercentile(){
+        if ( dataTable == null ){
+            return null ;
+        }
+        String t = dataTable.columnValue( NINETY_PERCENTILE, rowId);
+        if ( t == null ) return  null;
+        return TypeUtility.castDouble(t, DEFAULT_NINETY_PERCENTILE);
     }
 
     public String uniqueId(){
@@ -194,7 +206,7 @@ public class CallContainer implements Serializable, Cloneable {
         return inputObject ;
     }
 
-    public void call(){
+    public synchronized void call(){
         try{
             timing = System.nanoTime();
             result = method.invoke(service,parameters);
