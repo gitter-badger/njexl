@@ -294,7 +294,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         return new SelectOption(SelectOption.Using.label, item);
     }
 
-    void selectItem(Select select, String optionLocator) {
+    public void selectItem(Select select, String optionLocator) {
         SelectOption option = getSelectOption(optionLocator);
         switch (option.using) {
             case id:
@@ -317,7 +317,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         }
     }
 
-    void deSelectItem(Select select, String optionLocator) {
+    public void deSelectItem(Select select, String optionLocator) {
         SelectOption option = getSelectOption(optionLocator);
         switch (option.using) {
             case id:
@@ -340,6 +340,15 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         }
     }
 
+    public WebElement element(String locator){
+        By by = getByFromLocator(locator);
+        return driver.findElement(by);
+    }
+
+    public List<WebElement> elements(String locator){
+        By by = getByFromLocator(locator);
+        return driver.findElements(by);
+    }
 
     @Override
     public void click(String locator) {
