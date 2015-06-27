@@ -101,7 +101,7 @@ public final class Annotations {
          * Is this a performance test
          * @return true if it is, false if it is not
          */
-        boolean use() default false ;
+        boolean use() default true ;
 
         /**
          * Percentile for performance
@@ -154,10 +154,10 @@ public final class Annotations {
         int pacingTime() default 1000 ;
 
         /**
-         * The performance strategy if any
+         * The performance strategy if any, default off
          * @return the performance strategy
          */
-        Performance performance() default @Performance();
+        Performance performance() default @Performance(use=false);
 
     }
 
