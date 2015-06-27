@@ -21,7 +21,6 @@ import com.noga.njexl.lang.internal.logging.Log;
 import com.noga.njexl.lang.internal.logging.LogFactory;
 import com.noga.njexl.testing.api.Annotations;
 import com.noga.njexl.testing.api.CallContainer;
-import jdk.nashorn.internal.codegen.CompilerConstants;
 import org.junit.*;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
@@ -29,7 +28,6 @@ import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
 import org.junit.runners.parameterized.TestWithParameters;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -121,7 +119,7 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
             this.nApiThread = nApiThread ;
         }
 
-        public boolean doPerformanceCheck(WorkerThread[] workers, double ninetyPercentile) {
+        public boolean doPerformanceCheck(WorkerThread[] workers, double percentile,  double percentileValueLessThan ) {
             ArrayList<Double> results = new ArrayList<>();
             for ( int i = 0 ; i < workers.length;i++ ){
                 for ( int j = 0 ; j < workers[i].timings.length ; j++ ){
@@ -134,14 +132,17 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
             }
             Collections.sort( results );
             int s  = results.size() ;
-            double m = results.get( s -1 ); // the max
-            if ( s > 10 ){
-                s = (int)Math.ceil(0.9 * s);
+            double m = results.get(s - 1); // the max
+            int minSample = (int)Math.ceil(1.0/( 1.0 - percentile ));
+            if ( s >= minSample ){
+                s = (int)Math.ceil(percentile * s);
                 m = results.get(s);
             }
             results.clear();
-            System.out.printf("Expected ( %f ) , Actual ( %f )\n", ninetyPercentile, m );
-            return ( m < ninetyPercentile );
+            System.out.printf("Expected percentile[%f] ( %f ) , Actual ( %f )\n",
+                    percentile, percentileValueLessThan, m );
+            //always use open set, not closed or semi closed
+            return ( m < percentileValueLessThan );
         }
 
         @Test
@@ -163,12 +164,18 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
                 executor.shutdown();
                 while (!executor.isTerminated()) {  WorkerThread.delay(100); }
                 // if it was performance ...
-                if ( nApiThread.performance() ){
-                    Double ninetyPercentile = callContainer.ninetyPercentile();
-                    if ( ninetyPercentile == null ){
-                        ninetyPercentile = nApiThread.ninetyPercentile() ;
+                Annotations.Performance performance = nApiThread.performance();
+                if ( performance.use() ){
+                    Double lessThan = callContainer.percentile();
+                    short intPercentile = performance.percentile() ;
+                    double percentile = 0.9 ;
+                    if ( intPercentile > 0 && intPercentile < 100 ){
+                        percentile = intPercentile/100.0;
                     }
-                    boolean passed = doPerformanceCheck( workers, ninetyPercentile );
+                    if ( lessThan == null ){
+                        lessThan = performance.lessThan()  ;
+                    }
+                    boolean passed = doPerformanceCheck( workers, percentile , lessThan );
                     if ( !passed ){
                         throw new Exception("Performance Test Failed!");
                     }

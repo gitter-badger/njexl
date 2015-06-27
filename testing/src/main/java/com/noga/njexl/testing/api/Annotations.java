@@ -31,15 +31,47 @@ public final class Annotations {
     @Target( ElementType.TYPE )
     public @interface NApiService {
 
+        /**
+         * If true then use this for testing
+         * @return true if one needs to run, false otherwise
+         */
+        boolean use() default true ;
+
+        /**
+         * The base directory where all data and script
+         * would be stored
+         * @return directory
+         */
         String base() default "" ;
+
+        /**
+         * The before class script location ( not implemented )
+         * @return before class script location
+         */
+        String beforeClass() default "" ;
+
+        /**
+         * The after class script location ( not implemented )
+         * @return after class script location
+         */
+        String afterClass() default "" ;
     }
 
     @Retention( RetentionPolicy.RUNTIME )
     @Target( ElementType.TYPE )
     public @interface NApiServiceCreator {
 
+        /**
+         * The service creator class
+         * @return service creator class
+         */
         Class type() default  ServiceCreatorFactory.SimpleCreator.class ;
 
+        /**
+         * String representation of the arguments
+         * needs to call constructor of the service creator class
+         * @return arguments to the constructor
+         */
         String[] args() default {};
     }
 
@@ -47,10 +79,44 @@ public final class Annotations {
     @Target( ElementType.CONSTRUCTOR )
     public @interface NApiServiceInit {
 
+        /**
+         * The Spring Bean Name
+         * When one wants to instantiate the class using spring
+         * @return bean name
+         */
         String bean() default "";
 
+        /**
+         * String representation of the arguments
+         * needs to call constructor of the service class
+         * @return arguments to the constructor
+         */
         String[] args() default {};
+    }
 
+    @Retention( RetentionPolicy.RUNTIME )
+    public @interface Performance{
+
+        /**
+         * Is this a performance test
+         * @return true if it is, false if it is not
+         */
+        boolean use() default false ;
+
+        /**
+         * Percentile for performance
+         * Defaults to 90%
+         * @return the percentile you are seeking
+         */
+        short percentile() default 90;
+
+        /**
+         * Percentile for performance
+         * The experimental value should not exceed this,
+         * Else exception will be thrown. Defaults to @{CallContainer.DEFAULT_PERCENTILE_VALUE}
+         * @return the expected experimental upper cut-off of the percentile value
+         */
+        double lessThan()  default  CallContainer.DEFAULT_PERCENTILE_VALUE  ;
     }
 
     @Retention( RetentionPolicy.RUNTIME )
@@ -88,16 +154,10 @@ public final class Annotations {
         int pacingTime() default 1000 ;
 
         /**
-         * Is this a performance test
-         * @return true if it is, false if it is not
+         * The performance strategy if any
+         * @return the performance strategy
          */
-        boolean performance() default  false ;
-
-        /**
-         * 90% for performance
-         * @return the percentile value
-         */
-        double ninetyPercentile() default  CallContainer.DEFAULT_NINETY_PERCENTILE  ;
+        Performance performance() default @Performance();
 
     }
 
@@ -105,17 +165,74 @@ public final class Annotations {
     @Target( ElementType.METHOD )
     public @interface NApi {
 
+        /**
+         * If true then use this for testing
+         * @return true if one needs to run, false otherwise
+         */
+        boolean use() default true ;
+
+        /**
+         * <pre>
+         * The data source location :
+         *   [1] url
+         *   [2] Directory with flat files
+         *   [3] Excel files
+         * </pre>
+         * @return the location
+         */
         String dataSource();
 
+        /**
+         * The actual data table
+         * <pre>
+         *     A flat file
+         *     A table ( index ) in a url
+         *     A data sheet in excel file
+         * </pre>
+         * @return name of the table
+         */
         String dataTable();
 
+
+        /**
+         * The script that would invoke
+         * before any of the test vector calls started ( not implemented )
+         * @return relative location of the script w.r.t. base
+         */
+        String beforeAll() default "";
+
+        /**
+         * The script that would invoke
+         * after all of the test vector calls done ( not implemented )
+         * @return relative location of the script w.r.t. base
+         */
+        String afterAll() default "";
+
+        /**
+         * The script that would invoke
+         * before per test vector call
+         * @return relative location of the script w.r.t. base
+         */
         String before() default "";
 
+        /**
+         * The script that would invoke
+         * after per test vector call
+         * @return relative location of the script w.r.t. base
+         */
         String after() default "";
 
+        /**
+         * Global Variables which would be accessible
+         * per test vector call inside all the scripts
+         * <pre>
+         *     The way to put vars is :
+         *     { "x=a" , "y=b" ,...}
+         *     This ensures x variable is assigned the value 'a'.
+         * </pre>
+         * @return global variables entries to a global dict
+         */
         String[] globals() default {};
-
-        String validatorCreationMode() default "";
     }
 
     public static class MethodRunInformation{
@@ -126,8 +243,13 @@ public final class Annotations {
     }
 
     public static NApiService NApiService(Class c){
-        return (NApiService) c.getAnnotation( NApiService.class);
+        NApiService ns = (NApiService) c.getAnnotation( NApiService.class);
+        if ( ns != null && ns.use() ){
+            return ns;
+        }
+        return null;
     }
+
     public static NApiServiceCreator NApiServiceCreator(Class c){
         return (NApiServiceCreator) c.getAnnotation(NApiServiceCreator.class);
     }
@@ -137,7 +259,11 @@ public final class Annotations {
     }
 
     public static NApi NApi(Method m){
-        return  m.getAnnotation(NApi.class);
+        NApi nApi = m.getAnnotation(NApi.class);
+        if ( nApi != null && nApi.use() ){
+            return nApi;
+        }
+        return null;
     }
 
     public static NApiThread NApiThread(Method m){

@@ -31,7 +31,7 @@ public class NApiAnnotationSample {
     @NApiServiceInit
     public NApiAnnotationSample(){}
 
-    @NApi( dataSource = "UIData.xlsx", dataTable = "add" ,
+    @NApi(use=false, dataSource = "UIData.xlsx", dataTable = "add" ,
             before = "pre.jexl", after = "post.jexl", globals = {"op=+"} )
     @NApiThread
     public int add(int a, int b) {
@@ -42,7 +42,7 @@ public class NApiAnnotationSample {
 
     @NApi(dataSource = "UIData.xlsx", dataTable = "sub" ,
             before = "pre.jexl", after = "post.jexl" , globals = { "op=-" } )
-    @NApiThread(use=true,performance = true)
+    @NApiThread(use=true,performance = @Performance(use=true))
     public int subtract(int a, int b) {
         int r = a - b ;
         System.out.printf("%d - %d = %d \n", a, b, r );

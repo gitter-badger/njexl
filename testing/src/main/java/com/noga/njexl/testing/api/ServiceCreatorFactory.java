@@ -36,7 +36,7 @@ public final class ServiceCreatorFactory {
         protected void findInit(Class clazz){
             Constructor[] constructors = clazz.getConstructors();
             for ( int i = 0 ; i < constructors.length ; i++ ){
-                init = (NApiServiceInit)constructors[i].getAnnotation(NApiServiceInit.class);
+                init = Annotations.NApiServiceInit(constructors[i]);
                 if ( init != null ){
                     constructor = constructors[i];
                     break;

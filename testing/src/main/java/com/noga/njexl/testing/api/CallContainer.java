@@ -34,9 +34,9 @@ public class CallContainer implements Serializable, Cloneable {
 
     public static final String TEST_DESCRIPTION = "TEST_DESCRIPTION" ;
 
-    public static final String NINETY_PERCENTILE = "90%" ;
+    public static final String PERCENTILE = "%PERCENTILE%" ;
 
-    public static final double DEFAULT_NINETY_PERCENTILE = 10000.0 ;
+    public static final double DEFAULT_PERCENTILE_VALUE = 10000.0 ;
 
     public static final String EXPECTED_EXCEPTION = "EXPECTED_EXCEPTION" ;
 
@@ -159,18 +159,19 @@ public class CallContainer implements Serializable, Cloneable {
         return (t!=null) ? t : Integer.toString(rowId) ;
     }
 
-    public Double ninetyPercentile(){
+    public Double percentile(){
         if ( dataTable == null ){
             return null ;
         }
-        String t = dataTable.columnValue( NINETY_PERCENTILE, rowId);
+        String t = dataTable.columnValue( PERCENTILE, rowId);
         if ( t == null ) return  null;
-        return TypeUtility.castDouble(t, DEFAULT_NINETY_PERCENTILE);
+        return TypeUtility.castDouble(t, DEFAULT_PERCENTILE_VALUE );
     }
 
     public String uniqueId(){
         return testId() + "_" + Long.toString( Thread.currentThread().getId() ) ;
     }
+
     public String description(){
         String t = dataTable.columnValue( TEST_DESCRIPTION, rowId);
         return (t!=null) ? t : Integer.toString(rowId) ;
