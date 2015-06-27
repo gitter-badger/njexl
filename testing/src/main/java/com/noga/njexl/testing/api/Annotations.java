@@ -127,7 +127,7 @@ public final class Annotations {
          *  Whether or not use threaded mode
          * @return true/false
          */
-        boolean use() default false;
+        boolean use() default true;
 
         /**
          * Number of threads
