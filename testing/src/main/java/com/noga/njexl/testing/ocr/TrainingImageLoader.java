@@ -51,7 +51,7 @@ public class TrainingImageLoader extends DocumentScannerListenerAdaptor
      * data.  Multiple calls to this method may be made with the same
      * <code>Map</code> to populate it with the data from several training
      * images.
-     * @throws IOException
+     * @throws IOException in case unable to read the image file
      */
     public void load(String imageFilename, CharacterRange charRange, HashMap<Character, ArrayList<TrainingImage>> dest)
             throws IOException

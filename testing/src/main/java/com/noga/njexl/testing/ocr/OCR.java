@@ -115,7 +115,7 @@ public final class OCR {
     /**
      * OCRs current screen
      * @return text from the screen
-     * @throws Exception
+     * @throws Exception when it fails
      */
     public static String screen() throws Exception {
         // capture the whole screen

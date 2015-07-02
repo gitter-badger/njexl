@@ -29,22 +29,23 @@ public interface ExcelReader {
 
     /**
      * Gets the value of the excel cell as string
-     * @param sheet
-     *@param row    0 based row index
-     * @param column  @return value of the cell, casted to string
+     * @param sheet the sheet name
+     * @param row  0 based row index
+     * @param column  column name
+     * @return value of the cell, casted to string
      */
     String value(String sheet, int row, int column);
 
     /**
      * Gets the row count in the sheetName
-     * @param sheet
+     * @param sheet sheet name
      * @return the number of rows in the sheet
      */
     int rowCount(String sheet);
 
     /**
      * Gets the column  count in the sheet for the row
-     * @param sheet
+     * @param sheet sheet name
      * @return the column count
      */
     int columnCount(String sheet);

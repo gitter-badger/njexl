@@ -166,7 +166,7 @@ public class ArgConverter {
      *
      * </pre>
      *
-     * @param c
+     * @param c a class to be tested
      * @return then return true, else return false
      */
     public static boolean IsHash(Class<?> c) {

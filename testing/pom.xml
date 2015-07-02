@@ -204,6 +204,23 @@ limitations under the License.
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+                <configuration>
+                    <excludePackageNames>com.noga.njexl.lang.parser:com.noga.njexl.lang.internal</excludePackageNames>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>package-javadoc</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
