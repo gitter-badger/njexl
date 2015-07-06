@@ -19,6 +19,8 @@ import com.noga.njexl.testing.api.Annotations.*;
 import com.noga.njexl.testing.api.junit.JClassRunner;
 import org.junit.runner.RunWith;
 
+import java.security.SecureRandom;
+
 /**
  * Created by noga on 27/05/15.
  */
@@ -27,6 +29,8 @@ import org.junit.runner.RunWith;
 @NApiService(base = "samples/")
 @NApiServiceCreator
 public class NApiAnnotationSample {
+
+    static final boolean _RANDOM_EX_ = false ;
 
     @NApiServiceInit
     public NApiAnnotationSample(){}
@@ -46,7 +50,8 @@ public class NApiAnnotationSample {
     public int subtract(int a, int b) {
         int r = a - b ;
         System.out.printf("%d - %d = %d \n", a, b, r );
+        SecureRandom sr = new SecureRandom();
+        if ( _RANDOM_EX_ && sr.nextBoolean()){ throw new Error("Random Error!"); }
         return r;
     }
-
 }

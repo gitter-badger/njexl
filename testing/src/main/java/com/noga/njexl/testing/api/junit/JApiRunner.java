@@ -121,15 +121,30 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
 
         public boolean doPerformanceCheck(WorkerThread[] workers, double percentile,  double percentileValueLessThan ) {
             ArrayList<Double> results = new ArrayList<>();
+            boolean oneFailed = false ;
             for ( int i = 0 ; i < workers.length;i++ ){
                 for ( int j = 0 ; j < workers[i].timings.length ; j++ ){
                     double d = workers[i].timings[j] ;
+                    String uId = workers[i].cc.uniqueId() ;
                     if ( d > 0 ){
                         results.add(d);
+                        System.out.printf("%s -> %f \n", uId, d);
                     }
-                    System.out.printf("%s -> %f \n", workers[i].cc.uniqueId() , d);
+                    else{
+                        oneFailed = true ;
+                        System.err.printf("**ERROR %s -> %s \n", uId , workers[i].cc.error);
+                        System.err.printf("**ON INPUT %s\n", Main.strArr(workers[i].cc.parameters));
+                    }
                 }
             }
+            if ( results.isEmpty() ) {
+                System.err.println("All Inputs failed, can not have any performance check!");
+                return false ;
+            }
+            if ( oneFailed ){
+                System.err.println("Some Input failed, still doing performance check!");
+            }
+
             Collections.sort( results );
             int s  = results.size() ;
             double m = results.get(s - 1); // the max
