@@ -169,7 +169,11 @@ public class CallContainer implements Serializable, Cloneable {
     }
 
     public String uniqueId(){
-        return testId() + "_" + Long.toString( Thread.currentThread().getId() ) ;
+        return uniqueId( Thread.currentThread().getId()) ;
+    }
+
+    public String uniqueId(long l){
+        return testId() + "_" + Long.toString( l ) ;
     }
 
     public String description(){

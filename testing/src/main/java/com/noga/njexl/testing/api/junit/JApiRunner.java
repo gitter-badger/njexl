@@ -125,7 +125,7 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
             for ( int i = 0 ; i < workers.length;i++ ){
                 for ( int j = 0 ; j < workers[i].timings.length ; j++ ){
                     double d = workers[i].timings[j] ;
-                    String uId = workers[i].cc.uniqueId() ;
+                    String uId = workers[i].cc.uniqueId(j+1) ;
                     if ( d > 0 ){
                         results.add(d);
                         System.out.printf("%s -> %f \n", uId, d);
