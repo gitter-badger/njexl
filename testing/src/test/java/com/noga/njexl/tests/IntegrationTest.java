@@ -20,6 +20,7 @@ import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.testing.TestSuiteRunner;
 import com.noga.njexl.testing.api.Annotations;
 import com.noga.njexl.testing.api.NApiAnnotationSample;
+import com.noga.njexl.testing.api.junit.JClassRunner;
 import com.noga.njexl.testing.dataprovider.DataSourceTable;
 import com.noga.njexl.testing.dataprovider.ProviderFactory;
 import com.noga.njexl.testing.dataprovider.excel.ExcelDataSource;
@@ -64,7 +65,7 @@ public class IntegrationTest {
     @Test
     public void testOCR() throws Exception{
         OCR.train(TRAINING_DIR);
-        String text = OCR.text( IMAGE_FILE);
+        String text = OCR.text(IMAGE_FILE);
         System.out.println(text);
     }
 
@@ -91,7 +92,7 @@ public class IntegrationTest {
     @Test
     public void URIDataSourceTest() throws Exception{
         Object o = ProviderFactory.dataSource(URL);
-        Assert.assertTrue( o instanceof URIDataSource);
+        Assert.assertTrue(o instanceof URIDataSource);
     }
 
     @Test
@@ -119,5 +120,10 @@ public class IntegrationTest {
                 System.out.println("Found a nApi : " + m.getName() );
             }
         }
+    }
+
+    @Test
+    public void jClassTest() throws Exception{
+        JClassRunner.run( NApiAnnotationSample.class );
     }
 }

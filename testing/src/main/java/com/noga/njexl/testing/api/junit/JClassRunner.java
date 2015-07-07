@@ -15,12 +15,12 @@
 
 package com.noga.njexl.testing.api.junit;
 
-import com.noga.njexl.testing.api.Annotations;
+import com.noga.njexl.testing.api.*;
 import com.noga.njexl.testing.api.Annotations.* ;
-import com.noga.njexl.testing.api.ArgConverter;
-import com.noga.njexl.testing.api.CallContainer;
-import com.noga.njexl.testing.api.ServiceCreatorFactory;
 import com.noga.njexl.testing.api.ServiceCreatorFactory.ServiceCreator ;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Request;
+import org.junit.runner.Result;
 import org.junit.runner.Runner;
 import org.junit.runners.Suite;
 import java.util.ArrayList;
@@ -32,6 +32,19 @@ import java.util.List;
  * Created by noga on 28/05/15.
  */
 public class JClassRunner extends Suite {
+
+    /**
+     * Runs a nApi Class using jUnit
+     * @param clazz the class implementing nApi
+     * @return result
+     * @throws Exception in case of error
+     */
+    public static Result run(Class<?> clazz) throws Exception {
+        JUnitCore c = new JUnitCore();
+        JClassRunner suite = new JClassRunner( clazz );
+        Result r = c.run(Request.runner(suite));
+        return r;
+    }
 
     protected final List<Runner> children;
 
