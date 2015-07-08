@@ -16,8 +16,8 @@
 
 package com.noga.njexl.testing.dataprovider.collection;
 
-import com.noga.njexl.testing.dataprovider.DataSourceTable;
-
+import java.util.Arrays;
+import java.util.List;
 import java.util.ListIterator;
 
 /**
@@ -26,7 +26,7 @@ import java.util.ListIterator;
  * Created by noga on 15/04/15.
  */
 
-public class XStreamIterator implements ListIterator {
+public class XStreamIterator<T> implements ListIterator<T> {
 
     protected boolean stop = true ;
 
@@ -53,7 +53,7 @@ public class XStreamIterator implements ListIterator {
      * @return stream size
      */
     public int size() {
-        return dataSourceTable.length() ;
+        return dataSourceTable.size() ;
     }
 
     @Override
@@ -92,33 +92,33 @@ public class XStreamIterator implements ListIterator {
      *         exhausted
      */
     @Override
-    public Object next() {
+    public T next() {
 
         if (hasNext()) {
             index = nextIndex();
-            return dataSourceTable.row(index);
+            return dataSourceTable.get(index);
         }
         return null;
     }
 
     @Override
-    public Object previous() {
+    public T previous() {
 
         if (hasPrevious()) {
             index = previousIndex();
-            return dataSourceTable.row(index);
+            return dataSourceTable.get(index);
         }
         return null;
     }
 
     @Override
-    public void set(Object o) {
-        // We don't do it.
+    public void set(T o) {
+       // we do not do it
     }
 
     @Override
-    public void add(Object o) {
-        // We don't do it.
+    public void add(T o) {
+        dataSourceTable.add(o);
     }
 
     @Override
@@ -126,14 +126,21 @@ public class XStreamIterator implements ListIterator {
         // We don't do it.
     }
 
-    protected DataSourceTable dataSourceTable ;
+    protected List<T> dataSourceTable ;
 
     /**
      * Creates one
-     * @param table using this data source table
+     * @param table a  List using which would be used as data source table
      */
-    public XStreamIterator(DataSourceTable table){
+    public XStreamIterator(List<T> table){
         dataSourceTable = table;
     }
 
+    /**
+     * Creates one
+     * @param table an array using which would be used as data source table
+     */
+    public XStreamIterator(T[] table){
+        dataSourceTable = Arrays.asList(table);
+    }
 }

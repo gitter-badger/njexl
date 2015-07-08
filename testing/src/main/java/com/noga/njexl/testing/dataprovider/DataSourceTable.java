@@ -17,8 +17,6 @@
 package com.noga.njexl.testing.dataprovider;
 
 import com.noga.njexl.lang.extension.TypeUtility;
-import com.noga.njexl.testing.dataprovider.collection.XStreamIterator;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -104,13 +102,4 @@ public abstract class DataSourceTable {
             return Collections.EMPTY_MAP ;
         }
     }
-
-    /**
-     * A potential infinite iterator
-     * @return iterator
-     */
-    public XStreamIterator iterator(){
-        return new XStreamIterator(this);
-    }
-
 }
