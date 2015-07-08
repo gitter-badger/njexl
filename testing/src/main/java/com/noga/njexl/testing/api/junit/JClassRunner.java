@@ -113,8 +113,8 @@ public class JClassRunner extends Suite {
             iterator.setMode(false);
             // no of tests are strictly the no of threads to spawn
             int totCalls = mi.nApiThread.numThreads() * mi.nApiThread.numCallPerThread()  ;
-            int tests = totCalls / iterator.size() ;
-            if ( totCalls % iterator.size() > 0 ) {
+            int tests =  iterator.size() / totCalls ;
+            if ( iterator.size() % totCalls  > 0 ) {
                 tests += 1;
             }
             for ( int i = 0 ; i < tests ; i++ ){

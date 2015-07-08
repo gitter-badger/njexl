@@ -74,7 +74,7 @@ public class XStreamIterator<T> implements ListIterator<T> {
     public int nextIndex() {
         if ( hasNext() ){
             int x = (index + 1) % size() ;
-            return (x == 0)? 1 : x ;
+            return (x == 0)? 0 : x ;
         }
         return -1;
     }
