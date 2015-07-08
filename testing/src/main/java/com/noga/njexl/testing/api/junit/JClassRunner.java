@@ -15,6 +15,7 @@
 
 package com.noga.njexl.testing.api.junit;
 
+import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.testing.api.*;
 import com.noga.njexl.testing.api.Annotations.* ;
 import com.noga.njexl.testing.api.ServiceCreatorFactory.ServiceCreator ;
@@ -94,6 +95,9 @@ public class JClassRunner extends Suite {
             containers[i].pre = mi.base + "/" + mi.nApi.before() ;
             containers[i].post = mi.base + "/" + mi.nApi.after() ;
             containers[i].globals = globals ;
+        }
+        if ( mi.nApi.randomize() ){
+            TypeUtility.shuffle(containers);
         }
         /*
           Now what is our strategy?

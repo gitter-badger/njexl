@@ -200,6 +200,11 @@ public final class Annotations {
          */
         String dataTable();
 
+        /**
+         * Ensures that the call order of data is random
+         * @return randomized if true else executes test vectors in order
+         */
+        boolean randomize() default false;
 
         /**
          * The script that would invoke

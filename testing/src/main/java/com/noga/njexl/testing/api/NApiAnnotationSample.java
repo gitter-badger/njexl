@@ -44,7 +44,7 @@ public class NApiAnnotationSample {
         return r;
     }
 
-    @NApi(dataSource = "UIData.xlsx", dataTable = "sub" ,
+    @NApi(randomize = true, dataSource = "UIData.xlsx", dataTable = "sub" ,
             before = "pre.jexl", after = "post.jexl" , globals = { "op=-" } )
     @NApiThread(dcd = true, performance = @Performance())
     public int subtract(int a, int b) {
