@@ -20,7 +20,9 @@ import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.internal.logging.Log;
 import com.noga.njexl.lang.internal.logging.LogFactory;
 import com.noga.njexl.testing.api.Annotations;
+import com.noga.njexl.testing.api.Annotations.MethodRunInformation;
 import com.noga.njexl.testing.api.CallContainer;
+import com.noga.njexl.testing.dataprovider.collection.XStreamIterator;
 import org.junit.*;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
@@ -38,14 +40,13 @@ import java.util.concurrent.Executors;
  */
 public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
 
+    public static final double NANO_TO_MILLIS = 1000000.0 ;
 
     public static class WorkerThread implements Runnable{
 
-        final CallContainer cc;
+        final CallContainer[] cc;
 
         final int delay;
-
-        final int numCalls;
 
         public static void delay(int ms){
             try{
@@ -54,21 +55,16 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
             }
         }
 
-        public WorkerThread(CallContainer c, int d, int nc ){
+        public WorkerThread(CallContainer[] c, int d ){
             cc = c ;
             delay = d ;
-            numCalls = nc;
-            timings = new double[numCalls];
         }
-
-        public double[] timings;
 
         @Override
         public void run() {
-            for (int i = 0; i < numCalls ; i++) {
-                delay( delay );
-                cc.call();
-                timings[i] = cc.timing / 1000000.0  ;
+            for (int i = 0; i < cc.length ; i++) {
+                delay(delay);
+                cc[i].call();
             }
         }
     }
@@ -81,7 +77,11 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
 
         Log logger =  LogFactory.getLog( ProxyTest.class );
 
-        CallContainer callContainer;
+        int testNumber ;
+
+        XStreamIterator<CallContainer> iterator;
+
+        CallContainer callContainer ;
 
         Annotations.NApiThread nApiThread ;
 
@@ -114,26 +114,28 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
             return false;
         }
 
-        public ProxyTest(CallContainer callContainer, Annotations.NApiThread nApiThread){
-            this.callContainer = callContainer ;
+        public ProxyTest(int testNumber, XStreamIterator<CallContainer> iterator, Annotations.NApiThread nApiThread){
             this.nApiThread = nApiThread ;
+            this.testNumber = testNumber ;
+            this.iterator = iterator ;
+            callContainer = this.iterator.get( this.testNumber );
         }
 
         public boolean doPerformanceCheck(WorkerThread[] workers, double percentile,  double percentileValueLessThan ) {
             ArrayList<Double> results = new ArrayList<>();
             boolean oneFailed = false ;
             for ( int i = 0 ; i < workers.length;i++ ){
-                for ( int j = 0 ; j < workers[i].timings.length ; j++ ){
-                    double d = workers[i].timings[j] ;
-                    String uId = workers[i].cc.uniqueId(j+1) ;
+                for ( int j = 0 ; j < workers[i].cc.length ; j++ ){
+                    double d = workers[i].cc[j].timing / NANO_TO_MILLIS   ;
+                    String uId = workers[i].cc[j].uniqueId(j+1) ;
                     if ( d > 0 ){
                         results.add(d);
                         System.out.printf("%s -> %f \n", uId, d);
                     }
                     else{
                         oneFailed = true ;
-                        System.err.printf("**ERROR %s -> %s \n", uId , workers[i].cc.error);
-                        System.err.printf("**ON INPUT %s\n", Main.strArr(workers[i].cc.parameters));
+                        System.err.printf("**ERROR %s -> %s \n", uId , workers[i].cc[j].error);
+                        System.err.printf("**ON INPUT %s\n", Main.strArr(workers[i].cc[j].parameters));
                     }
                 }
             }
@@ -172,7 +174,18 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
                 int nc = nApiThread.numCallPerThread() ;
                 for (int i = 0; i < nT ; i++) {
                     WorkerThread.delay( sd );
-                    workers[i] = new WorkerThread( callContainer , pt, nc);
+                    CallContainer[] containers = new CallContainer[nc];
+                    if ( nApiThread.dcd() ){
+                        for ( int j = 0 ; j < nc ; j++ ){
+                            callContainer = iterator.next() ;
+                            containers[j] = CallContainer.clone(callContainer);
+                        }
+                    }else{
+                        for ( int j = 0 ; j < nc ; j++ ){
+                            containers[j] = CallContainer.clone(callContainer);
+                        }
+                    }
+                    workers[i] = new WorkerThread( containers , pt);
                     //calling execute method of ExecutorService
                     executor.execute(workers[i]);
                 }
@@ -234,12 +247,15 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
 
     public static final Class proxy = ProxyTest.class ;
 
-    public static JApiRunner createRunner(CallContainer container, Annotations.NApiThread nApiThread) throws Exception{
+    public static JApiRunner createRunner( int testNumber,
+             XStreamIterator<CallContainer> iterator,
+                                           MethodRunInformation mi) throws Exception{
         TestClass testClass = new TestClass(proxy);
-        String name = container.method.toGenericString();
+        String name = mi.method.getName() ;
         List<Object> parameters = new ArrayList<>();
-        parameters.add( container );
-        parameters.add( nApiThread );
+        parameters.add( testNumber );
+        parameters.add( iterator );
+        parameters.add( mi.nApiThread );
         TestWithParameters test = new TestWithParameters( name, testClass, parameters);
         return new JApiRunner(test);
     }

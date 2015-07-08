@@ -58,12 +58,16 @@ public class XStreamIterator<T> implements ListIterator<T> {
 
     @Override
     public boolean hasNext() {
-        return !stop;
+        // ensure that it flows in
+        if ( !stop ) return true ;
+        // now this is finite set
+        return index < size() ;
     }
 
     @Override
     public boolean hasPrevious() {
-        return true ;
+        if ( !stop ) return true ;
+        return index > 0 ;
     }
 
     @Override
@@ -76,7 +80,7 @@ public class XStreamIterator<T> implements ListIterator<T> {
     }
 
     @Override
-    public int previousIndex() {
+    public int  previousIndex() {
         if ( index == 1 ){
             return  size() - 1 ;
         }
@@ -92,7 +96,7 @@ public class XStreamIterator<T> implements ListIterator<T> {
      *         exhausted
      */
     @Override
-    public T next() {
+    public synchronized T next() {
 
         if (hasNext()) {
             index = nextIndex();
@@ -102,7 +106,7 @@ public class XStreamIterator<T> implements ListIterator<T> {
     }
 
     @Override
-    public T previous() {
+    public synchronized T previous() {
 
         if (hasPrevious()) {
             index = previousIndex();
@@ -117,7 +121,7 @@ public class XStreamIterator<T> implements ListIterator<T> {
     }
 
     @Override
-    public void add(T o) {
+    public synchronized void add(T o) {
         dataSourceTable.add(o);
     }
 
@@ -128,12 +132,25 @@ public class XStreamIterator<T> implements ListIterator<T> {
 
     protected List<T> dataSourceTable ;
 
+
+    public T get(int index){
+        if ( index >= 0 && index < dataSourceTable.size() ){
+            return dataSourceTable.get(index);
+        }
+        if ( !stop ){
+            if ( index < 0 ) return dataSourceTable.get( dataSourceTable.size() - 1);
+            if ( index >  dataSourceTable.size() -1  ) return dataSourceTable.get(0);
+        }
+        return null;
+    }
+
     /**
      * Creates one
      * @param table a  List using which would be used as data source table
      */
     public XStreamIterator(List<T> table){
         dataSourceTable = table;
+        index = -1;
     }
 
     /**
@@ -141,6 +158,6 @@ public class XStreamIterator<T> implements ListIterator<T> {
      * @param table an array using which would be used as data source table
      */
     public XStreamIterator(T[] table){
-        dataSourceTable = Arrays.asList(table);
+        this(Arrays.asList(table));
     }
 }

@@ -278,13 +278,21 @@ public class ArgConverter {
         return container;
     }
 
-    public CallContainer[] allContainers(){
+    public CallContainer[] allContainers(boolean removeDisable){
         int size = dataSource.tables.get(dataTableName).length();
-        CallContainer[] containers = new CallContainer[size-1];
-        for ( int i = 1 ; i < size; i++ ){
-            containers[i-1] = container(i);
+        ArrayList<CallContainer> containers = new ArrayList<>();
+        for ( int i = 1; i < size; i++ ){
+            CallContainer cc = container(i);
+            if ( removeDisable && cc.disabled() ){ continue; }
+            containers.add(cc);
         }
-        return containers ;
+        CallContainer[] ccArr = new CallContainer[containers.size()];
+        containers.toArray( ccArr );
+        return ccArr ;
+    }
+
+    public CallContainer[] allContainers(){
+        return allContainers(true);
     }
 
     public Object object(String value, Class clazz, Type type, String header) throws Exception {

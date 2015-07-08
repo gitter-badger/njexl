@@ -35,18 +35,18 @@ public class NApiAnnotationSample {
     @NApiServiceInit
     public NApiAnnotationSample(){}
 
-    @NApi(use=false, dataSource = "UIData.xlsx", dataTable = "add" ,
+    @NApi(dataSource = "UIData.xlsx", dataTable = "add" ,
             before = "pre.jexl", after = "post.jexl", globals = {"op=+"} )
-    @NApiThread
+    @NApiThread(use = false)
     public int add(int a, int b) {
         int r = a + b ;
         System.out.printf("%d + %d = %d \n", a, b, r );
         return r;
     }
 
-    @NApi(dataSource = "UIData.xlsx", dataTable = "sub" ,
+    @NApi(use=false, dataSource = "UIData.xlsx", dataTable = "sub" ,
             before = "pre.jexl", after = "post.jexl" , globals = { "op=-" } )
-    @NApiThread(performance = @Performance())
+    @NApiThread(dcd = true, performance = @Performance())
     public int subtract(int a, int b) {
         int r = a - b ;
         System.out.printf("%d - %d = %d \n", a, b, r );

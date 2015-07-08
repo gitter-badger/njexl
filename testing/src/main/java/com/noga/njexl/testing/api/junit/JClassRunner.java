@@ -18,6 +18,7 @@ package com.noga.njexl.testing.api.junit;
 import com.noga.njexl.testing.api.*;
 import com.noga.njexl.testing.api.Annotations.* ;
 import com.noga.njexl.testing.api.ServiceCreatorFactory.ServiceCreator ;
+import com.noga.njexl.testing.dataprovider.collection.XStreamIterator;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
@@ -56,7 +57,7 @@ public class JClassRunner extends Suite {
 
     public Object service(NApiServiceCreator creator, Class clazz) throws Exception{
         ServiceCreator serviceCreator = ServiceCreatorFactory.creator(creator);
-        Object service = serviceCreator.create( clazz );
+        Object service = serviceCreator.create(clazz);
         return service;
     }
 
@@ -84,21 +85,51 @@ public class JClassRunner extends Suite {
     }
 
     protected List<JApiRunner> runners(MethodRunInformation mi, Object service) throws Exception{
-        ArrayList l = new ArrayList();
         ArgConverter converter = new ArgConverter(mi);
-        String globals =  globals( mi.nApi.globals() );
+        String globals =  globals(mi.nApi.globals());
         CallContainer[] containers = converter.allContainers();
+        // update these containers with ready to run data
         for ( int i = 0 ; i < containers.length; i++ ){
-            // in case I am disabled
-            if ( containers[i].disabled() ) {  continue; }
-
             containers[i].service = service ;
             containers[i].pre = mi.base + "/" + mi.nApi.before() ;
             containers[i].post = mi.base + "/" + mi.nApi.after() ;
             containers[i].globals = globals ;
-            JApiRunner runner = JApiRunner.createRunner( containers[i], mi.nApiThread );
-            l.add(runner);
         }
+        /*
+          Now what is our strategy?
+          How many runners are required?
+           [1] All runners gets different Call Container
+                : DTD : they gets executed one test data after another
+
+           [2] All threads gets different Call Container
+                : DCD : Every Call will get different input
+        */
+        // now create an iterator
+        XStreamIterator<CallContainer> iterator = new XStreamIterator<>(containers);
+
+        ArrayList l = new ArrayList();
+        if ( mi.nApiThread.use() && mi.nApiThread.dcd() ){
+            // do not worry, rewind if need be
+            iterator.setMode(false);
+            // no of tests are strictly the no of threads to spawn
+            int totCalls = mi.nApiThread.numThreads() * mi.nApiThread.numCallPerThread()  ;
+            int tests = totCalls / iterator.size() ;
+            if ( totCalls % iterator.size() > 0 ) {
+                tests += 1;
+            }
+            for ( int i = 0 ; i < tests ; i++ ){
+                JApiRunner jApiRunner = JApiRunner.createRunner(-1, iterator, mi);
+                l.add(jApiRunner);
+            }
+        }
+        else{
+           // tests are strictly the no of data rows
+            for ( int i = 0 ; i < containers.length ; i++ ){
+                JApiRunner jApiRunner = JApiRunner.createRunner(i, iterator, mi);
+                l.add(jApiRunner);
+            }
+        }
+
         return l;
     }
 

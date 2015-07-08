@@ -154,6 +154,13 @@ public final class Annotations {
         int pacingTime() default 1000 ;
 
         /**
+         * For DCD : [D]ifferent [C]all [D]ifferent (Data)
+         * In case all the threads would execute different input or not
+         * @return true if all calls needs to execute different input, false otherwise
+         */
+        boolean dcd() default false ;
+
+        /**
          * The performance strategy if any, default off
          * @return the performance strategy
          */
