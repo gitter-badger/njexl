@@ -388,6 +388,19 @@ public final class Debugger implements ParserVisitor {
     }
 
     /** {@inheritDoc} */
+    public Object visit(ASTTuple node, Object data) {
+        int c = node.jjtGetNumChildren();
+        builder.append("#(");
+        accept(node.jjtGetChild(0), data);
+        for ( int i = 1; i < c ; i++ ){
+            builder.append(",");
+            accept(node.jjtGetChild(i), data);
+        }
+        builder.append(") ");
+        return data ;
+    }
+
+    /** {@inheritDoc} */
     public Object visit(ASTBitwiseAndNode node, Object data) {
         return infixChildren(node, " & ", false, data);
     }

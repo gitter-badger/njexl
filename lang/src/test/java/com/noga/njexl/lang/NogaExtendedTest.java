@@ -351,7 +351,7 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue((Boolean)o);
         e = JEXL.createScript("#|null| == 0");
         o = e.execute(jc);
-        assertTrue((Boolean)o);
+        assertTrue((Boolean) o);
     }
 
     @Test
@@ -379,14 +379,14 @@ public class NogaExtendedTest extends JexlTestCase {
         e.execute(jc);
         x = (List)jc.get("x");
         assertTrue(x.get(0).equals(-0.1f));
-        assertTrue(x.get(x.size()-1).equals(2.0f));
+        assertTrue(x.get(x.size() - 1).equals(2.0f));
 
 
         // now the anonymous stuff!
         e = JEXL.createScript("x=list('1.23', 2.0, -0.1,'0.0') ; x = sortd{ double($[0]) < double($[1]) }(x);");
         e.execute(jc);
         x = (List)jc.get("x");
-        assertTrue(x.get(x.size()-1).equals(-0.1f));
+        assertTrue(x.get(x.size() - 1).equals(-0.1f));
         assertTrue(x.get(0).equals(2.0f));
 
     }
@@ -448,7 +448,7 @@ public class NogaExtendedTest extends JexlTestCase {
 
         e = JEXL.createExpression("[0,0,1] != [2,3]");
         o = e.evaluate(jc);
-        assertTrue((Boolean)o);
+        assertTrue((Boolean) o);
     }
 
     @Test
@@ -584,7 +584,6 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue(((Map)o).size() == 3);
     }
 
-
     @Test
     public void testWithPrivateMethods() throws Exception {
         JexlContext jc = new MapContext();
@@ -607,5 +606,31 @@ public class NogaExtendedTest extends JexlTestCase {
         String s = "sys.out.println('hi!');" ;
         Script e = JEXL.createScript(s);
         Object o = e.execute(jc);
+    }
+
+    @Test
+    public void testTupleAssignment() throws Exception{
+        JexlContext jc = new MapContext();
+        JEXL.setFunctions(Main.getFunction(jc));
+        String s = "x = [ 1,2,3] ; #(a,b,c) = x ; a==1 and b == 2 and c == 3 ;" ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "x = [ 1,2,3] ; #(a,b) = x ; a ==1 and b == 2 ; " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "import 'java.lang.Integer' as JInt ; #(o,e) = JInt:parseInt('420') ; o == 420 and e == null ;" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "import 'java.lang.Integer' as JInt ; #(o,e) = JInt:parseInt('Sri 420') ; o == null and e != null ;" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
     }
 }

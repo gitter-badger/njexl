@@ -20,7 +20,6 @@ import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.oop.ScriptClass;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
-import com.noga.njexl.lang.extension.oop.ScriptMethod;
 import com.noga.njexl.lang.internal.logging.Log;
 import com.noga.njexl.lang.introspection.*;
 import com.noga.njexl.lang.parser.*;
@@ -726,25 +725,7 @@ public class Interpreter implements ParserVisitor {
         return literal;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public Object visit(ASTAssignment node, Object data) {
-        // left contains the reference to assign to
-        int register = -1;
-        JexlNode left = node.jjtGetChild(0);
-        if (left instanceof ASTIdentifier) {
-            ASTIdentifier var = (ASTIdentifier) left;
-            register = var.getRegister();
-            if (register < 0) {
-                throw new JexlException(left, "unknown variable " + left.image);
-            }
-        } else if (!(left instanceof ASTReference)) {
-            throw new JexlException(left, "illegal assignment form 0");
-        }
-        // right is the value expression to assign
-        Object right = node.jjtGetChild(1).jjtAccept(this, data);
-
+    public Object assignToNode(int register, JexlNode node, JexlNode left, Object right){
         // determine initial object & property:
         JexlNode objectNode = null;
         Object object = register >= 0 ? registers[register] : null;
@@ -861,6 +842,91 @@ public class Interpreter implements ParserVisitor {
         // one before last, assign
         setAttribute(object, property, right, propertyNode);
         return right;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object visit(ASTAssignment node, Object data) {
+        // left contains the reference to assign to
+        JexlNode left = node.jjtGetChild(0);
+        JexlNode value = node.jjtGetChild(1) ;
+        if ( left instanceof  ASTTuple ){
+            return tupleAssignment( (ASTTuple)left, value, data);
+        }
+        int register = -1;
+        if (left instanceof ASTIdentifier) {
+            ASTIdentifier var = (ASTIdentifier) left;
+            register = var.getRegister();
+            if (register < 0) {
+                throw new JexlException(left, "unknown variable " + left.image);
+            }
+        } else if (!(left instanceof ASTReference)) {
+            throw new JexlException(left, "illegal assignment form 0");
+        }
+        // right is the value expression to assign
+        Object right = value.jjtAccept(this, data);
+        return assignToNode(register, node, left, right);
+    }
+
+    private Collection tupleAssignment(ASTTuple astTuple, JexlNode value, Object data){
+        int c = astTuple.jjtGetNumChildren() ;
+        for ( int i = 0 ; i < c ; i++  ){
+            JexlNode left = astTuple.jjtGetChild(i);
+            if (!(left instanceof ASTReference)) {
+                throw new JexlException(left, "illegal assignment form 0");
+            }
+        }
+        Object result = null ;
+        Throwable error = null ;
+        synchronized (this){
+            boolean oldStrict = strict ;
+            try {
+                strict = true ;
+                result = value.jjtAccept(this, data);
+            }catch (Throwable t){
+                error = t;
+            }finally {
+                strict = oldStrict ;
+            }
+        }
+        JexlNode node = astTuple.jjtGetParent();
+        JexlNode left ;
+        List l = TypeUtility.combine();
+        if ( result != null ){
+            l = TypeUtility.combine(result);
+            int s = l.size();
+            for ( int i = 0 ; i < c ; i++  ) {
+                left = astTuple.jjtGetChild(i);
+                if (i < s) {
+                    assignToNode(-1, node, left, l.get(i));
+                } else {
+                    assignToNode(-1, node, left, null);
+                }
+            }
+        }
+        else if ( error != null ){
+            for ( int i = 0 ; i < c-1 ; i++  ){
+                left = astTuple.jjtGetChild(i);
+                assignToNode(-1,node, left , null);
+                l.add(null);
+            }
+            left = astTuple.jjtGetChild(c-1);
+            assignToNode(-1,node, left , error);
+            l.add(error);
+        }
+        return Collections.unmodifiableCollection(l);
+    }
+
+    @Override
+    public Object visit(ASTTuple node, Object data) {
+        List l = TypeUtility.combine();
+        int c = node.jjtGetNumChildren() ;
+        for ( int i = 0 ; i < c ; i++ ){
+            Object r = node.jjtGetChild(i).jjtAccept(this, data);
+            l.add(r);
+        }
+        return Collections.unmodifiableCollection(l);
     }
 
     /**

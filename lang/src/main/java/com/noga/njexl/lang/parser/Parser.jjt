@@ -296,7 +296,7 @@ void ReturnStatement() : {}
 
 void Expression() #void : {}
 {
-    ConditionalExpression() (LOOKAHEAD(1) <assign> Expression() #Assignment(2) )?
+     ConditionalExpression() (LOOKAHEAD(1) <assign> Expression() #Assignment(2) )?
 }
 
 void Assignment() #Assignment(2) : {}
@@ -324,13 +324,24 @@ void LValueVar() #Reference : {}
     LOOKAHEAD(1) Identifier(true) DotReference()
 }
 
+/**************************
+  * Tuple Syntax
+  **************************/
+
+  void TupleExpression() #Tuple() :{}
+  {
+      <hash> <LPAREN> ConditionalExpression() ( <COMMA> ConditionalExpression() )+ <RPAREN>
+  }
+
 /***************************************
  *      Conditional & relational
  ***************************************/
 
 void ConditionalExpression() #void : {}
 {
-  ConditionalOrExpression()
+   LOOKAHEAD(2) TupleExpression()
+  |
+   ConditionalOrExpression()
   (
     <QMARK> Expression() <COLON> Expression() #TernaryNode(3)
   |
