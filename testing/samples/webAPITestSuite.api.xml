@@ -11,7 +11,7 @@
             logs="reports/json" method="GET" > <!-- specify the method GET/POST -->
         <feature name="GetPostByUser" base="posts" method="GET"
                  ds="sample" table="userId" afterScript="apiDemo.jxl"
-                 owner="nmondal" enabled="true"/>
+                 owner="nmondal" randomize="true" enabled="true"/>
                  <!-- the script is the after test method -->
     </webApp>
 </testSuite>

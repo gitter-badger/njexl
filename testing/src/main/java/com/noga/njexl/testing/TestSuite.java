@@ -103,6 +103,9 @@ public class TestSuite {
         public String table ;
 
         @XStreamAsAttribute
+        public boolean randomize;
+
+        @XStreamAsAttribute
         public String owner ;
 
         @XStreamAsAttribute
@@ -124,12 +127,12 @@ public class TestSuite {
             ds = "" ;
             table = "" ;
             owner = "" ;
+            randomize = false ;
             enabled = true ;
             script = "";
             beforeScript = "" ;
             afterScript = "" ;
         }
-
     }
 
     public static class Application{

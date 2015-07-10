@@ -17,6 +17,7 @@
 package com.noga.njexl.testing;
 
 import com.noga.njexl.lang.extension.TypeUtility;
+import com.noga.njexl.lang.extension.iterators.RangeIterator;
 import com.noga.njexl.testing.dataprovider.DataSource;
 import com.noga.njexl.testing.dataprovider.DataSourceTable;
 import com.noga.njexl.testing.dataprovider.ProviderFactory;
@@ -240,7 +241,14 @@ public abstract class TestSuiteRunner implements Runnable{
                 System.err.println("Sorry, can not create data source!");
                 fireTestEvent(feature.name,TestRunEventType.AFTER_FEATURE, null, -1);
             }
-            for ( int row = 1 ; row < table.length() ; row ++){
+            RangeIterator iterator = new RangeIterator( table.length(), 1);
+            List<Long> rows = iterator.list();
+            if ( feature.randomize ){
+                TypeUtility.shuffle(rows);
+            }
+
+            for ( long lRow : rows ){
+                int row = (int)lRow;
                 boolean skip = skipTest(feature,row) ;
                 if ( skip ){
                     fireTestEvent(feature.name, TestRunEventType.IGNORE_TEST, table, row);
