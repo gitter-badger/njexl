@@ -328,10 +328,22 @@ void LValueVar() #Reference : {}
   * Tuple Syntax
   **************************/
 
-  void TupleExpression() #Tuple() :{}
-  {
-      <hash> <LPAREN> ConditionalExpression() ( <COMMA> ConditionalExpression() )+ <RPAREN>
-  }
+void TagContainer() #TagContainer():{}
+{
+    <COLON> ConditionalExpression()
+}
+
+void TupleExpression() #Tuple() :{}
+{
+  <hash> <LPAREN> ConditionalExpression()
+          (
+             LOOKAHEAD(2)   <COMMA> TagContainer()
+          |
+             ( <COMMA> ConditionalExpression() )+ ( TagContainer() )?
+
+           )
+         <RPAREN>
+}
 
 /***************************************
  *      Conditional & relational

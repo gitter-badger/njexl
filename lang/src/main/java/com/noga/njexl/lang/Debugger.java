@@ -388,6 +388,13 @@ public final class Debugger implements ParserVisitor {
     }
 
     /** {@inheritDoc} */
+    public Object visit(ASTTagContainer node, Object data) {
+        builder.append(":");
+        accept(node.jjtGetChild(0), data);
+        return data ;
+    }
+
+    /** {@inheritDoc} */
     public Object visit(ASTTuple node, Object data) {
         int c = node.jjtGetNumChildren();
         builder.append("#(");

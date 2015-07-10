@@ -844,6 +844,12 @@ public class Interpreter implements ParserVisitor {
         return right;
     }
 
+    @Override
+    public Object visit(ASTTagContainer node, Object data) {
+        // none should call it, ever
+        return data;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -871,8 +877,20 @@ public class Interpreter implements ParserVisitor {
 
     private Collection tupleAssignment(ASTTuple astTuple, JexlNode value, Object data){
         int c = astTuple.jjtGetNumChildren() ;
-        for ( int i = 0 ; i < c ; i++  ){
-            JexlNode left = astTuple.jjtGetChild(i);
+        JexlNode errorNode = astTuple.jjtGetChild(c-1);
+        boolean catchError = errorNode instanceof ASTTagContainer ;
+        JexlNode left = null;
+        int upto = c;
+        if ( catchError ){
+            left = astTuple.jjtGetChild(c-1).jjtGetChild(0);
+            if (!(left instanceof ASTReference)) {
+                throw new JexlException(left, "illegal assignment form 0");
+            }
+            errorNode = left ;// re-assign
+            upto = c - 1;
+        }
+        for ( int i = 0 ; i < upto ; i++  ){
+            left = astTuple.jjtGetChild(i);
             if (!(left instanceof ASTReference)) {
                 throw new JexlException(left, "illegal assignment form 0");
             }
@@ -886,33 +904,45 @@ public class Interpreter implements ParserVisitor {
                 result = value.jjtAccept(this, data);
             }catch (Throwable t){
                 error = t;
+                if ( t.getCause() != null ){
+                    error = t.getCause() ;
+                }
             }finally {
                 strict = oldStrict ;
             }
         }
         JexlNode node = astTuple.jjtGetParent();
-        JexlNode left ;
-        List l = TypeUtility.combine();
-        if ( result != null ){
-            l = TypeUtility.combine(result);
-            int s = l.size();
-            for ( int i = 0 ; i < c ; i++  ) {
+        ArrayList l = new ArrayList();
+        if ( error != null  ){
+            for ( int i = 0 ; i < upto ; i++  ){
                 left = astTuple.jjtGetChild(i);
-                if (i < s) {
-                    assignToNode(-1, node, left, l.get(i));
-                } else {
-                    assignToNode(-1, node, left, null);
+                assignToNode(-1,node, left, null);
+                l.add(null);
+            }
+        }
+        else{
+            if ( catchError && upto == 1){
+                // (o,*e) error check only - no project
+                assignToNode(-1, node, left,result);
+                l.add(result);
+            }
+            else {
+                // project
+                List t = TypeUtility.combine(result);
+                int s = t.size();
+                for (int i = 0; i < upto; i++) {
+                    left = astTuple.jjtGetChild(i);
+                    Object o = null;
+                    if (i < s) {
+                        o = t.get(i);
+                    }
+                    assignToNode(-1, node, left, o);
+                    l.add(o);
                 }
             }
         }
-        else if ( error != null ){
-            for ( int i = 0 ; i < c-1 ; i++  ){
-                left = astTuple.jjtGetChild(i);
-                assignToNode(-1,node, left , null);
-                l.add(null);
-            }
-            left = astTuple.jjtGetChild(c-1);
-            assignToNode(-1,node, left , error);
+        if ( catchError ){
+            assignToNode(-1,node, errorNode, error);
             l.add(error);
         }
         return Collections.unmodifiableCollection(l);

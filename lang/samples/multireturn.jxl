@@ -12,12 +12,11 @@ l = [ 10, 34, 21, 11,  55 ]
 out:printf("Accepted : %s\n", a)
 out:printf("Rejected : %s\n", r)
 // This shows exception handling
-#(o,e) = i // This is an error, for sure because i does not exist
+#(o,:e) = i // This is an error, for sure because i does not exist
 out:printf("Error is : %s\n", e)
 // Now error handling in methods
-#(o,e) = Integer:parseInt('42')
+#(o,:e) = Integer:parseInt('42')
 out:printf("Output is %d Error is : %s\n",o,e)
-#(o,e) = Integer:parseInt('Sri 420')
+#(o,:e) = Integer:parseInt('Sri 420')
 out:printf("Output is %d Error is : %s\n",o,e)
 r = #(o,e)
-

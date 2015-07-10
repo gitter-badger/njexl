@@ -622,12 +622,17 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.execute(jc);
         assertTrue((Boolean) o);
 
-        s = "import 'java.lang.Integer' as JInt ; #(o,e) = JInt:parseInt('420') ; o == 420 and e == null ;" ;
+        s = "import 'java.lang.Integer' as JInt ; #(o,:e) = JInt:parseInt('420') ; o == 420 and e == null ;" ;
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertTrue((Boolean) o);
 
-        s = "import 'java.lang.Integer' as JInt ; #(o,e) = JInt:parseInt('Sri 420') ; o == null and e != null ;" ;
+        s = "import 'java.lang.Integer' as JInt ; #(o,:e) = JInt:parseInt('Sri 420') ; o == null and e != null ;" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "l = [1,2,3,4]; #(a,:b) = list{ $ * 10 }(l) ; size(a) == 4 and b == null ; " ;
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertTrue((Boolean) o);
