@@ -87,7 +87,11 @@ public final class TestAssert {
         error = !value ;
         for ( AssertionEventListener listener : eventListeners ){
             AssertionEvent event = new AssertionEvent(this, AssertionType.TEST, value,args);
-            listener.onAssertion(event);
+            try {
+                listener.onAssertion(event);
+            }catch (Throwable t){
+                System.err.println("Error in sending to listener : " + t);
+            }
         }
     }
 

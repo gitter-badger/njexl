@@ -20,6 +20,7 @@ import com.noga.njexl.lang.JexlContext;
 import com.noga.njexl.lang.JexlEngine;
 import com.noga.njexl.lang.JexlException;
 import com.noga.njexl.lang.Script;
+import com.noga.njexl.testing.reporting.SimpleTextReporter;
 import com.noga.njexl.testing.ui.WebSuiteRunner;
 import com.noga.njexl.testing.ui.XSelenium;
 import com.noga.njexl.testing.ws.WebServiceRunner;
@@ -29,9 +30,7 @@ import org.kohsuke.args4j.Option;
 import static org.kohsuke.args4j.ExampleMode.ALL;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by noga on 15/04/15.
@@ -76,6 +75,12 @@ public class Main {
         context.set("selenium", xSelenium);
         HashMap<String,Object> functions = com.noga.njexl.lang.Main.getFunction(context);
         functions.put("sel", xSelenium);
+        TestAssert testAssert = new TestAssert();
+        SimpleTextReporter textReporter = SimpleTextReporter.reporter(SimpleTextReporter.Sync.CONSOLE,"");
+        functions.put(TestAssert.ASSERT_NS, testAssert );
+        context.set(TestAssert.ASSERT_VAR, testAssert);
+        testAssert.eventListeners.add(xSelenium);
+        testAssert.eventListeners.add(textReporter);
         JexlEngine JEXL = com.noga.njexl.lang.Main.getJexl(context);
         JEXL.setFunctions(functions);
 

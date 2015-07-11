@@ -24,6 +24,7 @@ import org.jsoup.select.Elements;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,7 +90,10 @@ public class URIDataSource extends DataSource{
         }
     }
 
-    public static final Pattern LOADER_PATTERN = Pattern.compile("^http[s]?://.+", Pattern.CASE_INSENSITIVE);
+    public static final Pattern LOADER_PATTERN_1 = Pattern.compile("^http[s]?://.+", Pattern.CASE_INSENSITIVE);
+
+    public static final Pattern LOADER_PATTERN_2 = Pattern.compile(".*html>.*|.*<html.*",
+            Pattern.MULTILINE|Pattern.DOTALL| Pattern.CASE_INSENSITIVE);
 
     public static final DataMatrix.DataLoader DATA_LOADER = new URIDataSource();
 
@@ -105,8 +109,14 @@ public class URIDataSource extends DataSource{
     protected Map<String, DataSourceTable> init(String location) throws Exception {
 
         HashMap<String,DataSourceTable> tables = new HashMap<>();
-        URL url = new URL(location);
-        doc = Jsoup.parse(url, 3000);
+        try {
+            URL url = new URL(location);
+            doc = Jsoup.parse(url, 30000);
+        }catch (MalformedURLException e){
+            // perhaps data as HTML String ?
+            doc = Jsoup.parse( location );
+        }
+
         int pos = 0 ;
         Elements elements =  doc.select("table");
         for ( Element elem : elements  ){

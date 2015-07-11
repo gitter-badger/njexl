@@ -41,8 +41,11 @@ public final class ProviderFactory {
         dataSources.put(ExcelDataSource.LOADER_PATTERN,ExcelDataSource.class.getName());
         DataMatrix.dataLoaders.put( ExcelDataSource.LOADER_PATTERN, ExcelDataSource.DATA_LOADER);
 
-        dataSources.put(URIDataSource.LOADER_PATTERN, URIDataSource.class.getName());
-        DataMatrix.dataLoaders.put( URIDataSource.LOADER_PATTERN, URIDataSource.DATA_LOADER);
+        dataSources.put(URIDataSource.LOADER_PATTERN_1, URIDataSource.class.getName());
+        DataMatrix.dataLoaders.put( URIDataSource.LOADER_PATTERN_1, URIDataSource.DATA_LOADER);
+
+        dataSources.put(URIDataSource.LOADER_PATTERN_2, URIDataSource.class.getName());
+        DataMatrix.dataLoaders.put( URIDataSource.LOADER_PATTERN_2, URIDataSource.DATA_LOADER);
 
     }
 

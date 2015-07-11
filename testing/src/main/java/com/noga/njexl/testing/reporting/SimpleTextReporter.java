@@ -22,11 +22,21 @@ import com.noga.njexl.testing.TestSuiteRunner;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by noga on 18/04/15.
  */
 public class SimpleTextReporter implements Reporter {
+
+    public static SimpleTextReporter reporter(Enum type, String location){
+        SimpleTextReporter reporter = new SimpleTextReporter();
+        ArrayList<String> list = new ArrayList();
+        list.add(type.toString());
+        reporter.init(list);
+        reporter.location(location);
+        return reporter ;
+    }
 
     public enum Sync{
         CONSOLE,
@@ -48,7 +58,7 @@ public class SimpleTextReporter implements Reporter {
     }
 
     @Override
-    public void init(ArrayList<String> args) {
+    public void init(List<String> args) {
         if ( args.size() == 0 ){
             type = Sync.CONSOLE ;
             fileName = "" ;

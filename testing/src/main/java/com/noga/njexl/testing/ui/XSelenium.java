@@ -17,9 +17,11 @@
 package com.noga.njexl.testing.ui;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour;
 import com.noga.njexl.testing.TestAssert;
+import com.noga.njexl.testing.TestSuite;
 import com.noga.njexl.testing.Utils;
 import com.noga.njexl.testing.dataprovider.DataSource;
 import com.noga.njexl.testing.dataprovider.ProviderFactory;
@@ -37,6 +39,7 @@ import org.openqa.selenium.support.ui.Select;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -78,7 +81,8 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     }
 
     String getScreenShotFile(){
-        String file = screenShotDir + "/" + System.currentTimeMillis() + ".png" ;
+        String tsFormatted = TypeUtility.castString( new Date(), "yyyy-MMM-dd-hh-mm-ss-ms" );
+        String file = screenShotDir + "/" + tsFormatted + ".png" ;
         return file ;
     }
 
@@ -870,10 +874,12 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     }
 
     public DataSource dataSource(){
-        return ProviderFactory.dataSource( driver.getCurrentUrl());
+        return ProviderFactory.dataSource( driver.getPageSource() );
     }
 
     public DataMatrix table(String tableIndex) throws Exception {
-        return DataMatrix.loc2matrix(tableIndex);
+        DataSource ds = dataSource();
+        if ( ds == null ){ throw  new Exception("Data Source Can not be Initialized!") ;}
+        return DataMatrix.loc2matrix(driver.getPageSource(), tableIndex);
     }
 }
