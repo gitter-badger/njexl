@@ -850,8 +850,8 @@ public class Interpreter implements ParserVisitor {
 
     @Override
     public Object visit(ASTTagContainer node, Object data) {
-        // none should call it, ever
-        return data;
+        Object o = node.jjtGetChild(0).jjtAccept(this,data);
+        return o;
     }
 
     /**
