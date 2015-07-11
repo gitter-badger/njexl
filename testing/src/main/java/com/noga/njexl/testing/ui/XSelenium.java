@@ -31,10 +31,13 @@ import com.thoughtworks.selenium.webdriven.WebDriverCommandProcessor;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Eventing;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.server.SystemClock;
 import org.openqa.selenium.support.ui.Select;
 
 import java.io.File;
@@ -51,7 +54,14 @@ import java.util.regex.Pattern;
 public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.AssertionEventListener {
 
     public static final String SELENIUM_VAR = "selenium" ;
+
     public static final String SELENIUM_NS = "sel" ;
+
+    public static final String OS_NAME = System.getProperty("os.name").toLowerCase();
+
+    public static final boolean IS_MAC = OS_NAME.startsWith("mac ");
+
+    public static final boolean IS_WIN = OS_NAME.startsWith("win");
 
 
     boolean __CLEAR_FIELD__ = true;
@@ -149,7 +159,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     @Override
     public void after(Event event) {
         if ( DISAPPEAR.equals(event.pattern) && event.args.length > 0 ){
-            waitForDisappear( event.args[0].toString() );
+            waitForDisappear(event.args[0].toString());
         }
     }
 
@@ -451,6 +461,54 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         driver.findElement(by).submit();
     }
 
+    @Override
+    public void mouseMove(String locator) {
+        WebElement el = element(locator);
+        Actions builder = new Actions(driver);
+        builder.moveToElement(el).perform();
+    }
+
+    @Override
+    public void attachFile(String fieldLocator, String fileLocator) {
+        type(fieldLocator, fileLocator);
+    }
+
+    @Override
+    public void contextMenu(String locator) {
+        Actions action= new Actions(driver);
+        WebElement el = element(locator);
+        action.contextClick(el).build().perform();
+    }
+
+    @Override
+    public void dragAndDrop(String locator, String movementsString) {
+        dragdrop(locator, movementsString);
+    }
+
+    @Override
+    public void dragAndDropToObject(String locatorOfObjectToBeDragged, String locatorOfDragDestinationObject) {
+        Actions actions = new Actions(driver);
+        WebElement someElement = element(locatorOfObjectToBeDragged);
+        WebElement otherElement = element(locatorOfDragDestinationObject);
+        actions.dragAndDrop(someElement, otherElement).perform();
+    }
+
+    @Override
+    public void dragdrop(String locator, String movementsString) {
+        String[] cords = movementsString.split(",");
+        Actions actions = new Actions(driver);
+        int X = TypeUtility.castInteger(cords[0],0);
+        int Y = TypeUtility.castInteger(cords[1], 0);
+        WebElement someElement = element(locator);
+        actions.dragAndDropBy(someElement, X, Y).perform();
+    }
+
+    @Override
+    public void mouseOver(String locator) {
+        Actions actions = new Actions(driver);
+        WebElement someElement = element(locator);
+        actions.moveToElement(someElement).perform();
+    }
 
     @Override
     public void goBack() {
@@ -693,8 +751,8 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     @Override
     public boolean isVisible(String locator) {
-        By by = getByFromLocator(locator);
-        return driver.findElement(by).isDisplayed();
+        WebElement element = element(locator);
+        return element.isDisplayed();
     }
 
     @Override
@@ -717,7 +775,6 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     public Number getXpathCount(String xpath) {
         return driver.findElements(By.xpath(xpath)).size();
     }
-
 
     public String[] idByXpath(String[] xpathList) {
         List<WebElement> elements = new ArrayList();
@@ -824,8 +881,12 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         return driver.findElement(by).getLocation().getY();
     }
 
-    public Object js(String script,Object... args){
+    public Object js(String script,Object... args) throws Exception {
         JavascriptExecutor executor = (JavascriptExecutor) driver;
+        File file =  new File(script);
+        if ( file.exists() ){
+            script = Utils.readToEnd(script);
+        }
         return executor.executeScript(script, args);
     }
 
@@ -840,9 +901,66 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     }
 
     @Override
+    public void selectFrame(String locator) {
+        Integer inx = TypeUtility.castInteger(locator);
+        if (  inx != null ){
+            driver.switchTo().frame(inx);
+        }else {
+            driver.switchTo().frame(locator);
+        }
+    }
+
+    @Override
+    public void selectPopUp(String windowID) {
+        selectWindow(windowID);
+    }
+
+    @Override
+    public void selectWindow(String windowID) {
+        driver.switchTo().window(windowID);
+    }
+
+    @Override
+    public void windowMaximize() {
+        driver.manage().window().maximize();
+    }
+
+    @Override
+    public void runScript(String script) {
+        try {
+            js(script);
+        }catch (Exception e){
+            System.err.println("Error in runScript : " + e);
+        }
+    }
+
+    @Override
     public String captureEntirePageScreenshotToString(String kwargs) {
        return ((TakesScreenshot)driver).getScreenshotAs(OutputType.BASE64);
     }
+
+    @Override
+    public void mouseDown(String locator) {
+        Actions actions = new Actions(driver);
+        WebElement element = element(locator);
+        actions.clickAndHold(element);
+    }
+
+
+    @Override
+    public void mouseUp(String locator) {
+        Actions actions = new Actions(driver);
+        WebElement element = element(locator);
+        actions.release(element);
+    }
+
+    @Override
+    public void keyPress(String locator, String keySequence) {
+        Actions actions = new Actions(driver);
+        WebElement element = element(locator);
+        actions.sendKeys( element ,keySequence);
+    }
+
 
     @Override
     public void captureScreenshot(String filename) {
@@ -874,7 +992,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     }
 
     public DataSource dataSource(){
-        return ProviderFactory.dataSource( driver.getPageSource() );
+        return ProviderFactory.dataSource(driver.getPageSource());
     }
 
     public DataMatrix table(String tableIndex) throws Exception {
@@ -882,4 +1000,34 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         if ( ds == null ){ throw  new Exception("Data Source Can not be Initialized!") ;}
         return DataMatrix.loc2matrix(driver.getPageSource(), tableIndex);
     }
+
+    public void zoomIn(int count){
+        WebElement html = driver.findElement(By.tagName("html"));
+        for ( int i = 0 ; i < count ; i++ ) {
+            if (IS_WIN) {
+                html.sendKeys(Keys.chord(Keys.CONTROL, Keys.ADD));
+            } else if (IS_MAC) {
+                html.sendKeys(Keys.chord(Keys.COMMAND, Keys.ADD));
+            } else {
+                //linux?
+            }
+        }
+    }
+
+    public void zoomIn(){ zoomIn(1);}
+
+    public void zoomOut(int count){
+        WebElement html = driver.findElement(By.tagName("html"));
+        for ( int i = 0 ; i < count ; i++ ) {
+            if (IS_WIN) {
+                html.sendKeys(Keys.chord(Keys.CONTROL, Keys.SUBTRACT));
+            } else if (IS_MAC) {
+                html.sendKeys(Keys.chord(Keys.COMMAND, Keys.SUBTRACT));
+            } else {
+                // linux ?
+            }
+        }
+    }
+
+    public void zoomOut(){ zoomOut(1); }
 }
