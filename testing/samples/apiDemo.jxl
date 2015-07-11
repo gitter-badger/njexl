@@ -6,8 +6,8 @@
 import 'java.lang.System.out' as out
 // apparently this is how the result gets pushed 
 result = _o_
-//convert JSON to Dictionary : use currying 
-d = `#{result}` 
+//convert JSON to Dictionary : use json()
+d = json(result)
 //print it - see that we are using data source column userId
 out:printf("userId: %s\n result: %s\n", userId, d)
 // this is good enough 
