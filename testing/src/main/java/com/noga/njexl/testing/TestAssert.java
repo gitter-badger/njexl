@@ -90,7 +90,7 @@ public final class TestAssert {
             try {
                 listener.onAssertion(event);
             }catch (Throwable t){
-                System.err.println("Error in sending to listener : " + t);
+                System.err.printf("Error asserting to listener : %s [%s]\n",listener,t);
             }
         }
     }

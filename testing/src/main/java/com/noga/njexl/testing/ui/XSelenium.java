@@ -94,7 +94,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         }
     }
 
-    int timeout = 10000; // 10 sec should be good
+    int timeout = 30000; // 30 sec should be good
 
     public int getTimeout(){
         return timeout ;
@@ -148,14 +148,14 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     @Override
     public void after(Event event) {
-        if ( DISAPPEAR.equals(event.pattern) && event.args.length > 1 ){
+        if ( DISAPPEAR.equals(event.pattern) && event.args.length > 0 ){
             waitForDisappear( event.args[0].toString() );
         }
     }
 
     @Override
     public void before(Event event) {
-        if ( APPEAR.equals(event.pattern) && event.args.length > 1 ){
+        if ( APPEAR.equals(event.pattern) && event.args.length > 0 ){
             waitForAppear(event.args[0].toString());
         }
     }
