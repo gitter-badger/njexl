@@ -1,0 +1,8 @@
+import 'com.noga.njexl.lang.extension.dataaccess.XmlMap' as XmlMap
+import 'java.lang.System.out' as out
+
+xml = XmlMap.file2xml(__args__[1])
+jsx = xml.json()
+d = json(jsx)
+out:printf("json of the xml is : \n\n %s\n",d)
+return d

@@ -245,9 +245,14 @@ public class TypeUtility {
         }
         String text = args[0].toString();
         if (args.length == 1) {
-            // this is the file name
-            text = readToEnd(text);
+            File file = new File(text);
+            if ( file.exists() ) {
+                // this is the file name
+                text = readToEnd(text);
+            }
             text = text.replaceAll("[\\r\\n]", " ");
+            // this is for the empty dict issue : {:}
+            text = text.replaceAll("\\{\\}", "\\{:\\}");
         }
         JexlEngine jexlEngine = new JexlEngine();
         Script sc = jexlEngine.createScript(text);

@@ -50,7 +50,6 @@ public class ExtendedScriptTest extends JexlTestCase {
         assertTrue(((Map) o).isEmpty());
     }
 
-
     @Test
     public void testDateTimeScript() throws Exception{
         runScript(JEXL, "samples/date_time.jexl");
@@ -168,8 +167,8 @@ public class ExtendedScriptTest extends JexlTestCase {
 
     @Test
     public void testXmlLoading() throws Exception{
-        XmlMap xmlMap = XmlMap.file2xml("pom.xml");
-        assertTrue(xmlMap != null);
+        Object o = runScript(JEXL, "samples/xml_load.jxl","samples/xml_load.jxl","samples/sample.xml");
+        assertTrue(o instanceof Map);
     }
 
     @Test

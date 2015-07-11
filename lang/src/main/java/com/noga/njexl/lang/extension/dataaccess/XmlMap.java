@@ -28,6 +28,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by noga on 02/04/15.
@@ -43,6 +44,31 @@ public class XmlMap {
                 textContent.append(child.getTextContent());
         }
         return textContent.toString();
+    }
+
+    public static String jsonDict(Map map){
+        String tmp = "" ;
+        for ( Object k : map.keySet() ) {
+            String prop = k.toString() ;
+            String value = map.get(k).toString() ;
+            value = value.replaceAll("\n", "\\\\n");
+            value = value.replaceAll("\r", "\\\\r");
+            String pair = String.format("\"%s\" : \"%s\"", prop, value);
+            tmp = tmp + pair + "," ;
+        }
+        if ( !tmp.isEmpty() ) {
+            int l = tmp.length();
+            tmp = tmp.substring(0, l - 1);
+        }
+        tmp = "{" + tmp + "}" ;
+        return tmp;
+    }
+
+    public static String jsonProp(String prop, String value){
+        value = value.replaceAll("\n", "\\\\n");
+        value = value.replaceAll("\r", "\\\\r");
+        String pair = String.format("\"%s\" : \"%s\"", prop,value);
+        return pair ;
     }
 
     public static class XmlElement {
@@ -94,17 +120,50 @@ public class XmlMap {
 
         @Override
         public String toString(){
-            return String.format("name='%s',text='%s'\nattr=%s\nchildren=%s\n",
-                    name,
-                    text.replaceAll("[\\r\\n]","").trim(),
-                    attr,child);
+            return json();
         }
 
+        /**
+         * Converts this to JSON String
+         * @return json string for this element
+         */
+        public String json() {
+            StringBuilder builder = new StringBuilder();
+            builder.append("{ ");
+            String prop = "";
+            prop = jsonProp("name", name);
+            builder.append(prop).append(" , ");
+            prop = jsonProp("ns", ns);
+            builder.append(prop).append(", ");
+            prop = jsonProp("prefix", prefix);
+            builder.append(prop).append(", ");
+            prop = jsonProp("text", text);
+            builder.append(prop).append(", ");
+            // now the attributes
+            String attrStrings = jsonDict(attr);
+            builder.append("\"attr\" : ").append(attrStrings).append(", ");
+            // now the children
+            builder.append("\"children\" : [ ");
+            if ( !child.isEmpty() ){
+                int i = 0 ;
+                String ej = child.get(i).json();
+                builder.append(ej);
+                i++;
+                for ( ; i < child.size(); i++ ){
+                    builder.append(",\n");
+                    ej = child.get(i).json();
+                    builder.append(ej);
+                }
+            }
+            builder.append(" ]");
+            builder.append( " }" );
+            return builder.toString();
+        }
     }
 
-    public XmlElement root;
+    public final XmlElement root;
 
-    public Document doc;
+    public final Document doc;
 
     public static XmlMap file2xml(String file) throws Exception{
         byte[] arr = Files.readAllBytes(new File(file).toPath());
@@ -147,8 +206,16 @@ public class XmlMap {
         }
     }
 
+    /**
+     * Converts this to JSON String
+     * @return json string for this xml
+     */
+    public String json(){
+       return root.json();
+    }
+
     @Override
     public String toString(){
-        return root.toString();
+        return json();
     }
 }
