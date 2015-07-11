@@ -143,6 +143,37 @@ public class JexlEngine {
         }
     }
 
+    boolean shareImports = false ;
+
+    /**
+     * Gets the import status of the engine
+     * @return true if import would be shared, false if otherwise
+     */
+    public boolean shareImports() {
+        return shareImports;
+    }
+
+    /**
+     * <pre>
+     * If one reuse the JexlEngine to import multiple jexl scripts,
+     * then there is possibility of import collision.
+     * Example, both scripts might want to import System.out as out.
+     * This is disaster, and thus is not allowed.
+     * Thus, the previous scripts imports are never propagated to the
+     * newer scripts.
+     * However, in command line interpreter mode, one is forced to do otherwise.
+     * In that case, we must share the imports, otherwise, one can not
+     * use imports thus made in the previous step.
+     * Note that the context is always shared, as it should be,
+     * immaterial of the import mode sharing.
+     * The only use as of now of this is the Main() function.
+     * </pre>
+     * @param shareImports to share imports or not to share the imports
+     */
+    public void shareImports(boolean shareImports) {
+        this.shareImports = shareImports;
+    }
+
     HashMap<String, Script> imports;
 
     /**

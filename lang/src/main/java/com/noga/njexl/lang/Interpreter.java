@@ -190,8 +190,12 @@ public class Interpreter implements ParserVisitor {
         this.logger = jexl.logger;
         this.uberspect = jexl.uberspect;
         this.arithmetic = jexl.arithmetic;
-        // why this? Because use *clone* not the same object
-        this.functions = new HashMap<>(jexl.functions);
+        if ( jexl.shareImports ) {
+            this.functions = jexl.functions ;
+        }else{
+            // why this? Because use *clone* not the same object
+            this.functions = new HashMap<>(jexl.functions);
+        }
         this.strict = strictFlag;
         this.silent = silentFlag;
         this.cache = jexl.cache != null;

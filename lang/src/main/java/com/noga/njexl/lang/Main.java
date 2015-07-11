@@ -74,7 +74,8 @@ public class Main {
         JexlContext context = getContext();
         JexlEngine JEXL = getJexl(context);
         ConsoleReader console = new ConsoleReader();
-
+        // share imports
+        JEXL.shareImports(true);
         String historyFile = System.getProperty("user.home") + "/.njexl_cli_history" ;
         console.setHistory( new FileHistory(new File(historyFile)));
         console.setExpandEvents(false);
