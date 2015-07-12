@@ -106,12 +106,26 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     int timeout = 30000; // 30 sec should be good
 
-    public int getTimeout(){
+    public int timeout(){
         return timeout ;
     }
 
-    public void setTimeout(int ms){
-        timeout = ms ;
+    public void timeout(int ms){
+        if ( ms > 0 ) {
+            timeout = ms;
+        }
+    }
+
+    int poll =  100 ; // 100 msec is fine
+
+    public int poll() {
+        return poll;
+    }
+
+    public void poll(int poll) {
+        if ( poll >  0 ) {
+            this.poll = poll;
+        }
     }
 
     protected void waitForAppear(String locator){
@@ -125,10 +139,11 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
             }
             now = System.currentTimeMillis();
             if ( now - start > timeout ){
-                throw new Error("Can not have element : " + locator );
+                String message = String.format("Element (%s) is still absent!" , locator );
+                throw new Error(message);
             }
             try{
-                Thread.sleep(100);
+                Thread.sleep(poll);
             }catch (Exception e){}
         }
     }
@@ -144,10 +159,11 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
             }
             now = System.currentTimeMillis();
             if ( now - start > timeout ){
-                throw new Error("Did not disappear element : " + locator );
+                String message = String.format("Element (%s) is still present!" , locator );
+                throw new Error(message);
             }
             try{
-                Thread.sleep(100);
+                Thread.sleep(poll);
             }catch (Exception e){}
         }
     }
@@ -757,8 +773,8 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     @Override
     public boolean isEditable(String locator) {
-        By by = getByFromLocator(locator);
-        return driver.findElement(by).isEnabled();
+        WebElement element = element(locator);
+        return element.isEnabled();
     }
 
     @Override
