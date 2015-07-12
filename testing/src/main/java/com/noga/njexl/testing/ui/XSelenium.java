@@ -640,6 +640,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     /**
      * Accepts or Dismiss the alert
+     * @param accept true to accept, false to dismiss if possible
      * @return true, if there was an alert to act on,
      *         false otherwise
      */
@@ -993,7 +994,6 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
      * @param script a string
      * @param args attached arguments
      * @return the marshall-ed javascript object
-     * @throws Exception in case of error
      */
     public Object jsa(String script,Object... args){
         JavascriptExecutor executor = (JavascriptExecutor) driver;
