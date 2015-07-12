@@ -64,6 +64,10 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     public static final boolean IS_WIN = OS_NAME.startsWith("win");
 
 
+    /**
+     * Do we want to clear field before typing?
+     * Probably YES.
+     */
     boolean __CLEAR_FIELD__ = true;
 
     public static final String[] xpathListButtons = {"//button", "//input[@type=\'submit\']",
@@ -82,12 +86,26 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     String screenShotDir = System.getProperty("user.dir") ;
 
+    /**
+     * Gets the directory of screen shots
+     * @return the screen shot dir
+     */
     public String screenShotDir(){
         return screenShotDir ;
     }
 
-    public void screenShotDir(String dir){
-        screenShotDir = dir;
+    /**
+     * Sets the directory of screen shots
+     * @param dir the directory of the screen shot
+     * @return true if it was successful, false if not
+     */
+    public boolean screenShotDir(String dir){
+        File file = new File(dir);
+        if ( file.isDirectory() ) {
+            screenShotDir = dir;
+            return true ;
+        }
+        return false ;
     }
 
     String getScreenShotFile(){
@@ -106,10 +124,18 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     int timeout = 30000; // 30 sec should be good
 
+    /**
+     * What is the time out for the wait operations
+     * @return the time out in ms
+     */
     public int timeout(){
         return timeout ;
     }
 
+    /**
+     * Sets the timeout, must be greater than 0
+     * @param ms the time out in ms greater than  0
+     */
     public void timeout(int ms){
         if ( ms > 0 ) {
             timeout = ms;
@@ -118,10 +144,18 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     int poll =  100 ; // 100 msec is fine
 
+    /**
+     * What is the polling time for the wait operations
+     * @return the polling time in ms
+     */
     public int poll() {
         return poll;
     }
 
+    /**
+     * Sets the polling time for the wait operations  must be greater than 0
+     * @param poll the poll time in ms greater than  0
+     */
     public void poll(int poll) {
         if ( poll >  0 ) {
             this.poll = poll;
@@ -186,6 +220,9 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         }
     }
 
+    /**
+     * The Types of Browser we support, as of now
+     */
     public enum BrowserType{
         FIREFOX,
         HTML_UNIT,
@@ -193,6 +230,12 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         SAFARI
     }
 
+    /**
+     * Gets the XSelenium with
+     * @param baseUrl the base url
+     * @param browserType the type of the browser
+     * @return an @{XSelenium} object
+     */
     public static XSelenium  selenium(String baseUrl, String browserType){
         BrowserType type = Enum.valueOf(BrowserType.class,browserType);
         WebDriver driver = null;
@@ -213,10 +256,6 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         }
         CommandProcessor commandProcessor = new WebDriverCommandProcessor(baseUrl,driver);
         return new XSelenium(commandProcessor);
-    }
-
-    public XSelenium(String serverHost, int serverPort, String browserStartCommand, String browserURL) {
-        super(serverHost, serverPort, browserStartCommand, browserURL);
     }
 
     public XSelenium(CommandProcessor processor) {
@@ -261,7 +300,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         return (By.id(locator));
     }
 
-    WebDriver driver;
+    public final WebDriver driver;
 
     public String getXPath(WebElement webElement) {
         String jscript = "function getPathTo(node) {" +
@@ -966,13 +1005,29 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         this.captureScreenshot(filename);
     }
 
+    /**
+     * Selects a frame by frame index
+     * @param inx 0 based index
+     */
+    public void frame(int inx){
+        driver.switchTo().frame(inx);
+    }
+
+    /**
+     * Selects a frame by frame name Or Id
+     * @param nameOrId name or id
+     */
+    public void frame(String nameOrId){
+        driver.switchTo().frame(nameOrId);
+    }
     @Override
     public void selectFrame(String locator) {
         Integer inx = TypeUtility.castInteger(locator);
         if (  inx != null ){
             driver.switchTo().frame(inx);
         }else {
-            driver.switchTo().frame(locator);
+            WebElement frame = element(locator);
+            driver.switchTo().frame(frame);
         }
     }
 
