@@ -573,6 +573,42 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         return null;
     }
 
+    /**
+     * Accepts the alert
+     * @return true, if there was an alert to accept,
+     *         false otherwise
+     */
+    public boolean acceptAlert(){
+        if ( isAlertPresent() ){
+            driver.switchTo().alert().accept();
+            return true;
+        }
+        return false ;
+    }
+
+    /**
+     * Dismisses an alert
+     * @return true, if there was an alert to dismiss,
+     *         false otherwise
+     */
+    public boolean dismissAlert(){
+        if ( isAlertPresent() ){
+            driver.switchTo().alert().dismiss();
+            return true;
+        }
+        return false ;
+    }
+
+    /**
+     * Accepts or Dismiss the alert
+     * @return true, if there was an alert to act on,
+     *         false otherwise
+     */
+    public boolean alert(boolean accept){
+        if ( accept ){ return  acceptAlert(); }
+        return dismissAlert();
+    }
+
     @Override
     public String getConfirmation() {
         return getAlert();
@@ -897,6 +933,13 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         return driver.findElement(by).getLocation().getY();
     }
 
+    /**
+     * Executes JavaScript from script synchronously
+     * @param script a file location or a string
+     * @param args attached arguments
+     * @return the marshall-ed javascript object
+     * @throws Exception in case of error
+     */
     public Object js(String script,Object... args) throws Exception {
         JavascriptExecutor executor = (JavascriptExecutor) driver;
         File file =  new File(script);
@@ -906,6 +949,13 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         return executor.executeScript(script, args);
     }
 
+    /**
+     * Executes JavaScript from script asynchronously
+     * @param script a string
+     * @param args attached arguments
+     * @return the marshall-ed javascript object
+     * @throws Exception in case of error
+     */
     public Object jsa(String script,Object... args){
         JavascriptExecutor executor = (JavascriptExecutor) driver;
         return executor.executeAsyncScript(script, args);
@@ -977,7 +1027,6 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         actions.sendKeys( element ,keySequence);
     }
 
-
     @Override
     public void captureScreenshot(String filename) {
         try {
@@ -988,10 +1037,22 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         }
     }
 
+    /**
+     * Downloads a target file from URL into a file
+     * @param url the target
+     * @param file the destination
+     * @return true if ok, false otherwise
+     */
     public boolean download(String url, String file){
         return Utils.copyFileFromUrl(url,file);
     }
 
+    /**
+     * Downloads a target file from locator into a file
+     * @param locator which is the target
+     * @param file the destination file
+     * @return true if ok, false otherwise
+     */
     public boolean downloadTarget(String locator, String file){
         By by = getByFromLocator(locator);
         WebElement element = driver.findElement(by);
@@ -1007,16 +1068,31 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         return false;
     }
 
+    /**
+     * Gets this current HTML page as data source
+     * which hosts the HTML tables as data tables
+     * @return a data source
+     */
     public DataSource dataSource(){
         return ProviderFactory.dataSource(driver.getPageSource());
     }
 
+    /**
+     * Gets an HTML table as a data table
+     * @param tableIndex 0 based index
+     * @return if possible, the [tableIndex] HTML table as Data Matrix object
+     * @throws Exception in case of error
+     */
     public DataMatrix table(String tableIndex) throws Exception {
         DataSource ds = dataSource();
         if ( ds == null ){ throw  new Exception("Data Source Can not be Initialized!") ;}
         return DataMatrix.loc2matrix(driver.getPageSource(), tableIndex);
     }
 
+    /**
+     * Zooms in the view port
+     * @param count how much zoom
+     */
     public void zoomIn(int count){
         WebElement html = driver.findElement(By.tagName("html"));
         for ( int i = 0 ; i < count ; i++ ) {
@@ -1030,8 +1106,15 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         }
     }
 
+    /**
+     * Zooms in the view port by one unit
+     */
     public void zoomIn(){ zoomIn(1);}
 
+    /**
+     * Zooms out the view port
+     * @param count how much zoom
+     */
     public void zoomOut(int count){
         WebElement html = driver.findElement(By.tagName("html"));
         for ( int i = 0 ; i < count ; i++ ) {
@@ -1045,5 +1128,8 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         }
     }
 
+    /**
+     * Zooms out the view port by one unit
+     */
     public void zoomOut(){ zoomOut(1); }
 }
