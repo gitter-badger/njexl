@@ -19,9 +19,7 @@ package com.noga.njexl.testing.ui;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
-import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour;
 import com.noga.njexl.testing.TestAssert;
-import com.noga.njexl.testing.TestSuite;
 import com.noga.njexl.testing.Utils;
 import com.noga.njexl.testing.dataprovider.DataSource;
 import com.noga.njexl.testing.dataprovider.ProviderFactory;
@@ -31,13 +29,15 @@ import com.thoughtworks.selenium.webdriven.WebDriverCommandProcessor;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Eventing;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
 import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-import org.openqa.selenium.interactions.Action;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.remote.server.SystemClock;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.Select;
 
 import java.io.File;
@@ -62,6 +62,10 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     public static final boolean IS_MAC = OS_NAME.startsWith("mac ");
 
     public static final boolean IS_WIN = OS_NAME.startsWith("win");
+
+    public static final String CHROME_DRIVER_PATH = "CHROME_DRIVER" ;
+
+    public static final String OPERA_DRIVER_PATH = "OPERA_DRIVER" ;
 
 
     /**
@@ -226,7 +230,9 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     public enum BrowserType{
         FIREFOX,
         HTML_UNIT,
+        IE,
         CHROME,
+        OPERA,
         SAFARI
     }
 
@@ -239,6 +245,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     public static XSelenium  selenium(String baseUrl, String browserType){
         BrowserType type = Enum.valueOf(BrowserType.class,browserType);
         WebDriver driver = null;
+        ChromeDriverService service = null;
         switch (type){
             case HTML_UNIT:
                 //set javascript support : with chrome mode on
@@ -246,8 +253,39 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
                 ((HtmlUnitDriver)driver).setJavascriptEnabled(true);
                 break;
             case CHROME:
+                String chromeDriverBin = System.getenv(CHROME_DRIVER_PATH);
+                try {
+                    service = new ChromeDriverService.Builder()
+                            .usingDriverExecutable(new File(chromeDriverBin))
+                            .usingAnyFreePort()
+                            .build();
+                    service.start();
+                }catch (Exception e){
+                    System.err.println(e);
+                    return null;
+                }
+                driver = new ChromeDriver(service,DesiredCapabilities.chrome());
                 break;
+            case OPERA:
+                String operaDriverBin = System.getenv(OPERA_DRIVER_PATH);
+                try {
+                    service = new ChromeDriverService.Builder()
+                            .usingDriverExecutable(new File(operaDriverBin))
+                            .usingAnyFreePort()
+                            .build();
+                    service.start();
+                }catch (Exception e){
+                    System.err.println(e);
+                    return null;
+                }
+                driver = new ChromeDriver(service, DesiredCapabilities.opera());
+                break;
+
             case SAFARI:
+                driver = new SafariDriver();
+                break;
+            case IE:
+                driver = new InternetExplorerDriver();
                 break;
             case FIREFOX:
             default:
@@ -521,6 +559,26 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         WebElement el = element(locator);
         Actions builder = new Actions(driver);
         builder.moveToElement(el).perform();
+    }
+
+    @Override
+    public void deleteCookie(String name, String optionsString) {
+        driver.manage().deleteCookieNamed(name);
+    }
+
+    @Override
+    public String getCookie() {
+        Set<Cookie> cookies = driver.manage().getCookies();
+        StringBuffer buf = new StringBuffer();
+        for ( Cookie c : cookies ){
+            buf.append(c.toString()).append(";;;");
+        }
+        return buf.toString();
+    }
+
+    @Override
+    public String getCookieByName(String name) {
+       return driver.manage().getCookieNamed(name).toString();
     }
 
     @Override
