@@ -1137,7 +1137,7 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     public void keyPress(String locator, String keySequence) {
         Actions actions = new Actions(driver);
         WebElement element = element(locator);
-        actions.sendKeys( element ,keySequence);
+        actions.sendKeys(element, keySequence);
     }
 
     @Override
@@ -1148,6 +1148,60 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         }catch (Exception e){
             System.err.printf("Error Taking Screenshot : %s", e);
         }
+    }
+
+    /**
+     * Highlights and flashes the locator boundary
+     * @param locator the element which needs to be highlighted
+     * @param args 0 is color (red) , 1 is width(3) , 2 is no of flashes(5), 3 is delay(1sec)
+     */
+    public void highlight(String locator, String... args){
+        WebElement element = element(locator);
+        highlight(element,args);
+    }
+
+    public void highlight(WebElement element, String... args) {
+
+        String lineWidth = "3" ;
+        String color = "red" ;
+        int times = 5 ;
+        int delay = 1000;
+        if ( args.length > 0 ){
+            color = args[0];
+            if ( args.length > 1 ){
+                lineWidth = args[1];
+                if ( args.length > 2 ){
+                    times = TypeUtility.castInteger(args[2],2);
+                    if ( args.length > 3 ){
+                        delay = TypeUtility.castInteger(args[3],1000);
+                    }
+                }
+            }
+        }
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        String style = element.getAttribute("style");
+        String highlight = String.format("border: %spx solid %s;", lineWidth, color) ;
+        String script = "arguments[0].setAttribute('style', arguments[1]);" ;
+
+
+        for (int i = 0; i < times ; i++) {
+            js.executeScript(script, element, highlight );
+            try{
+                Thread.sleep(delay);
+            }catch (Exception e){}
+
+            js.executeScript( script,  element, style);
+            try{
+                Thread.sleep(delay);
+            }catch (Exception e){}
+        }
+    }
+
+    @Override
+    public void highlight(String locator) {
+        WebElement element = element(locator);
+        highlight(element);
     }
 
     /**
