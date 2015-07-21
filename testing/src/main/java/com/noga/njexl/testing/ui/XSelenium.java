@@ -17,6 +17,7 @@
 package com.noga.njexl.testing.ui;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.noga.njexl.lang.Interpreter;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.testing.TestAssert;
@@ -41,10 +42,7 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.Select;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 
@@ -67,6 +65,26 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     public static final String OPERA_DRIVER_PATH = "OPERA_DRIVER" ;
 
+
+    public static final int BLINK_TIMES = 3 ;
+
+    public static final String BLINK_WIDTH = "3" ;
+
+    public static final int BLINK_DELAY = 1000 ;
+
+    public static final String BLINK_COLOR = "red" ;
+
+    protected int typeDelay = 580 ;
+
+    public void typeDelay( int delay){
+        if ( delay > 100 ) {
+            typeDelay = delay;
+        }
+    }
+
+    public int typeDelay( ){
+        return typeDelay ;
+    }
 
     /**
      * Do we want to clear field before typing?
@@ -499,7 +517,14 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     public void typeKeys(String locator, String value) {
         By by = getByFromLocator(locator);
         WebElement element = driver.findElement(by);
-        element.sendKeys(value);
+        value = replaceSpecialCharacters(value);
+        for ( int i = 0 ; i < value.length();i++){
+            element.sendKeys(Character.toString( value.charAt(i)));
+            try{
+                Thread.sleep(typeDelay);
+            }catch (Exception e){
+            }
+        }
     }
 
 
@@ -1150,32 +1175,39 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
         }
     }
 
-    /**
-     * Highlights and flashes the locator boundary
-     * @param locator the element which needs to be highlighted
-     * @param args 0 is color (red) , 1 is width(3) , 2 is no of flashes(5), 3 is delay(1sec)
-     */
-    public void highlight(String locator, String... args){
+    public void highlight(String locator, Interpreter.NamedArgs... args){
         WebElement element = element(locator);
         highlight(element,args);
     }
 
-    public void highlight(WebElement element, String... args) {
+    public void highlight(WebElement element, Interpreter.NamedArgs... args) {
 
-        String lineWidth = "3" ;
-        String color = "red" ;
-        int times = 5 ;
-        int delay = 1000;
-        if ( args.length > 0 ){
-            color = args[0];
-            if ( args.length > 1 ){
-                lineWidth = args[1];
-                if ( args.length > 2 ){
-                    times = TypeUtility.castInteger(args[2],2);
-                    if ( args.length > 3 ){
-                        delay = TypeUtility.castInteger(args[3],1000);
-                    }
-                }
+        String lineWidth = BLINK_WIDTH ;
+        String color = BLINK_COLOR ;
+        int times = BLINK_TIMES ;
+        int delay = BLINK_DELAY ;
+
+        for ( int i = 0 ; i<args.length ; i++){
+            switch ( args[i].name ){
+                case "width":
+                case "w" :
+                    lineWidth = args[i].value.toString() ;
+                    break;
+
+                case "c" :
+                case "color":
+                    color = args[i].value.toString();
+                    break;
+                case "times" :
+                case "n" :
+                    times = TypeUtility.castInteger(args[i].value, BLINK_TIMES );
+                    break;
+                case "delay" :
+                case "t" :
+                    delay = TypeUtility.castInteger(args[i].value, BLINK_DELAY );
+                    break;
+                default:
+                    break;
             }
         }
 
