@@ -57,18 +57,32 @@ Take a look around the expressive power of declarative programming :
 That begs a bigger question. If the test code can be written in such small pieces of predicate logic,
 how come the actual code is so much more complex and bigger than the test code? 
 There is something obviously wrong. The Business Programming front, people are actually making a complete mess of what are actually pretty trivial business processes. 
-Lesson no 1.
-In this business, neither bomb, not grenade, nor knife. Only gray ceels reign supreme.
-Thus.
-Business logic should recide outside code. 
-A lesson tried and tested and taught by SAP.
 
-No Business Process is beyond Turing Complete, never will be. So preaching complexity does not help.
-Over dependence on Java is another, which is a very bad choice at business programming (in fact any programming), 
+Lesson no 1 learned in any business:  
+
+>>  Neither bomb, not grenade, nor knife but Only gray cells reign supreme.
+
+Business logic should reside outside code. This is a lesson tried and tested and taught by SAP.
+
+Lesson no 2 learned if anyone studied computer science ( not software ) :
+
+>> No Business Process is beyond Turing Complete, never will be. So preaching complexity does not help. 
+   Objective is to reduce complexity not add more to it.
+
+
+
+Over dependence on Java is the root cause in here, which is a terrible choice at business programming (in fact any programming), 
 the verbosity makes it a killer on the loose. Python can do things in 10 lines what Java can do in 100. Scala is a good language and utmost geeky - impractical for business user and use. Python can not talk to Java business objects (Jython does not count, really), 
 and then Python is not a business process automation language or a software testing language.
 But it is a beautiful language never the less.  
+
+
+>> Git was developed in 14 Days. Old Rome was not. Git exists as of now, while Old Rome does not.
+
+
 Testing and Business Programming should be less talk, more work. 
+If the work takes more than 14 days, you have a talent problem.
+
 Who tests the test code? Who watches the watchers? 
 How business code can ever be *tested* ? Pure theory says never. 
 
