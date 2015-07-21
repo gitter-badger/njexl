@@ -535,6 +535,14 @@ public class TypeUtility {
         if (args.length == 0) {
             return "";
         }
+        if ( args[0] == null ){
+            /* what should I return?
+                Theoretically null, "" , "null" are possible.
+                But then, I choose 'null'.
+            */
+            return "null" ; // because it is nJexl null param
+        }
+
         if (args[0] instanceof AnonymousParam) {
             AnonymousParam anon = (AnonymousParam) args[0];
             args = shiftArrayLeft(args, 1);
