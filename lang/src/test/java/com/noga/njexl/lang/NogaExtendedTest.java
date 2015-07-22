@@ -638,4 +638,64 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue((Boolean) o);
 
     }
+
+    @Test
+    public void testEquals() throws Exception {
+        JexlContext jc = new MapContext();
+        String s = "1h == 1.0" ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "1h == 1.01" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse((Boolean) o);
+
+
+        s = "1h == 1.0000000001001" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse((Boolean) o);
+
+
+        s = "1h == 1.0000000000000" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+
+        s = "1h == 1.00000010001b" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse((Boolean) o);
+
+        s = "1h == 1.00000b" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "1.00000b == 1h" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "1.000001b == 1.000001" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+
+        s = "1.000001000000b == 1.000001" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "1.000001d == 1.000001f" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+
+    }
 }

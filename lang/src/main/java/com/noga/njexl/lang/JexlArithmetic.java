@@ -624,7 +624,7 @@ public class JexlArithmetic {
             }
             BigDecimal result;
 
-            if ( power.compareTo( BigInteger.ZERO ) > 0 ) {
+            if ( power.compareTo(BigInteger.ZERO) > 0 ) {
                 result = l ;
                 // +ve power
                 while (power.compareTo(BigInteger.ONE) > 0) {
@@ -1330,7 +1330,13 @@ public class JexlArithmetic {
                 return BigInteger.ZERO;
             }
         } else if (val instanceof Number) {
-            return new BigInteger(val.toString());
+            try {
+                BigDecimal bd = new BigDecimal(val.toString());
+                // this is much better off
+                return bd.toBigIntegerExact();
+            }catch (ArithmeticException e){
+                throw new NumberFormatException(e.toString());
+            }
         } else if (val instanceof String) {
             String string = (String) val;
             if ("".equals(string.trim())) {
