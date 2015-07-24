@@ -2441,6 +2441,17 @@ public class Interpreter implements ParserVisitor {
             if (object.getClass().isArray() && attribute.equals("length")) {
                 return Array.getLength(object);
             }
+            // ok, is this a method with void input?
+            JexlMethod jexlMethod = uberspect.getMethod(object, attribute.toString(), null, null);
+            if ( jexlMethod != null ){
+                try {
+                    Object ret = jexlMethod.invoke(object, null);
+                    return ret;
+                }catch (Exception e){
+
+                }
+            }
+
         }
         return null;
     }

@@ -280,8 +280,12 @@ public class IssuesTest extends JexlTestCase {
         ctxt.set("dummy", "abcd");
         assertEquals(jscript.getText(), Integer.valueOf("abcd".hashCode()), jscript.execute(ctxt)); // OK
 
+        /*
+           This is same as using void function as field
+           Not only getXXX but generally any void function
+        * */
         jscript = jexl.createScript("dummy.hashCode");
-        assertEquals(jscript.getText(), null, jscript.execute(ctxt)); // OK
+        assertNotNull(jscript.getText(), jscript.execute(ctxt)); // OK
 
         Expression jexpr;
 
@@ -292,8 +296,12 @@ public class IssuesTest extends JexlTestCase {
         ctxt.set("dummy", "abcd");
         assertEquals(jexpr.getExpression(), Integer.valueOf("abcd".hashCode()), jexpr.evaluate(ctxt)); // OK
 
+        /*
+           This is same as using void function as field
+           Not only getXXX but generally any void function
+        * */
         jexpr = jexl.createExpression("dummy.hashCode");
-        assertEquals(jexpr.getExpression(), null, jexpr.evaluate(ctxt)); // OK
+        assertNotNull(jexpr.getExpression(), jexpr.evaluate(ctxt)); // OK
     }
 
     // JEXL-73
