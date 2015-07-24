@@ -697,5 +697,10 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue((Boolean) o);
 
 
+        s = "char('a') == 'a' " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
     }
 }

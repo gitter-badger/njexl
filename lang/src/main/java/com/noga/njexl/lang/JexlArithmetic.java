@@ -1019,14 +1019,21 @@ public class JexlArithmetic {
                     return 0;
                 }
             } else if (isNumberable(left) || isNumberable(right)) {
-                long lhs = toLong(left);
-                long rhs = toLong(right);
-                if (lhs < rhs) {
-                    return -1;
-                } else if (lhs > rhs) {
-                    return +1;
-                } else {
-                    return 0;
+                try {
+                    long lhs = toLong(left);
+                    long rhs = toLong(right);
+                    if (lhs < rhs) {
+                        return -1;
+                    } else if (lhs > rhs) {
+                        return +1;
+                    } else {
+                        return 0;
+                    }
+                }catch (Exception e){
+                    // what sort of stuff?
+                    if ( left instanceof String || right instanceof String){
+                        return toString(left).compareTo(toString(right));
+                    }
                 }
             } else if (left instanceof String || right instanceof String) {
                 return toString(left).compareTo(toString(right));
