@@ -850,7 +850,7 @@ public class Interpreter implements ParserVisitor {
 
     @Override
     public Object visit(ASTTagContainer node, Object data) {
-        Object o = node.jjtGetChild(0).jjtAccept(this,data);
+        Object o = node.jjtGetChild(0).jjtAccept(this, data);
         return o;
     }
 
@@ -1060,7 +1060,7 @@ public class Interpreter implements ParserVisitor {
         }
         // conditional continue
         Object value = node.jjtGetChild(0).jjtAccept( this, data );
-        boolean b = TypeUtility.castBoolean( value , false );
+        boolean b = TypeUtility.castBoolean(value, false);
         if ( b ){
             throw new JexlException.Continue(node.jjtGetParent());
         }
@@ -2103,7 +2103,10 @@ public class Interpreter implements ParserVisitor {
      * @since 2.1
      */
     public Object visit(ASTReturnStatement node, Object data) {
-        Object val = node.jjtGetChild(0).jjtAccept(this, data);
+        Object val = NULL ;
+        if ( node.jjtGetNumChildren() > 0 ) {
+            val = node.jjtGetChild(0).jjtAccept(this, data);
+        }
         throw new JexlException.Return(node, null, val);
     }
 

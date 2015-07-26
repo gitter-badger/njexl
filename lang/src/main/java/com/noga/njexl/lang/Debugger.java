@@ -338,7 +338,7 @@ public final class Debugger implements ParserVisitor {
         }
         builder.append(") ");
         // now the body
-        accept(node.jjtGetChild(numChild-1),data);
+        accept(node.jjtGetChild(numChild - 1), data);
         return data;
     }
 
@@ -782,7 +782,9 @@ public final class Debugger implements ParserVisitor {
     /** {@inheritDoc} */
     public Object visit(ASTReturnStatement node, Object data) {
         builder.append("return ");
-        accept(node.jjtGetChild(0), data);
+        if ( node.jjtGetNumChildren() > 0 ) {
+            accept(node.jjtGetChild(0), data);
+        }
         return data;
     }
 

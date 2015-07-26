@@ -286,7 +286,7 @@ void ForeachStatement() : {}
 
 void ReturnStatement() : {}
 {
-    <RETURN> Expression()
+    <RETURN>  ( LOOKAHEAD(2) Expression() )?
 }
 
 
