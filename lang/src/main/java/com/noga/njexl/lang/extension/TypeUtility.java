@@ -128,6 +128,8 @@ public class TypeUtility {
 
     public static final String THREAD = "thread";
 
+    public static final String TIMING_BENCHMARK = "clock";
+
 
     /**
      * IO calls
@@ -1155,6 +1157,30 @@ public class TypeUtility {
         }
     }
 
+    public static Object benchmark(Object...args){
+        Object[] ret = new Object[ ]{0,null};
+        if ( args.length == 0 ){
+            return ret;
+        }
+        if ( !(args[0] instanceof AnonymousParam) ){
+            return ret;
+        }
+        AnonymousParam anon = (AnonymousParam)args[0];
+        args = shiftArrayLeft(args,1);
+        long start = System.nanoTime();
+        long end;
+
+        try{
+            ret[1] = anon.execute();
+        }catch (Throwable throwable){
+            ret[1] = throwable ;
+        }finally {
+            end = System.nanoTime();
+        }
+        ret[0] = end - start ;
+        return ret ;
+    }
+
     public static Object interceptCastingCall(String methodName, Object[] argv, Boolean[] success) throws Exception {
 
         if (success != null) {
@@ -1265,6 +1291,8 @@ public class TypeUtility {
                 return descending(argv);
             case TRY:
                 return guardedBlock(argv);
+            case TIMING_BENCHMARK:
+                return benchmark(argv);
             case SYSTEM:
                 return system(argv);
             case SHUFFLE:
