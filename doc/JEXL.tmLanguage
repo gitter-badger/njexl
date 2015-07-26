@@ -45,7 +45,7 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>\btry\b|\btype\b|\bisa\b|\bnew\b|\bif\b|\belse\b|\bwhile\b|\bwhere\b|\bfor\b|\breturn\b|\bvar\b|\bbreak\b|\bcontinue\b|;|\\$</string>
+			<string>\btype\b|\bisa\b|\bnew\b|\bif\b|\belse\b|\bwhile\b|\bwhere\b|\bfor\b|\breturn\b|\bvar\b|\bbreak\b|\bcontinue\b|;|\\$</string>
 			<key>name</key>
 			<string>keyword.control.jexl</string>
 		</dict>
@@ -57,7 +57,7 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>#|[a-zA-Z]+:[a-zA-Z_]+|\{\S+\}|\*\* \S+|\b&lt;\-|\bint\b|\bshort\b|\bbyte\b|\bchar\b|\bdouble\b|\blong\b|\bsub\b|\btime\b|\bbool\b|\bstr\b|\blist\b|\bset\b|\blistLiteral\b|\barray\b|\barrayFromList\b|\bwithin\b|\bdict\b|\brange\b|\bsqlmath\b|\btypeof\b|\bselect\b|\bindex\b|\bjson\b|\bpartition\b|\bread\b|\bsorta\b|\bsortb\b|\bjoin\b</string>
+			<string>#|[a-zA-Z]+:[a-zA-Z_]+|\{\S+\}|\*\* \S+|\b&lt;\-|\bint\b|\bshort\b|\bbyte\b|\bchar\b|\bdouble\b|\blong\b|\bsub\b|\btime\b|\bbool\b|\bstr\b|\blist\b|\bset\b|\blistLiteral\b|\barray\b|\barrayFromList\b|\bwithin\b|\bdict\b|\brange\b|\bsqlmath\b|\btypeof\b|\bselect\b|\bindex\b|\bjson\b|\bpartition\b|\bread\b|\bsorta\b|\bsortb\b|\bjoin\b|\btry\b|\bclock\b</string>
 			<key>name</key>
 			<string>support.function.jexl</string>
 		</dict>
