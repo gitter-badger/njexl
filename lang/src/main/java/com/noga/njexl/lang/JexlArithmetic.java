@@ -92,7 +92,7 @@ public class JexlArithmetic {
     }
 
     public static boolean areListOrArray(Object l, Object r){
-        return isListOrArray(r) && isListOrArray(r);
+        return isListOrArray(l) && isListOrArray(r);
     }
     /**
      * Creates a JexlArithmetic.

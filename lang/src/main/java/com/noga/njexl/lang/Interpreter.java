@@ -879,7 +879,7 @@ public class Interpreter implements ParserVisitor {
         return assignToNode(register, node, left, right);
     }
 
-    private Collection tupleAssignment(ASTTuple astTuple, JexlNode value, Object data){
+    private Object[] tupleAssignment(ASTTuple astTuple, JexlNode value, Object data){
         int c = astTuple.jjtGetNumChildren() ;
         JexlNode errorNode = astTuple.jjtGetChild(c-1);
         boolean catchError = errorNode instanceof ASTTagContainer ;
@@ -949,7 +949,7 @@ public class Interpreter implements ParserVisitor {
             assignToNode(-1,node, errorNode, error);
             l.add(error);
         }
-        return Collections.unmodifiableCollection(l);
+        return l.toArray();
     }
 
     @Override
@@ -960,7 +960,7 @@ public class Interpreter implements ParserVisitor {
             Object r = node.jjtGetChild(i).jjtAccept(this, data);
             l.add(r);
         }
-        return Collections.unmodifiableCollection(l);
+        return l.toArray();
     }
 
     /**
@@ -2388,6 +2388,7 @@ public class Interpreter implements ParserVisitor {
                 }
             }
         }
+
         JexlPropertyGet vg = uberspect.getPropertyGet(object, attribute, node);
         if (vg != null) {
             try {

@@ -223,7 +223,8 @@ public class ExtendedScriptTest extends JexlTestCase {
     @Test
     public void testTupleScript() throws Exception{
         Object o = runScript(JEXL, "samples/multireturn.jxl");
-        assertTrue(o instanceof Collection);
+        assertNotNull(o);
+        assertTrue( o.getClass().isArray());
     }
 
     /****
