@@ -609,6 +609,16 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testStringCatenation() throws Exception{
+        JexlContext jc = new MapContext();
+        JEXL.setFunctions(Main.getFunction(jc));
+        String s = "'1' + '1' " ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue("11".equals(o));
+    }
+
+    @Test
     public void testTupleAssignment() throws Exception{
         JexlContext jc = new MapContext();
         JEXL.setFunctions(Main.getFunction(jc));

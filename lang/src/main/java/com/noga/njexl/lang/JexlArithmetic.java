@@ -423,6 +423,9 @@ public class JexlArithmetic {
                 double r = toDouble(right);
                 return new Double(l + r);
             }
+            if ( left instanceof String ){
+                return toString(left).concat(toString(right));
+            }
 
             // otherwise treat as integers
             BigInteger l = toBigInteger(left);
