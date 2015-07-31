@@ -78,7 +78,7 @@ PARSER_END(Parser)
 <*> TOKEN : /* KEYWORDS */
 {
       < IF : "if" >
-    | < ELSE : ( (" "|"\t")* ( "\n" | "\r" | "\r\n" ) )? ( "else" ) ( (" "|"\t")* ( "\n" | "\r" | "\r\n" ) )? >
+    | < ELSE : ( (" "|"\t")* ( "\n" | "\r" | "\r\n" ) )* ( "else" ) ( (" "|"\t")* ( "\n" | "\r" | "\r\n" ) )* >
     | < FOR : "for" >
     | < FOREACH : "foreach" >
     | < WHILE : "while" >
