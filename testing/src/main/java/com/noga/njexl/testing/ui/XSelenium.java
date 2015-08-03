@@ -228,10 +228,27 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     public static final String DISAPPEAR = "$$" ;
 
+    int delay = 1000 ;
+
+    public void setDelay(int ms){
+        if ( ms > 10 ){
+            delay = ms ;
+        }
+    }
+
+    public void delay(int ms){
+        try{
+            Thread.sleep(ms);
+        }catch (Exception e){
+        }
+    }
+
     @Override
     public void after(Event event) {
         if ( DISAPPEAR.equals(event.pattern) && event.args.length > 0 ){
             waitForDisappear(event.args[0].toString());
+        }else{
+            delay(delay);
         }
     }
 
@@ -239,6 +256,8 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     public void before(Event event) {
         if ( APPEAR.equals(event.pattern) && event.args.length > 0 ){
             waitForAppear(event.args[0].toString());
+        }else{
+            delay(delay);
         }
     }
 

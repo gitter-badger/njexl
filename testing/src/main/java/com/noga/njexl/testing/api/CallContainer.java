@@ -213,6 +213,7 @@ public class CallContainer implements Serializable, Cloneable {
 
     public synchronized void call(){
         try{
+            validationResult = false ;
             timing = System.nanoTime();
             result = method.invoke(service,parameters);
             timing = System.nanoTime() - timing ;
@@ -221,6 +222,12 @@ public class CallContainer implements Serializable, Cloneable {
             error = t.getCause() ;
             if ( error == null ){
                 error = t;
+            }
+            // set it up
+            setExceptionPattern(null);
+            setExceptionMessage();
+            if ( isExceptionValid() ){
+               validationResult = true ;
             }
             result = null;
         }
