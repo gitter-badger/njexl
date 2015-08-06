@@ -725,4 +725,15 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.execute(jc);
         assertTrue((Boolean) o);
     }
+
+    @Test
+    public void testNegativeArrayAccess() throws Exception{
+        JexlContext jc = new MapContext();
+        jc.set("x", new int[]{ 0,1,2,3} );
+        String s = "x[-1] + x[-2] + x[0] + x[1]" ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertEquals(6,o);
+
+    }
 }

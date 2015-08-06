@@ -16,6 +16,7 @@
 
 
 package com.noga.njexl.lang.internal;
+import java.util.Arrays;
 import java.util.List;
 import java.lang.reflect.Array;
 /**
@@ -62,13 +63,21 @@ public final class ListGetExecutor extends AbstractExecutor.Get {
      */
     @Override
     public Object execute(final Object obj) {
+        int inx = property.intValue() ;
+        int len =-1;
         if (method == ARRAY_GET) {
-            return java.lang.reflect.Array.get(obj, property.intValue());
+            len = Array.getLength(obj);
+            if ( inx < 0 ){ inx  = len + inx ; }
+            return java.lang.reflect.Array.get(obj,inx );
         }
         if (method == CHAR_AT) {
-            return ((String)obj).charAt( property.intValue());
+            len = ((String)obj).length()  ;
+            if ( inx < 0 ){ inx  = len + inx ; }
+            return ((String)obj).charAt(inx);
         }
-        return ((List<?>) obj).get(property.intValue());
+        len = ((List<?>) obj).size() ;
+        if ( inx < 0 ){ inx  = len + inx ; }
+        return ((List<?>) obj).get(inx);
     }
 
     /** {@inheritDoc} */
