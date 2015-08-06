@@ -22,7 +22,6 @@ import com.noga.njexl.lang.JexlException;
 import com.noga.njexl.lang.internal.ArrayIterator;
 import com.noga.njexl.lang.internal.Introspector;
 import com.noga.njexl.lang.JexlInfo;
-import com.noga.njexl.lang.extension.iterators.StringIterator;
 import com.noga.njexl.lang.internal.AbstractExecutor;
 import com.noga.njexl.lang.internal.EnumerationIterator;
 import com.noga.njexl.lang.internal.introspection.MethodKey;
@@ -88,7 +87,10 @@ public class UberspectImpl extends Introspector implements Uberspect {
             return new EnumerationIterator<Object>((Enumeration<Object>) obj);
         }
         if ( obj instanceof String){
-            return new StringIterator((String)obj);
+            return new ArrayIterator(((String)obj).toCharArray());
+        }
+        if ( obj instanceof StringBuffer || obj instanceof StringBuilder){
+            return new ArrayIterator(obj.toString().toCharArray());
         }
         if (obj instanceof Iterable<?>) {
             return ((Iterable<?>) obj).iterator();
