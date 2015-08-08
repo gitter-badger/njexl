@@ -164,9 +164,9 @@ limitations under the License.
     <build>
         <!--
             Ensure Maven Tests runs from anywhere
-            Includes both src/ and test/ by giving root
+            Includes both src/ and test/ by giving root of project
         -->
-        <testSourceDirectory>/</testSourceDirectory>
+        <testSourceDirectory>${project.build.directory}</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
