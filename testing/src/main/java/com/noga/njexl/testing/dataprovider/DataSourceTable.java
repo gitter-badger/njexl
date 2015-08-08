@@ -17,12 +17,14 @@
 package com.noga.njexl.testing.dataprovider;
 
 import com.noga.njexl.lang.extension.TypeUtility;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
+import com.noga.njexl.lang.extension.datastructures.ListSet;
+import com.noga.njexl.lang.extension.datastructures.XList;
+
+import java.util.*;
 
 /**
- * Created by noga on 15/04/15.
+ * A DataSourceTable type for Table like manipulation of data
  */
 
 public abstract class DataSourceTable {
@@ -101,5 +103,41 @@ public abstract class DataSourceTable {
         catch (Exception e){
             return Collections.EMPTY_MAP ;
         }
+    }
+
+    protected DataMatrix matrix ;
+
+    /**
+     * Creates a read/write data matrix from the underlying data
+     * Note that changes won't be saved back to the data source
+     * @param header if true, header info is passed to matrix to do column wise manipulation
+     *               if false, header is taken as data
+     * @return a data matrix
+     */
+    public DataMatrix matrix(boolean header){
+        if ( matrix == null ){
+            ListSet cols = null;
+            int row = 0;
+            if ( header ){
+                String[] words = row(0);
+                cols = new ListSet(Arrays.asList(words));
+                row = 1;
+            }
+            ArrayList rows = new ArrayList();
+            int length = length();
+            while ( row < length ){
+                String[] words = row(row);
+                ArrayList<String> rowData = new ArrayList<>(Arrays.asList(words));
+                rows.add(rowData);
+                row++;
+            }
+            if ( header ){
+                matrix =  new DataMatrix(rows,cols);
+            }
+            else {
+                matrix = new DataMatrix(rows);
+            }
+        }
+        return matrix;
     }
 }

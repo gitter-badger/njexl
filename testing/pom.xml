@@ -162,8 +162,11 @@ limitations under the License.
         </snapshotRepository>
     </distributionManagement>
     <build>
-        <!-- Ensure Maven Tests runs from anywhere -->
-        <testSourceDirectory>src</testSourceDirectory>
+        <!--
+            Ensure Maven Tests runs from anywhere
+            Includes both src/ and test/ by giving root
+        -->
+        <testSourceDirectory>/</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

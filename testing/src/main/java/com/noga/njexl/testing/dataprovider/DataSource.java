@@ -54,25 +54,7 @@ public abstract class DataSource implements DataLoader {
         if ( args.length >  1 ){
             header = TypeUtility.castBoolean(args[1]);
         }
-        ListSet cols = null;
-        int row = 0;
-        if ( header ){
-            String[] words = dataSourceTable.row(0);
-            cols = new ListSet(Arrays.asList(words));
-            row = 1;
-        }
-        ArrayList rows = new ArrayList();
-
-        while ( row < dataSourceTable.length() ){
-            String[] words = dataSourceTable.row(row);
-            ArrayList<String> rowData = new ArrayList<>(Arrays.asList(words));
-            rows.add(rowData);
-            row++;
-        }
-        if ( header ){
-            return new DataMatrix(rows,cols);
-        }
-        return new DataMatrix(rows);
+        return dataSourceTable.matrix(header);
     }
 
     public DataSource(String location) throws Exception{
