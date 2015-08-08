@@ -23,7 +23,7 @@ import java.util.*;
 
 
 /**
- * Created by noga on 27/05/15.
+ * Annotations for Unit Testing of API
  */
 public final class Annotations {
 
@@ -32,14 +32,14 @@ public final class Annotations {
     public @interface NApiService {
 
         /**
-         * If true then use this for testing
+         * If true then use this for testing - defaults true
          * @return true if one needs to run, false otherwise
          */
         boolean use() default true ;
 
         /**
          * The base directory where all data and script
-         * would be stored
+         * would be stored - default empty
          * @return directory
          */
         String base() default "" ;
@@ -57,12 +57,17 @@ public final class Annotations {
         String afterClass() default "" ;
     }
 
+    /**
+     * Defines the service creator,
+     * That is, how to create the service instance
+     */
     @Retention( RetentionPolicy.RUNTIME )
     @Target( ElementType.TYPE )
     public @interface NApiServiceCreator {
 
         /**
          * The service creator class
+         * Defaults to @{ServiceCreatorFactory.SimpleCreator}
          * @return service creator class
          */
         Class type() default  ServiceCreatorFactory.SimpleCreator.class ;
@@ -70,11 +75,15 @@ public final class Annotations {
         /**
          * String representation of the arguments
          * needs to call constructor of the service creator class
+         * Default is empty array
          * @return arguments to the constructor
          */
         String[] args() default {};
     }
 
+    /**
+     * How to specifically initialize the service object
+     */
     @Retention( RetentionPolicy.RUNTIME )
     @Target( ElementType.CONSTRUCTOR )
     public @interface NApiServiceInit {
@@ -82,6 +91,7 @@ public final class Annotations {
         /**
          * The Spring Bean Name
          * When one wants to instantiate the class using spring
+         * Defaults to empty string
          * @return bean name
          */
         String bean() default "";
@@ -89,16 +99,21 @@ public final class Annotations {
         /**
          * String representation of the arguments
          * needs to call constructor of the service class
+         * Defaults to empty array
          * @return arguments to the constructor
          */
         String[] args() default {};
     }
 
+    /**
+     * In case of performance testing of the API is needed
+     */
     @Retention( RetentionPolicy.RUNTIME )
     public @interface Performance{
 
         /**
          * Is this a performance test
+         * Defaults to true
          * @return true if it is, false if it is not
          */
         boolean use() default true ;
@@ -119,12 +134,16 @@ public final class Annotations {
         double lessThan()  default  CallContainer.DEFAULT_PERCENTILE_VALUE  ;
     }
 
+    /**
+     * Should we use threading or not
+     */
     @Retention( RetentionPolicy.RUNTIME )
     @Target( ElementType.METHOD )
     public @interface NApiThread {
 
         /**
          *  Whether or not use threaded mode
+         *  Defaults to true
          * @return true/false
          */
         boolean use() default true;
@@ -168,12 +187,16 @@ public final class Annotations {
 
     }
 
+    /**
+     * Marks the function as API to test
+     */
     @Retention( RetentionPolicy.RUNTIME )
     @Target( ElementType.METHOD )
     public @interface NApi {
 
         /**
          * If true then use this for testing
+         * Defaults to true
          * @return true if one needs to run, false otherwise
          */
         boolean use() default true ;
@@ -247,13 +270,34 @@ public final class Annotations {
         String[] globals() default {};
     }
 
+    /**
+     * Holder class to retain information about
+     * How to run the method
+     */
     public static class MethodRunInformation{
+        /**
+         * What is my base directory for all data/script
+         */
         public String base;
+        /**
+         * What is precisely my method
+         */
         public Method method;
+        /**
+         * The method run information
+         */
         public NApi nApi;
+        /**
+         * Methods threading information
+         */
         public NApiThread nApiThread ;
     }
 
+    /**
+     * Gets service level information from a class
+     * @param c the class
+     * @return service level information
+     */
     public static NApiService NApiService(Class c){
         NApiService ns = (NApiService) c.getAnnotation( NApiService.class);
         if ( ns != null && ns.use() ){
@@ -262,14 +306,29 @@ public final class Annotations {
         return null;
     }
 
+    /**
+     * Gets service creator level information from a class
+     * @param c the class
+     * @return service creator level information
+     */
     public static NApiServiceCreator NApiServiceCreator(Class c){
         return (NApiServiceCreator) c.getAnnotation(NApiServiceCreator.class);
     }
 
+    /**
+     * Gets service object initialization information
+     * @param c the class
+     * @return service initialization information
+     */
     public static NApiServiceInit NApiServiceInit(Constructor c){
         return (NApiServiceInit) c.getAnnotation(NApiServiceInit.class);
     }
 
+    /**
+     * Gets method run details from a method
+     * @param m the method
+     * @return run details for the method
+     */
     public static NApi NApi(Method m){
         NApi nApi = m.getAnnotation(NApi.class);
         if ( nApi != null && nApi.use() ){
@@ -278,10 +337,20 @@ public final class Annotations {
         return null;
     }
 
+    /**
+     * Gets method's thread run details from a method
+     * @param m the method
+     * @return Thread run details for the method
+     */
     public static NApiThread NApiThread(Method m){
         return m.getAnnotation(NApiThread.class);
     }
 
+    /**
+     * Gets all method run details from a class
+     * @param c the class
+     * @return all run details for all the methods in the class as a list
+     */
     public static List<MethodRunInformation> runs( Class c ){
         NApiService ns = NApiService(c);
         if ( ns == null ) { return Collections.emptyList() ; }

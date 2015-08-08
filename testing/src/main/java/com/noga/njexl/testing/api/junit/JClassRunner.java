@@ -31,7 +31,7 @@ import java.util.List;
 
 
 /**
- * Created by noga on 28/05/15.
+ * jUnit class runner to run a standard POJO as Test
  */
 public class JClassRunner extends Suite {
 
@@ -50,18 +50,35 @@ public class JClassRunner extends Suite {
 
     protected final List<Runner> children;
 
+    /**
+     * Creates a runner from a class
+     * @param clazz the class to wrap into multiple tests
+     * @throws Exception if fails to do so
+     */
     public JClassRunner(Class<?> clazz) throws Exception {
         super(clazz, Collections.<Runner>emptyList());
         children = new ArrayList<>();
         createRunners();
     }
 
+    /**
+     * Creates a service object from a creator
+     * @param creator the creator to take definition from
+     * @param clazz the class to create
+     * @return instance of a service object
+     * @throws Exception if fails to do so
+     */
     public Object service(NApiServiceCreator creator, Class clazz) throws Exception{
         ServiceCreator serviceCreator = ServiceCreatorFactory.creator(creator);
         Object service = serviceCreator.create(clazz);
         return service;
     }
 
+    /**
+     * Creates a dict entry x:y
+     * @param s a string with x=y
+     * @return a dict entry x:y format
+     */
     public static String dictEntry(String s){
         String[] pairs = s.split("=");
         if ( pairs.length != 2 ){
@@ -71,6 +88,11 @@ public class JClassRunner extends Suite {
         return ret;
     }
 
+    /**
+     * Get the global variable
+     * @param arr the array of the global variables
+     * @return a dict in nJexl string
+     */
     public static String globals(String[] arr){
         StringBuffer buffer = new StringBuffer();
         buffer.append("{");

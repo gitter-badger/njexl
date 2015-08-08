@@ -17,7 +17,7 @@
 package com.noga.njexl.testing.dataprovider.excel;
 
 /**
- * Created by noga on 15/04/15.
+ * Interface ExcelReader to make it easy to read excel
  */
 public interface ExcelReader {
 

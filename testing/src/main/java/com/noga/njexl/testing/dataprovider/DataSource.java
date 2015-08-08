@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
- * Created by noga on 15/04/15.
+ * A Data Table type to ease out data reading
  */
 public abstract class DataSource implements DataLoader {
 

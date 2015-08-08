@@ -25,7 +25,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * Created by noga on 15/04/15.
+ * Excel Files as data sources,
+ * While use sheets as tables
  */
 public class ExcelDataSource extends DataSource {
 
@@ -33,6 +34,9 @@ public class ExcelDataSource extends DataSource {
 
     public static final DataLoader DATA_LOADER = new ExcelDataSource();
 
+    /**
+     * Excel sheet as data table
+     */
     public static class ExcelDataTable extends DataSourceTable {
 
         DataSource dataSource;
@@ -76,6 +80,13 @@ public class ExcelDataSource extends DataSource {
                 data.add(words);
             }
         }
+
+        /**
+         * Creates an data table
+         * @param reader excel reader
+         * @param ds the parent data source object
+         * @param sheetName the sheet to be used as table
+         */
         public ExcelDataTable(ExcelReader reader, ExcelDataSource ds, String sheetName){
             name = sheetName ;
             dataSource = ds ;

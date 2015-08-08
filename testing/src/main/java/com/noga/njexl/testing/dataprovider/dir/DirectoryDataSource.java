@@ -10,7 +10,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Created by noga on 28/05/15.
+ * Use a directory as data source,
+ * Idea is to use any TSV file inside as table
  */
 public class DirectoryDataSource extends DataSource {
 

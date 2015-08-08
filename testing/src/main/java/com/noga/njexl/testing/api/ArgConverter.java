@@ -27,7 +27,13 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+/**
+ * <pre>
+ * Standard Spring/Hibernate/xBatis magic
+ * of converting string to object - also known as DeSerialization
+ * This does the conversion of method parameters from relational strings
+ * </pre>
+ */
 public class ArgConverter {
 
     private static Log logger = LogFactory.getLog( ArgConverter.class );
@@ -183,8 +189,17 @@ public class ArgConverter {
         return false;
     }
 
+    /**
+     * A field map for fields of classes
+     */
     public static ConcurrentHashMap<Class,HashMap<String,Field>> cachedFieldMap = new ConcurrentHashMap<>();
 
+    /**
+     * Gets the field given class and field name
+     * @param clazz the class
+     * @param fieldName the field
+     * @return the reflective field, if exists
+     */
     public static Field getField(Class clazz, String fieldName) {
         HashMap<String,Field> map = cachedFieldMap.get(clazz);
         if ( map == null ){
@@ -213,6 +228,11 @@ public class ArgConverter {
 
     protected String formattedMethodSignature = "" ;
 
+    /**
+     * Generates method signature given a method
+     * @param method the method
+     * @return the compilable method signature for that method
+     */
     public static String getMethodSignature(Method method){
         String[] cols = method.getGenericReturnType().toString().split(" ");
         String retType = cols[cols.length - 1];
@@ -252,8 +272,17 @@ public class ArgConverter {
 
     String dataTableName;
 
+    /**
+     * Gets the associated data source
+     * @return the data source
+     */
     public DataSource dataSource(){ return  dataSource ; }
 
+    /**
+     * Create a call container from the given data source
+     * @param row the row of the data table
+     * @return a call container
+     */
     public CallContainer container(int row){
         String[] values = dataSource.tables.get(dataTableName).row(row);
         if ( parameterTypes.length > values.length ){
@@ -278,6 +307,11 @@ public class ArgConverter {
         return container;
     }
 
+    /**
+     * Gets all the containers from the data table
+     * @param removeDisable if true, disabled items won't be added
+     * @return an array of @{CallContainer} objects
+     */
     public CallContainer[] allContainers(boolean removeDisable){
         int size = dataSource.tables.get(dataTableName).length();
         ArrayList<CallContainer> containers = new ArrayList<>();
@@ -291,10 +325,24 @@ public class ArgConverter {
         return ccArr ;
     }
 
+    /**
+     * Gets all the containers from the data table
+     * removing the disabled items
+     * @return an array of @{CallContainer} objects
+     */
     public CallContainer[] allContainers(){
         return allContainers(true);
     }
 
+    /**
+     * Creates an object from serialized relational form
+     * @param value the string value
+     * @param clazz the object's class
+     * @param type the object's type
+     * @param header header ( metadata ) information
+     * @return instance of an object if it could
+     * @throws Exception if it can not create one
+     */
     public Object object(String value, Class clazz, Type type, String header) throws Exception {
         if ( value.equalsIgnoreCase(NULL_OBJECT) ){
             return null;
@@ -372,6 +420,12 @@ public class ArgConverter {
         return null;
     }
 
+    /**
+     * Gets constructor of a class from metadata info
+     * @param clazz the class
+     * @param headers the metadata information
+     * @return a matching constructor object
+     */
     public Constructor constructor(Class clazz, String[] headers){
         Constructor[] constructors = clazz.getConstructors();
         Constructor c = null;
@@ -509,6 +563,11 @@ public class ArgConverter {
         return null;
     }
 
+    /**
+     * For container types, tries to get inner type
+     * @param type the type
+     * @return inner type, if possible
+     */
     public static String getInnerType(Type type){
         String name = type.getTypeName();
         int firstIndex = name.indexOf('<');
@@ -544,6 +603,10 @@ public class ArgConverter {
         return list;
     }
 
+    /**
+     * Given metadata information creates one instance
+     * @param methodRunInformation metadata information
+     */
     public ArgConverter(Annotations.MethodRunInformation methodRunInformation){
         method = methodRunInformation.method ;
         parameterTypes = method.getGenericParameterTypes();

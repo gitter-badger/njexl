@@ -21,7 +21,7 @@ import jxl.Workbook;
 import java.io.File;
 
 /**
- * Created by noga on 15/04/15.
+ * Implementation of {ExcelReader} for .xls files
  */
 public class XlsReader implements ExcelReader {
 

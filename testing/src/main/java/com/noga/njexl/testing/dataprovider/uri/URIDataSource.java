@@ -32,8 +32,9 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * Created by noga on 21/04/15.
+ * Implementation of {DataSource} for arbitrary URI
  */
+
 public class URIDataSource extends DataSource{
 
     public static class HTMLTable extends DataSourceTable{

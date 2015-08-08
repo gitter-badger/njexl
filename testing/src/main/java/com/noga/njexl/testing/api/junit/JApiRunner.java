@@ -36,10 +36,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Created by noga on 27/05/15.
+ * An Implementation of the JUnit Runner
  */
 public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
 
+    /* Conversion of nano second to milli second */
     public static final double NANO_TO_MILLIS = 1000000.0 ;
 
     public static class WorkerThread implements Runnable{
@@ -48,6 +49,10 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
 
         final int delay;
 
+        /**
+         * Delays ( waits ) by sleeping
+         * @param ms amount of millisecond
+         */
         public static void delay(int ms){
             try{
                 Thread.sleep(ms);
@@ -55,6 +60,11 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
             }
         }
 
+        /**
+         * Creates a worker thread
+         * @param c an array of call container
+         * @param d the delay time
+         */
         public WorkerThread(CallContainer[] c, int d ){
             cc = c ;
             delay = d ;
@@ -69,10 +79,19 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
         }
     }
 
+    /**
+     * This is the class that actually gets invoked by JUnit
+     */
     public static class ProxyTest {
 
+        /**
+         * The call container - name to access from nJexl script
+         */
         public static final String INPUT = "_cc_" ;
 
+        /**
+         * The globals - name to access from nJexl script
+         */
         public static final String GLOBALS = "_g_" ;
 
         Log logger =  LogFactory.getLog( ProxyTest.class );
@@ -85,6 +104,11 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
 
         Annotations.NApiThread nApiThread ;
 
+        /**
+         * Executes the nJexl script from the file
+         * @param file the script file location
+         * @return true if script returns true, false if failure
+         */
         public boolean script(String file) {
             JexlContext context = Main.getContext();
             JexlEngine engine = Main.getJexl(context);
@@ -114,6 +138,12 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
             return false;
         }
 
+        /**
+         * Creates a proxy test
+         * @param testNumber the unique order no of the test
+         * @param iterator an iterator to get call container from
+         * @param nApiThread the run thread information
+         */
         public ProxyTest(int testNumber, XStreamIterator<CallContainer> iterator, Annotations.NApiThread nApiThread){
             this.nApiThread = nApiThread ;
             this.testNumber = testNumber ;
@@ -121,6 +151,13 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
             callContainer = this.iterator.get( this.testNumber );
         }
 
+        /**
+         * Gets the performance check done
+         * @param workers  data gathered from these worker threads
+         * @param percentile the percentile value to calculate
+         * @param percentileValueLessThan the expected percentile benchmark value
+         * @return true if performance benchmakring passes, false if fails
+         */
         public boolean doPerformanceCheck(WorkerThread[] workers, double percentile,  double percentileValueLessThan ) {
             ArrayList<Double> results = new ArrayList<>();
             boolean oneFailed = false ;
@@ -245,8 +282,19 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
 
     }
 
+    /**
+     * One single static class field
+     */
     public static final Class proxy = ProxyTest.class ;
 
+    /**
+     * Creates a jUnit runner
+     * @param testNumber unique test number
+     * @param iterator iterator to get the data
+     * @param mi method information to wrap to create tests
+     * @return one runner
+     * @throws Exception in case of failure to do so
+     */
     public static JApiRunner createRunner( int testNumber,
              XStreamIterator<CallContainer> iterator,
                                            MethodRunInformation mi) throws Exception{
@@ -260,6 +308,11 @@ public class JApiRunner extends BlockJUnit4ClassRunnerWithParameters {
         return new JApiRunner(test);
     }
 
+    /**
+     * Wraps a test
+     * @param test a jUnit test with parameters
+     * @throws InitializationError in case it fails to wrap
+     */
     public JApiRunner(TestWithParameters test) throws InitializationError {
         super(test);
     }

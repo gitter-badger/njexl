@@ -14,14 +14,24 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- * Created by noga on 24/06/15.
+ * A factory to create service creators
  */
 public final class ServiceCreatorFactory {
 
     public static final Log LOG = LogFactory.getLog( ServiceCreatorFactory.class );
 
+    /**
+     * A template service creator
+     */
     public static abstract class ServiceCreator{
 
+        /**
+         * Tries to create an instance of a class
+         * @param clazz the class
+         * @param init a @{NApiServiceInit} metadata
+         * @return one instance if possible
+         * @throws Exception in case fails
+         */
         protected abstract Object instantiate(Class clazz, NApiServiceInit init) throws Exception;
 
         protected Constructor constructor ;
@@ -44,6 +54,12 @@ public final class ServiceCreatorFactory {
             }
         }
 
+        /**
+         * Given a class, creates instance of the class
+         * @param clazz the class
+         * @return one instance of the class, if possible
+         * @throws Exception if fails to do so
+         */
         public Object create(Class clazz) throws Exception {
             findInit(clazz);
             if ( constructor == null ) throw new Exception("No Constructor with Init Property!");
@@ -52,6 +68,9 @@ public final class ServiceCreatorFactory {
         }
     }
 
+    /**
+     * A simple class instance creator - args converted from string
+     */
     public static class SimpleCreator extends ServiceCreator{
 
         public SimpleCreator(){}
@@ -62,6 +81,9 @@ public final class ServiceCreatorFactory {
         }
     }
 
+    /**
+     * Create class instance using the spring context
+     */
     public static class SpringContextCreator extends ServiceCreator{
 
         protected AutowireCapableBeanFactory beanFactory ;
@@ -90,6 +112,12 @@ public final class ServiceCreatorFactory {
         }
     }
 
+    /**
+     * Converts the arguments string array into object array
+     * using nJexl - thus every string gets executed as script
+     * @param args the string array
+     * @return an object array
+     */
     public static Object[] params(String[] args){
         JexlContext context = Main.getContext() ;
         JexlEngine engine = Main.getJexl(context);
@@ -101,6 +129,13 @@ public final class ServiceCreatorFactory {
         return params;
     }
 
+    /**
+     * Create instance of a class
+     * @param clazz the class
+     * @param args as strings, nJexl will be used to covert each one to object
+     * @return one instance
+     * @throws Exception if fails
+     */
     public static Object createInstance(Class clazz, String[] args) throws Exception {
         if ( args.length == 0 ){ return clazz.newInstance() ; }
         Constructor[] constructors = clazz.getConstructors();
@@ -115,6 +150,11 @@ public final class ServiceCreatorFactory {
         return null;
     }
 
+    /**
+     * Gets a service creator from metadata
+     * @param nApiServiceCreator the metadata
+     * @return the service creator
+     */
     public static ServiceCreator creator(NApiServiceCreator nApiServiceCreator){
         Class type = nApiServiceCreator.type() ;
         ServiceCreator sc = null;

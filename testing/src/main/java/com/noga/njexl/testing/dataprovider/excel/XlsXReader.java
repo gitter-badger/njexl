@@ -24,8 +24,9 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 
 /**
- * Created by noga on 15/04/15.
+ * Implementation of {ExcelReader} for .xlsx files
  */
+
 public class XlsXReader implements ExcelReader {
 
     XSSFWorkbook workbook;
@@ -34,6 +35,12 @@ public class XlsXReader implements ExcelReader {
 
     final FormulaEvaluator evaluator ;
 
+    /**
+     * Conversion of arbitrary value types to string
+     * Also reads formula cells
+     * @param cell the cell to read from
+     * @return the value as string
+     */
     public  String readCellValueAsString(XSSFCell cell) {
         CellValue cellValue = evaluator.evaluate(cell);
         switch (cellValue.getCellType()) {
