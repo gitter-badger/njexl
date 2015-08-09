@@ -22,15 +22,31 @@ import com.noga.njexl.testing.TestSuiteRunner.*;
 import java.util.List;
 
 /**
- * Created by noga on 18/04/15.
+ * A generic reporter infra
  */
 public interface Reporter extends TestRunEventListener, AssertionEventListener {
 
+    /**
+     * Arbitrary args to pass for initializing the reporter
+     * @param args a list of arguments, all string
+     */
     void init(List<String> args);
 
+    /**
+     * Where we want the log to be created
+     * @param location the path to the log
+     */
     void location(String location);
 
+    /**
+     * Gets back the current path of the log
+     * @return location of the log
+     */
     String location();
 
+    /**
+     * What name this reporter has
+     * @return name of the reporter
+     */
     String name();
 }

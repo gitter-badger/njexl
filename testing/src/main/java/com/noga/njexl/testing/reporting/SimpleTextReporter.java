@@ -25,11 +25,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by noga on 18/04/15.
+ * An implementation of a @{Reporter} - simple text one
  */
 public class SimpleTextReporter implements Reporter {
 
-    public static SimpleTextReporter reporter(Enum type, String location){
+    /**
+     * Gets a reporter
+     * @param type what sort of sync we are using? See @{Sync}
+     * @param location where we want it to go
+     * @return a reporter initialized properly
+     */
+    public static SimpleTextReporter reporter(Sync type, String location){
         SimpleTextReporter reporter = new SimpleTextReporter();
         ArrayList<String> list = new ArrayList();
         list.add(type.toString());
@@ -38,9 +44,21 @@ public class SimpleTextReporter implements Reporter {
         return reporter ;
     }
 
+    /**
+     * The Sync type
+     */
     public enum Sync{
+        /**
+         * Console type - stdout and stderr
+         */
         CONSOLE,
+        /**
+         * File type
+         */
         FILE,
+        /**
+         * Just ignores the logging
+         */
         NULL
     }
 
