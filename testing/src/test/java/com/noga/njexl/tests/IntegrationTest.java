@@ -18,6 +18,7 @@ package com.noga.njexl.tests;
 
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.testing.TestSuiteRunner;
+import com.noga.njexl.testing.Utils;
 import com.noga.njexl.testing.api.Annotations;
 import com.noga.njexl.testing.api.NApiAnnotationSample;
 import com.noga.njexl.testing.api.junit.JClassRunner;
@@ -107,6 +108,14 @@ public class IntegrationTest {
         // now just call data matrix
         DataMatrix matrix = DataMatrix.loc2matrix(URL,"0");
         Assert.assertNotNull(matrix);
+    }
+
+
+    @Test
+    public void mailTest() throws Exception {
+        // now just call send to send mail
+        boolean sent = Utils.Mailer.send("mondal","test mail", "This is a body", "mondal");
+        Assert.assertTrue(sent);
     }
 
     @Test

@@ -18,6 +18,9 @@ package com.noga.njexl.testing;
 
 
 import com.noga.njexl.lang.extension.TypeUtility;
+import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.SimpleEmail;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -32,9 +35,111 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by noga on 15/04/15.
+ * Utility class to do a lot of utility stuff
  */
 public final class Utils {
+
+    public static class Mailer{
+
+        public static final String SMTP_HOST_KEY = "SMTP_HOST";
+
+        public static  String SMTP_HOST;
+
+        public static final String SMTP_PORT_KEY = "SMTP_PORT";
+
+        public static  int  SMTP_PORT;
+
+        public static final String MAIL_FROM_KEY = "MAIL_FROM";
+
+        public static  String MAIL_FROM;
+
+        public static final String MAIL_DOMAIN_KEY = "SMTP_DOMAIN";
+
+        public static  String MAIL_DOMAIN;
+
+        public static final String MAIL_USER_KEY = "SMTP_USER";
+
+        public static  String MAIL_USER;
+
+        public static final String MAIL_PASS_KEY = "SMTP_PASS";
+
+        public static  String MAIL_PASS;
+
+
+        public static DefaultAuthenticator defaultAuthenticator;
+
+
+        public static int getEnvDefault(String name, int defaultValue){
+            String s = System.getenv(name);
+            return TypeUtility.castInteger(s,defaultValue);
+        }
+
+        public static String getEnvDefault(String name, String defaultValue){
+            String s = System.getenv(name);
+            if ( s != null ) return s ;
+            return defaultValue ;
+        }
+
+
+        static{
+            try{
+
+                SMTP_HOST = getEnvDefault(SMTP_HOST_KEY, "smtp.gmail.com");
+                SMTP_PORT = getEnvDefault(SMTP_PORT_KEY , 587) ;
+                MAIL_FROM = getEnvDefault(MAIL_FROM_KEY, "nobody@gmail.com");
+                MAIL_DOMAIN = getEnvDefault(MAIL_DOMAIN_KEY , "gmail.com");
+                MAIL_USER = getEnvDefault(MAIL_USER_KEY , "");
+                MAIL_PASS = getEnvDefault(MAIL_PASS_KEY , "");
+                defaultAuthenticator = new DefaultAuthenticator( MAIL_USER , MAIL_PASS );
+
+            }catch (Exception e){
+
+            }
+        }
+        static Email createEmail(String subject, String from) {
+
+            try {
+                Email email = new SimpleEmail();
+                email.setHostName(SMTP_HOST);
+                email.setSmtpPort(SMTP_PORT);
+                email.setAuthenticator(defaultAuthenticator);
+                if ( !from.contains("@")){
+                    from += "@" + MAIL_DOMAIN ;
+                }
+                email.setFrom(from);
+                email.setSubject(subject);
+                return email;
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+        public static boolean send(String from, String subject, String body , String... to ) {
+
+            Email email = createEmail(subject,from);
+            if ( email == null ){
+                return false;
+            }
+            try {
+
+                for (int i = 0; i < to.length; i++) {
+                    String mailTo = to[i].trim();
+                    if ( mailTo.isEmpty() ) continue;
+                    if ( !mailTo.contains("@")){
+                        mailTo += "@" + MAIL_DOMAIN ;
+                    }
+                    email.addTo(mailTo);
+                }
+                email.setMsg(body);
+                email.send();
+                return true;
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return false;
+        }
+    }
 
     public static final String REDIRECT_TO_FILE = "@" ;
 
