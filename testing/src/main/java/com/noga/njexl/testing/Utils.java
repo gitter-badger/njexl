@@ -41,6 +41,8 @@ public final class Utils {
 
     public static class Mailer{
 
+        public static final String MAIL_NS = "__mail__" ;
+
         public static final String SMTP_HOST_KEY = "SMTP_HOST";
 
         public static  String SMTP_HOST;
@@ -110,7 +112,7 @@ public final class Utils {
                 email.setSubject(subject);
                 return email;
             }catch (Exception e){
-                e.printStackTrace();
+                System.err.println("Can not create e-mail : " + e);
             }
             return null;
         }
@@ -135,7 +137,7 @@ public final class Utils {
                 return true;
 
             }catch (Exception e){
-                e.printStackTrace();
+                System.err.println("Can not send e-mail : " + e);
             }
             return false;
         }

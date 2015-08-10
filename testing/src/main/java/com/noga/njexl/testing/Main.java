@@ -53,6 +53,46 @@ public class Main {
     @Argument
     private List<String> arguments = new ArrayList<>();
 
+    /**
+     * In case of normal script w/o url
+     * Executes the script
+     * @param args the arguments passed to the script
+     */
+    public void executeScript(String[] args){
+        JexlContext jc = com.noga.njexl.lang.Main.getContext();
+        HashMap<String,Object> functions = com.noga.njexl.lang.Main.getFunction(jc);
+        functions.put(Utils.Mailer.MAIL_NS, Utils.Mailer.class);
+        JexlEngine JEXL = com.noga.njexl.lang.Main.getJexl(jc);
+        JEXL.setFunctions(functions);
+        jc.set(Script.ARGS, args);
+        try {
+            Script sc = JEXL.importScript(args[0]);
+            Object o = sc.execute(jc);
+            int e = 0;
+            if ( o instanceof Integer ){
+                e = (int)o;
+            }
+            System.exit(e);
+        }catch (Throwable e){
+            if ( __DEBUG__ ){
+                System.err.println(e);
+                e.printStackTrace();
+            }
+            else {
+                if (e instanceof JexlException) {
+                    System.err.printf( "Error : %s\n", ((JexlException) e).getFaultyCode());
+                } else {
+                    System.err.println(e.getMessage());
+                    if (e.getCause() != null) {
+                        System.err.println(e.getCause().getMessage());
+                    }
+
+                }
+            }
+            System.exit(1);
+        }
+    }
+
     private void executeScript(){
 
         if ( arguments.isEmpty()) {
@@ -62,11 +102,6 @@ public class Main {
 
         String[] args = new String[ arguments.size() ];
         args =  arguments.toArray(args);
-
-        if ( url.isEmpty() ){
-            com.noga.njexl.lang.Main.executeScript(args);
-            return;
-        }
         String file = arguments.get(0);
 
         JexlContext context = com.noga.njexl.lang.Main.getContext();
@@ -75,6 +110,7 @@ public class Main {
         context.set("selenium", xSelenium);
         HashMap<String,Object> functions = com.noga.njexl.lang.Main.getFunction(context);
         functions.put("sel", xSelenium);
+        functions.put(Utils.Mailer.MAIL_NS, Utils.Mailer.class);
         TestAssert testAssert = new TestAssert();
         SimpleTextReporter textReporter = SimpleTextReporter.reporter(SimpleTextReporter.Sync.CONSOLE,"");
         functions.put(TestAssert.ASSERT_NS, testAssert );
@@ -164,7 +200,7 @@ public class Main {
                 return;
             }
             // go with free call
-            com.noga.njexl.lang.Main.main(args);
+            executeScript(args);
 
         } catch( Exception e ) {
             // if there's a problem in the command line,
