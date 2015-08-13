@@ -27,11 +27,13 @@ import com.noga.njexl.testing.dataprovider.ProviderFactory;
 import com.noga.njexl.testing.dataprovider.excel.ExcelDataSource;
 import com.noga.njexl.testing.dataprovider.uri.URIDataSource;
 import com.noga.njexl.testing.ocr.OCR;
+import com.noga.njexl.testing.speech.SpeechRecognizer;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class IntegrationTest {
 
@@ -114,7 +116,7 @@ public class IntegrationTest {
     @Test
     public void mailTest() throws Exception {
         // now just call send to send mail
-        boolean sent = Utils.Mailer.send("mondal","test mail", "This is a body", "mondal");
+        boolean sent = Utils.Mailer.send("mondal", "test mail", "This is a body", "mondal");
         Assert.assertTrue(sent);
     }
 
@@ -134,5 +136,12 @@ public class IntegrationTest {
     @Test
     public void jClassTest() throws Exception{
         JClassRunner.run( NApiAnnotationSample.class );
+    }
+
+    @Test
+    public void speechTest() throws Exception{
+        SpeechRecognizer speechRecognizer = new SpeechRecognizer( "en-us" );
+        List<String> words = speechRecognizer.recognize();
+        System.out.println(words);
     }
 }

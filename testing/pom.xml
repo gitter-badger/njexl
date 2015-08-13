@@ -28,6 +28,16 @@ limitations under the License.
         The Commons Jexl library is an implementation of the JSTL Expression Language with extensions.
         This was customized by nmondal.
     </description>
+    <repositories>
+        <repository>
+            <id>snapshots-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+    </repositories>
     <developers>
         <developer>
             <name>Nabarun Mondal</name>
@@ -118,6 +128,16 @@ limitations under the License.
                     <artifactId>xmlParserAPIs</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>edu.cmu.sphinx</groupId>
+            <artifactId>sphinx4-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.cmu.sphinx</groupId>
+            <artifactId>sphinx4-data</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
