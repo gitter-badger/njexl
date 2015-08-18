@@ -20,12 +20,12 @@ import com.noga.njexl.lang.extension.oop.ScriptClass;
 import com.noga.njexl.lang.extension.oop.ScriptMethod;
 import com.noga.njexl.lang.parser.ASTImportStatement;
 import com.noga.njexl.lang.parser.ASTJexlScript;
+import com.noga.njexl.lang.parser.ASTLabelledStatement;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.regex.Pattern;
 
 /**
  * <p>A JEXL Script.</p>
@@ -142,21 +142,30 @@ public interface Script {
      *
      * @return a map of method name with parsed method object
      */
-    HashMap<String, ScriptMethod> methods();
+    Map<String, ScriptMethod> methods();
 
     /**
      * The defined classes of the script
      *
      * @return a map of class name with parsed class object
      */
-    HashMap<String, ScriptClass> classes();
+    Map<String, ScriptClass> classes();
 
     /**
      * The defined methods of the script
      *
      * @return a map of import name with parsed import object
      */
-    HashMap<String, ASTImportStatement> imports();
+    Map<String, ASTImportStatement> imports();
+
+
+    /**
+     * The defined methods of the script
+     *
+     * @return a map of label name with which no of child it points to
+     */
+    Map<String, Integer> jumps();
+
 
     /**
      *

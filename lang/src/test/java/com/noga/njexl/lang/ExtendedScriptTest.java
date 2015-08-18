@@ -231,7 +231,13 @@ public class ExtendedScriptTest extends JexlTestCase {
     @Test
     public void testSimpleForScript() throws Exception{
         Object o = runScript(JEXL, "samples/simplefor.jxl");
-        assertEquals(3,o);
+        assertEquals(3, o);
+    }
+
+    @Test
+    public void testLabelledScript() throws Exception{
+        Object o = runScript(JEXL, "samples/label.jxl");
+        assertEquals(0,o);
     }
 
     /****

@@ -96,6 +96,7 @@ PARSER_END(Parser)
     | < RETURN : "return" >
     | < DEF : "def" >
     | < IMPORT : "import" >
+    | < GOTO : "goto" >
     | < AS : "as" >
 }
 
@@ -219,7 +220,7 @@ void Statement() #void : {}
     | ForeachStatement()
     | WhileStatement()
     | WhereStatement()
-    | ExpressionStatement()
+    | LOOKAHEAD(2) ExpressionStatement()
     | ReturnStatement()
     | BreakStatement()
     | ContinueStatement()
@@ -227,6 +228,21 @@ void Statement() #void : {}
     | LOOKAHEAD(3) MethodDef()
     | ImportStatement()
     | LOOKAHEAD(3) ClassDef()
+    | GoToStatement()
+    | LabelledStatement()
+}
+
+void GoToStatement() : {}
+{
+    LOOKAHEAD(4) <GOTO> <hash> Identifier()   Expression()
+    |
+    LOOKAHEAD(3) <GOTO> <hash> Identifier()
+
+}
+
+void LabelledStatement() : {}
+{
+    <hash> Identifier() <LINE> Statement()
 }
 
 void BreakStatement() #BreakStatement : {}

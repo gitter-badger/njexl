@@ -58,7 +58,7 @@ public class Interpreter implements ParserVisitor {
             if (script == null) {
                 return null;
             }
-            HashMap<String, ScriptClass> map = script.classes();
+            Map<String, ScriptClass> map = script.classes();
             if (map.containsKey(name)) {
                 return map.get(name);
             }
@@ -71,7 +71,7 @@ public class Interpreter implements ParserVisitor {
         }
         for (String s : imports.keySet()) {
             Script script = imports.get(s);
-            HashMap<String, ScriptClass> map = script.classes();
+            Map<String, ScriptClass> map = script.classes();
             if (map.containsKey(name)) {
                 return map.get(name);
             }
@@ -89,7 +89,7 @@ public class Interpreter implements ParserVisitor {
         // else do some more
         for (String key : imports.keySet()) {
             script = imports.get(key);
-            HashMap methods = script.methods();
+            Map methods = script.methods();
             if (methods.containsKey(name)) {
                 return script;
             }
@@ -1528,6 +1528,15 @@ public class Interpreter implements ParserVisitor {
         for (int i = 0; i < numChildren; i++) {
             JexlNode child = node.jjtGetChild(i);
             result = child.jjtAccept(this, data);
+            if ( result instanceof Jump ){
+                Jump jump = (Jump)result;
+                if ( jump.jump ){
+                    i = jump.child - 1;
+                    result = true ;
+                    continue;
+                }
+                result = false ;
+            }
         }
         return result;
     }
@@ -2606,6 +2615,40 @@ public class Interpreter implements ParserVisitor {
         if (!silent) {
             logger.warn(xjexl.getMessage());
         }
+    }
+
+    static final class Jump{
+        public final int child;
+        public final boolean jump;
+
+        public Jump(int loc, boolean should){
+            this.child = loc ;
+            this.jump = should ;
+        }
+    }
+
+    /** {@inheritDoc} */
+    public Object visit(ASTGoToStatement node, Object data) {
+        boolean jump = true ;
+        if ( node.jjtGetNumChildren() > 1 ){
+            Object o = node.jjtGetChild(1).jjtAccept(this,data) ;
+            jump = TypeUtility.castBoolean(o,false);
+        }
+        if ( !jump ) return new Jump(-1,false ) ;
+        String label = node.jjtGetChild(0).image ;
+        // find ASTLabelledStatement --> and fire it...
+        Map<String,Integer> jumps = current.jumps();
+        Integer loc = jumps.get(label);
+
+        if ( loc == null ){
+            throw new JexlException(node, "Invalid Jump Label : " + label);
+        }
+        return new Jump( loc ,true) ;
+    }
+
+    /** {@inheritDoc} */
+    public Object visit(ASTLabelledStatement node, Object data) {
+        return node.jjtGetChild(1).jjtAccept(this,data);
     }
 
     /**

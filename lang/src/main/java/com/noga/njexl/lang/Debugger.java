@@ -918,6 +918,27 @@ public final class Debugger implements ParserVisitor {
     }
 
     /** {@inheritDoc} */
+    public Object visit(ASTGoToStatement node, Object data) {
+        builder.append("goto ");
+        builder.append("#");
+        accept(node.jjtGetChild(0), data);
+        if (node.jjtGetNumChildren() > 1) {
+            acceptStatement(node.jjtGetChild(1), data);
+        }
+        builder.append(" ;");
+        return data;
+    }
+
+    /** {@inheritDoc} */
+    public Object visit(ASTLabelledStatement node, Object data) {
+        builder.append("#");
+        accept(node.jjtGetChild(0), data);
+        builder.append( "\n");
+        accept(node.jjtGetChild(1), data);
+        return data;
+    }
+
+    /** {@inheritDoc} */
     public Object visit(SimpleNode node, Object data) {
         throw new UnsupportedOperationException("unexpected type of node");
     }

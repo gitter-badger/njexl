@@ -19,6 +19,7 @@ package com.noga.njexl.lang;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -44,6 +45,9 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
     final HashMap<String,ScriptMethod> methods;
 
     final HashMap<String,ASTImportStatement> imports;
+
+    final HashMap<String,Integer> jumps;
+
 
     /** The engine for this expression. */
     protected final JexlEngine jexl;
@@ -77,6 +81,16 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
         }
     }
 
+    protected void findLabels(JexlNode node){
+        int n = node.jjtGetNumChildren();
+        for ( int i = 0 ; i < n ; i++ ){
+            JexlNode child = node.jjtGetChild(i);
+            if ( child instanceof ASTLabelledStatement ){
+                jumps.put( child.jjtGetChild(0).image , i );
+            }
+        }
+    }
+
     protected ExpressionImpl(String from, String as, JexlEngine engine, String expr, ASTJexlScript ref) {
         jexl = engine;
         expression = expr;
@@ -84,6 +98,7 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
         methods = new HashMap<>();
         imports = new HashMap<>();
         classes = new HashMap<>();
+        jumps = new HashMap<>();
         location = from ;
         if ( location != null && !location.isEmpty() ){
             location = location.replace("\\","/"); // windows?
@@ -91,6 +106,7 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
         }
         importName = as;
         findInnerObjects(script);
+        findLabels(script);
     }
 
     /**
@@ -299,4 +315,8 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
         return importName;
     }
 
+    @Override
+    public Map<String, Integer> jumps() {
+        return jumps;
+    }
 }
