@@ -519,6 +519,22 @@ public final class Debugger implements ParserVisitor {
 
     /** {@inheritDoc} */
     public Object visit(ASTForeachStatement node, Object data) {
+        return accept(node.jjtGetChild(0), data);
+    }
+
+
+    /** {@inheritDoc} */
+    public Object visit(ASTExpressionFor node, Object data) {
+        if ( node.jjtGetNumChildren() > 0 ) {
+            return accept(node.jjtGetChild(0), data);
+        }
+        builder.append( " true ");
+        return true ;
+    }
+
+
+    /** {@inheritDoc} */
+    public Object visit(ASTForWithIterator node, Object data) {
         builder.append("for(");
         accept(node.jjtGetChild(0), data);
         builder.append(" : ");
@@ -526,6 +542,23 @@ public final class Debugger implements ParserVisitor {
         builder.append(") ");
         if (node.jjtGetNumChildren() > 2) {
             acceptStatement(node.jjtGetChild(2), data);
+        } else {
+            builder.append(';');
+        }
+        return data;
+    }
+
+    /** {@inheritDoc} */
+    public Object visit(ASTForWithCondition node, Object data) {
+        builder.append("for(");
+        accept(node.jjtGetChild(0), data);
+        builder.append(" ; ");
+        accept(node.jjtGetChild(1), data);
+        builder.append(" ; ");
+        accept(node.jjtGetChild(2), data);
+        builder.append(" ) ");
+        if (node.jjtGetNumChildren() > 3) {
+            acceptStatement(node.jjtGetChild(3), data);
         } else {
             builder.append(';');
         }

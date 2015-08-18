@@ -190,9 +190,9 @@ public class Interpreter implements ParserVisitor {
         this.logger = jexl.logger;
         this.uberspect = jexl.uberspect;
         this.arithmetic = jexl.arithmetic;
-        if ( jexl.shareImports ) {
-            this.functions = jexl.functions ;
-        }else{
+        if (jexl.shareImports) {
+            this.functions = jexl.functions;
+        } else {
             // why this? Because use *clone* not the same object
             this.functions = new HashMap<>(jexl.functions);
         }
@@ -729,7 +729,7 @@ public class Interpreter implements ParserVisitor {
         return literal;
     }
 
-    public Object assignToNode(int register, JexlNode node, JexlNode left, Object right){
+    public Object assignToNode(int register, JexlNode node, JexlNode left, Object right) {
         // determine initial object & property:
         JexlNode objectNode = null;
         Object object = register >= 0 ? registers[register] : null;
@@ -860,9 +860,9 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTAssignment node, Object data) {
         // left contains the reference to assign to
         JexlNode left = node.jjtGetChild(0);
-        JexlNode value = node.jjtGetChild(1) ;
-        if ( left instanceof  ASTTuple ){
-            return tupleAssignment( (ASTTuple)left, value, data);
+        JexlNode value = node.jjtGetChild(1);
+        if (left instanceof ASTTuple) {
+            return tupleAssignment((ASTTuple) left, value, data);
         }
         int register = -1;
         if (left instanceof ASTIdentifier) {
@@ -879,58 +879,56 @@ public class Interpreter implements ParserVisitor {
         return assignToNode(register, node, left, right);
     }
 
-    private Object[] tupleAssignment(ASTTuple astTuple, JexlNode value, Object data){
-        int c = astTuple.jjtGetNumChildren() ;
-        JexlNode errorNode = astTuple.jjtGetChild(c-1);
-        boolean catchError = errorNode instanceof ASTTagContainer ;
+    private Object[] tupleAssignment(ASTTuple astTuple, JexlNode value, Object data) {
+        int c = astTuple.jjtGetNumChildren();
+        JexlNode errorNode = astTuple.jjtGetChild(c - 1);
+        boolean catchError = errorNode instanceof ASTTagContainer;
         JexlNode left = null;
         int upto = c;
-        if ( catchError ){
-            left = astTuple.jjtGetChild(c-1).jjtGetChild(0);
+        if (catchError) {
+            left = astTuple.jjtGetChild(c - 1).jjtGetChild(0);
             if (!(left instanceof ASTReference)) {
                 throw new JexlException(left, "illegal assignment form 0");
             }
-            errorNode = left ;// re-assign
+            errorNode = left;// re-assign
             upto = c - 1;
         }
-        for ( int i = 0 ; i < upto ; i++  ){
+        for (int i = 0; i < upto; i++) {
             left = astTuple.jjtGetChild(i);
             if (!(left instanceof ASTReference)) {
                 throw new JexlException(left, "illegal assignment form 0");
             }
         }
-        Object result = null ;
-        Throwable error = null ;
-        synchronized (this){
-            boolean oldStrict = strict ;
+        Object result = null;
+        Throwable error = null;
+        synchronized (this) {
+            boolean oldStrict = strict;
             try {
-                strict = true ;
+                strict = true;
                 result = value.jjtAccept(this, data);
-            }catch (Throwable t){
+            } catch (Throwable t) {
                 error = t;
-                if ( t.getCause() != null ){
-                    error = t.getCause() ;
+                if (t.getCause() != null) {
+                    error = t.getCause();
                 }
-            }finally {
-                strict = oldStrict ;
+            } finally {
+                strict = oldStrict;
             }
         }
         JexlNode node = astTuple.jjtGetParent();
         ArrayList l = new ArrayList();
-        if ( error != null  ){
-            for ( int i = 0 ; i < upto ; i++  ){
+        if (error != null) {
+            for (int i = 0; i < upto; i++) {
                 left = astTuple.jjtGetChild(i);
-                assignToNode(-1,node, left, null);
+                assignToNode(-1, node, left, null);
                 l.add(null);
             }
-        }
-        else{
-            if ( catchError && upto == 1){
+        } else {
+            if (catchError && upto == 1) {
                 // (o,*e) error check only - no project
-                assignToNode(-1, node, left,result);
+                assignToNode(-1, node, left, result);
                 l.add(result);
-            }
-            else {
+            } else {
                 // project
                 List t = TypeUtility.combine(result);
                 int s = t.size();
@@ -945,8 +943,8 @@ public class Interpreter implements ParserVisitor {
                 }
             }
         }
-        if ( catchError ){
-            assignToNode(-1,node, errorNode, error);
+        if (catchError) {
+            assignToNode(-1, node, errorNode, error);
             l.add(error);
         }
         return l.toArray();
@@ -955,8 +953,8 @@ public class Interpreter implements ParserVisitor {
     @Override
     public Object visit(ASTTuple node, Object data) {
         List l = TypeUtility.combine();
-        int c = node.jjtGetNumChildren() ;
-        for ( int i = 0 ; i < c ; i++ ){
+        int c = node.jjtGetNumChildren();
+        for (int i = 0; i < c; i++) {
             Object r = node.jjtGetChild(i).jjtAccept(this, data);
             l.add(r);
         }
@@ -1031,22 +1029,22 @@ public class Interpreter implements ParserVisitor {
      */
     public Object visit(ASTBreakStatement node, Object data) {
         int c = node.jjtGetNumChildren();
-        if ( c == 0 ) {
+        if (c == 0) {
             //raise BreakException at parent -- not it's own condition
             throw new JexlException.Break(node.jjtGetParent());
         }
         // conditional break
-        Object value = node.jjtGetChild(0).jjtAccept( this, data );
-        boolean b = TypeUtility.castBoolean( value , false );
-        if ( b ){
-            if ( c > 1 ){
-                value = node.jjtGetChild(1).jjtAccept( this, data );
-                throw new JexlException.Break(node.jjtGetParent(), value );
+        Object value = node.jjtGetChild(0).jjtAccept(this, data);
+        boolean b = TypeUtility.castBoolean(value, false);
+        if (b) {
+            if (c > 1) {
+                value = node.jjtGetChild(1).jjtAccept(this, data);
+                throw new JexlException.Break(node.jjtGetParent(), value);
             }
             // signifies breaking on condition, not returning value
-            throw new JexlException.Break(node.jjtGetParent() );
+            throw new JexlException.Break(node.jjtGetParent());
         }
-        return data ;
+        return data;
     }
 
     /**
@@ -1054,17 +1052,17 @@ public class Interpreter implements ParserVisitor {
      */
     public Object visit(ASTContinueStatement node, Object data) {
         int c = node.jjtGetNumChildren();
-        if ( c == 0 ) {
+        if (c == 0) {
             //raise ContinueException
             throw new JexlException.Continue(node.jjtGetParent());
         }
         // conditional continue
-        Object value = node.jjtGetChild(0).jjtAccept( this, data );
+        Object value = node.jjtGetChild(0).jjtAccept(this, data);
         boolean b = TypeUtility.castBoolean(value, false);
-        if ( b ){
+        if (b) {
             throw new JexlException.Continue(node.jjtGetParent());
         }
-        return data ;
+        return data;
     }
 
     /**
@@ -1108,28 +1106,30 @@ public class Interpreter implements ParserVisitor {
         return Boolean.FALSE;
     }
 
-    protected Object findScriptObject(String name){
+    protected Object findScriptObject(String name) {
         String[] arr = name.split(":");
-        Object so = null ;
-        if ( arr.length == 1 ){
+        Object so = null;
+        if (arr.length == 1) {
             name = arr[0].trim();
-            so =  current.classes().get(name);
-            if ( so != null ){
+            so = current.classes().get(name);
+            if (so != null) {
                 return so;
             }
-            so = current.methods().get( name );
+            so = current.methods().get(name);
             return so;
         }
         String ns = arr[0].trim();
         name = arr[1].trim();
         Script script = imports.get(ns);
-        if ( script == null ){ return  null ; }
-        so =  script.classes().get(name);
-        if ( so != null ){
+        if (script == null) {
+            return null;
+        }
+        so = script.classes().get(name);
+        if (so != null) {
             return so;
         }
-        so = script.methods().get( name );
-        return  so;
+        so = script.methods().get(name);
+        return so;
     }
 
     /**
@@ -1138,22 +1138,23 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTDefinedFunction node, Object data) {
         try {
 
-            JexlNode n = node.jjtGetChild(0).jjtGetChild(0) ;
-            if ( n instanceof ASTIdentifier ){
-                String varName = n.image ;
+            JexlNode n = node.jjtGetChild(0).jjtGetChild(0);
+            if (n instanceof ASTIdentifier) {
+                String varName = n.image;
                 return context.has(varName);
-            }
-            else {
+            } else {
                 int num = n.jjtGetNumChildren();
                 // null is defined
-                if ( num > 0 && n.jjtGetChild(0) instanceof ASTNullLiteral ) { return true ; }
+                if (num > 0 && n.jjtGetChild(0) instanceof ASTNullLiteral) {
+                    return true;
+                }
                 Object o = n.jjtAccept(this, data);
-                if ( o instanceof String ){
+                if (o instanceof String) {
                     // used to get the Function or class
-                    String name  = (String)o;
+                    String name = (String) o;
                     return findScriptObject(name);
                 }
-                return o != null ;
+                return o != null;
             }
         } catch (Exception e) {
         }
@@ -1256,10 +1257,67 @@ public class Interpreter implements ParserVisitor {
         return Boolean.FALSE;
     }
 
+
     /**
      * {@inheritDoc}
      */
     public Object visit(ASTForeachStatement node, Object data) {
+        return node.jjtGetChild(0).jjtAccept(this, data);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object visit(ASTExpressionFor node, Object data) {
+        if (node.jjtGetNumChildren() > 0) {
+            return node.jjtGetChild(0).jjtAccept(this, data);
+        }
+        // in lieu of anything is...
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object visit(ASTForWithCondition node, Object data) {
+        Object result = null;
+        int numChild = node.jjtGetNumChildren();
+        /* last node is the statement to execute */
+        JexlNode statement = node.jjtGetChild(numChild - 1);
+        // initialize the stuff
+        node.jjtGetChild(0).jjtAccept(this,data);
+        while (true) {
+            // now the condition
+            Object cond = node.jjtGetChild(1).jjtAccept(this,data) ;
+            boolean condition = TypeUtility.castBoolean(cond, false);
+            if ( !condition ) break;
+            if (isCancelled()) {
+                throw new JexlException.Cancel(node);
+            }
+
+            try {
+                // execute statement
+                result = statement.jjtAccept(this, data);
+            } catch (JexlException.Break b) {
+                result = b;
+                break;
+            } catch (JexlException.Continue c) {
+                result = c;
+                // even in here too ..
+                node.jjtGetChild(2).jjtAccept(this,data) ;
+                continue;
+            }
+            // last one
+            node.jjtGetChild(2).jjtAccept(this,data) ;
+
+        }
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object visit(ASTForWithIterator node, Object data) {
         Object result = null;
         /* first objectNode is the loop variable */
         ASTReference loopReference = (ASTReference) node.jjtGetChild(0);
@@ -1289,10 +1347,10 @@ public class Interpreter implements ParserVisitor {
                     try {
                         // execute statement
                         result = statement.jjtAccept(this, data);
-                    }catch (JexlException.Break b){
-                        result = b ;
+                    } catch (JexlException.Break b) {
+                        result = b;
                         break;
-                    }catch (JexlException.Continue c){
+                    } catch (JexlException.Continue c) {
                         result = c;
                         continue;
                     }
@@ -1301,6 +1359,7 @@ public class Interpreter implements ParserVisitor {
         }
         return result;
     }
+
 
     /**
      * {@inheritDoc}
@@ -1536,7 +1595,8 @@ public class Interpreter implements ParserVisitor {
 
         /**
          * Constructs a anonymous parameter
-         * @param i the interpreter
+         *
+         * @param i     the interpreter
          * @param block the block
          */
         public AnonymousParam(Interpreter i, ASTBlock block) {
@@ -1546,9 +1606,10 @@ public class Interpreter implements ParserVisitor {
 
         /**
          * Sets the iteration context
+         *
          * @param con context of iteration, the whole object, in case of a collection the collection
-         * @param o the individual object, elements of the collection
-         * @param i the index - of the element in the collection
+         * @param o   the individual object, elements of the collection
+         * @param i   the index - of the element in the collection
          */
         public void setIterationContext(Object con, Object o, Object i) {
             interpreter.context.set(TypeUtility._CONTEXT_, con);
@@ -1558,14 +1619,15 @@ public class Interpreter implements ParserVisitor {
 
         /**
          * Sets the iteration context with partial updated result
+         *
          * @param con context of iteration, the whole object, in case of a collection the collection
-         * @param o the individual object, elements of the collection
-         * @param i the index - of the element in the collection
-         * @param p the partial result as of current iteration
+         * @param o   the individual object, elements of the collection
+         * @param i   the index - of the element in the collection
+         * @param p   the partial result as of current iteration
          */
-        public void setIterationContextWithPartial(Object con, Object o, Object i,Object p) {
-            setIterationContext(con,o,i);
-            interpreter.context.set( TypeUtility._PARTIAL_, p );
+        public void setIterationContextWithPartial(Object con, Object o, Object i, Object p) {
+            setIterationContext(con, o, i);
+            interpreter.context.set(TypeUtility._PARTIAL_, p);
         }
 
         /**
@@ -1580,6 +1642,7 @@ public class Interpreter implements ParserVisitor {
 
         /**
          * Executes the anonymous function
+         *
          * @return the result of the call
          */
         public Object execute() {
@@ -1588,17 +1651,18 @@ public class Interpreter implements ParserVisitor {
                 return ret;
             } catch (JexlException.Return r) {
                 return r.getValue();
-            } catch (JexlException.Break b){
+            } catch (JexlException.Break b) {
                 // important to return itself...
-                return b ;
-            } catch (JexlException.Continue c){
+                return b;
+            } catch (JexlException.Continue c) {
                 // important to return itself...
-                return c ;
+                return c;
             }
         }
 
         /**
          * Gets a variable
+         *
          * @param name of the variable
          * @return variable value on the running context
          */
@@ -1610,8 +1674,7 @@ public class Interpreter implements ParserVisitor {
         public void run() {
             try {
                 execute();
-            }
-            finally {
+            } finally {
                 removeIterationContext();
             }
         }
@@ -1664,14 +1727,14 @@ public class Interpreter implements ParserVisitor {
         }
         JexlException xjexl = null;
         // save eventing states, when we do not have a stack
-        boolean wasEventing = isEventing ;
-        Eventing curEventing = null ;
-        Eventing.Event event = null ;
+        boolean wasEventing = isEventing;
+        Eventing curEventing = null;
+        Eventing.Event event = null;
 
         if (isEventing) {
             eventing = getEventing(bean);
-            curEventing = eventing ; // set it here
-            event = new Eventing.Event( eventingPattern , methodName, argv);
+            curEventing = eventing; // set it here
+            event = new Eventing.Event(eventingPattern, methodName, argv);
             eventing.before(event);
         }
         try {
@@ -1743,11 +1806,11 @@ public class Interpreter implements ParserVisitor {
                 return eval;
             }
         } catch (InvocationTargetException e) {
-            xjexl = new JexlException(node, "method invocation error : '" + methodName +"'", e.getCause());
+            xjexl = new JexlException(node, "method invocation error : '" + methodName + "'", e.getCause());
         } catch (JexlException.Return | JexlException.Cancel e) {
             throw e;
         } catch (Exception e) {
-            xjexl = new JexlException(node, "method '" + methodName +"' in error", e);
+            xjexl = new JexlException(node, "method '" + methodName + "' in error", e);
         } finally {
             if (wasEventing) {
                 curEventing.after(event);
@@ -1767,12 +1830,12 @@ public class Interpreter implements ParserVisitor {
      * {@inheritDoc}
      */
     public Object visit(ASTMethodNode node, Object data) {
-        isEventing = false ;
+        isEventing = false;
         // the object to invoke the method on should be in the data argument
         if (data == null) {
             // if the method node is the first child of the (ASTReference) parent,
             // it is considered as calling a 'top level' function
-            JexlNode firstChild = node.jjtGetParent().jjtGetChild(0) ;
+            JexlNode firstChild = node.jjtGetParent().jjtGetChild(0);
             if (firstChild == node) {
                 data = resolveNamespace(null, node);
                 if (data == null) {
@@ -1780,14 +1843,14 @@ public class Interpreter implements ParserVisitor {
                 }
             } else {
                 // OK, we may have @@|$$ etc ... so?
-                if ( firstChild.image != null ) {
+                if (firstChild.image != null) {
                     isEventing = Eventing.EVENTS.matcher(firstChild.image).matches();
                     if (isEventing) {
                         eventingPattern = firstChild.image.substring(0, 2);
                         String objName = firstChild.image.substring(2);
                         data = context.get(objName);
                     }
-                }else {
+                } else {
                     throw new JexlException(node, "attempting to call method on null");
                 }
             }
@@ -2081,7 +2144,7 @@ public class Interpreter implements ParserVisitor {
                 return unknownVariable(xjexl);
             }
         }
-        if ( result instanceof Null ){
+        if (result instanceof Null) {
             return null;
         }
         return result;
@@ -2103,8 +2166,8 @@ public class Interpreter implements ParserVisitor {
      * @since 2.1
      */
     public Object visit(ASTReturnStatement node, Object data) {
-        Object val = NULL ;
-        if ( node.jjtGetNumChildren() > 0 ) {
+        Object val = NULL;
+        if (node.jjtGetNumChildren() > 0) {
             val = node.jjtGetChild(0).jjtAccept(this, data);
         }
         throw new JexlException.Return(node, null, val);
@@ -2229,7 +2292,7 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTUnarySizeNode node, Object data) {
         JexlNode valNode = node.jjtGetChild(0);
         Object val = valNode.jjtAccept(this, data);
-        if ( val == null ) return 0 ; // null gets a modulus of 0
+        if (val == null) return 0; // null gets a modulus of 0
         try {
             try {
                 return sizeOf(node, val);
@@ -2278,11 +2341,11 @@ public class Interpreter implements ParserVisitor {
             if (node.jjtGetNumChildren() > 1) {
                 try {
                     result = node.jjtGetChild(1).jjtAccept(this, data);
-                }catch (JexlException.Continue c){
-                    result = c ;
+                } catch (JexlException.Continue c) {
+                    result = c;
                     continue;
-                }catch (JexlException.Break b){
-                    result = b ;
+                } catch (JexlException.Break b) {
+                    result = b;
                     break;
                 }
             }
@@ -2360,7 +2423,8 @@ public class Interpreter implements ParserVisitor {
     /**
      * Shows that result was a valid null
      */
-    public static class Null{}
+    public static class Null {
+    }
 
     public static final Null NULL = new Null();
 
@@ -2409,14 +2473,14 @@ public class Interpreter implements ParserVisitor {
                         JexlPropertyGet fg = new UberspectImpl.FieldPropertyGet(field);
                         value = fg.invoke(object);
                         vg = fg;
-                        if ( value == null ){
+                        if (value == null) {
                             // the actual value of the property is null !
-                            return NULL ;
+                            return NULL;
                         }
                     } else {
-                        if ( ex == null ){
+                        if (ex == null) {
                             // the actual value of the property is null!
-                            return NULL ;
+                            return NULL;
                         }
                         // null field, raise ex
                         throw ex;
@@ -2447,11 +2511,11 @@ public class Interpreter implements ParserVisitor {
             }
             // ok, is this a method with void input?
             JexlMethod jexlMethod = uberspect.getMethod(object, attribute.toString(), null, null);
-            if ( jexlMethod != null ){
+            if (jexlMethod != null) {
                 try {
                     Object ret = jexlMethod.invoke(object, null);
                     return ret;
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
             }

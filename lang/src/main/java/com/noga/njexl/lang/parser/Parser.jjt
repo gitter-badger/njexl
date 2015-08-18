@@ -277,11 +277,29 @@ void WhereStatement() : {}
     <WHERE> <LPAREN> Expression() <RPAREN> (LOOKAHEAD(2) <LINE>)? Statement()
 }
 
+void ForWithIterator() : {}
+{
+       <FOR> <LPAREN> LValueVar() <COLON>  Expression() <RPAREN> (LOOKAHEAD(2) <LINE>)? Statement()
+    |
+        <FOREACH> <LPAREN> LValueVar() <COLON>  Expression() <RPAREN> (LOOKAHEAD(2) <LINE>)? Statement()
+}
+
+void ExpressionFor() :{}
+{
+    ( Expression() )?
+}
+
+void ForWithCondition() :{}
+{
+    <FOR> <LPAREN> ExpressionFor() <SEMICOL> ExpressionFor() <SEMICOL> ExpressionFor() <RPAREN>
+           (LOOKAHEAD(2) <LINE>)? Statement()
+}
+
 void ForeachStatement() : {}
 {
-    <FOR> <LPAREN> LValueVar() <COLON>  Expression() <RPAREN> (LOOKAHEAD(2) <LINE>)? Statement()
-|
-    <FOREACH> <LPAREN> LValueVar() <COLON>  Expression() <RPAREN> (LOOKAHEAD(2) <LINE>)? Statement()
+      LOOKAHEAD(4)  ForWithIterator()
+    |
+      ForWithCondition()
 }
 
 void ReturnStatement() : {}

@@ -1,0 +1,12 @@
+/* 
+ Showcases simple for loop - this is my innovation 
+*/
+import 'java.lang.System.out' as out
+
+for ( i  = 0 ; i < 10 ; i = i + 1 ){
+    continue( i % 2 == 0 )
+    out:println(i)
+    break( i % 3 == 0 )
+}
+
+return i 
