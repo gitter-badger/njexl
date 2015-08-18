@@ -1,0 +1,13 @@
+/* 
+ In case anyone like to use GOTO
+*/
+
+import 'java.lang.System.out' as out
+i = 0 
+goto #label  
+i = 2 
+out:println("This should be skipped")
+
+#label
+out:println("This should be printed")
+return i 
