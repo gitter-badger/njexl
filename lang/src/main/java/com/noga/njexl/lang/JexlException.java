@@ -277,7 +277,7 @@ public class JexlException extends RuntimeException {
 
         @Override
         protected String detailedMessage() {
-            return String.format( "undefined variable : '%s' " , getVariable() );
+            return String.format("undefined variable : '%s' ", getVariable());
         }
     }
 
@@ -425,6 +425,37 @@ public class JexlException extends RuntimeException {
             super(node, "loop broken", null);
             this.value = null ;
             this.hasValue = false ;
+        }
+    }
+
+    /**
+     * Thrown to jump from a location of script to another
+     * @since 0.1
+     */
+    public static class Jump extends JexlException {
+
+        public final int location;
+
+        public final boolean jump;
+
+        /**
+         * Creates a new instance of Break.
+         * @param node the node from where the jump should take place
+         * @param location the location of the break
+         */
+        public Jump(JexlNode node, int location) {
+            super(node, "loop broken", null);
+            this.location = location ;
+            this.jump = true ;
+        }
+        /**
+         * Creates a new instance of Break.
+         * @param node the node where the Break was detected
+         */
+        public Jump(JexlNode node) {
+            super(node, "loop broken", null);
+            this.location = -1 ;
+            this.jump = false ;
         }
     }
 

@@ -1527,15 +1527,12 @@ public class Interpreter implements ParserVisitor {
         Object result = null;
         for (int i = 0; i < numChildren; i++) {
             JexlNode child = node.jjtGetChild(i);
-            result = child.jjtAccept(this, data);
-            if ( result instanceof Jump ){
-                Jump jump = (Jump)result;
-                if ( jump.jump ){
-                    i = jump.child - 1;
-                    result = true ;
-                    continue;
-                }
-                result = false ;
+            try {
+                result = child.jjtAccept(this, data);
+            }catch (JexlException.Jump jump){
+                i = jump.location - 1;
+                result = jump ;
+                continue;
             }
         }
         return result;
@@ -2617,16 +2614,6 @@ public class Interpreter implements ParserVisitor {
         }
     }
 
-    static final class Jump{
-        public final int child;
-        public final boolean jump;
-
-        public Jump(int loc, boolean should){
-            this.child = loc ;
-            this.jump = should ;
-        }
-    }
-
     /** {@inheritDoc} */
     public Object visit(ASTGoToStatement node, Object data) {
         boolean jump = true ;
@@ -2634,7 +2621,7 @@ public class Interpreter implements ParserVisitor {
             Object o = node.jjtGetChild(1).jjtAccept(this,data) ;
             jump = TypeUtility.castBoolean(o,false);
         }
-        if ( !jump ) return new Jump(-1,false ) ;
+        if ( !jump ) return new JexlException.Jump(node) ;
         String label = node.jjtGetChild(0).image ;
         // find ASTLabelledStatement --> and fire it...
         Map<String,Integer> jumps = current.jumps();
@@ -2643,7 +2630,7 @@ public class Interpreter implements ParserVisitor {
         if ( loc == null ){
             throw new JexlException(node, "Invalid Jump Label : " + label);
         }
-        return new Jump( loc ,true) ;
+        throw new JexlException.Jump(node ,loc) ;
     }
 
     /** {@inheritDoc} */
