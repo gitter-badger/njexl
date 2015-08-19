@@ -107,9 +107,11 @@ public class Main {
         JexlContext context = com.noga.njexl.lang.Main.getContext();
         context.set(Script.ARGS, args);
         XSelenium xSelenium = XSelenium.selenium(url, browserType.toString());
-        context.set("selenium", xSelenium);
+        context.set(XSelenium.SELENIUM_VAR, xSelenium);
+        context.set(XSelenium.BASE_URL, url);
+
         HashMap<String,Object> functions = com.noga.njexl.lang.Main.getFunction(context);
-        functions.put("sel", xSelenium);
+        functions.put(XSelenium.SELENIUM_NS, xSelenium);
         functions.put(Utils.Mailer.MAIL_NS, Utils.Mailer.class);
         TestAssert testAssert = new TestAssert();
         SimpleTextReporter textReporter = SimpleTextReporter.reporter(SimpleTextReporter.Sync.CONSOLE,"");
