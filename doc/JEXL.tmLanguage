@@ -51,13 +51,13 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>\:|,|;||\btest\b|\bbye\b|\bdef\b|\bimport\b|\bas\b|\^|\||\+|\-|%|\*|\/|\=|\(|\)|\{|\}|\[|\]|&amp;|&lt;|&gt;|~|!|\beq\b|\blt\b|\bgt\b|\ble\b|\bge\b|\band\b|\bor\b|\bnot\b|@|\?|\bsize\b|\bempty\b</string>
+			<string>\:|,|;||\btest\b|\bbye\b|\b#def\b|\bgoto\b|\bimport\b|\bas\b|\^|\||\+|\-|%|\*|\/|\=|\(|\)|\{|\}|\[|\]|&amp;|&lt;|&gt;|~|!|\beq\b|\blt\b|\bgt\b|\ble\b|\bge\b|\band\b|\bor\b|\bnot\b|@|\?|\bsize\b|\bempty\b</string>
 			<key>name</key>
 			<string>keyword.operator.jexl</string>
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>#|[a-zA-Z]+:[a-zA-Z_]+|\{\S+\}|\*\* \S+|\b&lt;\-|\bint\b|\bshort\b|\bbyte\b|\bchar\b|\bdouble\b|\blong\b|\bsub\b|\btime\b|\bbool\b|\bstr\b|\blist\b|\bset\b|\blistLiteral\b|\barray\b|\barrayFromList\b|\bwithin\b|\bdict\b|\brange\b|\bsqlmath\b|\btypeof\b|\bselect\b|\bindex\b|\bjson\b|\bpartition\b|\bread\b|\bsorta\b|\bsortb\b|\bjoin\b|\btry\b|\bclock\b</string>
+			<string>#|[a-zA-Z]+:[a-zA-Z_]+|\{\S+\}|\*\* \S+|\b&lt;\-|\bint\b|\bINT\b|\bshort\b|\bbyte\b|\bchar\b|\bdouble\b|\blong\b|\bsub\b|\btime\b|\bbool\b|\bstr\b|\blist\b|\bset\b|\blistLiteral\b|\barray\b|\barrayFromList\b|\bwithin\b|\bdict\b|\brange\b|\bsqlmath\b|\btypeof\b|\bselect\b|\bindex\b|\bjson\b|\bpartition\b|\bread\b|\bsorta\b|\bsortb\b|\bjoin\b|\btry\b|\bclock\b</string>
 			<key>name</key>
 			<string>support.function.jexl</string>
 		</dict>
