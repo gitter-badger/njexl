@@ -2240,8 +2240,11 @@ public class Interpreter implements ParserVisitor {
             try {
                 Script curry = jexlEngine.createCopyScript(expression, current);
                 Object o = curry.execute(context);
-                String val = String.format("%s", o);
-                ret = m.replaceFirst(val);
+                //fancy to avoid null check -- 'null' comes
+                String replaceWith = String.format("%s", o);
+                String replaceThis = m.group(0);
+                // because there can be strings using regex, so no regex replace
+                ret = ret.replace( replaceThis, replaceWith );
                 m = CURRY_PATTERN.matcher(ret);
             } catch (Exception e) {
                 // return whatever we could...

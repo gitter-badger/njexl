@@ -736,4 +736,18 @@ public class NogaExtendedTest extends JexlTestCase {
         assertEquals(6,o);
 
     }
+
+    @Test
+    public void testCurryingInAnon() throws Exception{
+        JexlContext jc = new MapContext();
+        jc.set("l", new int[]{ 0,1,2,3} );
+        jc.set("P", "`$ #{op} #{val}`" );
+        jc.set("val", 1);
+        jc.set("op", ">=");
+
+        String s = "select{ `#{P}` }(l)" ;
+        Script e = JEXL.createScript(s);
+        List l = (List)e.execute(jc);
+        assertEquals(3, l.size() );
+    }
 }
