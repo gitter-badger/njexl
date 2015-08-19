@@ -55,6 +55,8 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     public static final String SELENIUM_NS = "sel" ;
 
+    public static final String BASE_URL = "__URL__" ;
+
     public static final String OS_NAME = System.getProperty("os.name").toLowerCase();
 
     public static final boolean IS_MAC = OS_NAME.startsWith("mac ");
