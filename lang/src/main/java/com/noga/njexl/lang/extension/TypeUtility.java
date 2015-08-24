@@ -748,6 +748,8 @@ public class TypeUtility {
                 }
                 if ( ret instanceof JexlException.Break ){
                     JexlException.Break br = (JexlException.Break)ret;
+                    /* breaks inclusive : by default takes the item
+                      unless explicitly specified not to. */
                     ret = true ;
                     if ( br.hasValue ){
                         ret = br.value ;

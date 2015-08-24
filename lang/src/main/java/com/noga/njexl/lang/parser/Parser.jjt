@@ -247,7 +247,7 @@ void LabelledStatement() : {}
 
 void BreakStatement() #BreakStatement : {}
 {
-      LOOKAHEAD(2) <BREAK> <LPAREN> ExpressionStatement() <RPAREN> ( LOOKAHEAD(2) Block() )?
+      LOOKAHEAD(2) <BREAK> <LPAREN> ExpressionStatement() <RPAREN> ( LOOKAHEAD(2) Statement() )?
       |
        <BREAK>
 }
