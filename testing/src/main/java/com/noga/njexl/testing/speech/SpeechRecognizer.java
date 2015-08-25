@@ -38,15 +38,19 @@ public class SpeechRecognizer {
         configuration.setLanguageModelPath(String.format(LanguageModelPath,lang,lang,lang));
     }
 
-    public List<String> recognize() throws IOException {
+    public List<String> recognize() throws Exception {
         LiveSpeechRecognizer recognizer = new LiveSpeechRecognizer(configuration);
         // Start recognition process pruning previously cached data.
         recognizer.startRecognition(true);
+        System.out.println(">>>>Talk now...");
         SpeechResult result = recognizer.getResult();
         // Pause recognition process. It can be resumed then with startRecognition(false).
         recognizer.stopRecognition();
+        System.out.println("<<<<<Talking Done...");
         List<String> words = new ArrayList<>();
-        for (WordResult wordResult : result.getWords() ){
+        List<WordResult> results = result.getWords();
+        System.out.println(result.getHypothesis());
+        for (WordResult wordResult : results ){
             words.add( wordResult.getWord().getSpelling() );
         }
         return words ;

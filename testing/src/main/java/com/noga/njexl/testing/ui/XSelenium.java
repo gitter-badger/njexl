@@ -24,9 +24,7 @@ import com.noga.njexl.testing.TestAssert;
 import com.noga.njexl.testing.Utils;
 import com.noga.njexl.testing.dataprovider.DataSource;
 import com.noga.njexl.testing.dataprovider.ProviderFactory;
-import com.thoughtworks.selenium.CommandProcessor;
-import com.thoughtworks.selenium.DefaultSelenium;
-import com.thoughtworks.selenium.webdriven.WebDriverCommandProcessor;
+import com.thoughtworks.selenium.Selenium;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Eventing;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
@@ -47,9 +45,12 @@ import java.util.regex.Pattern;
 
 
 /**
+ * A Selenium RC style guy - using raw webdriver component,
+ * No fancy stuff at all.
+ * Final goal is to remove @{Selenium} and use XSelenium as the protocol
  * Created by noga on 24/02/15.
  */
-public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.AssertionEventListener {
+public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEventListener {
 
     public static final String SELENIUM_VAR = "selenium" ;
 
@@ -77,6 +78,8 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
     public static final String BLINK_COLOR = "red" ;
 
     protected int typeDelay = 580 ;
+
+    protected String baseUrl;
 
     public void typeDelay( int delay){
         if ( delay > 100 ) {
@@ -277,11 +280,10 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
 
     /**
      * Gets the XSelenium with
-     * @param baseUrl the base url
      * @param browserType the type of the browser
-     * @return an @{XSelenium} object
+     * @return an @{WebDriver} object
      */
-    public static XSelenium  selenium(String baseUrl, String browserType){
+    public static WebDriver  local(String browserType){
         BrowserType type = Enum.valueOf(BrowserType.class,browserType);
         WebDriver driver = null;
         ChromeDriverService service = null;
@@ -331,13 +333,39 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
                 driver = new FirefoxDriver();
                 break;
         }
-        CommandProcessor commandProcessor = new WebDriverCommandProcessor(baseUrl,driver);
-        return new XSelenium(commandProcessor);
+        return driver ;
     }
 
-    public XSelenium(CommandProcessor processor) {
-        super(processor);
-        driver = ((WebDriverCommandProcessor) processor).getWrappedDriver();
+    /**
+     * Gets the remote XSelenium with
+     * @param config the configuration file location of browserstack
+     * @return an @{XSelenium} object
+     */
+    public static WebDriver remote(String config){
+        BrowserStackDriver driver = new BrowserStackDriver(config);
+        return driver ;
+    }
+    /**
+     * Gets the XSelenium with
+     * @param baseUrl the base url
+     * @param browserTypeOrConfig the type of the browser or remote config file,
+     *                            to specify a remote config file use @before it
+     * @return an @{XSelenium} object
+     */
+    public static XSelenium  selenium(String baseUrl, String browserTypeOrConfig) {
+        WebDriver driver ;
+        if ( browserTypeOrConfig.startsWith("@")){
+            browserTypeOrConfig = browserTypeOrConfig.substring(1);
+            driver = remote(browserTypeOrConfig);
+        }else{
+            driver = local(browserTypeOrConfig);
+        }
+        return new XSelenium(driver,baseUrl);
+    }
+
+    public XSelenium(WebDriver driver, String baseUrl) {
+        this.driver = driver ;
+        this.baseUrl = baseUrl ;
     }
 
     public static By getByFromLocator(String locator) {
@@ -1303,9 +1331,10 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
      * @return if possible, the [tableIndex] HTML table as Data Matrix object
      * @throws Exception in case of error
      */
-    public DataMatrix table(String tableIndex) throws Exception {
+    public DataMatrix table(Object tableIndex) throws Exception {
         DataSource ds = dataSource();
         if ( ds == null ){ throw  new Exception("Data Source Can not be Initialized!") ;}
+        tableIndex = TypeUtility.castInteger(tableIndex,null);
         return DataMatrix.loc2matrix(driver.getPageSource(), tableIndex);
     }
 
@@ -1346,6 +1375,1034 @@ public class XSelenium extends DefaultSelenium implements Eventing , TestAssert.
                 // linux ?
             }
         }
+    }
+
+    /**
+     * Sets the per-session extension Javascript
+     *
+     * @param extensionJs
+     */
+    @Override
+    public void setExtensionJs(String extensionJs) {
+        System.err.println("Sorry, no support for extensions!");
+    }
+
+    /**
+     * Launches the browser with a new Selenium session
+     */
+    @Override
+    public void start() {
+        System.err.println("Sorry, no need for start!");
+    }
+
+    /**
+     * Starts a new Selenium testing session with a String, representing a configuration
+     *
+     * @param optionsString
+     */
+    @Override
+    public void start(String optionsString) {
+        start();
+    }
+
+    /**
+     * Starts a new Selenium testing session with a configuration options object
+     *
+     * @param optionsObject
+     */
+    @Override
+    public void start(Object optionsObject) {
+        start();
+    }
+
+    /**
+     * Ends the test session, killing the browser
+     */
+    @Override
+    public void stop() {
+        System.err.println("Sorry, no need for stop!");
+    }
+
+    /**
+     * Shows in the RemoteRunner a banner for the current test The banner is 'classname : methodname'
+     * where those two are derived from the caller The method name will be unCamelCased with the
+     * insertion of spaces at word boundaries
+     */
+    @Override
+    public void showContextualBanner() {
+        System.err.println("Sorry, no support for context banner!");
+    }
+
+    /**
+     * Shows in the RemoteRunner a banner for the current test The banner is 'classname : methodname'
+     * The method name will be unCamelCased with the insertion of spaces at word boundaries
+     *
+     * @param className
+     * @param methodName
+     */
+    @Override
+    public void showContextualBanner(String className, String methodName) {
+        showContextualBanner();
+    }
+
+    /**
+     * Clicks on a link, button, checkbox or radio button. If the click action causes a new page to
+     * load (like a link usually does), call waitForPageToLoad.
+     *
+     * @param locator     an element locator
+     * @param coordString specifies the x,y position (i.e. - 10,20) of the mouse event relative to the
+     */
+    @Override
+    public void clickAt(String locator, String coordString) {
+        System.err.println("Sorry, no support for clickAt!");
+    }
+
+    /**
+     * Doubleclicks on a link, button, checkbox or radio button. If the action causes a new page to
+     * load (like a link usually does), call waitForPageToLoad.
+     *
+     * @param locator     an element locator
+     * @param coordString specifies the x,y position (i.e. - 10,20) of the mouse event relative to the
+     */
+    @Override
+    public void doubleClickAt(String locator, String coordString) {
+        System.err.println("Sorry, no support for doubleClickAt!");
+    }
+
+    /**
+     * Simulates opening the context menu for the specified element (as might happen if the user
+     * "right-clicked" on the element).
+     *
+     * @param locator     an element locator
+     * @param coordString specifies the x,y position (i.e. - 10,20) of the mouse event relative to the
+     */
+    @Override
+    public void contextMenuAt(String locator, String coordString) {
+        System.err.println("Sorry, no support for contextMenuAt!");
+    }
+
+    /**
+     * Explicitly simulate an event, to trigger the corresponding "on<em>event</em>" handler.
+     *
+     * @param locator   an <a href="#locators">element locator</a>
+     * @param eventName the event name, e.g. "focus" or "blur"
+     */
+    @Override
+    public void fireEvent(String locator, String eventName) {
+        WebElement element = element(locator);
+        String script = String.format("return arguments[0].%s() ; ", eventName );
+                ((JavascriptExecutor) driver).executeScript(script, element);
+    }
+
+    /**
+     * Press the shift key and hold it down until doShiftUp() is called or a new page is loaded.
+     */
+    @Override
+    public void shiftKeyDown() {
+        System.err.println("Sorry, no support for firing event!");
+    }
+
+    /**
+     * Release the shift key.
+     */
+    @Override
+    public void shiftKeyUp() {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Press the meta key and hold it down until doMetaUp() is called or a new page is loaded.
+     */
+    @Override
+    public void metaKeyDown() {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Release the meta key.
+     */
+    @Override
+    public void metaKeyUp() {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Press the alt key and hold it down until doAltUp() is called or a new page is loaded.
+     */
+    @Override
+    public void altKeyDown() {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Release the alt key.
+     */
+    @Override
+    public void altKeyUp() {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Press the control key and hold it down until doControlUp() is called or a new page is loaded.
+     */
+    @Override
+    public void controlKeyDown() {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Release the control key.
+     */
+    @Override
+    public void controlKeyUp() {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Simulates a user pressing a key (without releasing it yet).
+     *
+     * @param locator     an <a href="#locators">element locator</a>
+     * @param keySequence Either be a string(
+     *                    "\" followed by the numeric keycode  of the key to be pressed, normally the ASCII value of that key), or a single  character. For example: "
+     */
+    @Override
+    public void keyDown(String locator, String keySequence) {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Simulates a user releasing a key.
+     *
+     * @param locator     an <a href="#locators">element locator</a>
+     * @param keySequence Either be a string(
+     *                    "\" followed by the numeric keycode  of the key to be pressed, normally the ASCII value of that key), or a single  character. For example: "
+     */
+    @Override
+    public void keyUp(String locator, String keySequence) {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Simulates a user moving the mouse pointer away from the specified element.
+     *
+     * @param locator an <a href="#locators">element locator</a>
+     */
+    @Override
+    public void mouseOut(String locator) {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Simulates a user pressing the right mouse button (without releasing it yet) on the specified
+     * element.
+     *
+     * @param locator an <a href="#locators">element locator</a>
+     */
+    @Override
+    public void mouseDownRight(String locator) {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Simulates a user pressing the left mouse button (without releasing it yet) at the specified
+     * location.
+     *
+     * @param locator     an <a href="#locators">element locator</a>
+     * @param coordString specifies the x,y position (i.e. - 10,20) of the mouse event relative to the
+     */
+    @Override
+    public void mouseDownAt(String locator, String coordString) {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Simulates a user pressing the right mouse button (without releasing it yet) at the specified
+     * location.
+     *
+     * @param locator     an <a href="#locators">element locator</a>
+     * @param coordString specifies the x,y position (i.e. - 10,20) of the mouse event relative to the
+     */
+    @Override
+    public void mouseDownRightAt(String locator, String coordString) {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Simulates the event that occurs when the user releases the right mouse button (i.e., stops
+     * holding the button down) on the specified element.
+     *
+     * @param locator an <a href="#locators">element locator</a>
+     */
+    @Override
+    public void mouseUpRight(String locator) {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Simulates the event that occurs when the user releases the mouse button (i.e., stops holding
+     * the button down) at the specified location.
+     *
+     * @param locator     an <a href="#locators">element locator</a>
+     * @param coordString specifies the x,y position (i.e. - 10,20) of the mouse event relative to the
+     */
+    @Override
+    public void mouseUpAt(String locator, String coordString) {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Simulates the event that occurs when the user releases the right mouse button (i.e., stops
+     * holding the button down) at the specified location.
+     *
+     * @param locator     an <a href="#locators">element locator</a>
+     * @param coordString specifies the x,y position (i.e. - 10,20) of the mouse event relative to the
+     */
+    @Override
+    public void mouseUpRightAt(String locator, String coordString) {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Simulates a user pressing the mouse button (without releasing it yet) on the specified element.
+     *
+     * @param locator     an <a href="#locators">element locator</a>
+     * @param coordString specifies the x,y position (i.e. - 10,20) of the mouse event relative to the
+     */
+    @Override
+    public void mouseMoveAt(String locator, String coordString) {
+        System.err.println("Sorry, no support for keys events!");
+    }
+
+    /**
+     * Set execution speed (i.e., set the millisecond length of a delay which will follow each
+     * selenium operation). By default, there is no such delay, i.e., the delay is 0 milliseconds.
+     *
+     * @param value the number of milliseconds to pause after operation
+     */
+    @Override
+    public void setSpeed(String value) {
+        System.err.println("Sorry, no support for Speed!");
+    }
+
+    /**
+     * Get execution speed (i.e., get the millisecond length of the delay following each selenium
+     * operation). By default, there is no such delay, i.e., the delay is 0 milliseconds.
+     * <p>
+     * See also setSpeed.
+     *
+     * @return the execution speed in milliseconds.
+     */
+    @Override
+    public String getSpeed() {
+        System.err.println("Sorry, no support for Speed! I would return empty!");
+        return "";
+    }
+
+    /**
+     * Get RC logs associated with this session.
+     *
+     * @return the remote control logs associated with this session
+     */
+    @Override
+    public String getLog() {
+        System.err.println("Sorry, no support for logs! I would return empty!");
+        return "";
+    }
+
+    /**
+     * Opens an URL in the test frame. This accepts both relative and absolute URLs.
+     * <p>
+     * The "open" command waits for the page to load before proceeding, ie. the "AndWait" suffix is
+     * implicit.
+     * <p>
+     * <em>Note</em>: The URL must be on the same domain as the runner HTML due to security
+     * restrictions in the browser (Same Origin Policy). If you need to open an URL on another domain,
+     * use the Selenium Server to start a new browser session on that domain.
+     *
+     * @param url                the URL to open; may be relative or absolute
+     * @param ignoreResponseCode if set to true, ignores http response code.
+     */
+    @Override
+    public void open(String url, String ignoreResponseCode) {
+        System.err.println("Sorry, no support for ignoring anything, I would do it normally!");
+        open(url);
+    }
+
+    /**
+     * Opens an URL in the test frame. This accepts both relative and absolute URLs.
+     * <p>
+     * The "open" command waits for the page to load before proceeding, ie. the "AndWait" suffix is
+     * implicit.
+     * <p>
+     * <em>Note</em>: The URL must be on the same domain as the runner HTML due to security
+     * restrictions in the browser (Same Origin Policy). If you need to open an URL on another domain,
+     * use the Selenium Server to start a new browser session on that domain.
+     *
+     * @param url the URL to open; may be relative or absolute
+     */
+    @Override
+    public void open(String url) {
+        if ( url.toLowerCase().startsWith("http")){
+            driver.get(url);
+        } else {
+            driver.get(baseUrl + url);
+        }
+    }
+
+    /**
+     * Opens a popup window (if a window with that ID isn't already open). After opening the window,
+     * you'll need to select it using the selectWindow command.
+     * <p>
+     * <p>
+     * This command can also be a useful workaround for bug SEL-339. In some cases, Selenium will be
+     * unable to intercept a call to window.open (if the call occurs during or before the "onLoad"
+     * event, for example). In those cases, you can force Selenium to notice the open window's name by
+     * using the Selenium openWindow command, using an empty (blank) url, like this: openWindow("",
+     * "myFunnyWindow").
+     * </p>
+     *
+     * @param url      the URL to open, which can be blank
+     * @param windowID the JavaScript window ID of the window to select
+     */
+    @Override
+    public void openWindow(String url, String windowID) {
+        System.err.println("Sorry, no support for popping windows now!");
+    }
+
+    /**
+     * Selects the main window. Functionally equivalent to using <code>selectWindow()</code> and
+     * specifying no value for <code>windowID</code>.
+     */
+    @Override
+    public void deselectPopUp() {
+        driver.switchTo().defaultContent();
+    }
+
+    /**
+     * Determine whether current/locator identify the frame containing this running code.
+     * <p>
+     * <p>
+     * This is useful in proxy injection mode, where this code runs in every browser frame and window,
+     * and sometimes the selenium server needs to identify the "current" frame. In this case, when the
+     * test calls selectFrame, this routine is called for each frame to figure out which one has been
+     * selected. The selected frame will return true, while all others will return false.
+     * </p>
+     *
+     * @param currentFrameString starting frame
+     * @param target             new frame (which might be relative to the current one)
+     * @return true if the new frame is this code's window
+     */
+    @Override
+    public boolean getWhetherThisFrameMatchFrameExpression(String currentFrameString, String target) {
+        System.err.println("Sorry, no idea what this even means!");
+        return false;
+    }
+
+    /**
+     * Determine whether currentWindowString plus target identify the window containing this running
+     * code.
+     * <p>
+     * <p>
+     * This is useful in proxy injection mode, where this code runs in every browser frame and window,
+     * and sometimes the selenium server needs to identify the "current" window. In this case, when
+     * the test calls selectWindow, this routine is called for each window to figure out which one has
+     * been selected. The selected window will return true, while all others will return false.
+     * </p>
+     *
+     * @param currentWindowString starting window
+     * @param target              new window (which might be relative to the current one, e.g., "_parent")
+     * @return true if the new window is this code's window
+     */
+    @Override
+    public boolean getWhetherThisWindowMatchWindowExpression(String currentWindowString, String target) {
+        return false;
+    }
+
+    /**
+     * Waits for a popup window to appear and load up.
+     *
+     * @param windowID the JavaScript window "name" of the window that will appear (not the text of
+     *                 the title bar) If unspecified, or specified as "null", this command will wait for the
+     *                 first non-top window to appear (don't rely on this if you are working with multiple
+     *                 popups simultaneously).
+     * @param timeout  a timeout in milliseconds, after which the action will return with an error. If
+     *                 this value is not specified, the default Selenium timeout will be used. See the
+     */
+    @Override
+    public void waitForPopUp(String windowID, String timeout) {
+        System.err.println("Sorry, no support for popping windows now!");
+    }
+
+    /**
+     * <p>
+     * By default, Selenium's overridden window.confirm() function will return true, as if the user
+     * had manually clicked OK; after running this command, the next call to confirm() will return
+     * false, as if the user had clicked Cancel. Selenium will then resume using the default behavior
+     * for future confirmations, automatically returning true (OK) unless/until you explicitly call
+     * this command for each confirmation.
+     * </p>
+     * <p>
+     * Take note - every time a confirmation comes up, you must consume it with a corresponding
+     * getConfirmation, or else the next selenium operation will fail.
+     * </p>
+     */
+    @Override
+    public void chooseCancelOnNextConfirmation() {
+        System.err.println("Sorry, no support for this sort of alerting");
+    }
+
+    /**
+     * <p>
+     * Undo the effect of calling chooseCancelOnNextConfirmation. Note that Selenium's overridden
+     * window.confirm() function will normally automatically return true, as if the user had manually
+     * clicked OK, so you shouldn't need to use this command unless for some reason you need to change
+     * your mind prior to the next confirmation. After any confirmation, Selenium will resume using
+     * the default behavior for future confirmations, automatically returning true (OK) unless/until
+     * you explicitly call chooseCancelOnNextConfirmation for each confirmation.
+     * </p>
+     * <p>
+     * Take note - every time a confirmation comes up, you must consume it with a corresponding
+     * getConfirmation, or else the next selenium operation will fail.
+     * </p>
+     */
+    @Override
+    public void chooseOkOnNextConfirmation() {
+        System.err.println("Sorry, no support for this sort of alerting");
+    }
+
+    /**
+     * Instructs Selenium to return the specified answer string in response to the next JavaScript
+     * prompt [window.prompt()].
+     *
+     * @param answer the answer to give in response to the prompt pop-up
+     */
+    @Override
+    public void answerOnNextPrompt(String answer) {
+        System.err.println("Sorry, no support for this sort of alerting");
+    }
+
+    /**
+     * Gets the text from a cell of a table. The cellAddress syntax tableLocator.row.column, where row
+     * and column start at 0.
+     *
+     * @param tableCellAddress a cell address, e.g. "foo.1.4"
+     * @return the text from the specified cell
+     */
+    @Override
+    public String getTable(String tableCellAddress) {
+        System.err.println("Sorry, no support for this sort of slow table access, use table() instead");
+        return "";
+    }
+
+    /**
+     * Returns every instance of some attribute from all known windows.
+     *
+     * @param attributeName name of an attribute on the windows
+     * @return the set of values of this attribute from all known windows.
+     */
+    @Override
+    public String[] getAttributeFromAllWindows(String attributeName) {
+        System.err.println("Sorry, no support for this sort of attribute get");
+        return new String[0];
+    }
+
+    /**
+     * Configure the number of pixels between "mousemove" events during dragAndDrop commands
+     * (default=10).
+     * <p>
+     * Setting this value to 0 means that we'll send a "mousemove" event to every single pixel in
+     * between the start location and the end location; that can be very slow, and may cause some
+     * browsers to force the JavaScript to timeout.
+     * </p>
+     * <p>
+     * If the mouse speed is greater than the distance between the two dragged objects, we'll just
+     * send one "mousemove" at the start location and then one final one at the end location.
+     * </p>
+     *
+     * @param pixels the number of pixels between "mousemove" events
+     */
+    @Override
+    public void setMouseSpeed(String pixels) {
+        System.err.println("Sorry, no support for playing with mouse speed");
+    }
+
+    /**
+     * Returns the number of pixels between "mousemove" events during dragAndDrop commands
+     * (default=10).
+     *
+     * @return the number of pixels between "mousemove" events during dragAndDrop commands
+     * (default=10)
+     */
+    @Override
+    public Number getMouseSpeed() {
+        System.err.println("Sorry, no support for playing with mouse speed");
+        return -1;
+    }
+
+    /**
+     * Gives focus to the currently selected window
+     */
+    @Override
+    public void windowFocus() {
+        driver.switchTo().defaultContent();
+    }
+
+    /**
+     * Moves the text cursor to the specified position in the given input element or textarea. This
+     * method will fail if the specified element isn't an input element or textarea.
+     *
+     * @param locator  an <a href="#locators">element locator</a> pointing to an input element or
+     *                 textarea
+     * @param position the numerical position of the cursor in the field; position should be 0 to move
+     *                 the position to the beginning of the field. You can also set the cursor to -1 to move it
+     */
+    @Override
+    public void setCursorPosition(String locator, String position) {
+        System.err.println("Sorry, no support for playing with cursor as of now");
+    }
+
+    /**
+     * Get the relative index of an element to its parent (starting from 0). The comment node and
+     * empty text node will be ignored.
+     *
+     * @param locator an <a href="#locators">element locator</a> pointing to an element
+     * @return of relative index of the element to its parent (starting from 0)
+     */
+    @Override
+    public Number getElementIndex(String locator) {
+        System.err.println("Sorry, no support for playing with position of child as of now");
+        return -1;
+    }
+
+    /**
+     * Check if these two elements have same parent and are ordered siblings in the DOM. Two same
+     * elements will not be considered ordered.
+     *
+     * @param locator1 an <a href="#locators">element locator</a> pointing to the first element
+     * @param locator2 an <a href="#locators">element locator</a> pointing to the second element
+     * @return true if element1 is the previous sibling of element2, false otherwise
+     */
+    @Override
+    public boolean isOrdered(String locator1, String locator2) {
+        System.err.println("Sorry, no support for this, now!");
+        return false;
+    }
+
+    /**
+     * Retrieves the text cursor position in the given input element or textarea; beware, this may not
+     * work perfectly on all browsers.
+     * <p>
+     * <p>
+     * Specifically, if the cursor/selection has been cleared by JavaScript, this command will tend to
+     * return the position of the last location of the cursor, even though the cursor is now gone from
+     * the page. This is filed as <a href="http://jira.openqa.org/browse/SEL-243">SEL-243</a>.
+     * </p>
+     * This method will fail if the specified element isn't an input element or textarea, or there is
+     * no cursor in the element.
+     *
+     * @param locator an <a href="#locators">element locator</a> pointing to an input element or
+     *                textarea
+     * @return the numerical position of the cursor in the field
+     */
+    @Override
+    public Number getCursorPosition(String locator) {
+        System.err.println("Sorry, no support for playing with cursor position");
+        return -1;
+    }
+
+    /**
+     * Returns the specified expression.
+     * <p>
+     * <p>
+     * This is useful because of JavaScript preprocessing. It is used to generate commands like
+     * assertExpression and waitForExpression.
+     * </p>
+     *
+     * @param expression the value to return
+     * @return the value passed in
+     */
+    @Override
+    public String getExpression(String expression) {
+        Object o = ((JavascriptExecutor)driver).executeScript(expression);
+        return String.format("%s",o);
+    }
+
+    /**
+     * Temporarily sets the "id" attribute of the specified element, so you can locate it in the
+     * future using its ID rather than a slow/complicated XPath. This ID will disappear once the page
+     * is reloaded.
+     *
+     * @param locator    an <a href="#locators">element locator</a> pointing to an element
+     * @param identifier a string to be used as the ID of the specified element
+     */
+    @Override
+    public void assignId(String locator, String identifier) {
+        WebElement element = element(locator);
+        String script = String.format("return arguments[0].setAttribute('id', '%s');", identifier);
+        ((JavascriptExecutor)driver).executeScript(script, element);
+    }
+
+    /**
+     * Specifies whether Selenium should use the native in-browser implementation of XPath (if any
+     * native version is available); if you pass "false" to this function, we will always use our
+     * pure-JavaScript xpath library. Using the pure-JS xpath library can improve the consistency of
+     * xpath element locators between different browser vendors, but the pure-JS version is much
+     * slower than the native implementations.
+     *
+     * @param allow boolean, true means we'll prefer to use native XPath; false means we'll only use
+     *              JS XPath
+     */
+    @Override
+    public void allowNativeXpath(String allow) {
+        System.err.println("Sorry, no support for playing with XPath either!");
+    }
+
+    /**
+     * Specifies whether Selenium will ignore xpath attributes that have no value, i.e. are the empty
+     * string, when using the non-native xpath evaluation engine. You'd want to do this for
+     * performance reasons in IE. However, this could break certain xpaths, for example an xpath that
+     * looks for an attribute whose value is NOT the empty string.
+     * <p>
+     * The hope is that such xpaths are relatively rare, but the user should have the option of using
+     * them. Note that this only influences xpath evaluation when using the ajaxslt engine (i.e. not
+     * "javascript-xpath").
+     *
+     * @param ignore boolean, true means we'll ignore attributes without value at the expense of xpath
+     *               "correctness"; false means we'll sacrifice speed for correctness.
+     */
+    @Override
+    public void ignoreAttributesWithoutValue(String ignore) {
+        System.err.println("Sorry, no support for playing with fire");
+    }
+
+    /**
+     * Runs the specified JavaScript snippet repeatedly until it evaluates to "true". The snippet may
+     * have multiple lines, but only the result of the last line will be considered.
+     * <p>
+     * <p>
+     * Note that, by default, the snippet will be run in the runner's test window, not in the window
+     * of your application. To get the window of your application, you can use the JavaScript snippet
+     * <code>selenium.browserbot.getCurrentWindow()</code>, and then run your JavaScript in there
+     * </p>
+     *
+     * @param script  the JavaScript snippet to run
+     * @param timeout a timeout in milliseconds, after which this command will return with an error
+     */
+    @Override
+    public void waitForCondition(String script, String timeout) {
+        System.err.println("Sorry, no support for playing with ideas of polling, not now, pls!");
+    }
+
+    /**
+     * Specifies the amount of time that Selenium will wait for actions to complete.
+     * <p>
+     * <p>
+     * Actions that require waiting include "open" and the "waitFor*" actions.
+     * </p>
+     * The default timeout is 30 seconds.
+     *
+     * @param timeout a timeout in milliseconds, after which the action will return with an error
+     */
+    @Override
+    public void setTimeout(String timeout) {
+        this.timeout = TypeUtility.castInteger( timeout, this.timeout );
+    }
+
+    /**
+     * Waits for a new page to load.
+     * <p>
+     * <p>
+     * You can use this command instead of the "AndWait" suffixes, "clickAndWait", "selectAndWait",
+     * "typeAndWait" etc. (which are only available in the JS API).
+     * </p>
+     * <p>
+     * Selenium constantly keeps track of new pages loading, and sets a "newPageLoaded" flag when it
+     * first notices a page load. Running any other Selenium command after turns the flag to false.
+     * Hence, if you want to wait for a page to load, you must wait immediately after a Selenium
+     * command that caused a page-load.
+     * </p>
+     *
+     * @param timeout a timeout in milliseconds, after which this command will return with an error
+     */
+    @Override
+    public void waitForPageToLoad(String timeout) {
+        this.timeout = TypeUtility.castInteger( timeout, this.timeout );
+    }
+
+    /**
+     * Waits for a new frame to load.
+     * <p>
+     * <p>
+     * Selenium constantly keeps track of new pages and frames loading, and sets a "newPageLoaded"
+     * flag when it first notices a page load.
+     * </p>
+     * <p>
+     * See waitForPageToLoad for more information.
+     *
+     * @param frameAddress FrameAddress from the server side
+     * @param timeout      a timeout in milliseconds, after which this command will return with an error
+     */
+    @Override
+    public void waitForFrameToLoad(String frameAddress, String timeout) {
+        System.err.println("Sorry, no support for playing with speed of frame load, no no no!");
+    }
+
+    /**
+     * Returns true if a cookie with the specified name is present, or false otherwise.
+     *
+     * @param name the name of the cookie
+     * @return true if a cookie with the specified name is present, or false otherwise.
+     */
+    @Override
+    public boolean isCookiePresent(String name) {
+        Set<Cookie> cookies = driver.manage().getCookies();
+        for ( Cookie c : cookies ){
+            if ( c.getName().equals(name)){
+                return true ;
+            }
+        }
+        return false ;
+    }
+
+    /**
+     * Create a new cookie whose path and domain are same with those of current page under test,
+     * unless you specified a path for this cookie explicitly.
+     *
+     * @param nameValuePair name and value of the cookie in a format "name=value"
+     * @param optionsString options for the cookie. Currently supported options include 'path',
+     *                      'max_age' and 'domain'. the optionsString's format is
+     *                      "path=/path/, max_age=60, domain=.foo.com". The order of options are irrelevant, the
+     *                      unit of the value of 'max_age' is second. Note that specifying a domain that isn't a
+     */
+    @Override
+    public void createCookie(String nameValuePair, String optionsString) {
+        String[] pair = nameValuePair.split("=");
+        Cookie cookie = new Cookie(pair[0],pair[1]);
+        // TODO : option string later... dude...
+        driver.manage().addCookie(cookie);
+    }
+
+    /**
+     * Calls deleteCookie with recurse=true on all cookies visible to the current page. As noted on
+     * the documentation for deleteCookie, recurse=true can be much slower than simply deleting the
+     * cookies using a known domain/path.
+     */
+    @Override
+    public void deleteAllVisibleCookies() {
+        driver.manage().deleteAllCookies();
+    }
+
+    /**
+     * Sets the threshold for browser-side logging messages; log messages beneath this threshold will
+     * be discarded. Valid logLevel strings are: "debug", "info", "warn", "error" or "off". To see the
+     * browser logs, you need to either show the log window in GUI mode, or enable browser-side
+     * logging in Selenium RC.
+     *
+     * @param logLevel one of the following: "debug", "info", "warn", "error" or "off"
+     */
+    @Override
+    public void setBrowserLogLevel(String logLevel) {
+        System.err.println("Sorry, no support for playing with browser logs");
+    }
+
+    /**
+     * Defines a new function for Selenium to locate elements on the page. For example, if you define
+     * the strategy "foo", and someone runs click("foo=blah"), we'll run your function, passing you
+     * the string "blah", and click on the element that your function returns, or throw an
+     * "Element not found" error if your function returns null.
+     * <p>
+     * We'll pass three arguments to your function:
+     * <ul>
+     * <li>locator: the string the user passed in</li>
+     * <li>inWindow: the currently selected window</li>
+     * <li>inDocument: the currently selected document</li>
+     * </ul>
+     * The function must return null if the element can't be found.
+     *
+     * @param strategyName       the name of the strategy to define; this should use only letters [a-zA-Z]
+     *                           with no spaces or other punctuation.
+     * @param functionDefinition a string defining the body of a function in JavaScript. For example:
+     */
+    @Override
+    public void addLocationStrategy(String strategyName, String functionDefinition) {
+        System.err.println("Sorry, no support for playing with locators");
+    }
+
+    /**
+     * Executes a command rollup, which is a series of commands with a unique name, and optionally
+     * arguments that control the generation of the set of commands. If any one of the rolled-up
+     * commands fails, the rollup is considered to have failed. Rollups may also contain nested
+     * rollups.
+     *
+     * @param rollupName the name of the rollup command
+     * @param kwargs     keyword arguments string that influences how the rollup expands into commands
+     */
+    @Override
+    public void rollup(String rollupName, String kwargs) {
+        System.err.println("Sorry, I do not think anyone ever used it!");
+    }
+
+    /**
+     * Loads script content into a new script tag in the Selenium document. This differs from the
+     * runScript command in that runScript adds the script tag to the document of the AUT, not the
+     * Selenium document. The following entities in the script content are replaced by the characters
+     * they represent:
+     * <p>
+     * &lt; &gt; &amp;
+     * <p>
+     * The corresponding remove command is removeScript.
+     *
+     * @param scriptContent the Javascript content of the script to add
+     * @param scriptTagId   (optional) the id of the new script tag. If specified, and an element with
+     */
+    @Override
+    public void addScript(String scriptContent, String scriptTagId) {
+        System.err.println("Sorry, no support for playing with JS like this!");
+    }
+
+    /**
+     * Removes a script tag from the Selenium document identified by the given id. Does nothing if the
+     * referenced tag doesn't exist.
+     *
+     * @param scriptTagId the id of the script element to remove.
+     */
+    @Override
+    public void removeScript(String scriptTagId) {
+        System.err.println("Sorry, no support for playing with JS like this!");
+    }
+
+    /**
+     * Allows choice of one of the available libraries.
+     *
+     * @param libraryName name of the desired library Only the following three can be chosen:
+     *                    <ul>
+     *                    <li>"ajaxslt" - Google's library</li>
+     *                    <li>"javascript-xpath" - Cybozu Labs' faster library</li>
+     *                    <li>"default" - The default library. Currently the default library is "ajaxslt" .</li>
+     *                    </ul>
+     *                    If libraryName isn't one of these three, then no change will be made.
+     */
+    @Override
+    public void useXpathLibrary(String libraryName) {
+        System.err.println("Sorry, no support for playing with XPath like this");
+    }
+
+    /**
+     * Writes a message to the status bar and adds a note to the browser-side log.
+     *
+     * @param context the message to be sent to the browser
+     */
+    @Override
+    public void setContext(String context) {
+        System.err.println("Sorry, no support for things as such : we are not hackers!");
+    }
+
+    /**
+     * Capture a PNG screenshot. It then returns the file as a base 64 encoded string.
+     *
+     * @return The base 64 encoded string of the screen shot (PNG file)
+     */
+    @Override
+    public String captureScreenshotToString() {
+        String ss = ((TakesScreenshot)driver).getScreenshotAs(OutputType.BASE64);
+        return ss;
+    }
+
+    /**
+     * Returns the network traffic seen by the browser, including headers, AJAX requests, status
+     * codes, and timings. When this function is called, the traffic log is cleared, so the returned
+     * content is only the traffic seen since the last call.
+     *
+     * @param type The type of data to return the network traffic as. Valid values are: json, xml, or
+     *             plain.
+     * @return A string representation in the defined type of the network traffic seen by the browser.
+     */
+    @Override
+    public String captureNetworkTraffic(String type) {
+        System.err.println("Sorry, no support for things as such : we are not hackers!");
+        return "";
+    }
+
+    /**
+     * Tells the Selenium server to add the specificed key and value as a custom outgoing request
+     * header. This only works if the browser is configured to use the built in Selenium proxy.
+     *
+     * @param key   the header name.
+     * @param value the header value.
+     */
+    @Override
+    public void addCustomRequestHeader(String key, String value) {
+        System.err.println("Sorry, no support for things as such");
+    }
+
+    /**
+     * Kills the running Selenium Server and all browser sessions. After you run this command, you
+     * will no longer be able to send commands to the server; you can't remotely start the server once
+     * it has been stopped. Normally you should prefer to run the "stop" command, which terminates the
+     * current browser session, rather than shutting down the entire server.
+     */
+    @Override
+    public void shutDownSeleniumServer() {
+        System.err.println("Sorry, no support for things as such");
+    }
+
+    /**
+     * Retrieve the last messages logged on a specific remote control. Useful for error reports,
+     * especially when running multiple remote controls in a distributed environment. The maximum
+     * number of log messages that can be retrieve is configured on remote control startup.
+     *
+     * @return The last N log messages as a multi-line string.
+     */
+    @Override
+    public String retrieveLastRemoteControlLogs() {
+        System.err.println("Sorry, no support for things as such");
+        return "";
+    }
+
+    /**
+     * Simulates a user pressing a key (without releasing it yet) by sending a native operating system
+     * keystroke. This function uses the java.awt.Robot class to send a keystroke; this more
+     * accurately simulates typing a key on the keyboard. It does not honor settings from the
+     * shiftKeyDown, controlKeyDown, altKeyDown and metaKeyDown commands, and does not target any
+     * particular HTML element. To send a keystroke to a particular element, focus on the element
+     * first before running this command.
+     *
+     * @param keycode an integer keycode number corresponding to a java.awt.event.KeyEvent; note that
+     *                Java keycodes are NOT the same thing as JavaScript keycodes!
+     */
+    @Override
+    public void keyDownNative(String keycode) {
+        System.err.println("Sorry, no support for events as such");
+    }
+
+    /**
+     * Simulates a user releasing a key by sending a native operating system keystroke. This function
+     * uses the java.awt.Robot class to send a keystroke; this more accurately simulates typing a key
+     * on the keyboard. It does not honor settings from the shiftKeyDown, controlKeyDown, altKeyDown
+     * and metaKeyDown commands, and does not target any particular HTML element. To send a keystroke
+     * to a particular element, focus on the element first before running this command.
+     *
+     * @param keycode an integer keycode number corresponding to a java.awt.event.KeyEvent; note that
+     *                Java keycodes are NOT the same thing as JavaScript keycodes!
+     */
+    @Override
+    public void keyUpNative(String keycode) {
+        System.err.println("Sorry, no support for events as such");
+    }
+
+    /**
+     * Simulates a user pressing and releasing a key by sending a native operating system keystroke.
+     * This function uses the java.awt.Robot class to send a keystroke; this more accurately simulates
+     * typing a key on the keyboard. It does not honor settings from the shiftKeyDown, controlKeyDown,
+     * altKeyDown and metaKeyDown commands, and does not target any particular HTML element. To send a
+     * keystroke to a particular element, focus on the element first before running this command.
+     *
+     * @param keycode an integer keycode number corresponding to a java.awt.event.KeyEvent; note that
+     *                Java keycodes are NOT the same thing as JavaScript keycodes!
+     */
+    @Override
+    public void keyPressNative(String keycode) {
+        System.err.println("Sorry, no support for events as such");
     }
 
     /**

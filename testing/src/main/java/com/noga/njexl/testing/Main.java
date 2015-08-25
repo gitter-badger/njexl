@@ -46,8 +46,12 @@ public class Main {
     @Option(name="-s",usage="Test Suite Xml file")
     private String suite = "" ;
 
-    @Option(name="-b",usage="Browser Type to Use")
+    @Option(name="-b",usage="Local Browser Type to Use")
     private XSelenium.BrowserType  browserType = XSelenium.BrowserType.FIREFOX  ;
+
+    @Option(name="-bc",usage="Remote Browser Configuration to Use, if no local browser")
+    private String remoteBrowserConfiguration = ""  ;
+
 
     // receives other command line parameters than options
     @Argument
@@ -106,7 +110,13 @@ public class Main {
 
         JexlContext context = com.noga.njexl.lang.Main.getContext();
         context.set(Script.ARGS, args);
-        XSelenium xSelenium = XSelenium.selenium(url, browserType.toString());
+        String browserString = "" ;
+        if ( remoteBrowserConfiguration.isEmpty() ){
+            browserString = browserType.toString() ;
+        }else{
+            browserString = "@" + remoteBrowserConfiguration ;
+        }
+        XSelenium xSelenium = XSelenium.selenium(url, browserString);
         context.set(XSelenium.SELENIUM_VAR, xSelenium);
         context.set(XSelenium.BASE_URL, url);
 
