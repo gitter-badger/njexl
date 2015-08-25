@@ -6,6 +6,8 @@ A wise man once told me  "Never build a fool proof software. When you complete b
 the fool will release foolishness 2.0.". He was 15 years in Industry then, and is an MBA from IIM-A.
 My team mates in Microsoft judged him the smartest and wisest man in the team. Thus, it is our opinion.
 Our personal opinion, not of my company, not of my friends, family or foes. Entirely mine.
+It also is a software testing framework, and for multibrowser/multisystem testing
+this project use and reccomends [BrowserStack](www.browserstack.com/) for the web testing part.
 
 ## Summary
 
