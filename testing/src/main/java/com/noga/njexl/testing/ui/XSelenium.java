@@ -280,11 +280,10 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
 
     /**
      * Gets the XSelenium with
-     * @param browserType the type of the browser
+     * @param type the type of the browser
      * @return an @{WebDriver} object
      */
-    public static WebDriver  local(String browserType){
-        BrowserType type = Enum.valueOf(BrowserType.class,browserType);
+    public static WebDriver  local(BrowserType type){
         WebDriver driver = null;
         ChromeDriverService service = null;
         switch (type){
@@ -348,18 +347,22 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
     /**
      * Gets the XSelenium with
      * @param baseUrl the base url
-     * @param browserTypeOrConfig the type of the browser or remote config file,
-     *                            to specify a remote config file use @before it
+     * @param browserType the type of the browser
      * @return an @{XSelenium} object
      */
-    public static XSelenium  selenium(String baseUrl, String browserTypeOrConfig) {
-        WebDriver driver ;
-        if ( browserTypeOrConfig.startsWith("@")){
-            browserTypeOrConfig = browserTypeOrConfig.substring(1);
-            driver = remote(browserTypeOrConfig);
-        }else{
-            driver = local(browserTypeOrConfig);
-        }
+    public static XSelenium  selenium(String baseUrl, BrowserType browserType) {
+        WebDriver driver = local(browserType);
+        return new XSelenium(driver,baseUrl);
+    }
+
+    /**
+     * Gets the XSelenium with
+     * @param baseUrl the base url
+     * @param configFile the remote config file for the browser
+     * @return an @{XSelenium} object
+     */
+    public static XSelenium  selenium(String baseUrl, String configFile) {
+        WebDriver driver = remote(configFile);
         return new XSelenium(driver,baseUrl);
     }
 

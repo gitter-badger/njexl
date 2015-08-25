@@ -33,6 +33,7 @@ import static org.kohsuke.args4j.ExampleMode.ALL;
 import java.util.*;
 
 /**
+ * A Main class to have command line interface, if need be.
  * Created by noga on 15/04/15.
  */
 public class Main {
@@ -110,13 +111,13 @@ public class Main {
 
         JexlContext context = com.noga.njexl.lang.Main.getContext();
         context.set(Script.ARGS, args);
-        String browserString = "" ;
+        XSelenium xSelenium;
         if ( remoteBrowserConfiguration.isEmpty() ){
-            browserString = browserType.toString() ;
+             xSelenium = XSelenium.selenium(url, browserType);
         }else{
-            browserString = "@" + remoteBrowserConfiguration ;
+            xSelenium = XSelenium.selenium(url, remoteBrowserConfiguration);
         }
-        XSelenium xSelenium = XSelenium.selenium(url, browserString);
+
         context.set(XSelenium.SELENIUM_VAR, xSelenium);
         context.set(XSelenium.BASE_URL, url);
 

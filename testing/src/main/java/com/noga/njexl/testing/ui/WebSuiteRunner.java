@@ -95,7 +95,13 @@ public class WebSuiteRunner extends TestSuiteRunner {
 
     @Override
     protected void prepare() throws Exception {
-        xSelenium = XSelenium.selenium(webTestSuite.webApp.url, webTestSuite.browserType.toString());
+
+        if (webTestSuite.remoteConfig.isEmpty() ){
+            xSelenium = XSelenium.selenium(webTestSuite.webApp.url, webTestSuite.browserType );
+        }else{
+            xSelenium = XSelenium.selenium(webTestSuite.webApp.url, webTestSuite.remoteConfig );
+        }
+
         testAssert = new TestAssert();
         testAssert.eventListeners.add(xSelenium);
         testAssert.eventListeners.addAll(reporters);

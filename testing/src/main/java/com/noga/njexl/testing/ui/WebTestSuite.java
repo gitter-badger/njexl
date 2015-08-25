@@ -32,6 +32,9 @@ public class WebTestSuite extends TestSuite {
     @XStreamAsAttribute
     public XSelenium.BrowserType browserType;
 
+    @XStreamAsAttribute
+    public String remoteConfig;
+
     @XStreamAlias("webApp")
     public static class WebApplication extends Application{
 
@@ -51,6 +54,7 @@ public class WebTestSuite extends TestSuite {
 
     public WebTestSuite(){
         browserType = XSelenium.BrowserType.FIREFOX ;
+        remoteConfig = "" ;
         webApp = new WebApplication();
     }
 
