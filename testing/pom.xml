@@ -21,13 +21,20 @@ limitations under the License.
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.nmondal</groupId>
     <artifactId>njexl.testing</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2</version>
     <name>New Jexl Extension for UI and API Testing</name>
     <inceptionYear>2015</inceptionYear>
     <description>
         The Commons Jexl library is an implementation of the JSTL Expression Language with extensions.
         This was customized by nmondal.
     </description>
+    <url>https://github.com/nmondal/njexl</url>
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
     <repositories>
         <repository>
             <id>snapshots-repo</id>
@@ -55,7 +62,7 @@ limitations under the License.
         <maven.compile.source>1.8</maven.compile.source>
         <maven.compile.target>1.8</maven.compile.target>
         <maven.javadoc.skip>false</maven.javadoc.skip>
-        <lang.version>0.2-SNAPSHOT</lang.version>
+        <lang.version>0.3-SNAPSHOT</lang.version>
         <gpg.skip>true</gpg.skip>
     </properties>
     <dependencies>
