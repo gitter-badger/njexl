@@ -1383,7 +1383,7 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
     /**
      * Sets the per-session extension Javascript
      *
-     * @param extensionJs
+     * @param extensionJs string for javascript extension
      */
     @Override
     public void setExtensionJs(String extensionJs) {
@@ -1401,7 +1401,7 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
     /**
      * Starts a new Selenium testing session with a String, representing a configuration
      *
-     * @param optionsString
+     * @param optionsString options string option=value format
      */
     @Override
     public void start(String optionsString) {
@@ -1411,7 +1411,7 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
     /**
      * Starts a new Selenium testing session with a configuration options object
      *
-     * @param optionsObject
+     * @param optionsObject options string json format
      */
     @Override
     public void start(Object optionsObject) {
@@ -1440,8 +1440,8 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
      * Shows in the RemoteRunner a banner for the current test The banner is 'classname : methodname'
      * The method name will be unCamelCased with the insertion of spaces at word boundaries
      *
-     * @param className
-     * @param methodName
+     * @param className see doc
+     * @param methodName see doc
      */
     @Override
     public void showContextualBanner(String className, String methodName) {
@@ -1756,7 +1756,6 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
      * Opens a popup window (if a window with that ID isn't already open). After opening the window,
      * you'll need to select it using the selectWindow command.
      * <p>
-     * <p>
      * This command can also be a useful workaround for bug SEL-339. In some cases, Selenium will be
      * unable to intercept a call to window.open (if the call occurs during or before the "onLoad"
      * event, for example). In those cases, you can force Selenium to notice the open window's name by
@@ -1784,7 +1783,6 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
     /**
      * Determine whether current/locator identify the frame containing this running code.
      * <p>
-     * <p>
      * This is useful in proxy injection mode, where this code runs in every browser frame and window,
      * and sometimes the selenium server needs to identify the "current" frame. In this case, when the
      * test calls selectFrame, this routine is called for each frame to figure out which one has been
@@ -1804,7 +1802,6 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
     /**
      * Determine whether currentWindowString plus target identify the window containing this running
      * code.
-     * <p>
      * <p>
      * This is useful in proxy injection mode, where this code runs in every browser frame and window,
      * and sometimes the selenium server needs to identify the "current" window. In this case, when
@@ -1995,7 +1992,6 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
      * Retrieves the text cursor position in the given input element or textarea; beware, this may not
      * work perfectly on all browsers.
      * <p>
-     * <p>
      * Specifically, if the cursor/selection has been cleared by JavaScript, this command will tend to
      * return the position of the last location of the cursor, even though the cursor is now gone from
      * the page. This is filed as <a href="http://jira.openqa.org/browse/SEL-243">SEL-243</a>.
@@ -2015,7 +2011,6 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
 
     /**
      * Returns the specified expression.
-     * <p>
      * <p>
      * This is useful because of JavaScript preprocessing. It is used to generate commands like
      * assertExpression and waitForExpression.
@@ -2082,7 +2077,6 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
      * Runs the specified JavaScript snippet repeatedly until it evaluates to "true". The snippet may
      * have multiple lines, but only the result of the last line will be considered.
      * <p>
-     * <p>
      * Note that, by default, the snippet will be run in the runner's test window, not in the window
      * of your application. To get the window of your application, you can use the JavaScript snippet
      * <code>selenium.browserbot.getCurrentWindow()</code>, and then run your JavaScript in there
@@ -2099,7 +2093,6 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
     /**
      * Specifies the amount of time that Selenium will wait for actions to complete.
      * <p>
-     * <p>
      * Actions that require waiting include "open" and the "waitFor*" actions.
      * </p>
      * The default timeout is 30 seconds.
@@ -2113,7 +2106,6 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
 
     /**
      * Waits for a new page to load.
-     * <p>
      * <p>
      * You can use this command instead of the "AndWait" suffixes, "clickAndWait", "selectAndWait",
      * "typeAndWait" etc. (which are only available in the JS API).
@@ -2134,7 +2126,6 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
 
     /**
      * Waits for a new frame to load.
-     * <p>
      * <p>
      * Selenium constantly keeps track of new pages and frames loading, and sets a "newPageLoaded"
      * flag when it first notices a page load.

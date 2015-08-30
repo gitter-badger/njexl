@@ -51,11 +51,18 @@ limitations under the License.
         <developerConnection>scm:git:git@github.com:nmondal/njexl.git</developerConnection>
         <url>git@github.com:nmondal/njexl.git</url>
     </scm>
+    <properties>
+        <maven.compile.source>1.8</maven.compile.source>
+        <maven.compile.target>1.8</maven.compile.target>
+        <maven.javadoc.skip>false</maven.javadoc.skip>
+        <lang.version>0.2-SNAPSHOT</lang.version>
+        <gpg.skip>true</gpg.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>com.github.nmondal</groupId>
             <artifactId>njexl.lang</artifactId>
-            <version>0.2-SNAPSHOT</version>
+            <version>${lang.version}</version>
         </dependency>
         <dependency>
             <groupId>args4j</groupId>
@@ -168,13 +175,6 @@ limitations under the License.
         </dependency>
 
     </dependencies>
-
-    <properties>
-        <maven.compile.source>1.8</maven.compile.source>
-        <maven.compile.target>1.8</maven.compile.target>
-        <commons.componentid>jexl</commons.componentid>
-        <maven.javadoc.skip>false</maven.javadoc.skip>
-    </properties>
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -289,6 +289,20 @@ limitations under the License.
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
