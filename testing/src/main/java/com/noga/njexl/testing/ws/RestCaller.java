@@ -43,9 +43,16 @@ public class RestCaller {
     //disabling switching... probably makes sense this way?
     public final CallType method;
 
-    public RestCaller(String url, String method) throws Exception{
+    protected int connectionTimeout;
+
+    protected int readTimeout;
+
+
+    public RestCaller(String url, String method, int connectionTimeout, int readTimeOut) throws Exception{
         base = new URL(url) ;
         this.method = Enum.valueOf( CallType.class, method);
+        this.connectionTimeout = connectionTimeout ;
+        this.readTimeout = readTimeOut ;
     }
 
     public String createRequest(Map<String,String> args) throws Exception{
@@ -65,7 +72,7 @@ public class RestCaller {
 
     public String get(Map<String,String> args) throws Exception {
         String finalUrl = base.toString() + "?" + createRequest(args);
-        String result = TypeUtility.readToEnd(finalUrl);
+        String result = TypeUtility.readToEnd(finalUrl, connectionTimeout, readTimeout );
         return result;
     }
 
@@ -80,6 +87,8 @@ public class RestCaller {
         connection.setDoOutput(true); // make it post
         connection.setRequestProperty("Accept-Charset", ENCODING);
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + ENCODING);
+        connection.setConnectTimeout( connectionTimeout );
+        connection.setReadTimeout( readTimeout );
         String query = createRequest(args);
         OutputStream outputStream = connection.getOutputStream();
         outputStream.write( query.getBytes(ENCODING) );

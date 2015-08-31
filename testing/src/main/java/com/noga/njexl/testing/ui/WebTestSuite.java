@@ -44,9 +44,13 @@ public class WebTestSuite extends TestSuite {
         @XStreamAsAttribute
         public String method;
 
+        @XStreamAsAttribute
+        public int connectionTimeout;
+
         public WebApplication(){
             url = "" ;
             method = "" ;
+            connectionTimeout = 10000;
         }
     }
 

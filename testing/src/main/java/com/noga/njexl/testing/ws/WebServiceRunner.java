@@ -44,7 +44,8 @@ public class WebServiceRunner extends WebSuiteRunner {
         if (!feature.method.isEmpty()) {
             method = feature.method;
         }
-        restCaller = new RestCaller(callUrl, method);
+        restCaller = new RestCaller(callUrl, method,
+                webTestSuite.webApp.connectionTimeout, feature.timeout );
 
     }
 

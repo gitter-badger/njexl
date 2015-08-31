@@ -120,6 +120,9 @@ public class TestSuite {
         @XStreamAsAttribute
         public String afterScript ;
 
+        @XStreamAsAttribute
+        public int timeout ;
+
         public Feature(){
             name = "" ;
             base = "" ;
@@ -132,6 +135,7 @@ public class TestSuite {
             script = "";
             beforeScript = "" ;
             afterScript = "" ;
+            timeout = 10000;
         }
     }
 
