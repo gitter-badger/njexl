@@ -86,6 +86,8 @@ import com.noga.njexl.lang.introspection.JexlMethod;
 public class JexlEngine {
 
     private static final Log LOGGER = LogFactory.getLog(JexlEngine.class);
+
+    public static final String LINE = System.lineSeparator();
     /**
      * An empty/static/non-mutable JexlContext used instead of null context.
      */
@@ -608,6 +610,12 @@ public class JexlEngine {
         }
         BufferedReader reader = new BufferedReader(new FileReader(f));
         scriptText = readerToString(reader);
+        // remove the first #! if any ?
+        if ( scriptText.startsWith("#!")){
+            int lineIndex = scriptText.indexOf(LINE);
+            scriptText = scriptText.substring(lineIndex);
+        }
+
         // name mangling for linking
         scriptText = scriptText.replaceAll(Script.SELF + ":", as + ":");
         // now create script
