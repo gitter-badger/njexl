@@ -97,7 +97,7 @@ limitations under the License.
         <maven.compile.source>1.8</maven.compile.source>
         <maven.compile.target>1.8</maven.compile.target>
         <maven.javadoc.skip>false</maven.javadoc.skip>
-        <gpg.skip>false</gpg.skip>
+        <gpg.skip>true</gpg.skip>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -165,9 +165,6 @@ limitations under the License.
                         <configuration>
                             <sourceDirectory>src/main/java/com/noga/njexl/lang/parser</sourceDirectory>
                             <outputDirectory>${project.build.directory}/generated-sources/java</outputDirectory>
-                            <timestampDirectory>${project.build.directory}/generated-sources/javacc-timestamp
-                            </timestampDirectory>
-                            <packageName>com.noga.njexl.lang.parser</packageName>
                         </configuration>
                         <goals>
                             <goal>jjtree-javacc</goal>
@@ -276,83 +273,6 @@ limitations under the License.
     </build>
     <reporting>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-changes-plugin</artifactId>
-                <version>${commons.changes.version}</version>
-                <configuration>
-                    <xmlPath>${basedir}/src/site/xdoc/changes.xml</xmlPath>
-                    <issueLinkTemplatePerSystem>
-                        <default>%URL%/%ISSUE%</default>
-                    </issueLinkTemplatePerSystem>
-                </configuration>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>changes-report</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <configLocation>src/main/config/checkstyle.xml</configLocation>
-                    <excludes>org/apache/commons/jexl2/parser/*.java</excludes>
-                    <headerLocation>${basedir}/src/main/config/header.txt</headerLocation>
-                    <enableRulesSummary>false</enableRulesSummary>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.5.1</version>
-                <configuration>
-                    <instrumentation>
-                        <ignores>
-                            <ignore>**/generated-sources/**/*</ignore>
-                        </ignores>
-                        <excludes>
-                            <exclude>**/generated-sources/**/*</exclude>
-                            <exclude>org/apache/commons/jexl2/parser/*.class</exclude>
-                            <exclude>org/apache/commons/jexl2/**/*Test.class</exclude>
-                        </excludes>
-                    </instrumentation>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <excludeFilterFile>${basedir}/src/main/config/findbugs-exclude-filter.xml</excludeFilterFile>
-                    <xmlOutput>true</xmlOutput>
-                    <!-- Optional directory to put findbugs xdoc xml report -->
-                    <xmlOutputDirectory>target/site</xmlOutputDirectory>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.5</version>
-                <configuration>
-                    <targetJdk>1.8</targetJdk>
-                    <excludes>
-                        <excludes>**/generated-sources/**/*</excludes>
-                    </excludes>
-                    <rulesets>
-                        <ruleset>/rulesets/braces.xml</ruleset>
-                        <ruleset>/rulesets/unusedcode.xml</ruleset>
-                        <ruleset>/rulesets/imports.xml</ruleset>
-                        <ruleset>/rulesets/codesize.xml</ruleset>
-                        <ruleset>/rulesets/coupling.xml</ruleset>
-                        <ruleset>/rulesets/design.xml</ruleset>
-                        <ruleset>/rulesets/strings.xml</ruleset>
-                    </rulesets>
-                </configuration>
-            </plugin>
         </plugins>
     </reporting>
 </project>
