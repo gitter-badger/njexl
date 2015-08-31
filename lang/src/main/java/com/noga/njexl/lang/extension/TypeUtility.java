@@ -38,6 +38,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -274,18 +275,31 @@ public class TypeUtility {
         return buf.toString();
     }
 
-    public static String readUrl(URL url) throws Exception{
-        return readStream(url.openStream());
+    public static String readUrl(URL url, Object...args) throws Exception{
+        // set reasonable timeout
+        int conTimeOut = 10000 ;
+        // set reasonable read timeout
+        int readTimeOut = 10000 ;
+        if ( args.length > 0 ) {
+            conTimeOut = castInteger(args[0], conTimeOut);
+            if (args.length > 1) {
+                readTimeOut = castInteger(args[1], readTimeOut);
+            }
+        }
+        URLConnection conn = url.openConnection();
+        conn.setConnectTimeout(conTimeOut);
+        conn.setReadTimeout(readTimeOut);
+        return readStream( conn.getInputStream());
     }
 
-    public static String readToEnd(String location) throws Exception {
+    public static String readToEnd(String location, Object... args) throws Exception {
         // if the fileName is URL?
         String name = location.toLowerCase();
         if( name.startsWith("http://") ||
                 name.startsWith("https://") ||
                 name.startsWith("ftp://") ){
             URL url = new URL(location);
-            return readUrl(url);
+            return readUrl(url,args);
         }
 
         List<String> lines = Files.readAllLines(new File(location).toPath());
@@ -316,10 +330,14 @@ public class TypeUtility {
             return readStream((InputStream) args[0]);
         }
         if ( args[0] instanceof String ) {
-            return readToEnd((String) args[0]);
+            String loc = (String) args[0];
+            args = shiftArrayLeft(args,1);
+            return readToEnd(loc,args);
         }
         if ( args[0] instanceof URL ) {
-            return readUrl((URL) args[0]);
+            URL loc = (URL) args[0];
+            args = shiftArrayLeft(args,1);
+            return readUrl(loc, args);
         }
         if ( args[0] instanceof Path) {
             return readToEnd( ((Path)args[0]).toFile().getCanonicalPath() ) ;
