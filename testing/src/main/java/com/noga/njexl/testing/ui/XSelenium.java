@@ -337,11 +337,19 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
 
     /**
      * Gets the remote XSelenium with
-     * @param config the configuration file location of browserstack
-     * @return an @{XSelenium} object
+     * @param config the configuration file location of :
+     *               ".mobile.xml" : use Appium configuration
+     *               ".xml" : use browserstack configuration
+     * @return an @{WebDriver} object
      */
     public static WebDriver remote(String config){
-        BrowserStackDriver driver = new BrowserStackDriver(config);
+        WebDriver driver;
+        String lower = config.toLowerCase();
+        if ( lower.endsWith("mobile.xml") ){
+            driver = MobileDriver.createDriver(config);
+            return driver ;
+        }
+        driver = new BrowserStackDriver(config);
         return driver ;
     }
     /**
