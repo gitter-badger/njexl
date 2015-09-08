@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MobileConfig>
-    <deviceName></deviceName>
-    <platformVersion></platformVersion>
-    <app></app>
-    <appPackage></appPackage>
-    <appActivity></appActivity>
+    <deviceName>iPhone 5</deviceName>
+    <platformName>iOS</platformName>
+    <platformVersion>8.4</platformVersion>
+    <app>settings</app>
+    <browserName></browserName>
+    <iOSConfig>
+        <bundleId></bundleId>
+    </iOSConfig>
 </MobileConfig>

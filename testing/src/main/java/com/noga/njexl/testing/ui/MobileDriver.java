@@ -39,43 +39,72 @@ import java.util.Properties;
  */
 public class MobileDriver extends AppiumDriver {
 
+    @XStreamAlias("IOSConfig")
+    public static final class IOSConfig{
+
+        @XStreamAlias("bundleId")
+        public String bundleId ;
+
+        public IOSConfig(){
+            bundleId = "" ;
+        }
+
+    }
+
     @XStreamAlias("MobileConfig")
-    public static class MobileConfiguration {
+    public static final class MobileConfiguration {
 
         @XStreamAlias("url")
         public String url;
 
-        @XStreamAlias("deviceName")
-        public String device;
+        @XStreamAlias("automationName")
+        public String automationName;
+
+        @XStreamAlias("platformName")
+        public String platformName;
 
         @XStreamAlias("platformVersion")
         public String platformVersion;
 
+        @XStreamAlias("deviceName")
+        public String deviceName;
+
         @XStreamAlias("app")
         public String app;
 
-        @XStreamAlias("appPackage")
-        public String appPackage;
+        @XStreamAlias("browserName")
+        public String browserName;
 
-        @XStreamAlias("appActivity")
-        public String appActivity;
+        @XStreamAlias("noReset")
+        public boolean noReset;
+
+        @XStreamAlias("fullReset")
+        public boolean fullReset ;
 
         public URL urlObject;
 
         public Capabilities capabilities;
 
+        @XStreamAlias("iOSConfig")
+        public IOSConfig iOSConfig;
+
         public MobileConfiguration() {
             url = "http://127.0.0.1:4723/wd/hub" ;
-            device = "";
+            deviceName = "";
             platformVersion = "";
             app = "" ;
-            appPackage = "" ;
-            appActivity = "" ;
+            automationName = "" ;
+            platformName = "" ;
+            platformVersion = "" ;
+            browserName = "" ;
+            noReset = false ;
+            fullReset = false ;
+            iOSConfig = null;
         }
 
         public static MobileConfiguration loadFromXml(String xmlFile) throws Exception {
             XStream xStream = new XStream(new PureJavaReflectionProvider());
-            xStream.alias("BSConfig", MobileConfiguration.class);
+            xStream.alias("MobileConfig", MobileConfiguration.class);
             xStream.autodetectAnnotations(true);
             String xml = Utils.readToEnd(xmlFile);
             MobileConfiguration configuration = (MobileConfiguration) xStream.fromXML(xml);
@@ -90,8 +119,6 @@ public class MobileDriver extends AppiumDriver {
             }
             configuration.app = (String)map.get("app");
             configuration.platformVersion = (String)map.get("platformVersion");
-            configuration.appPackage = (String)map.get("appPackage");
-            configuration.appActivity = (String)map.get("appActivity");
 
             return configuration;
         }
@@ -112,9 +139,6 @@ public class MobileDriver extends AppiumDriver {
 
     public final AppiumDriver driver;
 
-    public static boolean isAndroid(String device){
-        return  ( device.toLowerCase().contains("android") );
-    }
 
     public static MobileDriver createDriver(String file) {
         MobileConfiguration configuration ;
@@ -135,17 +159,19 @@ public class MobileDriver extends AppiumDriver {
         DesiredCapabilities caps = new DesiredCapabilities();
 
         // desktop
-        caps.setCapability("deviceName", configuration.device);
+        caps.setCapability("deviceName", configuration.deviceName);
+        caps.setCapability("browserName", configuration.browserName );
+        caps.setCapability("platformName", configuration.platformName);
         caps.setCapability("platformVersion", configuration.platformVersion);
         caps.setCapability("app", configuration.app);
-        caps.setCapability("appPackage", configuration.appPackage);
-        caps.setCapability("appActivity", configuration.appActivity);
+
         configuration.capabilities = caps ;
         AppiumDriver driver;
-        if ( isAndroid( configuration.device  ) ){
+        if ( configuration.iOSConfig == null ){
             //android
             driver = new AndroidDriver<>(configuration.urlObject, caps);
         }else{
+            caps.setCapability("bundleId", configuration.iOSConfig.bundleId );
             // ios
             driver = new IOSDriver<>(configuration.urlObject, caps);
         }
