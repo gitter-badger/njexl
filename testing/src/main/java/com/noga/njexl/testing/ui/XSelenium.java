@@ -349,7 +349,7 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
             driver = MobileDriver.createDriver(config);
             return driver ;
         }
-        driver = new BrowserStackDriver(config);
+        driver = BrowserStackDriver.createDriver(config);
         return driver ;
     }
     /**

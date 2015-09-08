@@ -42,7 +42,7 @@ import java.util.Set;
  * Which sets the capabilities well
  * Created by noga on 25/08/15.
  */
-public class BrowserStackDriver implements WebDriver {
+public class BrowserStackDriver extends XWebDriver {
 
     @XStreamAlias("BSConfig")
     public static class BrowserStackConfiguration {
@@ -157,9 +157,23 @@ public class BrowserStackDriver implements WebDriver {
         }
     }
 
-    RemoteWebDriver driver;
+    public static BrowserStackDriver createDriver(String file){
+        BrowserStackConfiguration config ;
+        // create driver here...
+        String s_file = file.toLowerCase();
+        try {
+            if (s_file.endsWith(".xml")) {
+                config = BrowserStackConfiguration.loadFromXml(file);
+            } else if (s_file.endsWith(".json")) {
+                config = BrowserStackConfiguration.loadFromJSON(file);
+            }else{
+                config = BrowserStackConfiguration.loadFromText(file);
+            }
 
-    public static RemoteWebDriver createDriver(BrowserStackConfiguration config) throws Exception {
+        } catch (Throwable t) {
+            throw new Error("Issue Creating a BrowserStack remote driver from !", t);
+        }
+
         String url = String.format("http://%s:%s@hub.browserstack.com/wd/hub",
                 config.user, config.key);
 
@@ -183,93 +197,15 @@ public class BrowserStackDriver implements WebDriver {
             caps.setCapability("browserName", config.mobileBrowser);
             caps.setCapability("device", config.device);
         }
-
-        RemoteWebDriver driver = new RemoteWebDriver(new URL(url), caps);
-        return driver;
-    }
-
-    public BrowserStackDriver(String file) {
-        driver = null;
-        BrowserStackConfiguration configuration = null;
-        // create driver here...
-        String s_file = file.toLowerCase();
         try {
-            if (s_file.endsWith(".xml")) {
-                configuration = BrowserStackConfiguration.loadFromXml(file);
-            } else if (s_file.endsWith(".json")) {
-                configuration = BrowserStackConfiguration.loadFromJSON(file);
-            }else{
-                configuration = BrowserStackConfiguration.loadFromText(file);
-            }
-            driver = createDriver(configuration);
-
-        } catch (Throwable t) {
-            throw new Error("Issue Creating a BrowserStack remote driver from !", t);
+            RemoteWebDriver driver = new RemoteWebDriver(new URL(url), caps);
+            return new BrowserStackDriver(driver);
+        }catch (Exception e){
+            throw new Error(e);
         }
     }
 
-    @Override
-    public void get(String s) {
-        driver.get(s);
-    }
-
-    @Override
-    public String getCurrentUrl() {
-        return driver.getCurrentUrl();
-    }
-
-    @Override
-    public String getTitle() {
-        return driver.getTitle();
-    }
-
-    @Override
-    public List<WebElement> findElements(By by) {
-        return driver.findElements(by);
-    }
-
-    @Override
-    public WebElement findElement(By by) {
-        return driver.findElement(by);
-    }
-
-    @Override
-    public String getPageSource() {
-        return driver.getPageSource();
-    }
-
-    @Override
-    public void close() {
-        driver.close();
-    }
-
-    @Override
-    public void quit() {
-        driver.quit();
-    }
-
-    @Override
-    public Set<String> getWindowHandles() {
-        return driver.getWindowHandles();
-    }
-
-    @Override
-    public String getWindowHandle() {
-        return driver.getWindowHandle();
-    }
-
-    @Override
-    public TargetLocator switchTo() {
-        return driver.switchTo();
-    }
-
-    @Override
-    public Navigation navigate() {
-        return driver.navigate();
-    }
-
-    @Override
-    public Options manage() {
-        return driver.manage();
+    public BrowserStackDriver(WebDriver driver) {
+        super(driver);
     }
 }

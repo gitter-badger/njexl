@@ -23,13 +23,17 @@ import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * This is a driver for running Mobile app tests
@@ -37,7 +41,7 @@ import java.util.Properties;
  * Created by noga on 08/09/15.
  *
  */
-public class MobileDriver extends AppiumDriver {
+public class MobileDriver extends XWebDriver {
 
     @XStreamAlias("IOSConfig")
     public static final class IOSConfig{
@@ -137,9 +141,6 @@ public class MobileDriver extends AppiumDriver {
         }
     }
 
-    public final AppiumDriver driver;
-
-
     public static MobileDriver createDriver(String file) {
         MobileConfiguration configuration ;
         // create driver here...
@@ -175,22 +176,10 @@ public class MobileDriver extends AppiumDriver {
             // ios
             driver = new IOSDriver<>(configuration.urlObject, caps);
         }
-
-        return new MobileDriver( configuration.urlObject, configuration.capabilities, driver );
+        return new MobileDriver(driver);
     }
 
-    public MobileDriver(URL remoteAddress, Capabilities desiredCapabilities, AppiumDriver driver) {
-        super(remoteAddress, desiredCapabilities);
-        this.driver = driver;
-    }
-
-    @Override
-    public WebElement scrollTo(String s) {
-        return driver.scrollTo(s);
-    }
-
-    @Override
-    public WebElement scrollToExact(String s) {
-        return driver.scrollToExact(s);
+    public MobileDriver(AppiumDriver driver) {
+        super(driver);
     }
 }
