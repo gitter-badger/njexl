@@ -17,6 +17,7 @@
 package com.noga.njexl.lang.extension;
 
 import com.noga.njexl.lang.*;
+import com.noga.njexl.lang.extension.dataaccess.XmlMap;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.datastructures.XList;
 import com.noga.njexl.lang.extension.iterators.DateIterator;
@@ -141,6 +142,7 @@ public class TypeUtility {
     public static final String WRITE = "write";
 
     public static final String JSON = "json";
+    public static final String XML = "xml";
 
     public static final String _ITEM_ = "$";
     public static final String _CONTEXT_ = "$$";
@@ -206,12 +208,12 @@ public class TypeUtility {
         }
         if ( args[0].getClass().isArray()){
             int size = Array.getLength(args[0]);
-            int index = random.nextInt( size );
+            int index = random.nextInt(size);
             return Array.get( args[0], index);
         }
         if ( args[0].getClass().isEnum()){
             Object[] values = args[0].getClass().getEnumConstants();
-            int index = random.nextInt( values.length );
+            int index = random.nextInt(values.length);
             return values[index];
         }
         return null;
@@ -261,6 +263,19 @@ public class TypeUtility {
         Script sc = jexlEngine.createScript(text);
         JexlContext context = new MapContext();
         return sc.execute(context);
+    }
+
+    public static Object xml(Object... args) throws Exception {
+        if (args.length == 0) {
+            return null;
+        }
+        String text = args[0].toString();
+        File file = new File(text);
+        if ( file.exists() ) {
+            // this is the file name
+            return XmlMap.file2xml(file.getAbsolutePath());
+        }
+        return XmlMap.string2xml(text);
     }
 
     public static String readStream(InputStream inputStream) throws Exception {
@@ -1301,6 +1316,8 @@ public class TypeUtility {
                 return ReflectionUtility.load_path(argv);
             case JSON:
                 return json(argv);
+            case XML:
+                return xml(argv);
             case MULTI_SET1:
             case MULTI_SET2:
             case MULTI_SET3:
