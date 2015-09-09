@@ -174,9 +174,9 @@ public class ExtendedScriptTest extends JexlTestCase {
         assertTrue(o instanceof Map);
         XmlMap xmlMap = XmlMap.file2xml("samples/sample.xml");
         o = xmlMap.elements("//slide");
-        assertTrue(o instanceof NodeList);
-        o = xmlMap.element("//slide");
-        assertTrue(o instanceof Node);
+        assertTrue(o instanceof List);
+        o = xmlMap.element("//slide[1]");
+        assertTrue(o instanceof XmlMap.XmlElement);
         o = xmlMap.xpath("//slide/title/text()");
         assertTrue(o instanceof String);
     }

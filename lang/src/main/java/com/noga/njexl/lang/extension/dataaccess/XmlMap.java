@@ -31,6 +31,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -78,6 +79,9 @@ public class XmlMap {
 
         public static final XPath X_PATH =  XPathFactory.newInstance().newXPath();
 
+        // the dom root
+        public XmlMap root;
+
         // the attributes
         public HashMap<String,String> attr;
         // the name
@@ -124,17 +128,19 @@ public class XmlMap {
             children = new ArrayList<>();
         }
 
-        protected void populate(){
+        protected void populate(XmlMap root){
             if ( parent !=null ) {
                 parent.children.add(this);
             }
+            this.root = root ;
+            this.root.nodes.put(node,this);
             NodeList nodeList = node.getChildNodes();
             int count = nodeList.getLength();
             for ( int i = 0 ; i < count; i++) {
                 Node c = nodeList.item(i);
                 if ( c.getNodeType() == Node.ELEMENT_NODE) {
                     XmlElement child = new XmlElement(c,this);
-                    child.populate();
+                    child.populate(root);
                 }
             }
         }
@@ -144,16 +150,34 @@ public class XmlMap {
             return json();
         }
 
-        public NodeList elements(String expression) throws Exception {
+        public NodeList nodes(String expression) throws Exception {
             NodeList nodeList = (NodeList) X_PATH.compile(expression).evaluate(
                     this.node, XPathConstants.NODESET);
             return nodeList;
         }
 
-        public Node element(String expression) throws Exception {
+        public List<XmlElement> elements(String expression) throws Exception {
+            NodeList nodeList = nodes(expression);
+            ArrayList<XmlElement> elements = new ArrayList<>();
+            int size = nodeList.getLength();
+            for ( int i = 0 ; i < size; i++ ){
+                Node node = nodeList.item(i);
+                XmlElement e = root.nodes.get(node);
+                elements.add(e);
+            }
+            return elements;
+        }
+
+        public Node node(String expression) throws Exception {
             Node node = (Node) X_PATH.compile(expression).evaluate(this.node, XPathConstants.NODE);
             return node;
         }
+
+        public XmlElement element(String expression) throws Exception {
+            Node node = node(expression);
+            return root.nodes.get(node);
+        }
+
 
         public String xpath(String expression) throws Exception{
             String val = (String) X_PATH.compile(expression).evaluate(this.node, XPathConstants.STRING);
@@ -202,6 +226,8 @@ public class XmlMap {
 
     public final Document doc;
 
+    public final HashMap<Node,XmlElement> nodes;
+
     public static XmlMap file2xml(String file) throws Exception{
         byte[] arr = Files.readAllBytes(new File(file).toPath());
         String text = new String(arr);
@@ -222,14 +248,15 @@ public class XmlMap {
     public XmlMap(Document doc){
         this.doc = doc ;
         root = new XmlElement(doc.getDocumentElement(),null);
-        root.populate();
+        nodes = new HashMap<>();
+        root.populate(this);
     }
 
-    public Node element(String expression) throws Exception {
+    public XmlElement element(String expression) throws Exception {
         return root.element(expression);
     }
 
-    public NodeList elements(String expression) throws Exception {
+    public List<XmlElement> elements(String expression) throws Exception {
         return root.elements(expression);
     }
 
