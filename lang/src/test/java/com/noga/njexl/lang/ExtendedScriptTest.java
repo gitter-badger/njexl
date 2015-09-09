@@ -22,6 +22,9 @@ import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.lang.extension.dataaccess.XmlMap;
 import com.noga.njexl.lang.extension.datastructures.Tuple;
 import org.junit.Test;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -167,8 +170,15 @@ public class ExtendedScriptTest extends JexlTestCase {
 
     @Test
     public void testXmlLoading() throws Exception{
-        Object o = runScript(JEXL, "samples/xml_load.jxl","samples/xml_load.jxl","samples/sample.xml");
+        Object o = runScript(JEXL, "samples/xml_load.jxl", "samples/xml_load.jxl", "samples/sample.xml");
         assertTrue(o instanceof Map);
+        XmlMap xmlMap = XmlMap.file2xml("samples/sample.xml");
+        o = xmlMap.elements("//slide");
+        assertTrue(o instanceof NodeList);
+        o = xmlMap.element("//slide");
+        assertTrue(o instanceof Node);
+        o = xmlMap.xpath("//slide/title/text()");
+        assertTrue(o instanceof String);
     }
 
     @Test

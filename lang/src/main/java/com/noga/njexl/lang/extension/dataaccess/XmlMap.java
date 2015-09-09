@@ -23,6 +23,9 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Files;
@@ -72,6 +75,9 @@ public class XmlMap {
     }
 
     public static class XmlElement {
+
+        public static final XPath X_PATH =  XPathFactory.newInstance().newXPath();
+
         // the attributes
         public HashMap<String,String> attr;
         // the name
@@ -82,7 +88,7 @@ public class XmlMap {
         public String prefix;
 
         // the elements
-        public ArrayList<XmlElement> child;
+        public ArrayList<XmlElement> children;
         // the text
         public String text;
         // parent node of me
@@ -115,12 +121,43 @@ public class XmlMap {
                 }
             }
             text = getFirstLevelTextContent(node);
-            child = new ArrayList<>();
+            children = new ArrayList<>();
+        }
+
+        protected void populate(){
+            if ( parent !=null ) {
+                parent.children.add(this);
+            }
+            NodeList nodeList = node.getChildNodes();
+            int count = nodeList.getLength();
+            for ( int i = 0 ; i < count; i++) {
+                Node c = nodeList.item(i);
+                if ( c.getNodeType() == Node.ELEMENT_NODE) {
+                    XmlElement child = new XmlElement(c,this);
+                    child.populate();
+                }
+            }
         }
 
         @Override
         public String toString(){
             return json();
+        }
+
+        public NodeList elements(String expression) throws Exception {
+            NodeList nodeList = (NodeList) X_PATH.compile(expression).evaluate(
+                    this.node, XPathConstants.NODESET);
+            return nodeList;
+        }
+
+        public Node element(String expression) throws Exception {
+            Node node = (Node) X_PATH.compile(expression).evaluate(this.node, XPathConstants.NODE);
+            return node;
+        }
+
+        public String xpath(String expression) throws Exception{
+            String val = (String) X_PATH.compile(expression).evaluate(this.node, XPathConstants.STRING);
+            return val;
         }
 
         /**
@@ -144,14 +181,14 @@ public class XmlMap {
             builder.append("\"attr\" : ").append(attrStrings).append(", ");
             // now the children
             builder.append("\"children\" : [ ");
-            if ( !child.isEmpty() ){
+            if ( !children.isEmpty() ){
                 int i = 0 ;
-                String ej = child.get(i).json();
+                String ej = children.get(i).json();
                 builder.append(ej);
                 i++;
-                for ( ; i < child.size(); i++ ){
+                for ( ; i < children.size(); i++ ){
                     builder.append(",\n");
-                    ej = child.get(i).json();
+                    ej = children.get(i).json();
                     builder.append(ej);
                 }
             }
@@ -180,32 +217,26 @@ public class XmlMap {
         return new XmlMap(doc);
     }
 
-    protected void populate(Node n,XmlElement parent){
-        XmlElement me = new XmlElement(n,parent);
-        parent.child.add(me);
-        NodeList nodeList = n.getChildNodes();
-        int count = nodeList.getLength();
-        for ( int i = 0 ; i < count; i++) {
-            Node c = nodeList.item(i);
-            if ( c.getNodeType() == Node.ELEMENT_NODE) {
-                populate(c,me);
-            }
-        }
-    }
+
 
     public XmlMap(Document doc){
         this.doc = doc ;
         root = new XmlElement(doc.getDocumentElement(),null);
-        NodeList nodeList = doc.getDocumentElement().getChildNodes();
-        int count = nodeList.getLength();
-        for ( int i = 0 ; i < count; i++) {
-            Node c = nodeList.item(i);
-            if ( c.getNodeType() == Node.ELEMENT_NODE ) {
-                populate(c,root);
-            }
-        }
+        root.populate();
     }
 
+    public Node element(String expression) throws Exception {
+        return root.element(expression);
+    }
+
+    public NodeList elements(String expression) throws Exception {
+        return root.elements(expression);
+    }
+
+    public String xpath(String expression) throws Exception {
+        return root.xpath(expression);
+    }
+    
     /**
      * Converts this to JSON String
      * @return json string for this xml

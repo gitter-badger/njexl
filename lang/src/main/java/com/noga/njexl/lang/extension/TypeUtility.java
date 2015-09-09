@@ -49,6 +49,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.noga.njexl.lang.Interpreter.AnonymousParam;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * <pre>
@@ -269,6 +271,22 @@ public class TypeUtility {
         if (args.length == 0) {
             return null;
         }
+        if ( args[0] instanceof Node){
+            Node n = (Node)args[0];
+            XmlMap.XmlElement e = new XmlMap.XmlElement(n, null);
+            return e;
+        }
+        if ( args[0] instanceof NodeList){
+            NodeList nL = (NodeList)args[0];
+            ArrayList list = new ArrayList();
+            for ( int i = 0 ; i <  nL.getLength() ; i++ ){
+                Node n = nL.item(i);
+                XmlMap.XmlElement e = new XmlMap.XmlElement(n, null);
+                list.add(e);
+            }
+            return list;
+        }
+
         String text = args[0].toString();
         File file = new File(text);
         if ( file.exists() ) {
