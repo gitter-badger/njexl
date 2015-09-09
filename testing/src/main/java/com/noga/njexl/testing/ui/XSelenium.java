@@ -41,6 +41,7 @@ import org.openqa.selenium.support.ui.Select;
 
 import java.io.File;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -335,23 +336,29 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
         return driver ;
     }
 
+
+    public static final Pattern MOBILE_LOCAL_DRIVER =
+            Pattern.compile(".*\\.[mM][oO][bB]([iI][lL][eE])?\\..*",
+                    Pattern.DOTALL|Pattern.CASE_INSENSITIVE);
+
     /**
      * Gets the remote XSelenium with
      * @param config the configuration file location of :
-     *               ".mobile.xml" : use Appium configuration
-     *               ".xml" : use browserstack configuration
+     *               "*.mob(ile)?.*" : use Appium configuration
+     *               "else" : use browserstack configuration
      * @return an @{WebDriver} object
      */
     public static WebDriver remote(String config){
         WebDriver driver;
-        String lower = config.toLowerCase();
-        if ( lower.endsWith("mobile.xml") ){
+        Matcher m = MOBILE_LOCAL_DRIVER.matcher( config ) ;
+        if ( m.matches() ){
             driver = MobileDriver.createDriver(config);
             return driver ;
         }
         driver = BrowserStackDriver.createDriver(config);
         return driver ;
     }
+
     /**
      * Gets the XSelenium with
      * @param baseUrl the base url
