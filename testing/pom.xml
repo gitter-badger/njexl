@@ -21,7 +21,7 @@ limitations under the License.
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.nmondal</groupId>
     <artifactId>njexl.testing</artifactId>
-    <version>0.2</version>
+    <version>0.3-SNAPSHOT</version>
     <name>New Jexl Extension for UI and API Testing</name>
     <inceptionYear>2015</inceptionYear>
     <description>
