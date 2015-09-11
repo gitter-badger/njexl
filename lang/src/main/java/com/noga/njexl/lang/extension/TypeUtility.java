@@ -277,6 +277,24 @@ public class TypeUtility {
             }
             return values[index];
         }
+        if ( args[0] instanceof Map ){
+            Map m = (Map)args[0];
+            List  l = new ListSet<>(m.keySet()) ;
+            int index = random.nextInt(  l.size() );
+            if  ( args.length > 1 ){
+                // how many stuff we need?
+                int count = castInteger(args[1], 1);
+                Map r = new HashMap<>();
+                while(count-- > 0 ){
+                    Object k = l.get(index);
+                    r.put(k,m.get(k));
+                    index = random.nextInt(  l.size() );
+                }
+                return r;
+            }
+            // return the tuple
+            return new Object[] { l.get(index) , m.get( l.get(index) ) };
+        }
         return null;
     }
 
