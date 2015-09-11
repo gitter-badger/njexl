@@ -26,6 +26,19 @@ import java.util.List;
  */
 public abstract class YieldedIterator implements Iterator, Cloneable{
 
+    public static List list(Iterator iterator){
+        List list ;
+        if ( iterator == null ){
+            list = Collections.emptyList();
+            return list;
+        }
+        list = new ArrayList<>();
+        while ( iterator.hasNext() ){
+            list.add( iterator.next());
+        }
+        return list;
+    }
+
     protected List list;
 
     @Override
@@ -47,14 +60,7 @@ public abstract class YieldedIterator implements Iterator, Cloneable{
             return list;
         }
         YieldedIterator iterator = (YieldedIterator)this.clone() ;
-        if ( iterator == null ){
-            list = Collections.emptyList();
-            return list;
-        }
-        list = new ArrayList<>();
-        while ( iterator.hasNext() ){
-            list.add( iterator.next());
-        }
+        list = list(iterator);
         return list;
     }
 }

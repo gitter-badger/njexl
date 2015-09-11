@@ -21,7 +21,10 @@ import com.noga.njexl.lang.extension.dataaccess.XmlMap;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.datastructures.XList;
 import com.noga.njexl.lang.extension.iterators.DateIterator;
+import com.noga.njexl.lang.extension.iterators.SymbolIterator;
+import com.noga.njexl.lang.extension.iterators.YieldedIterator;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
+import com.noga.njexl.lang.internal.ArrayListWrapper;
 import com.noga.njexl.lang.parser.ASTReturnStatement;
 import com.noga.njexl.lang.parser.ASTStringLiteral;
 import com.noga.njexl.lang.parser.JexlNode;
@@ -203,19 +206,75 @@ public class TypeUtility {
         if ( args.length == 0 ) return random ;
         if ( args[0] == null ) return random ;
 
+        if ( args[0] instanceof YieldedIterator ){
+            args[0] = ((YieldedIterator)args[0]).list();
+        }
+        else if ( args[0] instanceof Iterator){
+            args[0] = YieldedIterator.list((Iterator) args[0]);
+        }
+        if ( args[0] instanceof String){
+            String l = (String)args[0];
+            int index = random.nextInt(  l.length() );
+            if  ( args.length > 1 ){
+                // how many stuff we need?
+                int count = castInteger(args[1], 1);
+                StringBuffer buf = new StringBuffer();
+                while(count-- > 0 ){
+                    char c = l.charAt(index);
+                    buf.append(c);
+                    index = random.nextInt(  l.length() );
+                }
+                return buf.toString();
+            }
+            return l.charAt(index);
+        }
+
         if ( args[0] instanceof List){
             List l = (List)args[0];
             int index = random.nextInt(  l.size() );
+            if  ( args.length > 1 ){
+                // how many stuff we need?
+                int count = castInteger(args[1], 1);
+                List r = new ArrayList<>();
+                while(count-- > 0 ){
+                    Object o = l.get(index);
+                    r.add(o);
+                    index = random.nextInt(  l.size() );
+                }
+                return r;
+            }
             return l.get(index);
         }
         if ( args[0].getClass().isArray()){
             int size = Array.getLength(args[0]);
             int index = random.nextInt(size);
+            if  ( args.length > 1 ){
+                // how many stuff we need?
+                int count = castInteger(args[1], 1);
+                List r = new ArrayList<>();
+                while(count-- > 0 ){
+                    Object o = Array.get(args[0], index);
+                    r.add(o);
+                    index = random.nextInt(size);
+                }
+                return r;
+            }
             return Array.get( args[0], index);
         }
         if ( args[0].getClass().isEnum()){
             Object[] values = args[0].getClass().getEnumConstants();
             int index = random.nextInt(values.length);
+            if  ( args.length > 1 ){
+                // how many stuff we need?
+                int count = castInteger(args[1], 1);
+                List r = new ArrayList<>();
+                while(count-- > 0 ){
+                    Object o = values[index];
+                    r.add(o);
+                    index = random.nextInt(values.length);
+                }
+                return r;
+            }
             return values[index];
         }
         return null;
@@ -900,7 +959,26 @@ public class TypeUtility {
                 }
                 return new DateIterator(et);
             }
-
+            if ( args[0] instanceof String ){
+                // a different iterator ...
+                Character et = castChar(args[0]);
+                if ( args.length > 1 ){
+                    if ( args[1] instanceof String ){
+                        Character st = castChar(args[1]);
+                        if ( args.length > 2 ){
+                            String d = args[2].toString() ;
+                            try {
+                                short dur = Short.parseShort(d);
+                                return new SymbolIterator(et, st,dur);
+                            }catch (Exception e){
+                                return new SymbolIterator(et, st,(short)1);
+                            }
+                        }
+                        return new SymbolIterator(et,st);
+                    }
+                }
+                return new SymbolIterator(et);
+            }
             end = Long.valueOf(args[0].toString());
             if (args.length > 1) {
                 start = Long.valueOf(args[1].toString());

@@ -87,10 +87,17 @@ public class Main {
             if ( line == null || line.equals("q")){
                 break;
             }
-            if ( line == null || line.equals("cls")){
+            if ( line.equals("cls")){
                 console.clearScreen();
                 continue;
             }
+            if ( line.equals("--v")){
+                String version = Main.class.getPackage().getImplementationVersion();
+                console.println(version);
+                continue;
+            }
+
+
             line = line.trim();
             if ( line.isEmpty() ){
                 continue;
