@@ -27,6 +27,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.BooleanSupplier;
 
 /**
  * Tests for while statement.
@@ -749,5 +750,24 @@ public class NogaExtendedTest extends JexlTestCase {
         Script e = JEXL.createScript(s);
         List l = (List)e.execute(jc);
         assertEquals(3, l.size() );
+    }
+
+    @Test
+    public void testWaiters() throws Exception{
+        JexlContext jc = new MapContext();
+        jc.set("i", 4 );
+
+        String s = "until(100)" ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue((boolean)o);
+        s = "until{ i = i - 1 ; i == 0 ; }(100,10)" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((boolean)o);
+        jc.set("i", 40);
+        o = e.execute(jc);
+        assertFalse((boolean)o);
+
     }
 }

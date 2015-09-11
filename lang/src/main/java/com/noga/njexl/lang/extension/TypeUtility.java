@@ -133,7 +133,7 @@ public class TypeUtility {
     public static final String THREAD = "thread";
 
     public static final String TIMING_BENCHMARK = "clock";
-
+    public static final String POLL = "until";
 
     /**
      * IO calls
@@ -322,7 +322,7 @@ public class TypeUtility {
         URLConnection conn = url.openConnection();
         conn.setConnectTimeout(conTimeOut);
         conn.setReadTimeout(readTimeOut);
-        return readStream( conn.getInputStream());
+        return readStream(conn.getInputStream());
     }
 
     public static String readToEnd(String location, Object... args) throws Exception {
@@ -1234,6 +1234,48 @@ public class TypeUtility {
         return ret ;
     }
 
+    public static boolean wait(Object...args) throws Exception {
+
+        int pollInterval = 100 ; // in ms
+        int duration = 3000 ; // in ms
+
+        if ( args.length == 0 ){
+            Thread.sleep(duration);
+            return true ;
+        }
+        AnonymousParam anon = null ;
+        if ( args[0] instanceof AnonymousParam) {
+            anon = (AnonymousParam) args[0];
+            args = shiftArrayLeft(args, 1);
+        }
+
+        if ( args.length > 0 ){
+            duration = castInteger(args[0],duration);
+            if ( anon == null ){
+                Thread.sleep(duration);
+                return true ;
+            }
+            if ( args.length > 1 ){
+                pollInterval = castInteger(args[1],pollInterval);
+            }
+        }
+
+        long start = System.currentTimeMillis();
+        while(true){
+            try {
+                Thread.sleep(pollInterval);
+                Object er = anon.execute();
+                boolean ret = castBoolean(er,false);
+                if ( ret ) return true ;
+            } catch (Throwable throwable) {
+                // do nothing
+            }
+            long cur = System.currentTimeMillis();
+            if ( cur - start > duration ) break;
+        }
+        return false;
+    }
+
     public static Object interceptCastingCall(String methodName, Object[] argv, Boolean[] success) throws Exception {
 
         if (success != null) {
@@ -1348,6 +1390,8 @@ public class TypeUtility {
                 return guardedBlock(argv);
             case TIMING_BENCHMARK:
                 return benchmark(argv);
+            case POLL:
+                return wait(argv);
             case SYSTEM:
                 return system(argv);
             case SHUFFLE:
