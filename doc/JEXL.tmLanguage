@@ -51,7 +51,7 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>\:|,|;||\btest\b|\bbye\b|\b#def\b|\bgoto\b|\bimport\b|\bas\b|\^|\||\+|\-|%|\*|\/|\=|\(|\)|\{|\}|\[|\]|&amp;|&lt;|&gt;|~|!|\beq\b|\blt\b|\bgt\b|\ble\b|\bge\b|\band\b|\bor\b|\bnot\b|@|\?|\bsize\b|\bempty\b</string>
+			<string>\:|,|;||\btest\b|\bbye\b|\b(#)?def\b|\bgoto\b|\bimport\b|\bas\b|\^|\||\+|\-|%|\*|\/|\=|\(|\)|\{|\}|\[|\]|&amp;|&lt;|&gt;|~|!|\beq\b|\blt\b|\bgt\b|\ble\b|\bge\b|\band\b|\bor\b|\bnot\b|@|\?|\bsize\b|\bempty\b</string>
 			<key>name</key>
 			<string>keyword.operator.jexl</string>
 		</dict>
