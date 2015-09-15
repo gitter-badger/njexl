@@ -91,9 +91,21 @@ public class JexlArithmetic {
         return false;
     }
 
+    public static boolean isListOrSetOrArray(Object a){
+        if ( a != null ){
+            return  a instanceof List || a instanceof Set || a.getClass().isArray() ;
+        }
+        return false;
+    }
+
     public static boolean areListOrArray(Object l, Object r){
         return isListOrArray(l) && isListOrArray(r);
     }
+
+    public static boolean areListOrSetOrArray(Object l, Object r){
+        return isListOrSetOrArray(l) && isListOrSetOrArray(r);
+    }
+
     /**
      * Creates a JexlArithmetic.
      * @param lenient whether this arithmetic is lenient or strict
@@ -523,6 +535,10 @@ public class JexlArithmetic {
             if ( left instanceof Arithmetic ){
                 return ((Arithmetic) left).div(right);
             }
+            if ( areListOrSetOrArray( left,right ) ){
+                return SetOperations.division(left,right);
+            }
+
             throw e;
         }
     }

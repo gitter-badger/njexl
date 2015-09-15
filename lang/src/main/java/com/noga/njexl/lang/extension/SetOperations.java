@@ -457,7 +457,7 @@ public final class SetOperations {
      * @return true if m1 R m2, else false
      */
     public static boolean is_dict_relation(Map m1, Map m2,String relation){
-        SetRelation actual = dict_relation(m1,m2);
+        SetRelation actual = dict_relation(m1, m2);
         return SetRelation.is(relation,actual);
     }
 
@@ -570,11 +570,75 @@ public final class SetOperations {
         return r;
     }
 
+
+    public static final String SEP = "\u2205"  ;
+
     /**
-     * Arbitrary list join
-     * @param args the lists
-     * @return a joined list of lists
+     * Finds list division :
+     * See more here : http://www.mathcs.emory.edu/~cheung/Courses/377/Syllabus/4-RelAlg/division.html
+     * Not enirely sure if the algorithm is correct in any case
+     * @param a list 1
+     * @param b list 2
+     * @return division of the two lists
      */
+    public static List division(Object a, Object b) {
+        List l = TypeUtility.from(a);
+        List r = TypeUtility.from(b);
+        HashMap<String,Object> left = new HashMap<>();
+        for ( Object o : l ){
+            String i = TypeUtility.castString(o, SEP);
+            left.put(i,o);
+        }
+
+        HashMap<String,Object> right = new HashMap<>();
+        for ( Object o : r ){
+            String i = TypeUtility.castString(o, SEP);
+            right.put(i,o);
+        }
+
+        HashMap<String,Integer> tmp = new HashMap<>();
+        HashMap<String,List> result = new HashMap<>();
+
+
+        for ( String leftKey : left.keySet() ){
+            for ( String rightKey : right.keySet() ){
+                int i = leftKey.lastIndexOf( SEP + rightKey );
+                if ( i >= 0 ){
+                    // here is a match :
+                    String key = leftKey.substring(0,i);
+                    if ( !tmp.containsKey(key)){
+                        tmp.put(key,0);
+                        List item = list_d( left.get(leftKey) , right.get(rightKey) );
+                        result.put(key, item );
+                    }
+                    int n = tmp.get(key);
+                    tmp.put( key, n + 1 );
+                }
+            }
+        }
+
+        List div = new ArrayList<>();
+        int count = right.size();
+        for ( String key : result.keySet() ){
+            int c = tmp.get(key);
+            if ( c == count ){
+                List item = result.get(key);
+                if ( item.size() == 1 ){
+                    div.add( item.get(0));
+                }else{
+                    div.add(item);
+                }
+            }
+        }
+        if ( div.isEmpty() ) return Collections.EMPTY_LIST ;
+        return div;
+    }
+
+        /**
+         * Arbitrary list join
+         * @param args the lists
+         * @return a joined list of lists
+         */
     public static List join_c(Object... args) {
         Interpreter.AnonymousParam anon = null;
         XList join = new XList();

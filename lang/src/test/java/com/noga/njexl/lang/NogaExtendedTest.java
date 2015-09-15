@@ -764,10 +764,23 @@ public class NogaExtendedTest extends JexlTestCase {
         s = "until{ i = i - 1 ; i == 0 ; }(100,10)" ;
         e = JEXL.createScript(s);
         o = e.execute(jc);
-        assertTrue((boolean)o);
+        assertTrue((boolean) o);
         jc.set("i", 40);
         o = e.execute(jc);
-        assertFalse((boolean)o);
+        assertFalse((boolean) o);
 
+    }
+
+    @Test
+    public void testListDivision() throws Exception{
+        Object l = new Integer[][]{ {0 , 0 }, { 0, 1 }, {1, 0 } , {1,1 } } ;
+        Object r = new Integer[]{ 0 , 1  }  ;
+        JexlContext jc = new MapContext();
+        jc.set("l",l);
+        jc.set("r",r);
+        String s = "x = l/r ; x == [0,1] ;" ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue((Boolean)o);
     }
 }
