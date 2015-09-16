@@ -20,6 +20,7 @@ import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.noga.njexl.lang.Interpreter;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
+import com.noga.njexl.lang.extension.dataaccess.XmlMap;
 import com.noga.njexl.testing.TestAssert;
 import com.noga.njexl.testing.Utils;
 import com.noga.njexl.testing.dataprovider.DataSource;
@@ -28,6 +29,7 @@ import com.thoughtworks.selenium.Selenium;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Eventing;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
@@ -1332,6 +1334,15 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
             return Utils.copyFileFromUrl(url,file);
         }
         return false;
+    }
+
+    /**
+     * Get's the page source as @{Document}
+     * See more : http://jsoup.org/cookbook/extracting-data/selector-syntax
+     * @return a @{Document} object from the page source
+     */
+    public Document doc(){
+        return Jsoup.parse( getHtmlSource());
     }
 
     /**
