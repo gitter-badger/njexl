@@ -128,6 +128,9 @@ public class TypeUtility {
 
     public static final String RANDOM = "random";
     public static final String SHUFFLE = "shuffle";
+    public static final String LEFT_FOLD = "lfold";
+    public static final String RIGHT_FOLD = "rfold";
+
 
     public static final String TRY = "try";
 
@@ -165,6 +168,49 @@ public class TypeUtility {
             int[].class, float[].class, double[].class, boolean[].class,
             byte[].class, short[].class, long[].class, char[].class};
 
+
+    /**
+     * Folds as in functional programming
+     * https://en.wikipedia.org/wiki/Fold_(higher-order_function)
+     * @param right : if true, does a right fold
+     * @param args the arguments to the fold
+     * @return the result of the fold
+     */
+    public static Object fold(boolean right, Object...args){
+        if ( args.length == 0 ) return  null ;
+        AnonymousParam anon = null;
+        if ( args[0] instanceof AnonymousParam ){
+            anon = (AnonymousParam)args[0];
+            args = shiftArrayLeft(args,1);
+        }
+        if ( args.length == 0 ) return  null ;
+
+        List l = combine(args[0]);
+        Object partial = null;
+        if ( args.length > 1 ){
+            partial = args[1];
+        }
+        if ( right ){
+            //reverse the list ?
+            l = JexlArithmetic.reverseList(l);
+        }
+
+        if ( anon == null ){
+            return castString(l, SetOperations.SEP );
+        }
+        int i = 0 ;
+        for ( Object o : l ){
+            anon.setIterationContextWithPartial(l,o,i,partial);
+            try {
+                partial = anon.execute();
+            }catch (JexlException.Break b){
+                break;
+            }catch (JexlException.Continue c){
+                continue;
+            }
+        }
+        return partial;
+    }
 
     /**
      * http://en.wikipedia.org/wiki/Fisher–Yates_shuffle#The_modern_algorithm
@@ -1496,6 +1542,12 @@ public class TypeUtility {
                 return random(argv);
             case THREAD:
                 return thread(argv);
+
+            case LEFT_FOLD:
+                return fold(false,argv);
+            case RIGHT_FOLD:
+                return fold(true,argv);
+
             default:
                 if (success != null) {
                     success[0] = false;

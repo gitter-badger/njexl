@@ -677,6 +677,16 @@ public class JexlArithmetic {
 
     }
 
+
+    public static List reverseList(List l){
+        List r = new ArrayList<>();
+        int size = l.size();
+        for ( int i = size - 1; i >= 0 ; i--){
+            r.add(l.get(i));
+        }
+        return r;
+    }
+
     /**
      * Power of the left value by the right.
      * @param left first value
@@ -748,7 +758,14 @@ public class JexlArithmetic {
             }
             if (isListOrArray(left) && right instanceof Integer) {
                 int n = (int) right;
+                if ( n == 0 ){
+                    return Collections.EMPTY_LIST ;
+                }
                 List l = TypeUtility.from(left);
+                if ( n < 0 ){
+                    l = reverseList(l);
+                    n = -n;
+                }
                 while (--n > 0) {
                     l = SetOperations.join(l, left);
                 }
