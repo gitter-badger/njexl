@@ -8,6 +8,8 @@ My team mates in Microsoft judged him the smartest and wisest man in the team. T
 Our personal opinion, not of my company, not of my friends, family or foes. Entirely mine.
 It also is a software testing framework, and for multibrowser/multisystem testing
 this project use and reccomends [BrowserStack](www.browserstack.com/) for the web testing part.
+I belive that resources in the internet should remain open, and free of cost.
+I believe in the [Mozilla Manifesto](https://www.mozilla.org/en-US/about/manifesto/).
 
 ## Summary
 
