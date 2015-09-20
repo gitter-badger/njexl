@@ -27,11 +27,42 @@ import java.util.*;
  */
 public class XList<T> extends ArrayList<T> {
 
+
+    public static class Pair{
+        public final Object l;
+        public Object r;
+
+        public Pair(Object l, Object r){
+            this.l = l;
+            this.r = r;
+        }
+
+        public Object get(int index){
+            if ( index == 0 ) return l ;
+            if ( index == 1 ) return r ;
+            return this;
+        }
+
+        @Override
+        public String toString(){
+            return String.format("(%s,%s)",l,r);
+        }
+    }
+
     public XList() {
     }
 
     public XList(Collection c) {
         super(c);
+    }
+
+    public XList(Map m){
+        super();
+        for ( Object k : m.keySet() ){
+            Object v = m.get(k);
+            Pair p = new Pair(k,v);
+            this.add((T) p);
+        }
     }
 
     public XList(int initialCapacity) {

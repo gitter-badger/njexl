@@ -840,10 +840,7 @@ public class TypeUtility {
             list.addAll(l);
         } else if (object instanceof Map ) {
             Map m = ((Map)object);
-            for ( Object k : m.keySet() ){
-                Object[] o = new Object[]{  k , m.get(k) };
-                list.add(o);
-            }
+            list = new XList(m);
         }
         else {
             list.add(object);
