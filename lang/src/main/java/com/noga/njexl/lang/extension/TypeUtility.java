@@ -838,7 +838,14 @@ public class TypeUtility {
             Object[] array = getArray(object);
             List l = Arrays.asList(array);
             list.addAll(l);
-        } else {
+        } else if (object instanceof Map ) {
+            Map m = ((Map)object);
+            for ( Object k : m.keySet() ){
+                Object[] o = new Object[]{  k , m.get(k) };
+                list.add(o);
+            }
+        }
+        else {
             list.add(object);
         }
         return list;
