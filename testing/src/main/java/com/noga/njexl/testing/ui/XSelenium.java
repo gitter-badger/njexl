@@ -84,12 +84,28 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
 
     protected String baseUrl;
 
+    /**
+     * Set's the base url to the arg
+     * @param baseUrl the url to set as the base url
+     */
+    public void base(String baseUrl){
+        this.baseUrl = baseUrl ;
+    }
+
+    /**
+     * Sets the delay in typing
+     * @param delay the delay in milliseconds, must be greater than 100
+     */
     public void typeDelay( int delay){
         if ( delay > 100 ) {
             typeDelay = delay;
         }
     }
 
+    /**
+     * Gets the typing delay
+     * @return the delay in milliseconds
+     */
     public int typeDelay( ){
         return typeDelay ;
     }
@@ -1771,7 +1787,8 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
      */
     @Override
     public void open(String url) {
-        if ( url.toLowerCase().startsWith("http")){
+        if ( url.contains(":")){
+            // should handle all tps, as well as file://
             driver.get(url);
         } else {
             driver.get(baseUrl + url);
