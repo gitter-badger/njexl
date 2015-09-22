@@ -43,6 +43,7 @@ import org.openqa.selenium.support.ui.Select;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -169,6 +170,15 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
     }
 
     int timeout = 30000; // 30 sec should be good
+
+
+    /**
+     * Sets the implicit wait time
+     * @param sec amount of implicit wait in seconds
+     */
+    public void iwait(int sec){
+        driver.manage().timeouts().implicitlyWait(sec, TimeUnit.SECONDS);
+    }
 
     /**
      * What is the time out for the wait operations

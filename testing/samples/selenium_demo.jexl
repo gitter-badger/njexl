@@ -1,6 +1,16 @@
-// http://www.mymp3song.com/filedownload/21072/04_-_raabta
+import 'java.lang.System.out' as out
 import 'java.lang.Thread' as Thread
-sel:open("/filedownload/21072/04_-_raabta")
-Thread:sleep(5000)
-sel:downloadTarget("link=04 - Raabta.mp3", "/Users/noga/1.mp3")
+
+
+selenium.open('/')
+// tells you how to wait till the control appears 
+@@selenium.type( 'sb_form_q' , "talentsprint")
+selenium.submit('sb_form_go')
+// Now wait for bing to do something 
+@@selenium.click("//a[@href='http://www.talentsprint.com/']")
+@@selenium.type("habla_pre_chat_name_input" , "ezeetra" )
+selenium.type("habla_pre_chat_email_input" , "support@ezeetra.com" )
+selenium.type("habla_pre_chat_phone_input" , "99999999" )
+selenium.click("habla_pre_chat_submit_input")
+Thread.sleep(6000)
 
