@@ -24,6 +24,9 @@ import java.util.Map;
  * <p>Each entry in the map is considered a variable name, value pair.</p>
  */
 public class MapContext implements JexlContext {
+
+    public static final String CURRENT = "__current__" ;
+
     /**
      * The wrapped variable map.
      */
@@ -43,6 +46,7 @@ public class MapContext implements JexlContext {
     public MapContext(Map<String, Object> vars) {
         super();
         map = vars == null ? new HashMap<String, Object>() : vars;
+        map.put(CURRENT, this);
     }
 
     /** {@inheritDoc} */
@@ -79,5 +83,27 @@ public class MapContext implements JexlContext {
     /** {@inheritDoc} */
     public void clear() {
         map.clear();
+    }
+
+
+    @Override
+    public String toString(){
+        StringBuffer buf = new StringBuffer();
+        buf.append("{");
+        if ( map!= null ){
+
+            for ( String key : map.keySet() ){
+                buf.append("'" + key +"'" ).append(" : ");
+                if ( key.equals(CURRENT ) ){
+                    buf.append("'.'");
+                    continue;
+                }
+                buf.append("'" + map.get(key ) + "'" );
+                buf.append(",\n");
+            }
+        }
+        buf.setCharAt(buf.lastIndexOf(","), ' ');
+        buf.append("}");
+        return buf.toString();
     }
 }

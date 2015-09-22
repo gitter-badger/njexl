@@ -28,8 +28,10 @@ import java.util.*;
 public class XList<T> extends ArrayList<T> {
 
 
-    public static class Pair{
-        public final Object l;
+    public static class Pair implements Map.Entry{
+
+        public Object l;
+
         public Object r;
 
         public Pair(Object l, Object r){
@@ -46,6 +48,23 @@ public class XList<T> extends ArrayList<T> {
         @Override
         public String toString(){
             return String.format("(%s,%s)",l,r);
+        }
+
+        @Override
+        public Object getKey() {
+            return l;
+        }
+
+        @Override
+        public Object getValue() {
+            return r;
+        }
+
+        @Override
+        public Object setValue(Object value) {
+            Object o = r;
+            r = value;
+            return o;
         }
     }
 
