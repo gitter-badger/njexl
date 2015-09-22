@@ -1,16 +1,21 @@
 import 'java.lang.System.out' as out
 import 'java.lang.Thread' as Thread
-
+/*
+ this is last level of abstraction 
+   - auto connected with data source 
+   - variables are coming from test vectors 
+   - specified in data source 
+*/
 
 selenium.open('/')
 // tells you how to wait till the control appears 
-@@selenium.type( 'sb_form_q' , "talentsprint")
+@@selenium.type( 'sb_form_q' , word )
 selenium.submit('sb_form_go')
 // Now wait for bing to do something 
 @@selenium.click("//a[@href='http://www.talentsprint.com/']")
-@@selenium.type("habla_pre_chat_name_input" , "ezeetra" )
-selenium.type("habla_pre_chat_email_input" , "support@ezeetra.com" )
-selenium.type("habla_pre_chat_phone_input" , "99999999" )
+@@selenium.type("habla_pre_chat_name_input" , name )
+selenium.type("habla_pre_chat_email_input" , email )
+selenium.type("habla_pre_chat_phone_input" , phone )
 selenium.click("habla_pre_chat_submit_input")
 Thread.sleep(6000)
 

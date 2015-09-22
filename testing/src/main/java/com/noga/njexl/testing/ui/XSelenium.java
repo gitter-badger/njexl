@@ -230,6 +230,7 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
             now = System.currentTimeMillis();
             if ( now - start > timeout ){
                 String message = String.format("Element (%s) is still absent!" , locator );
+                captureScreenshot(getScreenShotFile());
                 throw new Error(message);
             }
             try{
@@ -250,6 +251,7 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
             now = System.currentTimeMillis();
             if ( now - start > timeout ){
                 String message = String.format("Element (%s) is still present!" , locator );
+                captureScreenshot(getScreenShotFile());
                 throw new Error(message);
             }
             try{

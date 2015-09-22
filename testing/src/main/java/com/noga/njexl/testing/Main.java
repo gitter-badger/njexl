@@ -192,12 +192,14 @@ public class Main {
             TestSuiteRunner runner = runner(suiteFile);
             // get on with the show...
             runner.run();
+            System.exit(0);
 
         } catch (Throwable t) {
             if (__DEBUG__) {
                 t.printStackTrace();
             } else {
                 System.err.println(t);
+                System.exit(1);
             }
         }
     }
