@@ -620,6 +620,32 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testShortAssignment() throws Exception {
+        JexlContext jc = new MapContext();
+        JEXL.setFunctions(Main.getFunction(jc));
+        String s = "x = short('jshjkdhfjs')" ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertEquals(null, o);
+
+        s = "x = short('jshjkdhfjs' , 0 )" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals((short)0,o);
+
+        s = "x = short('j')" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertNotNull(o);
+
+        s = "x = short('j', 0)" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertNotSame((short)0,o);
+
+    }
+
+        @Test
     public void testTupleAssignment() throws Exception{
         JexlContext jc = new MapContext();
         JEXL.setFunctions(Main.getFunction(jc));

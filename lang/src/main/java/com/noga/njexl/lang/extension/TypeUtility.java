@@ -587,14 +587,15 @@ public class TypeUtility {
             return 0;
         }
         if (args[0] instanceof String) {
-            return ((String) args[0]).charAt(0);
+            String s = ((String) args[0]);
+            if ( s.length() != 1 ){ return  null; }
+            return s.charAt(0);
         }
         Double doubleValue = castDouble(args);
         if (doubleValue != null) {
             char[] cc = Character.toChars(doubleValue.intValue());
             return new Character(cc[0]);
         }
-
         return null;
     }
 
