@@ -811,22 +811,42 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
-    public void testDictSubtract() throws Exception{
+    public void testDictSetOperations() throws Exception{
         JexlContext jc = new MapContext();
-        String s = "{ 'a' : 1 , 'b' : 2 } - {'a':1 }" ;
+        String s = "x = { 'a' : 1 , 'b' : 2 } - {'a':1 }; x == {'b' : 2 }" ;
         Script e = JEXL.createScript(s);
         Object o = e.execute(jc);
-        assertTrue(o instanceof Map);
+        assertTrue((Boolean)o);
 
-        s = "{ 'a' : 1 , 'b' : 2 } - [ 'a' ]" ;
+        s = "x = { 'a' : 1 , 'b' : 2 } - [ 'a' ] ; x == { 'b' : 2 }" ;
         e = JEXL.createScript(s);
         o = e.execute(jc);
-        assertTrue(o instanceof Map);
+        assertTrue((Boolean)o);
 
-        s = "{ 'a' : 1 , 'b' : 2 } -  'a' " ;
+        s = "x = { 'a' : 1 , 'b' : 2 } -  'a' ; x == { 'b' : 2 }" ;
         e = JEXL.createScript(s);
         o = e.execute(jc);
-        assertTrue(o instanceof Map);
+        assertTrue((Boolean)o);
 
+        s = "x = { 'a' : 1 , 'b' : 2 } | {'a': 1 , 'b' : 0 } ; x.keySet() == ['a', 'b' ] " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = "x = { 'a' : 1 , 'b' : 2 } & {'a': 1 , 'b' : 0 }; x.keySet() == [ 'a' ] " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = "x = { 'a' : 1 , 'b' : 2 } ^ {'a': 1 , 'b' : 0 }; empty ( x ) " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+
+        s = "x = { 'a' : 2 , 'b' : 2  , 'c' : 0 } / 2 ;  x == [ 'a' , 'b' ]" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
     }
 }

@@ -535,10 +535,12 @@ public class JexlArithmetic {
             if ( left instanceof Arithmetic ){
                 return ((Arithmetic) left).div(right);
             }
+            if ( left instanceof Map ){
+                return SetOperations.dict_divide((Map) left, right);
+            }
             if ( areListOrSetOrArray( left,right ) ){
                 return SetOperations.division(left,right);
             }
-
             throw e;
         }
     }
@@ -933,6 +935,9 @@ public class JexlArithmetic {
             if ( left instanceof Set && right instanceof Set){
                 return SetOperations.set_i((Set) left, (Set) right);
             }
+            if ( left instanceof Map && right instanceof Map){
+                return SetOperations.dict_i((Map) left, (Map) right);
+            }
             if ( areListOrArray(left,right)){
                 return SetOperations.list_i(left, right);
             }
@@ -959,6 +964,9 @@ public class JexlArithmetic {
             if ( left instanceof Set && right instanceof Set){
                 return SetOperations.set_u((Set) left, (Set) right);
             }
+            if ( left instanceof Map && right instanceof Map){
+                return SetOperations.dict_u((Map) left, (Map) right);
+            }
             if ( areListOrArray(left,right)){
                 return SetOperations.list_u(left, right);
             }
@@ -984,6 +992,9 @@ public class JexlArithmetic {
         }catch (Exception e){
             if ( left instanceof Set && right instanceof Set){
                 return SetOperations.set_sym_d((Set) left, (Set) right);
+            }
+            if ( left instanceof Map && right instanceof Map){
+                return SetOperations.dict_sym_d((Map) left, (Map) right);
             }
             if ( areListOrArray(left,right)){
                 return SetOperations.list_sym_d(left, right);
@@ -1076,9 +1087,9 @@ public class JexlArithmetic {
                 }
             } else if (left instanceof String || right instanceof String) {
                 return toString(left).compareTo(toString(right));
-            } else if ( left instanceof Set && right instanceof Set ){
-                Set l = (Set)left;
-                Set r = (Set)right;
+            } else if ( left instanceof Set || right instanceof Set ){
+                Set l = TypeUtility.set(left);
+                Set r = TypeUtility.set(right);
                 SetOperations.SetRelation sr = SetOperations.set_relation(l,r);
                 switch (sr){
                     case SUBSET:

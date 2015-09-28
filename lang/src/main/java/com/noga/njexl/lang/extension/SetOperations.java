@@ -801,6 +801,12 @@ public final class SetOperations {
         return false;
     }
 
+    /**
+     * Subtract one object from a dictionary
+     * @param m1 the map object
+     * @param o the object to be subtracted
+     * @return a map object
+     */
     public static Map dict_subtract(Map m1, Object o){
         Map m = new HashMap<>();
 
@@ -829,5 +835,78 @@ public final class SetOperations {
             }
         }
         return m;
+    }
+
+    /**
+     * Generic union of 2 dictionaries
+     * @param m1 : left map
+     * @param m2 : right map
+     * @return a map where all the tuples are present
+     *         When values match, one entry is added
+     *         When values do not match, an array of size 2 [left_value, right_value] is added
+     */
+    public static Map dict_u(Map m1, Map m2){
+        Set u = set_u(m1.keySet(), m2.keySet() );
+        Map um = new HashMap<>();
+        for ( Object k : u ){
+            Object v1 = m1.get(k);
+            Object v2 = m2.get(k);
+            if ( Objects.equals(v1,v2) ){
+                um.put(k,v1);
+            }else{
+                um.put(k, new Object[]{ v1,v2 });
+            }
+        }
+        return um;
+    }
+    /**
+     * Generic intersection of 2 dictionaries
+     * @param m1 : left map
+     * @param m2 : right map
+     * @return a map where intersecting keys of the tuples are present : only when values match too
+     */
+    public static Map dict_i(Map m1, Map m2){
+        Set i = set_i(m1.keySet(), m2.keySet() );
+        Map im = new HashMap<>();
+        for ( Object k : i ){
+            Object v1 = m1.get(k);
+            Object v2 = m2.get(k);
+            if ( Objects.equals(v1,v2) ){
+                im.put(k,v1);
+            }
+        }
+        return im;
+    }
+
+    /**
+     * Generic symmetric diff of 2 dictionaries
+     * @param m1 : left map
+     * @param m2 : right map
+     * @return a map where all the symmetric diff tuples are present
+     */
+    public static Map dict_sym_d(Map m1, Map m2){
+        Set sd = set_sym_d(m1.keySet(), m2.keySet());
+        Map sdm = new HashMap<>();
+        for ( Object k : sd ){
+            if ( m1.containsKey(k)){
+                sdm.put(k, m1.get(k));
+                continue;
+            }
+            if ( m2.containsKey(k)){
+                sdm.put(k, m2.get(k));
+            }
+        }
+        return sdm;
+    }
+
+    public static Set dict_divide(Map m, Object o){
+        Set s = new ListSet<>();
+        for ( Object k : m.keySet() ){
+            Object v = m.get(k);
+            if ( Objects.equals(o,v)){
+                s.add(k);
+            }
+        }
+        return s;
     }
 }
