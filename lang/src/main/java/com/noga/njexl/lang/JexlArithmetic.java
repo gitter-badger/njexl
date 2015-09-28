@@ -830,6 +830,9 @@ public class JexlArithmetic {
                     return r;
                 }
             }
+            if ( left instanceof Map ){
+                return SetOperations.dict_subtract((Map)left,right);
+            }
             if ( left instanceof Arithmetic){
                 return ((Arithmetic) left).sub(right);
             }
@@ -838,7 +841,7 @@ public class JexlArithmetic {
                     return ((DateTime) left).minus((long)right);
                 }
                 if ( right instanceof Duration){
-                    return ((DateTime) left).minus((Duration)right);
+                    return ((DateTime) left).minus((Duration) right);
                 }
                 if ( right instanceof String ){
                     return ((DateTime) left).minus(DateIterator.parseDuration((String) right));

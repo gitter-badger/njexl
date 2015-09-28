@@ -809,4 +809,24 @@ public class NogaExtendedTest extends JexlTestCase {
         Object o = e.execute(jc);
         assertTrue((Boolean)o);
     }
+
+    @Test
+    public void testDictSubtract() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "{ 'a' : 1 , 'b' : 2 } - {'a':1 }" ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue(o instanceof Map);
+
+        s = "{ 'a' : 1 , 'b' : 2 } - [ 'a' ]" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Map);
+
+        s = "{ 'a' : 1 , 'b' : 2 } -  'a' " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Map);
+
+    }
 }

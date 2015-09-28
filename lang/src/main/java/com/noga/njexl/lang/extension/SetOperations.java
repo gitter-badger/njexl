@@ -800,4 +800,34 @@ public final class SetOperations {
         }
         return false;
     }
+
+    public static Map dict_subtract(Map m1, Object o){
+        Map m = new HashMap<>();
+
+        if ( o instanceof Map){
+            Map m2 = (Map)o;
+            for ( Object k : m1.keySet() ){
+                Object v1 = m1.get(k);
+                if ( m2.containsKey(k) ){
+                    Object v2 = m2.get(k);
+                    boolean e = Objects.equals(v1,v2);
+                    if ( e ){ continue; }
+                }
+                // add that pair
+                m.put(k, v1);
+            }
+        }
+        else {
+            Set s = TypeUtility.set(o);
+            for ( Object k : m1.keySet() ){
+                Object v1 = m1.get(k);
+                if ( s.contains(k) ){
+                    continue;
+                }
+                // add that pair
+                m.put(k, v1);
+            }
+        }
+        return m;
+    }
 }
