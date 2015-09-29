@@ -24,6 +24,7 @@ import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.parser.ASTBlock;
+import com.noga.njexl.lang.parser.ASTIdentifier;
 import com.noga.njexl.lang.parser.ASTMethodDef;
 import com.noga.njexl.lang.parser.JexlNode;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Eventing.Event;
@@ -48,11 +49,21 @@ public class ScriptMethod {
     public final ListSet<String> params;
 
     public ScriptMethod(ASTMethodDef def) {
-        name = def.jjtGetChild(0).image;
+
+        JexlNode n = def.jjtGetChild(0);
+        int start ;
+        if ( n instanceof ASTIdentifier ){
+            start = 1 ;
+            name = n.image ;
+        }else{
+            name = "" ; // anonoymous, so no name
+            start = 0 ;
+        }
+
         defaultValues = new HashMap<>();
         params = new ListSet<>();
         int numChild = def.jjtGetNumChildren();
-        for (int i = 1; i < numChild - 1; i++) {
+        for (int i = start ; i < numChild - 1; i++) {
             // process params
             String argName = def.jjtGetChild(i).jjtGetChild(0).image;
             params.add(argName);

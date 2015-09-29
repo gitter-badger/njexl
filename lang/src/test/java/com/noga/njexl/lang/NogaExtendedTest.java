@@ -856,7 +856,7 @@ public class NogaExtendedTest extends JexlTestCase {
     @Test
     public void testFuncInVariable() throws Exception{
         JexlContext jc = new MapContext();
-        String s = "x = def _(a,b){ a + b} ; x(2,3)" ;
+        String s = "x = def (a,b){ a + b} ; x(2,3)" ;
         Script e = JEXL.createScript(s);
         Object o = e.execute(jc);
         assertEquals(5,o);

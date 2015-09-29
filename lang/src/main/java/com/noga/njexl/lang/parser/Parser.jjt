@@ -808,9 +808,9 @@ void ArgDef() #ArgDef : {}
 
 void MethodDef() #MethodDef : {}
 {
-    LOOKAHEAD(3) <DEF>  Identifier()  <LPAREN>[  ParamDef() ( <COMMA> ParamDef()  )* ] <RPAREN> (<LINE>)? Block()
+    LOOKAHEAD(3) <DEF>  (Identifier())?  <LPAREN>[  ParamDef() ( <COMMA> ParamDef()  )* ] <RPAREN> (<LINE>)? Block()
     |
-    <DEF> Identifier()  <LPAREN>  <RPAREN>  (<LINE>)? Block()
+    <DEF> (Identifier())?  <LPAREN>  <RPAREN>  (<LINE>)? Block()
 }
 
 
