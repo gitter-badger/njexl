@@ -860,5 +860,8 @@ public class NogaExtendedTest extends JexlTestCase {
         Script e = JEXL.createScript(s);
         Object o = e.execute(jc);
         assertEquals(5,o);
+        Expression expression = JEXL.createExpression("x(4,2)");
+        o = expression.evaluate(jc);
+        assertEquals(6,o);
     }
 }

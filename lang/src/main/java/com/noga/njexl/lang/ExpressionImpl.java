@@ -133,6 +133,8 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
         }
         Interpreter interpreter = jexl.createInterpreter(context);
         interpreter.setFrame(script.createFrame((Object[]) null));
+        interpreter.current = this;
+        this.interpreter = interpreter ;
         return interpreter.interpret(script.jjtGetChild(0));
     }
 
