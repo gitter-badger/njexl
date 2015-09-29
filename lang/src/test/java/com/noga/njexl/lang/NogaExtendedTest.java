@@ -20,6 +20,7 @@ import com.noga.njexl.lang.extension.datastructures.Graph;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -848,5 +849,18 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertTrue((Boolean)o);
+    }
+
+
+    @Test
+    public void testFuncInVariable() throws Exception{
+        return;
+        /*
+        JexlContext jc = new MapContext();
+        String s = "x = def(a,b){ a + b} ; x(2,3) ;" ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertEquals(5,o);
+        */
     }
 }
