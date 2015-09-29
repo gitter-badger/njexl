@@ -330,7 +330,13 @@ void ReturnStatement() : {}
 
 void Expression() #void : {}
 {
-     ConditionalExpression() (LOOKAHEAD(1) <assign> Expression() #Assignment(2) )?
+     ConditionalExpression() (LOOKAHEAD(1) <assign>
+                     (
+                        MethodDef()
+                        |
+                        Expression()
+                      )
+                     #Assignment(2) )?
 }
 
 void Assignment() #Assignment(2) : {}

@@ -20,6 +20,7 @@ import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.oop.ScriptClass;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
+import com.noga.njexl.lang.extension.oop.ScriptMethod;
 import com.noga.njexl.lang.internal.logging.Log;
 import com.noga.njexl.lang.introspection.*;
 import com.noga.njexl.lang.parser.*;
@@ -482,6 +483,13 @@ public class Interpreter implements ParserVisitor {
                 throw new JexlException(node, "no such function namespace " + prefix);
             }
 
+            if ( context.has(methodName )) {
+                Object r = context.get(methodName);
+                if (r instanceof ScriptMethod) {
+                    current.methods().put(methodName, (ScriptMethod) r);
+                    return current;
+                }
+            }
         }
         // allow namespace to be instantiated as functor with context if possible, not an error otherwise
         if (namespace instanceof Class<?>) {
@@ -874,8 +882,14 @@ public class Interpreter implements ParserVisitor {
         } else if (!(left instanceof ASTReference)) {
             throw new JexlException(left, "illegal assignment form 0");
         }
-        // right is the value expression to assign
-        Object right = value.jjtAccept(this, data);
+        Object right = null;
+        if (value instanceof ASTMethodDef) {
+            // handle anonymous function ...(?)
+            right =  new ScriptMethod((ASTMethodDef)value);
+        }else {
+            // right is the value expression to assign
+            right = value.jjtAccept(this, data);
+        }
         return assignToNode(register, node, left, right);
     }
 

@@ -71,8 +71,12 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
             classes.put( classDef.name , classDef );
         }
         else if ( node instanceof ASTMethodDef){
-            ScriptMethod methodDef = new ScriptMethod((ASTMethodDef)node);
-            methods.put( methodDef.name, methodDef );
+            if ( node.jjtGetParent() instanceof ASTAssignment ){
+                // should be taken care later, don't worry
+            }else {
+                ScriptMethod methodDef = new ScriptMethod((ASTMethodDef) node);
+                methods.put(methodDef.name, methodDef);
+            }
         }else {
             int numChild = node.jjtGetNumChildren();
             for ( int i =0; i < numChild; i++ ){
