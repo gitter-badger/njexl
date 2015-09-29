@@ -1481,6 +1481,12 @@ public class Interpreter implements ParserVisitor {
                 JexlException xjexl = new JexlException.Variable(node, name);
                 return unknownVariable(xjexl);
             }
+            if ( current != null ) {
+                // last try, is that a method name?
+                if (current.methods().containsKey(name)) {
+                    return current.methods().get(name);
+                }
+            }
             return value;
         } else {
             return getAttribute(data, name, node);
