@@ -851,10 +851,21 @@ public final class SetOperations {
         for ( Object k : u ){
             Object v1 = m1.get(k);
             Object v2 = m2.get(k);
-            if ( Objects.equals(v1,v2) ){
-                um.put(k,v1);
+            boolean left = m1.containsKey(k);
+            boolean right = m2.containsKey(k);
+
+            if ( left && right ) {
+                if ( Objects.equals(v1,v2) ) {
+                    um.put(k, v1);
+                }else{
+                    um.put(k, new XList.Pair(v1,v2));
+                }
+                continue;
+            }
+            if ( left ){
+                um.put(k, v1);
             }else{
-                um.put(k, new Object[]{ v1,v2 });
+                um.put(k, v2);
             }
         }
         return um;
