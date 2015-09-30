@@ -373,17 +373,35 @@ public class TypeUtility {
         if (args.length == 0) {
             return null;
         }
-        String text = args[0].toString();
-        if (args.length == 1) {
+        String text = "" ;
+        if ( args.length > 1 ){
+            String directive = args[0].toString().toLowerCase();
+            text = args[1].toString();
+            if ( directive.startsWith("f")){
+                // file
+                File file = new File(text);
+                if ( file.exists() ) {
+                    // this is the file name
+                    text = readToEnd(text);
+                }else{
+                    return  null;
+                }
+            }
+        }
+        else{
+            // auto resolve mode...
+            text = args[0].toString();
             File file = new File(text);
             if ( file.exists() ) {
                 // this is the file name
                 text = readToEnd(text);
             }
-            text = text.replaceAll("[\\r\\n]", " ");
-            // this is for the empty dict issue : {:}
-            text = text.replaceAll("\\{\\}", "\\{:\\}");
         }
+
+        text = text.replaceAll("[\\r\\n]", " ");
+        // this is for the empty dict issue : {:}
+        text = text.replaceAll("\\{\\}", "\\{:\\}");
+
         JexlEngine jexlEngine = new JexlEngine();
         Script sc = jexlEngine.createScript(text);
         JexlContext context = new MapContext();

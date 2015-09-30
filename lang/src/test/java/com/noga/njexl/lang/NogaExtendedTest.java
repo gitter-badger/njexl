@@ -900,4 +900,23 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.execute(jc);
         assertEquals(9,o);
     }
+
+    @Test
+    public void testJSonOp() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "{\"firstName\":\"John\", \"lastName\":\"Doe\"} "  ;
+        jc.set("t",s);
+        Script e = JEXL.createScript("json('t',t);");
+        Object o = e.execute(jc);
+        assertTrue(o instanceof Map);
+        e = JEXL.createScript("json(t);");
+        o = e.execute(jc);
+        assertTrue(o instanceof Map);
+        e = JEXL.createScript("json('f','samples/graph.json');");
+        o = e.execute(jc);
+        assertTrue(o instanceof Map);
+        e = JEXL.createScript("json('samples/graph.json');");
+        o = e.execute(jc);
+        assertTrue(o instanceof Map);
+    }
 }
