@@ -1153,22 +1153,24 @@ public class Interpreter implements ParserVisitor {
         try {
 
             JexlNode n = node.jjtGetChild(0).jjtGetChild(0);
-            if (n instanceof ASTIdentifier) {
+            int num = n.jjtGetNumChildren();
+            if (n instanceof ASTIdentifier && num == 1 ) {
                 String varName = n.image;
                 return context.has(varName);
             } else {
-                int num = n.jjtGetNumChildren();
                 // null is defined
-                if (num > 0 && n.jjtGetChild(0) instanceof ASTNullLiteral) {
+                if ( num > 0 && n.jjtGetChild(0) instanceof ASTNullLiteral) {
                     return true;
                 }
-                Object o = n.jjtAccept(this, data);
+                // now here try to do slightly better
+                Object o =  node.jjtGetChild(0).jjtAccept(this, data);
+                if (o != null) return true ;
+                o = n.jjtAccept(this, data);
                 if (o instanceof String) {
                     // used to get the Function or class
                     String name = (String) o;
                     return findScriptObject(name);
                 }
-                return o != null;
             }
         } catch (Exception e) {
         }

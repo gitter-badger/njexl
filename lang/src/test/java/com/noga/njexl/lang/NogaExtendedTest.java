@@ -77,6 +77,14 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.evaluate(jc);
         assertTrue((Boolean) o);
 
+        Script s = JEXL.createScript("y = {'a' : 10 }; #def y.k");
+        o = s.execute(jc);
+        assertFalse((Boolean) o);
+
+        s = JEXL.createScript(" #def y.a");
+        o = s.execute(jc);
+        assertTrue((Boolean) o);
+
     }
 
     @Test
