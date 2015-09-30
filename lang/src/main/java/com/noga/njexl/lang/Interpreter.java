@@ -483,7 +483,7 @@ public class Interpreter implements ParserVisitor {
                 throw new JexlException(node, "no such function namespace " + prefix);
             }
 
-            if ( context.has(methodName )) {
+            if (context.has(methodName)) {
                 Object r = context.get(methodName);
                 if (r instanceof ScriptMethod) {
                     current.methods().put(methodName, (ScriptMethod) r);
@@ -885,8 +885,8 @@ public class Interpreter implements ParserVisitor {
         Object right = null;
         if (value instanceof ASTMethodDef) {
             // handle anonymous function ...(?)
-            right =  new ScriptMethod((ASTMethodDef)value);
-        }else {
+            right = new ScriptMethod((ASTMethodDef) value);
+        } else {
             // right is the value expression to assign
             right = value.jjtAccept(this, data);
         }
@@ -1299,12 +1299,12 @@ public class Interpreter implements ParserVisitor {
         /* last node is the statement to execute */
         JexlNode statement = node.jjtGetChild(numChild - 1);
         // initialize the stuff
-        node.jjtGetChild(0).jjtAccept(this,data);
+        node.jjtGetChild(0).jjtAccept(this, data);
         while (true) {
             // now the condition
-            Object cond = node.jjtGetChild(1).jjtAccept(this,data) ;
+            Object cond = node.jjtGetChild(1).jjtAccept(this, data);
             boolean condition = TypeUtility.castBoolean(cond, false);
-            if ( !condition ) break;
+            if (!condition) break;
             if (isCancelled()) {
                 throw new JexlException.Cancel(node);
             }
@@ -1318,11 +1318,11 @@ public class Interpreter implements ParserVisitor {
             } catch (JexlException.Continue c) {
                 result = c;
                 // even in here too ..
-                node.jjtGetChild(2).jjtAccept(this,data) ;
+                node.jjtGetChild(2).jjtAccept(this, data);
                 continue;
             }
             // last one
-            node.jjtGetChild(2).jjtAccept(this,data) ;
+            node.jjtGetChild(2).jjtAccept(this, data);
 
         }
         return result;
@@ -1481,7 +1481,7 @@ public class Interpreter implements ParserVisitor {
                 JexlException xjexl = new JexlException.Variable(node, name);
                 return unknownVariable(xjexl);
             }
-            if ( current != null ) {
+            if (current != null) {
                 // last try, is that a method name?
                 if (current.methods().containsKey(name)) {
                     return current.methods().get(name);
@@ -1549,9 +1549,9 @@ public class Interpreter implements ParserVisitor {
             JexlNode child = node.jjtGetChild(i);
             try {
                 result = child.jjtAccept(this, data);
-            }catch (JexlException.Jump jump){
+            } catch (JexlException.Jump jump) {
                 i = jump.location - 1;
-                result = jump ;
+                result = jump;
                 continue;
             }
         }
@@ -2264,7 +2264,7 @@ public class Interpreter implements ParserVisitor {
                 String replaceWith = String.format("%s", o);
                 String replaceThis = m.group(0);
                 // because there can be strings using regex, so no regex replace
-                ret = ret.replace( replaceThis, replaceWith );
+                ret = ret.replace(replaceThis, replaceWith);
                 m = CURRY_PATTERN.matcher(ret);
             } catch (Exception e) {
                 // return whatever we could...
@@ -2302,6 +2302,23 @@ public class Interpreter implements ParserVisitor {
             }
         }
         if (condition != null && arithmetic.toBoolean(condition)) {
+            return condition;
+        } else {
+            return node.jjtGetChild(1).jjtAccept(this, data);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object visit(ASTNullCoalesce node, Object data) {
+        Object condition = null ;
+        try {
+            condition = node.jjtGetChild(0).jjtAccept(this, data);
+        }catch (Exception e){
+            // do nothing...
+        }
+        if (condition != null) {
             return condition;
         } else {
             return node.jjtGetChild(1).jjtAccept(this, data);
@@ -2637,28 +2654,32 @@ public class Interpreter implements ParserVisitor {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Object visit(ASTGoToStatement node, Object data) {
-        boolean jump = true ;
-        if ( node.jjtGetNumChildren() > 1 ){
-            Object o = node.jjtGetChild(1).jjtAccept(this,data) ;
-            jump = TypeUtility.castBoolean(o,false);
+        boolean jump = true;
+        if (node.jjtGetNumChildren() > 1) {
+            Object o = node.jjtGetChild(1).jjtAccept(this, data);
+            jump = TypeUtility.castBoolean(o, false);
         }
-        if ( !jump ) return new JexlException.Jump(node) ;
-        String label = node.jjtGetChild(0).image ;
+        if (!jump) return new JexlException.Jump(node);
+        String label = node.jjtGetChild(0).image;
         // find ASTLabelledStatement --> and fire it...
-        Map<String,Integer> jumps = current.jumps();
+        Map<String, Integer> jumps = current.jumps();
         Integer loc = jumps.get(label);
 
-        if ( loc == null ){
+        if (loc == null) {
             throw new JexlException(node, "Invalid Jump Label : " + label);
         }
-        throw new JexlException.Jump(node ,loc) ;
+        throw new JexlException.Jump(node, loc);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Object visit(ASTLabelledStatement node, Object data) {
-        return node.jjtGetChild(1).jjtAccept(this,data);
+        return node.jjtGetChild(1).jjtAccept(this, data);
     }
 
     /**

@@ -869,6 +869,14 @@ public final class Debugger implements ParserVisitor {
     }
 
     /** {@inheritDoc} */
+    public Object visit(ASTNullCoalesce node, Object data) {
+        accept(node.jjtGetChild(0), data);
+        builder.append("??");
+        accept(node.jjtGetChild(1), data);
+        return data;
+    }
+
+    /** {@inheritDoc} */
     public Object visit(ASTTrueNode node, Object data) {
         check(node, "true", data);
         return data;

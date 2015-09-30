@@ -873,4 +873,23 @@ public class NogaExtendedTest extends JexlTestCase {
         assertEquals(6,o);
 
     }
+
+    @Test
+    public void testNullCoalesce() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "x = { 'a' : 10 , 'b' : { 'c' : 20 } } ; x??10" ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue(o instanceof Map);
+        // not defined y
+        s = "y??10" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(10, o);
+        // defined and null
+        s = "y = null ; y??9" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(9,o);
+    }
 }

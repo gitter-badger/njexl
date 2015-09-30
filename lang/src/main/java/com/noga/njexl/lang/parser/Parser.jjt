@@ -120,6 +120,7 @@ PARSER_END(Parser)
 <*> TOKEN : { /* CONDITIONALS */
       < QMARK : "?" >
     | < ELVIS : "?:" >
+    | < NUCO : "??" >
     | < AND : ("&&" | "and" ) (<LINE>)? >
     | < OR : ( "||" | "or" ) (<LINE>)? >
 }
@@ -398,6 +399,8 @@ void ConditionalExpression() #void : {}
     <QMARK> Expression() <COLON> Expression() #TernaryNode(3)
   |
     <ELVIS> Expression() #TernaryNode(2)
+  |
+    <NUCO> Expression() #NullCoalesce(2)
   )?
 }
 
