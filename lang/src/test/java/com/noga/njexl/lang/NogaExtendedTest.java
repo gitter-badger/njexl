@@ -879,6 +879,11 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript(s);
         o =  e.execute(jc);
         assertEquals(6,o);
+        // now pass the stuff in a hash - and call
+        s = " d = {'m' : z } ; d.m(4,2)" ;
+        e = JEXL.createScript(s);
+        o =  e.execute(jc);
+        assertEquals(6,o);
 
     }
 

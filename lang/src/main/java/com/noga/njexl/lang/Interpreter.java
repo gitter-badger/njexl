@@ -1818,8 +1818,9 @@ public class Interpreter implements ParserVisitor {
                     } else if (functor instanceof JexlMethod) {
                         vm = (JexlMethod) functor;
                         cacheable = false;
+                    } else if ( functor instanceof ScriptMethod ){
+                        return ((ScriptMethod)functor).invoke(bean,this,argv);
                     } else {
-
                         xjexl = new JexlException.Method(node, methodName);
                     }
                 }
