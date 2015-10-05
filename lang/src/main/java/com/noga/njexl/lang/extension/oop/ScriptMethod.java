@@ -178,12 +178,11 @@ public class ScriptMethod {
         JexlContext context = oldContext.copy();
 
         HashMap map = getParamValues(interpreter, args);
-        if ( instance ){
-            // do double check : to be sure
-            if ( me == null ){
-                throw new Exception("Instance Method called with null instance!");
-            }
+        if ( me != null ){
             map.put(ScriptClass.SELF, me);
+        }
+        else if(instance){
+            throw new Exception("Instance Method called with null instance!");
         }
         addToContext(context, map);
         try {
