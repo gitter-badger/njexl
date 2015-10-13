@@ -1,0 +1,15 @@
+import 'java.lang.System.out' as out
+y = 10 
+def r(s){
+    y = 12
+    i = def (d){
+        s + d 
+    }
+    return i 
+}
+
+x = r(1)
+y = 12 
+z = x(2)
+out:println (z)
+z

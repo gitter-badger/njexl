@@ -884,8 +884,8 @@ public class Interpreter implements ParserVisitor {
         }
         Object right = null;
         if (value instanceof ASTMethodDef) {
-            // handle anonymous function ...(?)
-            right = new ScriptMethod((ASTMethodDef) value);
+            // handle anonymous function and closures ...(?)
+            right = new ScriptMethod((ASTMethodDef) value, context );
         } else {
             // right is the value expression to assign
             right = value.jjtAccept(this, data);

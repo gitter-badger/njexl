@@ -16,10 +16,7 @@
 
 package com.noga.njexl.lang.extension.oop;
 
-import com.noga.njexl.lang.Interpreter;
-import com.noga.njexl.lang.JexlContext;
-import com.noga.njexl.lang.JexlException;
-import com.noga.njexl.lang.Script;
+import com.noga.njexl.lang.*;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
@@ -34,6 +31,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
+ * Also supports closure...
  * Created by noga on 08/04/15.
  */
 public class ScriptMethod {
@@ -48,7 +46,24 @@ public class ScriptMethod {
 
     public final ListSet<String> params;
 
-    public ScriptMethod(ASTMethodDef def) {
+    public final boolean nested ;
+
+    public final JexlContext parentContext;
+
+
+    public static boolean isNested(JexlNode current){
+        while ( current != null ){
+            current = current.jjtGetParent();
+            if ( current instanceof ASTMethodDef) return true ;
+        }
+        return false ;
+    }
+
+    public ScriptMethod(ASTMethodDef def){
+        this(def,null);
+    }
+
+    public ScriptMethod(ASTMethodDef def, JexlContext parent) {
 
         JexlNode n = def.jjtGetChild(0);
         int start ;
@@ -56,9 +71,11 @@ public class ScriptMethod {
             start = 1 ;
             name = n.image ;
         }else{
-            name = "" ; // anonoymous, so no name
+            name = "" ; // anonymous, so no name
             start = 0 ;
         }
+        nested = isNested(def); // is it a closure definition  ?
+        parentContext = parent ; // set it up for closure
 
         defaultValues = new HashMap<>();
         params = new ListSet<>();
@@ -173,7 +190,14 @@ public class ScriptMethod {
     }
 
     public Object invoke(Object me, Interpreter interpreter, Object[] args) throws Exception {
-        JexlContext oldContext = interpreter.getContext() ;
+        JexlContext oldContext ;
+        if ( nested ){
+            // closure and nested functions
+            //TODO : how do we integrate interpreter context changes here?
+            oldContext = parentContext ;
+        }else {
+            oldContext = interpreter.getContext();
+        }
         //process params : copy context
         JexlContext context = oldContext.copy();
 

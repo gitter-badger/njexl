@@ -54,6 +54,12 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testClosureAndDefinedMethodScript() throws Exception{
+        Object o = runScript(JEXL, "samples/closure.jxl");
+        assertEquals(3,o);
+    }
+
+    @Test
     public void testDateTimeScript() throws Exception{
         runScript(JEXL, "samples/date_time.jexl");
     }
