@@ -190,16 +190,15 @@ public class ScriptMethod {
     }
 
     public Object invoke(Object me, Interpreter interpreter, Object[] args) throws Exception {
-        JexlContext oldContext ;
+        JexlContext oldContext = interpreter.getContext();
+        JexlContext toBeCopiedContext = oldContext ;
         if ( nested ){
             // closure and nested functions
             //TODO : how do we integrate interpreter context changes here?
-            oldContext = parentContext ;
-        }else {
-            oldContext = interpreter.getContext();
+            toBeCopiedContext = parentContext ;
         }
         //process params : copy context
-        JexlContext context = oldContext.copy();
+        JexlContext context = toBeCopiedContext.copy();
 
         HashMap map = getParamValues(interpreter, args);
         if ( me != null ){

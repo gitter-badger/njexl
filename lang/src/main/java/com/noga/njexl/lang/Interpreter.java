@@ -486,7 +486,6 @@ public class Interpreter implements ParserVisitor {
             if (context.has(methodName)) {
                 Object r = context.get(methodName);
                 if (r instanceof ScriptMethod) {
-                    current.methods().put(methodName, (ScriptMethod) r);
                     return current;
                 }
             }
