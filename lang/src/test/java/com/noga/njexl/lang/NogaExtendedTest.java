@@ -20,6 +20,7 @@ import com.noga.njexl.lang.extension.datastructures.Graph;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
+import com.noga.njexl.lang.extension.iterators.YieldedIterator;
 import com.noga.njexl.lang.extension.oop.ScriptMethod;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.Assert;
@@ -923,5 +924,19 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript("json('samples/graph.json');");
         o = e.execute(jc);
         assertTrue(o instanceof Map);
+    }
+
+    @Test
+    public void testReverseRange() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "r = [10:1:-1]"  ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue( o instanceof YieldedIterator);
+        s = "#|r.list()|"  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse( o.equals(0) );
+
     }
 }

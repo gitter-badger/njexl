@@ -16,22 +16,36 @@
 
 package com.noga.njexl.lang.extension.iterators;
 
-import java.util.function.Consumer;
-
 /**
+ * A range iterator, for longish stuff to be done
  * Created by noga on 31/03/15.
  */
 public  class RangeIterator extends YieldedIterator {
+
     protected long e;
+
     protected long b;
+
     protected long s;
 
     private long cur ;
+
+    public final boolean reverse;
 
     public RangeIterator(long end, long begin, long step){
         e = end;
         b = begin;
         s = step;
+        if ( b > e && s < 0 ){
+            reverse = true ;
+
+        }
+        else if ( b <= e && s >= 0  ){
+            reverse = false ;
+        }
+        else{
+            throw new IllegalArgumentException(ERROR);
+        }
         cur = b - s ;
     }
 
@@ -66,12 +80,8 @@ public  class RangeIterator extends YieldedIterator {
     }
 
     @Override
-    public void forEachRemaining(Consumer action) {
-
-    }
-
-    @Override
     public boolean hasNext() {
+        if ( reverse ){ return  cur > e - s ;}
         return cur < e - s ;
     }
 
@@ -80,8 +90,4 @@ public  class RangeIterator extends YieldedIterator {
         return (cur += s) ;
     }
 
-    @Override
-    public void remove() {
-
-    }
 }

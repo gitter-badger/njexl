@@ -1072,9 +1072,6 @@ public class TypeUtility {
                 if (args.length > 2) {
                     space = Long.valueOf(args[2].toString());
                 }
-                if (space <= 0) {
-                    space = 1;
-                }
             }
         }
 

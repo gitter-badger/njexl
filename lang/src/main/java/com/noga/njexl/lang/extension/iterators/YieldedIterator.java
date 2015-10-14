@@ -16,23 +16,34 @@
 
 package com.noga.njexl.lang.extension.iterators;
 
+import com.noga.njexl.lang.extension.datastructures.XList;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 /**
+ * This sort of iterator is more fun,
+ * Let's you do way more thing than standard ones
  * Created by noga on 01/05/15.
  */
 public abstract class YieldedIterator implements Iterator, Cloneable{
 
+    public static final String ERROR =  "Sorry, can not make the loop infinite by range!" ;
+
+    /**
+     * Get's a list out of an iterator
+     * @param iterator the input
+     * @return a list
+     */
     public static List list(Iterator iterator){
         List list ;
         if ( iterator == null ){
             list = Collections.emptyList();
             return list;
         }
-        list = new ArrayList<>();
+        list = new XList<>();
         while ( iterator.hasNext() ){
             list.add( iterator.next());
         }
@@ -40,6 +51,9 @@ public abstract class YieldedIterator implements Iterator, Cloneable{
     }
 
     protected List list;
+
+    protected List reverse;
+
 
     @Override
     public Object clone(){
@@ -52,7 +66,7 @@ public abstract class YieldedIterator implements Iterator, Cloneable{
     }
 
     /**
-     * generates a list out of the iterator - if need be
+     * Yields a list out of the iterator - if need be
      * @return the list
      */
     public List list(){
@@ -62,5 +76,27 @@ public abstract class YieldedIterator implements Iterator, Cloneable{
         YieldedIterator iterator = (YieldedIterator)this.clone() ;
         list = list(iterator);
         return list;
+    }
+
+    /**
+     * Yields a reverse list out of the iterator - if need be
+     * @return the list
+     */
+    public List reverse(){
+        if ( reverse != null ){
+            return reverse;
+        }
+        List l = list();
+        if ( l.isEmpty() ){
+            reverse = Collections.emptyList();
+        }else{
+            reverse = new XList<>();
+            int size = l.size();
+            for ( int i = 0 ; i <size; i++ ){
+                Object o = l.get(size-i-1);
+                reverse.add(o);
+            }
+        }
+        return reverse ;
     }
 }

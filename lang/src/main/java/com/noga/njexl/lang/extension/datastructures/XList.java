@@ -23,6 +23,8 @@ import com.noga.njexl.lang.extension.TypeUtility;
 import java.util.*;
 
 /**
+ * An EXtended List -- XList.
+ * The purpose, doing some of the fantastic functional programming stuff
  * Created by noga on 08/05/15.
  */
 public class XList<T> extends ArrayList<T> {
@@ -165,6 +167,24 @@ public class XList<T> extends ArrayList<T> {
         }
         anon.removeIterationContext();
         return listSet;
+    }
+
+    public XList map(Interpreter.AnonymousParam anon){
+        if ( anon == null ){
+            return new XList(this);
+        }
+        XList list = new XList();
+        int i = 0;
+        Iterator iterator = iterator();
+        while(iterator.hasNext()){
+            Object item = iterator.next();
+            anon.setIterationContextWithPartial( this, item ,i, list);
+            Object ret = anon.execute();
+            list.add(ret);
+            i++;
+        }
+        anon.removeIterationContext();
+        return list;
     }
 
     public HashMap<Object,List> mset(){
