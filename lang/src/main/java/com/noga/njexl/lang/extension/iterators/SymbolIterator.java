@@ -21,6 +21,7 @@ import com.noga.njexl.lang.extension.TypeUtility;
 import java.util.function.Consumer;
 
 /**
+ * A symbol iterator, so that we can give ranges in char
  * Created by noga on 11/09/15.
  */
 public class SymbolIterator extends YieldedIterator {
@@ -33,23 +34,52 @@ public class SymbolIterator extends YieldedIterator {
 
     public final String str;
 
-    public SymbolIterator(Character end, Character begin, short step){
+    public final String rstr;
+
+    private void init(Character end, Character begin, short step){
         e = end;
         b = begin;
         s = step;
+        if ( b > e && s < 0 ){
+            decreasing = true ;
+        }
+        else if ( b <= e && s >= 0  ){
+            decreasing = false ;
+        }
+        else{
+            throw new IllegalArgumentException(ERROR);
+        }
         cur = (char)(b - s);
-        str = TypeUtility.castString(list(),"");
+
+    }
+
+    public SymbolIterator(Character end, Character begin, short step){
+        init(end,begin,step);
+        str = TypeUtility.castString(list(), "");
+        rstr = TypeUtility.castString(reverse(), "");
     }
 
     public SymbolIterator(Character end, Character begin){
-        this(end,begin,(short)1);
+        if ( end >= begin ){
+            init(end,begin,(short)1);
+        }else{
+            init(end,begin,(short)-1);
+        }
+        str = TypeUtility.castString(list(), "");
+        rstr = TypeUtility.castString(reverse(), "");
     }
+
     public SymbolIterator(Character end){
         this(end,'A');
     }
 
     public SymbolIterator(){
         this('Z');
+    }
+
+    @Override
+    public void reset() {
+        cur = (char)(b - s) ;
     }
 
     @Override
@@ -72,6 +102,7 @@ public class SymbolIterator extends YieldedIterator {
 
     @Override
     public boolean hasNext() {
+        if ( decreasing ){ return  cur + s >= e ; }
         return cur + s <= e ; // this is because in char range you want it included
     }
 

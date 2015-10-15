@@ -30,18 +30,16 @@ public  class RangeIterator extends YieldedIterator {
 
     private long cur ;
 
-    public final boolean reverse;
-
-    public RangeIterator(long end, long begin, long step){
+    private void init(long end, long begin, long step){
         e = end;
         b = begin;
         s = step;
         if ( b > e && s < 0 ){
-            reverse = true ;
+            decreasing = true ;
 
         }
         else if ( b <= e && s >= 0  ){
-            reverse = false ;
+            decreasing = false ;
         }
         else{
             throw new IllegalArgumentException(ERROR);
@@ -49,8 +47,16 @@ public  class RangeIterator extends YieldedIterator {
         cur = b - s ;
     }
 
+    public RangeIterator(long end, long begin, long step){
+        init(end, begin,step);
+    }
+
     public RangeIterator(long end, long begin){
-        this(end,begin,1);
+        if ( end >= begin ) {
+            init(end, begin, 1);
+        }else{
+            init(end,begin,-1);
+        }
     }
 
     public RangeIterator(long end){
@@ -64,6 +70,11 @@ public  class RangeIterator extends YieldedIterator {
     @Override
     public String toString(){
         return String.format("[%d:%d:%d]", b,e,s);
+    }
+
+    @Override
+    public void reset() {
+        cur = b - s ;
     }
 
     @Override
@@ -81,7 +92,7 @@ public  class RangeIterator extends YieldedIterator {
 
     @Override
     public boolean hasNext() {
-        if ( reverse ){ return  cur > e - s ;}
+        if ( decreasing ){ return  cur > e - s ;}
         return cur < e - s ;
     }
 

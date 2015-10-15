@@ -116,8 +116,13 @@ public class DateIterator extends YieldedIterator{
         this.end  = end ;
         this.start = start ;
         this.interval = interval ;
+        decreasing = this.start.compareTo(this.end) > 0 ;
         // inclusive
-        this.cur = this.start  ;
+        if ( decreasing ){
+            this.cur = this.start.plus(this.interval) ;
+        }else{
+            this.cur = this.start.minus(this.interval) ;
+        }
         this.duration = new Duration(this.start, this.end);
         years = Years.yearsBetween(start,end).getYears();
         months = Months.monthsBetween(start, end).getMonths();
@@ -133,10 +138,20 @@ public class DateIterator extends YieldedIterator{
 
 
     @Override
+    public void reset() {
+        // inclusive
+        if ( decreasing ){
+            this.cur = this.start.plus(this.interval) ;
+        }else{
+            this.cur = this.start.minus(this.interval) ;
+        }
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if ( !(obj instanceof DateIterator) ) return false ;
         DateIterator o = (DateIterator)obj;
-        if ( end == o.end && start == o.start && interval == o.interval ) return true ;
+        if ( end.equals(o.end) && start.equals(o.start) && interval.equals(o.interval) ) return true ;
         return false ;
     }
 
@@ -147,12 +162,19 @@ public class DateIterator extends YieldedIterator{
 
     @Override
     public boolean hasNext() {
+        if ( decreasing ){
+            return cur.minus(interval).compareTo( end ) >=0 ;
+        }
         return cur.plus(interval).compareTo( end ) <= 0 ;
     }
 
     @Override
     public Object next() {
-        cur = cur.plus(interval);
+        if ( decreasing ){
+            cur = cur.minus(interval);
+        }else {
+            cur = cur.plus(interval);
+        }
         return cur;
     }
 

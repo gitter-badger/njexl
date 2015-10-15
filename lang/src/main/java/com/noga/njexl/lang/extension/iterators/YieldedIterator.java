@@ -50,10 +50,22 @@ public abstract class YieldedIterator implements Iterator, Cloneable{
         return list;
     }
 
+    public YieldedIterator(){
+        decreasing = false ;
+    }
+
+    protected boolean decreasing;
+
+    public boolean decreasing(){ return decreasing ; }
+
     protected List list;
 
-    protected List reverse;
+    protected List reverseList;
 
+    /**
+     * Resets the iterator back to where it was in the beginning
+     */
+    public abstract void reset();
 
     @Override
     public Object clone(){
@@ -74,6 +86,7 @@ public abstract class YieldedIterator implements Iterator, Cloneable{
             return list;
         }
         YieldedIterator iterator = (YieldedIterator)this.clone() ;
+        iterator.reset(); // reset it to the basic
         list = list(iterator);
         return list;
     }
@@ -83,20 +96,20 @@ public abstract class YieldedIterator implements Iterator, Cloneable{
      * @return the list
      */
     public List reverse(){
-        if ( reverse != null ){
-            return reverse;
+        if ( reverseList != null ){
+            return reverseList;
         }
         List l = list();
         if ( l.isEmpty() ){
-            reverse = Collections.emptyList();
+            reverseList = Collections.emptyList();
         }else{
-            reverse = new XList<>();
+            reverseList = new XList<>();
             int size = l.size();
             for ( int i = 0 ; i <size; i++ ){
                 Object o = l.get(size-i-1);
-                reverse.add(o);
+                reverseList.add(o);
             }
         }
-        return reverse ;
+        return reverseList ;
     }
 }
