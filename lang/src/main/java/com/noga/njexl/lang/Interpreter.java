@@ -592,7 +592,18 @@ public class Interpreter implements ParserVisitor {
 
     @Override
     public Object visit(ASTMethodDef node, Object data) {
-        return null;
+        JexlNode n = node.jjtGetChild(0);
+        if ( n instanceof ASTIdentifier ){
+            ScriptMethod method = current.methods().get(n.image);
+            if ( method == null ){
+                //named inner method?
+                ScriptMethod inner = new ScriptMethod(node,context);
+                context.set(inner.name,inner);
+                return inner;
+            }
+            return method ;
+        }
+        return null; // anonymous functions should not be there inside a main script?
     }
 
     @Override
