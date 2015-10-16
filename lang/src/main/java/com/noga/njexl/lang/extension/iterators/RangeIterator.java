@@ -16,6 +16,12 @@
 
 package com.noga.njexl.lang.extension.iterators;
 
+import com.noga.njexl.lang.extension.TypeUtility;
+import com.noga.njexl.lang.extension.datastructures.XList;
+
+import java.lang.reflect.Array;
+import java.util.List;
+
 /**
  * A range iterator, for longish stuff to be done
  * Created by noga on 31/03/15.
@@ -99,6 +105,43 @@ public  class RangeIterator extends YieldedIterator {
     @Override
     public Object next() {
         return (cur += s) ;
+    }
+
+    /**
+     * Splices the target
+     * @param target an array or a list or a String
+     * @return spliced object
+     */
+    public Object splice(Object target) {
+        if ( target == null ) return  null ;
+        if ( target instanceof String ){
+            String ts = (String)target;
+            StringBuffer buffer = new StringBuffer();
+            while( hasNext() ){
+                int i = TypeUtility.castInteger(next());
+                buffer.append( ts.charAt(i));
+            }
+            return buffer.toString();
+        }
+        List l = new XList();
+        if ( target instanceof List){
+            List tl = (List)target;
+
+            while( hasNext() ){
+                int i = TypeUtility.castInteger(next());
+                l.add( tl.get(i));
+            }
+            return l;
+
+        }
+        if ( target.getClass().isArray() ){
+            while( hasNext() ){
+                int i = TypeUtility.castInteger(next());
+                l.add(Array.get( target, i));
+            }
+            return l.toArray();
+        }
+        return null;
     }
 
 }

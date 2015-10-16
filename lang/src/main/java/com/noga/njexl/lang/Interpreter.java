@@ -18,6 +18,7 @@ package com.noga.njexl.lang;
 
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
+import com.noga.njexl.lang.extension.iterators.RangeIterator;
 import com.noga.njexl.lang.extension.oop.ScriptClass;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
 import com.noga.njexl.lang.extension.oop.ScriptMethod;
@@ -2577,6 +2578,10 @@ public class Interpreter implements ParserVisitor {
                 } catch (Exception e) {
 
                 }
+            }
+            // is this a range stuff?
+            if ( attribute instanceof RangeIterator ){
+                return ((RangeIterator)attribute).splice(object);
             }
 
         }

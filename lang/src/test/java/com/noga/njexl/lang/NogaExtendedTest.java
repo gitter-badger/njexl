@@ -947,6 +947,17 @@ public class NogaExtendedTest extends JexlTestCase {
         Script e = JEXL.createScript(s);
         Object o = e.execute(jc);
         assertTrue( o instanceof List);
+        assertEquals(3, ((List) o).size());
+
+    }
+
+    @Test
+    public void testArraySplicing() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "s = list(1,2,3,4) ; s[[0:3]]"  ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue( o instanceof List);
         assertEquals( 3 ,((List)o).size() );
 
     }
