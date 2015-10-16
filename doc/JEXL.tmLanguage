@@ -57,7 +57,7 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>#|[a-zA-Z]+:[a-zA-Z_]+|\{\S+\}|\*\* \S+|\b&lt;\-|\bint\b|\bINT\b|\bshort\b|\bbyte\b|\bchar\b|\bdouble\b|\blong\b|\bsub\b|\btime\b|\bbool\b|\bstr\b|\blist\b|\bset\b|\blistLiteral\b|\barray\b|\barrayFromList\b|\bwithin\b|\bdict\b|\brange\b|\bsqlmath\b|\btypeof\b|\bselect\b|\bindex\b|\bjson\b|\bpartition\b|\buntil\b|\bread\b|\bsorta\b|\bsortb\b|\bjoin\b|\btry\b|\bclock\b|\b[r|l]fold\b</string>
+			<string>#|[a-zA-Z]+:[a-zA-Z_]+|\{\S+\}|\*\* \S+|\b&lt;\-|\bint\b|\bINT\b|\bshort\b|\bbyte\b|\bchar\b|\bdouble\b|\blong\b|\bsub\b|\btime\b|\bbool\b|\bstr\b|\blist\b|\bset\b|\blistLiteral\b|\barray\b|\barrayFromList\b|\bwithin\b|\bdict\b|\brange\b|\bsqlmath\b|\btypeof\b|\bselect\b|\bindex\b|\bjson\b|\bpartition\b|\buntil\b|\bread\b|\bsorta\b|\bsortb\b|\bjoin\b|\btry\b|\bclock\b|\b[r|l]fold\b|\btokens\b|\bhash\b</string>
 			<key>name</key>
 			<string>support.function.jexl</string>
 		</dict>
