@@ -939,4 +939,15 @@ public class NogaExtendedTest extends JexlTestCase {
         assertFalse( o.equals(0) );
 
     }
+
+    @Test
+    public void testTokenizer() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "s = '11,12,13' ; tokens{ int($) }(s,'[0-9]+') ;"  ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue( o instanceof List);
+        assertEquals( 3 ,((List)o).size() );
+
+    }
 }

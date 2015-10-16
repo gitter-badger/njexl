@@ -50,6 +50,8 @@ import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.noga.njexl.lang.Interpreter.AnonymousParam;
 import org.w3c.dom.Node;
@@ -151,6 +153,8 @@ public class TypeUtility {
 
     public static final String JSON = "json";
     public static final String XML = "xml";
+    public static final String TOKEN = "tokens";
+
 
     public static final String _ITEM_ = "$";
     public static final String _CONTEXT_ = "$$";
@@ -168,6 +172,50 @@ public class TypeUtility {
             int[].class, float[].class, double[].class, boolean[].class,
             byte[].class, short[].class, long[].class, char[].class};
 
+
+    /**
+     * Tokenizes a string
+     * @param args first is the string, next the regex, then true|false for the case matching
+     * @return a matcher if there is no anonymous arg, else a list of result of all matches
+     */
+    public static Object tokenize(Object... args){
+        if ( args.length == 0 ) return false;
+        AnonymousParam anon = null;
+        if ( args[0] instanceof AnonymousParam ){
+            anon = (AnonymousParam)args[0];
+            args = shiftArrayLeft(args,1);
+        }
+        if ( args.length < 2 ) return false;
+        String text = args[0].toString();
+        String regex = args[1].toString();
+        int flags = Pattern.DOTALL|Pattern.MULTILINE ;
+        if ( args.length > 2 ){
+            if ( castBoolean(args[2])){
+                flags |= Pattern.CASE_INSENSITIVE ;
+            }
+        }
+        Pattern pattern = Pattern.compile(regex,flags);
+        Matcher matcher = pattern.matcher(text);
+        if ( anon == null ) return matcher ;
+        List l = new XList<>();
+        // else ?
+        int i = 0 ;
+        while ( matcher.find() ){
+            anon.setIterationContextWithPartial(text, matcher.group(), i++, l);
+            Object o ;
+            try {
+                o = anon.execute();
+            }catch (JexlException.Break b){
+                break;
+            }catch (JexlException.Continue c){
+                continue;
+            }catch (Exception e){
+                o = null;
+            }
+            l.add(o);
+        }
+        return l;
+    }
 
     /**
      * Folds as in functional programming
@@ -1567,6 +1615,8 @@ public class TypeUtility {
                 return fold(false,argv);
             case RIGHT_FOLD:
                 return fold(true,argv);
+            case TOKEN:
+                return tokenize(argv);
 
             default:
                 if (success != null) {
