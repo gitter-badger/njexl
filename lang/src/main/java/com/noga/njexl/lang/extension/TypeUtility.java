@@ -1071,7 +1071,6 @@ public class TypeUtility {
         }
         long end = 42;
         long start = 1;
-        long space = 1;
 
         if (args.length > 0) {
             if ( args[0] instanceof Date || args[0] instanceof DateTime ){
@@ -1118,12 +1117,12 @@ public class TypeUtility {
             if (args.length > 1) {
                 start = Long.valueOf(args[1].toString());
                 if (args.length > 2) {
-                    space = Long.valueOf(args[2].toString());
+                    long space = Long.valueOf(args[2].toString());
+                    return new RangeIterator(end, start, space);
                 }
             }
         }
-
-        return new RangeIterator(end, start, space);
+        return new RangeIterator(end, start);
     }
 
     public static Object[] shiftArrayLeft(Object[] args, int shift) {
