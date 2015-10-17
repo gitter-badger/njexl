@@ -1078,13 +1078,18 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTContinueStatement node, Object data) {
         int c = node.jjtGetNumChildren();
         if (c == 0) {
-            //raise ContinueException
+            //raise ContinueException at parent -- not it's own condition
             throw new JexlException.Continue(node.jjtGetParent());
         }
         // conditional continue
         Object value = node.jjtGetChild(0).jjtAccept(this, data);
         boolean b = TypeUtility.castBoolean(value, false);
         if (b) {
+            if (c > 1) {
+                value = node.jjtGetChild(1).jjtAccept(this, data);
+                throw new JexlException.Continue(node.jjtGetParent(), value);
+            }
+            // signifies continue on condition, not returning value
             throw new JexlException.Continue(node.jjtGetParent());
         }
         return data;

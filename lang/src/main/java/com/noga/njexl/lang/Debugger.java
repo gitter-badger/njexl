@@ -459,9 +459,8 @@ public final class Debugger implements ParserVisitor {
         return data;
     }
 
-    /** {@inheritDoc} */
-    public Object visit(ASTBreakStatement node, Object data) {
-        builder.append(" break ");
+    public Object loopJumps(String value, JexlNode node, Object data){
+        builder.append(value);
         int c = node.jjtGetNumChildren() ;
         if ( c > 0 ){
             builder.append(" ( ");
@@ -475,15 +474,13 @@ public final class Debugger implements ParserVisitor {
     }
 
     /** {@inheritDoc} */
+    public Object visit(ASTBreakStatement node, Object data) {
+        return loopJumps(" break ", node, data );
+    }
+
+    /** {@inheritDoc} */
     public Object visit(ASTContinueStatement node, Object data) {
-        builder.append(" continue ");
-        int c = node.jjtGetNumChildren() ;
-        if ( c > 0 ) {
-            builder.append(" ( ");
-            accept(node.jjtGetChild(0), data);
-            builder.append(" )");
-        }
-        return data;
+        return loopJumps(" continue ", node, data );
     }
 
     /** {@inheritDoc} */

@@ -255,7 +255,7 @@ void BreakStatement() #BreakStatement : {}
 
 void ContinueStatement() #ContinueStatement : {}
 {
-    LOOKAHEAD(2) <CONTINUE> <LPAREN> ExpressionStatement() <RPAREN>
+    LOOKAHEAD(2) <CONTINUE> <LPAREN> ExpressionStatement() <RPAREN> ( LOOKAHEAD(2) Statement() )?
     |
     <CONTINUE>
 }

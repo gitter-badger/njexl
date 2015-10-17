@@ -154,6 +154,7 @@ public class TypeUtility {
     public static final String JSON = "json";
     public static final String XML = "xml";
     public static final String TOKEN = "tokens";
+    public static final String HASH = "hash";
 
 
     public static final String _ITEM_ = "$";
@@ -405,9 +406,19 @@ public class TypeUtility {
         return args[0].getClass();
     }
 
-    public static String hash(String text) {
+    public static final String HASH_MD5 = "MD5" ;
+
+
+    public static String hash(Object...args) {
+        if ( args.length == 0 ) return  "" ;
+        String algorithm = HASH_MD5 ;
+        String text = args[0].toString() ;
+        if ( args.length > 1 ){
+            algorithm = text ;
+            text = args[1].toString() ;
+        }
         try {
-            MessageDigest m = MessageDigest.getInstance("MD5");
+            MessageDigest m = MessageDigest.getInstance(algorithm);
             m.update(text.getBytes(), 0, text.length());
             BigInteger bi = new BigInteger(1, m.digest());
             return bi.toString(16);
@@ -945,7 +956,7 @@ public class TypeUtility {
             XList l = new XList();
             int i = 0;
             for (Object o : list) {
-                anon.setIterationContext(list, o, i);
+                anon.setIterationContextWithPartial(list, o, i,l);
                 Object ret = anon.execute();
                 if ( ret instanceof JexlException.Continue ){
                     continue;
@@ -1616,6 +1627,8 @@ public class TypeUtility {
                 return fold(true,argv);
             case TOKEN:
                 return tokenize(argv);
+            case HASH:
+                return hash(argv);
 
             default:
                 if (success != null) {
