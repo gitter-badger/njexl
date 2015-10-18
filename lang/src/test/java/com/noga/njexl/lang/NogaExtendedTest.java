@@ -991,5 +991,11 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue( o instanceof List);
         assertEquals( 3 ,((List)o).size() );
 
+        s = "s = list(1,2,3,4) ; s[[-1:-3]]"  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue( o instanceof List);
+        assertEquals( 2 ,((List)o).size() );
+
     }
 }

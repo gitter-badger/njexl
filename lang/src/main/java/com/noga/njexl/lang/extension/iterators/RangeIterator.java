@@ -117,8 +117,10 @@ public  class RangeIterator extends YieldedIterator {
         if ( target instanceof String ){
             String ts = (String)target;
             StringBuffer buffer = new StringBuffer();
+            int s = ts.length() ;
             while( hasNext() ){
                 int i = TypeUtility.castInteger(next());
+                i = (i >= 0) ? i : ( s + i) ;
                 buffer.append( ts.charAt(i));
             }
             return buffer.toString();
@@ -126,17 +128,20 @@ public  class RangeIterator extends YieldedIterator {
         List l = new XList();
         if ( target instanceof List){
             List tl = (List)target;
-
+            int s = tl.size();
             while( hasNext() ){
                 int i = TypeUtility.castInteger(next());
+                i = (i >= 0) ? i : ( s + i) ;
                 l.add( tl.get(i));
             }
             return l;
 
         }
         if ( target.getClass().isArray() ){
+            int s = Array.getLength( target );
             while( hasNext() ){
                 int i = TypeUtility.castInteger(next());
+                i = (i >= 0) ? i : ( s + i) ;
                 l.add(Array.get( target, i));
             }
             return l.toArray();
