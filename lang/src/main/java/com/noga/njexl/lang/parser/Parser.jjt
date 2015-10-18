@@ -376,7 +376,7 @@ void TagContainer() #TagContainer():{}
 
 void TupleExpression() #Tuple() :{}
 {
-  <hash> <LPAREN> ConditionalExpression()
+  <hash> <LPAREN> ( ConditionalExpression() |  TagContainer() )
           (
              LOOKAHEAD(2)   <COMMA> TagContainer()
           |

@@ -656,7 +656,7 @@ public class NogaExtendedTest extends JexlTestCase {
 
     }
 
-        @Test
+    @Test
     public void testTupleAssignment() throws Exception{
         JexlContext jc = new MapContext();
         JEXL.setFunctions(Main.getFunction(jc));
@@ -693,6 +693,38 @@ public class NogaExtendedTest extends JexlTestCase {
 
 
         s = "p = #(0,0) ; p[0] == 0 and p[1] == 0 ; " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        //  assignment from right
+        s = "#(:a,b) = [1,2,3,4] ; a == 3 and b == 4" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+
+        //  assignment from right - again
+        s = "#(:a,b,c) = [1,2,3,4] ; a == 2 and b == 3 and c == 4" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        //  assignment from right - exact
+        s = "#(:a,b,c) = [1,2,3] ; a == 1 and b == 2 and c == 3" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        //  assignment from right - exact with one null
+        s = "#(:a,b,c,d) = [1,2,3] ; a == null and b == 1 and c == 2 and d == 3" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+
+        //  assignment from right - with many null
+        s = "#(:a,b,c,d,e) = [1,2,3] ; e == 3 and d == 2 and c == 1 and b == null and a == null" ;
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertTrue((Boolean) o);

@@ -905,9 +905,12 @@ public class Interpreter implements ParserVisitor {
     }
 
     private Object[] tupleAssignment(ASTTuple astTuple, JexlNode value, Object data) {
-        int c = astTuple.jjtGetNumChildren();
+        final int c = astTuple.jjtGetNumChildren();
         JexlNode errorNode = astTuple.jjtGetChild(c - 1);
-        boolean catchError = errorNode instanceof ASTTagContainer;
+        final JexlNode startNode = astTuple.jjtGetChild(0);
+        final boolean catchError = errorNode instanceof ASTTagContainer;
+        final boolean fromRight = startNode instanceof ASTTagContainer ;
+
         JexlNode left = null;
         int upto = c;
         if (catchError) {
@@ -918,7 +921,13 @@ public class Interpreter implements ParserVisitor {
             errorNode = left;// re-assign
             upto = c - 1;
         }
-        for (int i = 0; i < upto; i++) {
+        int start = 0;
+        if ( fromRight ){
+            start = 1 ;
+            left = startNode.jjtGetChild(0);
+        }
+
+        for (int i = start ; i < upto; i++) {
             left = astTuple.jjtGetChild(i);
             if (!(left instanceof ASTReference)) {
                 throw new JexlException(left, "illegal assignment form 0");
@@ -943,28 +952,59 @@ public class Interpreter implements ParserVisitor {
         JexlNode node = astTuple.jjtGetParent();
         ArrayList l = new ArrayList();
         if (error != null) {
-            for (int i = 0; i < upto; i++) {
+            if ( fromRight ){
+                left = startNode.jjtGetChild(0);
+                assignToNode(-1, node, left, null);
+                l.add(null);
+            }
+            for (int i = start; i < upto; i++) {
                 left = astTuple.jjtGetChild(i);
                 assignToNode(-1, node, left, null);
                 l.add(null);
             }
         } else {
             if (catchError && upto == 1) {
-                // (o,*e) error check only - no project
+                // (o,:e) error check only - no project
                 assignToNode(-1, node, left, result);
                 l.add(result);
             } else {
                 // project
                 List t = TypeUtility.combine(result);
                 int s = t.size();
-                for (int i = 0; i < upto; i++) {
-                    left = astTuple.jjtGetChild(i);
-                    Object o = null;
-                    if (i < s) {
-                        o = t.get(i);
+                if ( fromRight ){
+                    int i = s - 1  ;
+                    int ni = upto - 1;
+                    while ( ni > 0 && i >= 0 ){
+                        Object o = t.get(i);
+                        left = astTuple.jjtGetChild(ni);
+                        assignToNode(-1, node, left, o);
+                        l.add(o);
+                        i--;
+                        ni--;
                     }
-                    assignToNode(-1, node, left, o);
-                    l.add(o);
+                    if ( i >= 0  ){
+                        left = startNode.jjtGetChild(0);
+                        Object o = t.get(i);
+                        assignToNode(-1, node, left, o);
+                    }else{
+                        left = startNode.jjtGetChild(0);
+                        assignToNode(-1, node, left, null);
+                        for ( i = ni; i >= 1; i-- ){
+                            left = astTuple.jjtGetChild(i);
+                            assignToNode(-1, node, left, null);
+                        }
+                    }
+
+                }else {
+                    for (int i = 0; i < upto; i++) {
+                        left = astTuple.jjtGetChild(i);
+                        Object o = null;
+                        if (i < s) {
+                            o = t.get(i);
+                        }
+                        assignToNode(-1, node, left, o);
+                        l.add(o);
+                    }
                 }
             }
         }
