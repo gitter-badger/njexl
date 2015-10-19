@@ -120,7 +120,7 @@ public  class RangeIterator extends YieldedIterator {
             int s = ts.length() ;
             while( hasNext() ){
                 int i = TypeUtility.castInteger(next());
-                i = (i >= 0) ? i : ( s + i) ;
+                i = ( s + i) % s ;
                 buffer.append( ts.charAt(i));
             }
             return buffer.toString();
@@ -131,7 +131,7 @@ public  class RangeIterator extends YieldedIterator {
             int s = tl.size();
             while( hasNext() ){
                 int i = TypeUtility.castInteger(next());
-                i = (i >= 0) ? i : ( s + i) ;
+                i = ( s + i) % s ;
                 l.add( tl.get(i));
             }
             return l;
@@ -141,7 +141,7 @@ public  class RangeIterator extends YieldedIterator {
             int s = Array.getLength( target );
             while( hasNext() ){
                 int i = TypeUtility.castInteger(next());
-                i = (i >= 0) ? i : ( s + i) ;
+                i = ( s + i) % s ;
                 l.add(Array.get( target, i));
             }
             return l.toArray();
