@@ -234,4 +234,13 @@ public class ScriptMethod {
                 ", instance=" + instance +
                 '}';
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        this.after.clear();
+        this.before.clear();
+        this.defaultValues.clear();
+        this.params.clear();
+        super.finalize();
+    }
 }
