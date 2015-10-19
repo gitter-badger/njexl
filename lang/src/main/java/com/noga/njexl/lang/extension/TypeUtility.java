@@ -239,16 +239,23 @@ public class TypeUtility {
         if ( args.length > 1 ){
             partial = args[1];
         }
-        if ( right ){
-            //reverse the list ?
-            l = JexlArithmetic.reverseList(l);
-        }
-
+        int size = l.size() ;
         if ( anon == null ){
+            if ( right ){
+                StringBuffer sb = new StringBuffer();
+                for ( int i = 0 ; i < size ; i++ ){
+                    sb.append( l.get(size - i -1) );
+                    sb.append(SetOperations.SEP);
+                }
+                String s = sb.toString();
+                s = s.substring(0, s.lastIndexOf(SetOperations.SEP));
+                return s;
+            }
             return castString(l, SetOperations.SEP );
         }
-        int i = 0 ;
-        for ( Object o : l ){
+        for ( int i = 0 ; i < size; i++ ){
+            int j =  right? (size -i -1) : i ;
+            Object o = l.get(j);
             anon.setIterationContextWithPartial(l,o,i,partial);
             try {
                 partial = anon.execute();
