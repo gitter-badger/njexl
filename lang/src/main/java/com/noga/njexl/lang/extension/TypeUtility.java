@@ -866,7 +866,8 @@ public class TypeUtility {
             for (Object o : l) {
                 buf.append(o).append(sep);
             }
-            String ret = buf.substring(0, buf.lastIndexOf(sep));
+            if ( buf.length() == 0 ){ return  "" ; }
+            String ret = buf.substring(0,buf.lastIndexOf(sep));
             return ret;
         }
         return args[0].toString();
@@ -1049,13 +1050,35 @@ public class TypeUtility {
                 args = shiftArrayLeft(args, 1);
             }
         }
+        if ( args.length < 1){ return -1; }
         Object item = args[0];
         int start = 0;
         if (anon == null) {
+            if ( args.length < 2){ return -1; }
+            if ( args[1] instanceof CharSequence ){
+                if ( item == null ) return -1;
+                return args[1].toString().indexOf( item.toString() );
+            }
+            if ( JexlArithmetic.areListOrArray( item , args[1] )){
+                String l = castString(item,SetOperations.SEP);
+                String r = castString(args[1],SetOperations.SEP);
+                int inx = r.indexOf(l);
+                // how many seps are there?
+                int c = 0;
+                char sep = SetOperations.SEP.charAt(0);
+                for ( int i = 0 ; i < inx; i++ ){
+                    if (  r.charAt(i) == sep ){
+                        c++;
+                    }
+                }
+                return inx - c ;
+            }
+
             start = 1;
         }
         for (int i = start; i < args.length; i++) {
             List l = from(args[i]);
+            if ( l == null ) continue;
             list.addAll(l);
         }
         if (anon == null) {

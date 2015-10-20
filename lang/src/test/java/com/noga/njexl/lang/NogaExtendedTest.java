@@ -1034,4 +1034,33 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue((Boolean)o);
 
     }
+
+    @Test
+    public void testIndexFunction() throws Exception {
+        JexlContext jc = new MapContext();
+        String s = "index(null,null)";
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertEquals(-1, o);
+        s = "index([],[1,2,3])";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        // axiomatically empty list is a member of any list
+        assertEquals(0, o);
+        s = "index([1,2],[1,2,3])";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(0, o);
+
+        s = "index([2,3],[1,2,3])";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(1, o);
+
+        s = "index([3,4],[1,2,3,4])";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(2, o);
+
+    }
 }
