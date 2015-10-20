@@ -991,7 +991,7 @@ public class Interpreter implements ParserVisitor {
                         Object o = t.get(i);
                         left = astTuple.jjtGetChild(ni);
                         assignToNode(-1, node, left, o);
-                        l.add(o);
+                        l.add(0,o);
                         i--;
                         ni--;
                     }
@@ -999,12 +999,15 @@ public class Interpreter implements ParserVisitor {
                         left = startNode.jjtGetChild(0);
                         Object o = t.get(i);
                         assignToNode(-1, node, left, o);
+                        l.add(0,o);
                     }else{
                         left = startNode.jjtGetChild(0);
                         assignToNode(-1, node, left, null);
+                        l.add(0,null);
                         for ( i = ni; i >= 1; i-- ){
                             left = astTuple.jjtGetChild(i);
                             assignToNode(-1, node, left, null);
+                            l.add(0,null);
                         }
                     }
 

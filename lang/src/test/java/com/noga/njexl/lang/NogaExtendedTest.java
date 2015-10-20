@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -702,6 +703,13 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertTrue((Boolean) o);
+
+        //  assignment from right
+        s = "#(:a,b) = [1,2,3,4]" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(2, Array.getLength(o));
+
 
 
         //  assignment from right - again
