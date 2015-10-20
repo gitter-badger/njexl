@@ -146,6 +146,8 @@ PARSER_END(Parser)
     | < not : "!" | "not" >
     | < plus : "+" (<LINE>)? >
     | < minus : "-" (<LINE>)? >
+    | < plusa : "+=" >
+    | < minusa : "-=" >
     | < mult : "*" >
     | < tilda : "~" >
     | < and : "&" >
@@ -493,6 +495,12 @@ void AdditiveOperator() : {}
     <plus> { jjtThis.image = "+"; }
 |
     <minus> { jjtThis.image = "-"; }
+
+|
+    <plusa>  { jjtThis.image = "+="; }
+|
+    <minusa> { jjtThis.image = "-="; }
+
 }
 
 void MultiplicativeExpression() #void : {}

@@ -628,7 +628,8 @@ public class Interpreter implements ParserVisitor {
          * In cases where this is not convenient/possible, JexlException must
          * be caught explicitly and rethrown.
          */
-        Object left = node.jjtGetChild(0).jjtAccept(this, data);
+        JexlNode leftNode = node.jjtGetChild(0);
+        Object left = leftNode.jjtAccept(this, data);
         for (int c = 2, size = node.jjtGetNumChildren(); c < size; c += 2) {
             Object right = node.jjtGetChild(c).jjtAccept(this, data);
             try {
@@ -643,9 +644,21 @@ public class Interpreter implements ParserVisitor {
                         left = arithmetic.subtract(left, right);
                         continue;
                     }
-                    throw new UnsupportedOperationException("unknown operator " + which);
+                    if ("+=".equals(which)) {
+                        left = arithmetic.add(left, right);
+                        //assign
+                        assignToNode(-1,node,leftNode,left);
+                        continue;
+                    }
+                    if ("-=".equals(which)) {
+                        left = arithmetic.subtract(left, right);
+                        //assign
+                        assignToNode(-1,node,leftNode,left);
+                        continue;
+                    }
+                    throw new UnsupportedOperationException("unknown additive operator " + which);
                 }
-                throw new IllegalArgumentException("unknown operator " + op);
+                throw new IllegalArgumentException("unknown non-additive operator " + op);
             } catch (ArithmeticException xrt) {
                 JexlNode xnode = findNullOperand(xrt, node, left, right);
                 throw new JexlException(xnode, "+/- error", xrt);

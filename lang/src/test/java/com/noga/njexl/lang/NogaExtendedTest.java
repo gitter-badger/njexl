@@ -998,4 +998,32 @@ public class NogaExtendedTest extends JexlTestCase {
         assertEquals( 2 ,((List)o).size() );
 
     }
+
+    @Test
+    public void testAssignAdditive() throws Exception{
+        JexlContext jc = new MapContext();
+        // += test
+        String s = "s = 40 ; s+= 2 ;"  ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertEquals( 42 ,o);
+        assertEquals( 42 ,jc.get("s"));
+        //-= test
+        s = "s = 44 ; s-= 2 ;"  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals( 42 ,o);
+        assertEquals( 42 ,jc.get("s"));
+        // object += and -= tests
+        s = "s = [ 0 ] ; s+= 42 ; s == [ 0, 42 ]"  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = "s = [ 42 , 0 ] ; s-= 0 ; s == [ 42 ]"  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+    }
 }
