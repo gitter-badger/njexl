@@ -207,7 +207,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
                 return methodDef.invoke(this, interpreter, args);
             }
             return methodDef.invoke(null, interpreter, args);
-        }catch (Exception e){
+        }catch (Throwable e){
             throw new Error(e);
         }
     }

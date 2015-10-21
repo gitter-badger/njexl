@@ -1851,7 +1851,16 @@ public class Interpreter implements ParserVisitor {
             }
             boolean cacheable = cache;
             if (bean instanceof Executable) {
-                return ((Executable) bean).execMethod(methodName, argv);
+                try {
+                    Object ret = ((Executable) bean).execMethod(methodName, argv);
+                    return ret;
+                }catch (Throwable e){
+                    if ( e.getCause() instanceof NoSuchMethodException ){
+                        // continue
+                    }else{
+                        throw e;
+                    }
+                }
             }
 
             JexlMethod vm = uberspect.getMethod(bean, methodName, argv, node);

@@ -197,7 +197,7 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
         try {
             ScriptMethod methodDef = getMethod(method);
             if (methodDef == null) {
-                throw new Exception("Method : '" + method + "' is not found in : " + this.importName);
+                throw new NoSuchMethodException("Method : '" + method + "' is not found in : " + this.importName);
             }
             return methodDef.invoke(null, this.interpreter, args);
         }catch (Throwable e){
@@ -223,6 +223,7 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
             ASTImportStatement importStatement = imports.get(i);
             interpreter.visit( importStatement, this);
         }
+        interpreter.functions.put(importName,this);
     }
 
     /**
@@ -237,6 +238,7 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
         interpreter.imports.put(importName, this);
         interpreter.imports.put(Script.SELF, this);
         interpreter.imports.put(null, this);
+        interpreter.functions.put(importName,this);
         return interpreter.interpret(script);
     }
 
