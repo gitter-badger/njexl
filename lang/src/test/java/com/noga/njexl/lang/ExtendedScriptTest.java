@@ -259,7 +259,7 @@ public class ExtendedScriptTest extends JexlTestCase {
     @Test
     public void testInstanceMethod() throws Exception{
         Object o = runScript(JEXL, "samples/instance_method.jxl");
-        assertEquals(132,o);
+        assertEquals(174,o);
     }
 
     /****

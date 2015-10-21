@@ -478,9 +478,10 @@ public class Interpreter implements ParserVisitor {
             if (namespace != null) {
                 return namespace;
             }
-
             namespace = functions.get(prefix);
             if (prefix != null && namespace == null) {
+                namespace = resolveJexlClassName(prefix);
+                if ( namespace != null ) return namespace ;
                 throw new JexlException(node, "no such function namespace " + prefix);
             }
 
@@ -1852,14 +1853,20 @@ public class Interpreter implements ParserVisitor {
             boolean cacheable = cache;
             if (bean instanceof Executable) {
                 try {
-                    Object ret = ((Executable) bean).execMethod(methodName, argv);
-                    return ret;
+                    return ((Executable) bean).execMethod(methodName, argv);
                 }catch (Throwable e){
                     if ( e.getCause() instanceof NoSuchMethodException ){
                         // continue
                     }else{
                         throw e;
                     }
+                }
+            }
+            if ( bean instanceof ScriptClass ){
+                try {
+                    return ((ScriptClass) bean).execMethod(methodName,this, argv);
+                }catch (NoSuchMethodException e){
+                    // continue...
                 }
             }
 

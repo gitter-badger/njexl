@@ -14,6 +14,11 @@ def MyClass{
         out:println(me.v)
         count += me.v 
     }
+    // this is a static method 
+    def my_static(){
+        count += 42
+        out:println("I am static!")
+    }
 }
 // create one instance 
 mc1 = new ( 'MyClass' , 42 )
@@ -33,6 +38,7 @@ b2 = mc2.my_before
 // call these people?
 b1() // these should work 
 b2() // and this should work 
-
+// to call a static method ?
+MyClass:my_static()
 // return count 
 return count

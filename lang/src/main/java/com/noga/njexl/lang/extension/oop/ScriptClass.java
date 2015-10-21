@@ -216,4 +216,10 @@ public class ScriptClass  implements TypeAware {
     public String toString(){
         return String.format("nClass %s:%s", ns, name) ;
     }
+
+    public Object execMethod(String methodName,Interpreter interpreter, Object[] args) throws Exception {
+        ScriptMethod scriptMethod = getMethod(methodName);
+        if ( scriptMethod == null ) throw new NoSuchMethodException(methodName);
+        return scriptMethod.invoke(null,interpreter,args);
+    }
 }
