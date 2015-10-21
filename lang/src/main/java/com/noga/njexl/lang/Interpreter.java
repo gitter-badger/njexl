@@ -556,6 +556,7 @@ public class Interpreter implements ParserVisitor {
             Script freshlyImported = jexlEngine.importScript(from, as, base);
             freshlyImported.setup(context);
             imports.put(as, freshlyImported);
+            functions.put(as, freshlyImported);
             context.set(as, freshlyImported);
             return freshlyImported;
 
