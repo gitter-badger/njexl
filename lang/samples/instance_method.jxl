@@ -27,5 +27,12 @@ add.before.add( mc1.my_before )
 add.before.add( mc2.my_before )
 // call the method 
 add(3,4)
+// now same instance methods ?
+b1 = mc1.my_before 
+b2 = mc2.my_before 
+// call these people?
+b1() // these should work 
+b2() // and this should work 
+
 // return count 
 return count
