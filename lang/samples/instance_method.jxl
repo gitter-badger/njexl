@@ -1,0 +1,31 @@
+/*
+  Shows how instance methods can be passed 
+*/
+import 'java.lang.System.out' as out
+// a global variable count 
+var count = 0 
+// a class 
+def MyClass{
+    def __new__ (me,v=10){
+        me.v = v
+    }
+    // this is the method to be added as before method 
+    def my_before(me){
+        out:println(me.v)
+        count += me.v 
+    }
+}
+// create one instance 
+mc1 = new ( 'MyClass' , 42 )
+// create another instance 
+mc2 = new ( 'MyClass' , 24 )
+// define the add method 
+def add(a,b){ out:println( a + b )}
+// adding one instance method instance as before call 
+add.before.add( mc1.my_before )
+// adding another instance method instance as before call 
+add.before.add( mc2.my_before )
+// call the method 
+add(3,4)
+// return count 
+return count

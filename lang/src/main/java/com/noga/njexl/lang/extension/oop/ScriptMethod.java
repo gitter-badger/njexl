@@ -20,6 +20,7 @@ import com.noga.njexl.lang.*;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
+import com.noga.njexl.lang.extension.datastructures.XList;
 import com.noga.njexl.lang.parser.ASTBlock;
 import com.noga.njexl.lang.parser.ASTIdentifier;
 import com.noga.njexl.lang.parser.ASTMethodDef;
@@ -28,6 +29,7 @@ import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Eventing.Event;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Eventing;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -49,7 +51,6 @@ public class ScriptMethod {
     public final boolean nested ;
 
     public final JexlContext parentContext;
-
 
     public static boolean isNested(JexlNode current){
         while ( current != null ){
@@ -96,26 +97,27 @@ public class ScriptMethod {
             // This was always dummy...
             params.remove(0);
         }
-        before = new ListSet<>();
-        after = new ListSet<>();
+        before = new XList<>();
+        after = new XList<>();
     }
 
-    public final ListSet before;
+    public final List before;
 
-    public final ListSet after;
+    public final List after;
 
-    private void dispatch(String p, Interpreter interpreter, Object[] args, ListSet listeners){
+    private void dispatch(String p, Interpreter interpreter, Object[] args, List listeners){
         Event event = new Event( p, this, args );
         Object[] argv = new Object[]{ event } ;
         for ( Object l : listeners ){
-            if ( l instanceof ScriptClassInstance ){
-                ScriptClassInstance i = (ScriptClassInstance)l;
+
+            if ( l instanceof ScriptClassBehaviour.Executable ){
+                ScriptClassBehaviour.Executable e = (ScriptClassBehaviour.Executable)l;
                 try {
-                    i.execMethod( p , argv );
+                    e.execMethod(p, args );
                 }catch (Throwable t){
                 }
             }
-            else if ( l instanceof ScriptMethod ){
+            if ( l instanceof ScriptMethod ){
                 ScriptMethod m = (ScriptMethod)l;
                 try {
                     m.invoke( null , interpreter, argv );
@@ -201,6 +203,7 @@ public class ScriptMethod {
         JexlContext context = toBeCopiedContext.copy();
 
         HashMap map = getParamValues(interpreter, args);
+
         if ( me != null ){
             map.put(ScriptClass.SELF, me);
         }
