@@ -617,7 +617,7 @@ public class JexlEngine {
         }
 
         // name mangling for linking
-        scriptText = scriptText.replaceAll(Script.SELF + ":", as + ":");
+        scriptText = scriptText.replaceAll("\b"+Script.SELF +"\b" + ":", as + ":");
         // now create script
         // Parse the expression
         String path = f.getCanonicalPath();
