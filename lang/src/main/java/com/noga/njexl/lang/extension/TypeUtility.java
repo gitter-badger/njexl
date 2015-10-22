@@ -24,7 +24,6 @@ import com.noga.njexl.lang.extension.iterators.DateIterator;
 import com.noga.njexl.lang.extension.iterators.SymbolIterator;
 import com.noga.njexl.lang.extension.iterators.YieldedIterator;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
-import com.noga.njexl.lang.internal.ArrayListWrapper;
 import com.noga.njexl.lang.parser.ASTReturnStatement;
 import com.noga.njexl.lang.parser.ASTStringLiteral;
 import com.noga.njexl.lang.parser.JexlNode;
@@ -37,7 +36,6 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.io.*;
 import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -155,12 +153,6 @@ public class TypeUtility {
     public static final String XML = "xml";
     public static final String TOKEN = "tokens";
     public static final String HASH = "hash";
-
-
-    public static final String _ITEM_ = "$";
-    public static final String _CONTEXT_ = "$$";
-    public static final String _INDEX_ = "_";
-    public static final String _PARTIAL_ = "_$_";
 
 
     /**
@@ -1023,9 +1015,9 @@ public class TypeUtility {
 
                 if (castBoolean(ret, false)) {
                     //should add _ITEM_ 's value, if anyone modified it
-                    l.add(anon.interpreter.getContext().get(_ITEM_));
+                    l.add(anon.interpreter.getContext().get(Script._ITEM_));
                 }else{
-                    reject.add( anon.interpreter.getContext().get(_ITEM_) );
+                    reject.add( anon.interpreter.getContext().get(Script._ITEM_) );
                 }
                 if ( broken ){ break; }
                 i++;

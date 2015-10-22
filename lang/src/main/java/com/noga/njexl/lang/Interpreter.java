@@ -1722,9 +1722,9 @@ public class Interpreter implements ParserVisitor {
          * @param i   the index - of the element in the collection
          */
         public void setIterationContext(Object con, Object o, Object i) {
-            interpreter.context.set(TypeUtility._CONTEXT_, con);
-            interpreter.context.set(TypeUtility._ITEM_, o);
-            interpreter.context.set(TypeUtility._INDEX_, i);
+            interpreter.context.set(Script._CONTEXT_, con);
+            interpreter.context.set(Script._ITEM_, o);
+            interpreter.context.set(Script._INDEX_, i);
         }
 
         /**
@@ -1737,17 +1737,17 @@ public class Interpreter implements ParserVisitor {
          */
         public void setIterationContextWithPartial(Object con, Object o, Object i, Object p) {
             setIterationContext(con, o, i);
-            interpreter.context.set(TypeUtility._PARTIAL_, p);
+            interpreter.context.set(Script._PARTIAL_, p);
         }
 
         /**
          * Cleans up the context by removing all context variables
          */
         public void removeIterationContext() {
-            interpreter.context.remove(TypeUtility._CONTEXT_);
-            interpreter.context.remove(TypeUtility._ITEM_);
-            interpreter.context.remove(TypeUtility._INDEX_);
-            interpreter.context.remove(TypeUtility._PARTIAL_);
+            interpreter.context.remove(Script._CONTEXT_);
+            interpreter.context.remove(Script._ITEM_);
+            interpreter.context.remove(Script._INDEX_);
+            interpreter.context.remove(Script._PARTIAL_);
         }
 
         /**

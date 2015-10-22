@@ -16,6 +16,7 @@
 package com.noga.njexl.lang.extension.dataaccess;
 
 import com.noga.njexl.lang.Interpreter;
+import com.noga.njexl.lang.Script;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.datastructures.Tuple;
@@ -345,7 +346,7 @@ public class DataMatrix {
                     continue;
                 }
                 // get back the values if over written ?
-                selectedRows.put(i,(Tuple)anon.getVar(TypeUtility._ITEM_));
+                selectedRows.put(i,(Tuple)anon.getVar(Script._ITEM_));
             }
             ArrayList cs = new ArrayList();
             List<String> dataRow = rows.get(i);

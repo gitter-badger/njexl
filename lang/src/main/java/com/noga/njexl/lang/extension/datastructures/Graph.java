@@ -139,7 +139,7 @@ public class Graph {
          * @return the result
          */
         public Object execute(JexlContext context){
-            context.set( TypeUtility._ITEM_ , this );
+            context.set( Script._ITEM_ , this );
             JexlEngine jexlEngine = new JexlEngine();
             Script s = jexlEngine.createScript(script);
             return s.execute( context);

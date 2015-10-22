@@ -17,6 +17,7 @@
 package com.noga.njexl.lang.extension.datastructures;
 
 import com.noga.njexl.lang.Interpreter;
+import com.noga.njexl.lang.Script;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
 
@@ -138,7 +139,7 @@ public class XList<T> extends ArrayList<T> {
             Object ret = anon.execute();
             if (TypeUtility.castBoolean(ret,false)){
                 // ensure update to the variable is considered
-                item = anon.getVar( TypeUtility._ITEM_);
+                item = anon.getVar( Script._ITEM_);
                 xList.add(item);
             }
             i++;

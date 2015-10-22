@@ -49,6 +49,10 @@ public interface Script {
     String RELATIVE = "_";
 
     String ARGS = "__args__";
+    String _ITEM_ = "$";
+    String _CONTEXT_ = "$$";
+    String _INDEX_ = "_";
+    String _PARTIAL_ = "_$_";
 
 
     /**
