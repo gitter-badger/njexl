@@ -67,7 +67,7 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
             imports.put( as , importDef );
         }
         else if ( node instanceof ASTClassDef){
-            ScriptClass classDef = new ScriptClass((ASTClassDef)node,importName);
+            ScriptClass classDef = new ScriptClass(interpreter, (ASTClassDef)node,importName);
             classes.put( classDef.name , classDef );
         }
         else if ( node instanceof ASTMethodDef){
@@ -109,7 +109,7 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
             location = location.substring(0,location.lastIndexOf("/"));
         }
         importName = as;
-        findInnerObjects(script);
+
         findLabels(script);
     }
 
@@ -173,6 +173,8 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
 
     Interpreter interpreter;
 
+    public Interpreter interpreter(){ return interpreter ; }
+
     ScriptMethod getMethod(String method){
         ScriptMethod methodDef = methods.get(method);
         if ( methodDef != null ){
@@ -214,6 +216,7 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
 
     public void setup(JexlContext context){
         interpreter = jexl.createInterpreter(context);
+        findInnerObjects(this.script);
         interpreter.current = this;
         interpreter.setFrame(script.createFrame(new Object[]{}));
         interpreter.imports.put(importName, this);
@@ -232,6 +235,7 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
      */
     public Object execute(JexlContext context, Object... args) {
         interpreter = jexl.createInterpreter(context);
+        findInnerObjects(this.script);
         interpreter.current = this;
         interpreter.setFrame(script.createFrame(args));
         // the following are key for calling methods ...

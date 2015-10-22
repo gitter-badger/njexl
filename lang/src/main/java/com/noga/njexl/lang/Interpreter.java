@@ -69,7 +69,10 @@ public class Interpreter implements ParserVisitor {
         }
         // Try, is that a Java object loaded?
         if (context.has(name)) {
-            return new ScriptClass(name, context.get(name), current.name());
+            Object o = context.get(name);
+            if ( !(o instanceof ScriptClass) ){
+                return new ScriptClass(this, name, o , current.name());
+            }
         }
         for (String s : imports.keySet()) {
             Script script = imports.get(s);
@@ -1866,13 +1869,6 @@ public class Interpreter implements ParserVisitor {
                     }else{
                         throw e;
                     }
-                }
-            }
-            if ( bean instanceof ScriptClass ){
-                try {
-                    return ((ScriptClass) bean).execMethod(methodName,this, argv);
-                }catch (NoSuchMethodException e){
-                    // continue...
                 }
             }
 

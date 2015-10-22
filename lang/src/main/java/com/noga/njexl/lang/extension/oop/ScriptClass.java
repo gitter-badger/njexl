@@ -34,11 +34,13 @@ import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.TypeAware;
 /**
  * Created by noga on 08/04/15.
  */
-public class ScriptClass  implements TypeAware {
+public class ScriptClass  implements TypeAware,ScriptClassBehaviour.Executable {
 
     public static final String _INIT_ = "__new__";
 
     public static final String SELF = "me";
+
+    Interpreter interpreter;
 
     final Map<String,Object> statics;
 
@@ -147,7 +149,8 @@ public class ScriptClass  implements TypeAware {
         supers.put( ns +":" + superName, value);
     }
 
-    public ScriptClass(ASTClassDef ref,String ns) {
+    public ScriptClass(Interpreter interpreter, ASTClassDef ref,String ns) {
+        this.interpreter = interpreter ;
         this.ns = ns ;
         name = ref.jjtGetChild(0).image;
         methods = new HashMap<>();
@@ -168,11 +171,13 @@ public class ScriptClass  implements TypeAware {
         hash = TypeUtility.hash(Debugger.getText(ref));
         clazz = null ;
         statics = new ConcurrentHashMap<>();
+        this.interpreter.getContext().set(this.name,this);
     }
 
     public final Class clazz;
 
-    public ScriptClass(String name, Object o,String ns){
+    public ScriptClass(Interpreter interpreter, String name, Object o,String ns){
+        this.interpreter = interpreter ;
         Class c ;
         if (o instanceof  Class){
             c = (Class)o ;
@@ -234,13 +239,19 @@ public class ScriptClass  implements TypeAware {
         return String.format("nClass %s:%s", ns, name) ;
     }
 
-    public Object execMethod(String methodName,Interpreter interpreter, Object[] args) throws Exception {
-        ScriptMethod scriptMethod = getMethod(methodName);
-        if ( scriptMethod == null ) throw new NoSuchMethodException(methodName);
+    @Override
+    public Object execMethod(String methodName, Object[] args) {
         try {
+            ScriptMethod scriptMethod = getMethod(methodName);
+            if ( scriptMethod == null ) {
+                throw new Error(new NoSuchMethodException(methodName));
+            }
             interpreter.addFunctionNamespace(SELF,this);
             return scriptMethod.invoke(this, interpreter, args);
-        }finally {
+        }catch (Exception e){
+            throw new Error(e);
+        }
+        finally {
             // do some housekeeping
             interpreter.removeFunctionNamespace(SELF) ;
         }
