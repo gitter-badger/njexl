@@ -122,7 +122,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
 
     public void ancestor(Object sName,Object[]args) throws Exception {
         Object old = supers.get(sName);
-        if ( old != null && ! interpreter.getContext().has(sName.toString()) ) {
+        if ( old != null && old instanceof ScriptClassInstance ) {
             ScriptClassInstance _new_ = ((ScriptClassInstance)old).$.instance(interpreter, args);
             addSuper( _new_ ); // this should replace the old
             return;
