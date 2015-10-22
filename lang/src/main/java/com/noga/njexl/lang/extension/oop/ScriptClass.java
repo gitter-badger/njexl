@@ -45,7 +45,7 @@ public class ScriptClass  implements TypeAware, Executable {
         /**
          * The instance which to pass as *me* pointer
          */
-        public final Executable instance ;
+        public final Executable executable ;
 
         /**
          * The name of the method
@@ -54,11 +54,11 @@ public class ScriptClass  implements TypeAware, Executable {
 
         /**
          * Creates such a wrapper
-         * @param i instance object
+         * @param exec executable object
          * @param method method name
          */
-        public MethodInstance(ScriptClassBehaviour.Executable i, String method){
-            instance = i ;
+        public MethodInstance(Executable exec, String method){
+            executable = exec ;
             methodName = method ;
         }
 
@@ -71,7 +71,7 @@ public class ScriptClass  implements TypeAware, Executable {
 
         @Override
         public Object execMethod(String method, Object[] args) {
-            return instance.execMethod(methodName,args );
+            return executable.execMethod(methodName,args );
         }
     }
 
@@ -277,7 +277,7 @@ public class ScriptClass  implements TypeAware, Executable {
             that = (ScriptClass)o;
         }
         else if ( o instanceof ScriptClassInstance){
-            that = ((ScriptClassInstance)o).scriptClass;
+            that = ((ScriptClassInstance)o).$;
         }
         if ( that != null){
             // match body hash

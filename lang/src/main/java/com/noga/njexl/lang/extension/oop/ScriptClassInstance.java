@@ -47,11 +47,11 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     public static final String _ANCESTOR_ = "__anc__" ;
 
     protected void addSuper(ScriptClassInstance value){
-        if ( scriptClass.ns.equals(value.scriptClass.ns)) {
+        if ( $.ns.equals(value.$.ns)) {
             //make direct calling possible ONLY if the namespace of child and parent match
-            supers.put(value.scriptClass.name, value);
+            supers.put(value.$.name, value);
         }
-        supers.put( value.scriptClass.ns +":" + value.scriptClass.name, value);
+        supers.put( value.$.ns +":" + value.$.name, value);
     }
 
     /**
@@ -72,13 +72,13 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
 
     Interpreter interpreter;
 
-    final ScriptClass scriptClass;
+    final ScriptClass $;
 
-    public ScriptClass getNClass(){ return scriptClass ;}
+    public ScriptClass getNClass(){ return $;}
 
     public ScriptClassInstance(ScriptClass scriptClass, Interpreter interpreter){
         this.interpreter = interpreter ;
-        this.scriptClass = scriptClass ;
+        this.$ = scriptClass ;
         this.fields = new HashMap<>();
         this.supers = new HashMap<>();
         this.hasJSuper = false ;
@@ -116,14 +116,14 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
         }
         Object instance = ctor.invoke(null, args);
         supers.put(name,instance);
-        supers.put(scriptClass.ns + ":" + name,instance);
+        supers.put($.ns + ":" + name,instance);
     }
 
 
     public void ancestor(Object sName,Object[]args) throws Exception {
         Object old = supers.get(sName);
         if ( old != null && ! interpreter.getContext().has(sName.toString()) ) {
-            ScriptClassInstance _new_ = ((ScriptClassInstance)old).scriptClass.instance(interpreter, args);
+            ScriptClassInstance _new_ = ((ScriptClassInstance)old).$.instance(interpreter, args);
             addSuper( _new_ ); // this should replace the old
             return;
         }
@@ -154,7 +154,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
                 ancestor(arg0,args);
                 return null;
             }
-            ScriptMethod methodDef = scriptClass.getMethod(method);
+            ScriptMethod methodDef = $.getMethod(method);
             if (methodDef == null ) {
                 if ( hasJSuper ) {
                     Object[] sups = new Object[1];
@@ -164,7 +164,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
                         return jexlMethod.invoke(sups[0], args);
                     }
                 }
-                throw new NoSuchMethodException("Method : '" + method + "' is not found in class : " + this.scriptClass.name);
+                throw new NoSuchMethodException("Method : '" + method + "' is not found in class : " + this.$.name);
             }
             if (methodDef.instance) {
                 return methodDef.invoke(this, interpreter, args);
@@ -198,7 +198,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
         }
         try {
             // try finding functions...?
-            ScriptMethod fp = scriptClass.getMethod(name);
+            ScriptMethod fp = $.getMethod(name);
             Object o =  new ScriptClass.MethodInstance(this,fp.name);
             // cache it -- important
             fields.put(name,o);

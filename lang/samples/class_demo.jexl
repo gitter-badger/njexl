@@ -1,63 +1,43 @@
 import 'java.lang.System.out' as out
 
 def Some1{
-
     def __new__ (me){
           me.s = 'xxx'
       }
-
     def do_print(me){
         out:println('Some1!')
     }
 }
-
 def Some2{
    def do_print(me){
        out:println('Some2!')
    }
 }
-
-
 def Complex : Some1 , Some2 {
+    def __new__ (me,x=0.0,y=0.0){
+        me.x = x
+        me.y = y
+    }
+    def __str__(me){
+        str:format('%s : (%f,i %f)', me.s, me.x, me.y)
+    }
+    def __add__(me,o){
 
-      def __new__ (me,x=0.0,y=0.0){
-          me.x = x
-          me.y = y
-      }
-
-      def __str__(me){
-          str:format('%s : (%f,i %f)', me.s, me.x, me.y)
-      }
-      
-
-      def __add__(me,o){
-
-          return new ('Complex' , me.x + o.x , me.y + o.y )
-      }
-      
-
-      def __sub__(me,o){
-          return new ('Complex' , me.x - o.x , me.y - o.y )
-      }
-
-      
-
-      def __mul__(me,o){
-          return new ('Complex' , me.x * o.x  - me.y * o.y , me.x * o.y + me.y * o.x )
-      }
-
-      
-      def do_print(me){
-          out:println(me)
-      }
-  
+        return new ('Complex' , me.x + o.x , me.y + o.y )
+    }
+    def __sub__(me,o){
+        return new ('Complex' , me.x - o.x , me.y - o.y )
+    }
+    def __mul__(me,o){
+        return new ('Complex' , me.x * o.x  - me.y * o.y , me.x * o.y + me.y * o.x )
+    }
+    def do_print(me){
+        out:println(me)
+    }
 }
-
 def print(p='hello, world' , v){
     out:println(p + ':' + v)
 }
-
-
 c1 = new ( 'Complex' , 1.0, 2.0 )
 print( 'Complex No :' , c1 )
 
@@ -65,11 +45,8 @@ c2 = new ( 'Complex' , 2.0, 1.0 )
 print( 'Complex No :' , c2 )
 
 print( 'Add :' , c1 + c2 )
-
 print( 'Sub :' , c1 - c2 )
-
 print( 'Mul :' , c1 * c2 )
-
 
 // for calling supers:
 c2.supers['Some1'].do_print()
@@ -85,13 +62,6 @@ c1.do_print()
 c2.do_print()
 
 out:println(c1 isa c2)
-
 s1 = new ( 'Some1' )
-
 out:println(c1 isa s1)
-
 out:println(s1 isa c1)
-
-
-
-

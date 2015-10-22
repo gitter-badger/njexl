@@ -24,6 +24,13 @@ def MyClass{
        me.x += 12
        out:printf("(m3) after adding %s\n", me.x)
     }
+    // now showing how to call static 
+    // from instance method
+    def instance_method(me){
+       out:printf ( "My static 'x' has value %s \n", me.$.x )
+       // call static method?
+       me.$.static_method1() 
+    } 
 }
 // call one in namespace form 
 MyClass:static_method1()
@@ -35,7 +42,9 @@ MyClass.static_method1()
 m3 = MyClass.static_method3
 // call the method
 m3()
+ci = new('MyClass')
+ci.instance_method()
 // see it works 
-MyClass.x += 36
+MyClass.x += 60
 out:printf("Final result is %d\n", MyClass.x)
 MyClass.x
