@@ -29,12 +29,53 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.TypeAware;
+import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Executable;
 
 
 /**
  * Created by noga on 08/04/15.
  */
-public class ScriptClass  implements TypeAware,ScriptClassBehaviour.Executable {
+public class ScriptClass  implements TypeAware, Executable {
+
+    /**
+     * A wrapper for instance method instances
+     */
+    public static final class MethodInstance implements Executable {
+
+        /**
+         * The instance which to pass as *me* pointer
+         */
+        public final Executable instance ;
+
+        /**
+         * The name of the method
+         */
+        public final String methodName ;
+
+        /**
+         * Creates such a wrapper
+         * @param i instance object
+         * @param method method name
+         */
+        public MethodInstance(ScriptClassBehaviour.Executable i, String method){
+            instance = i ;
+            methodName = method ;
+        }
+
+        /**
+         * Calls the methodName
+         * @param method name of the method - ignored
+         * @param args to be passed as argument
+         * @return result object
+         */
+
+        @Override
+        public Object execMethod(String method, Object[] args) {
+            return instance.execMethod(methodName,args );
+        }
+    }
+
+
 
     public static final String _INIT_ = "__new__";
 
@@ -51,7 +92,23 @@ public class ScriptClass  implements TypeAware,ScriptClassBehaviour.Executable {
     }
 
     public Object get(String prop){
-        return statics.get(prop);
+        if ( statics.containsKey(prop )) {
+            return statics.get(prop);
+        }
+        try {
+            ScriptMethod sm = getMethod(prop);
+            if ( sm != null ){
+                if ( sm.instance ){
+                    statics.put(prop,null); // can not return instance method...
+                    return null;
+                }
+                Object o = new MethodInstance(this,prop);
+                statics.put(prop,o);
+                return o;
+            }
+        }catch (Exception e){
+        }
+        return null;
     }
 
     public Object set(String prop, Object value){

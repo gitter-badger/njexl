@@ -33,43 +33,6 @@ import java.util.HashMap;
  */
 public class ScriptClassInstance implements Executable, Comparable,Arithmetic, Logic, Eventing  {
 
-    /**
-     * A wrapper for instance method instances
-     */
-    public static final class MethodInstance implements Executable {
-
-        /**
-         * The instance which to pass as *me* pointer
-         */
-        public final Executable instance ;
-
-        /**
-         * The name of the method
-         */
-        public final String methodName ;
-
-        /**
-         * Creates such a wrapper
-         * @param i instance object
-         * @param method method name
-         */
-        public MethodInstance(Executable i, String method){
-            instance = i ;
-            methodName = method ;
-        }
-
-        /**
-         * Calls the methodName
-         * @param method name of the method - ignored
-         * @param args to be passed as argument
-         * @return result object
-         */
-
-        @Override
-        public Object execMethod(String method, Object[] args) {
-            return instance.execMethod(methodName,args );
-        }
-    }
 
     final HashMap<String, Object> fields;
 
@@ -236,7 +199,11 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
         try {
             // try finding functions...?
             ScriptMethod fp = scriptClass.getMethod(name);
-            return new MethodInstance(this,fp.name);
+            Object o =  new ScriptClass.MethodInstance(this,fp.name);
+            // cache it -- important
+            fields.put(name,o);
+            return o;
+
         }catch (Exception e){
             // nothing...
         }

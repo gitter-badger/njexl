@@ -7,15 +7,22 @@ def MyClass{
     }
     // one static method : note implicit *me*
     def static_method1(){
-       out:printf("Before subtracting (m1) %s\n", me.x)  
+       out:printf("(m1) before subtracting %s\n", me.x)
        me.x -= 24 // static variable 
-       out:printf("Before subtracting (m1) %s\n", me.x) 
+       out:printf("(m1) after subtracting %s\n", me.x)
     }
-    // another static method 
+    // another static method 2
     def static_method2(){
+       out:printf("(m2) before adding  %s\n", me.x)
        me.x += 24
-       out:printf("after adding (m2) %s, now calling m1 again\n", me.x) 
+       out:printf("(m2) after adding %s, now calling m1 again\n", me.x)
        me:static_method1()
+    }
+    // another static method 3
+    def static_method3(){
+       out:printf("(m3) before adding %s\n", me.x)
+       me.x += 12
+       out:printf("(m3) after adding %s\n", me.x)
     }
 }
 // call one in namespace form 
@@ -24,7 +31,11 @@ MyClass:static_method1()
 MyClass:static_method2()
 // in variable form 
 MyClass.static_method1()
+// in the field form
+m3 = MyClass.static_method3
+// call the method
+m3()
 // see it works 
-MyClass.x += 48
+MyClass.x += 36
 out:printf("Final result is %d\n", MyClass.x)
 MyClass.x
