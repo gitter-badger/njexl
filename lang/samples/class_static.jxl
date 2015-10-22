@@ -1,0 +1,30 @@
+import 'java.lang.System.out' as out
+// a class demo 
+def MyClass{
+    // static constructor 
+    def __class__(){
+       me.x = 42
+    }
+    // one static method : note implicit *me*
+    def static_method1(){
+       out:printf("Before subtracting (m1) %s\n", me.x)  
+       me.x -= 24 // static variable 
+       out:printf("Before subtracting (m1) %s\n", me.x) 
+    }
+    // another static method 
+    def static_method2(){
+       me.x += 24
+       out:printf("after adding (m2) %s, now calling m1 again\n", me.x) 
+       me:static_method1()
+    }
+}
+// call one in namespace form 
+MyClass:static_method1()
+// another 
+MyClass:static_method2()
+// in variable form 
+MyClass.static_method1()
+// see it works 
+MyClass.x += 48
+out:printf("Final result is %d\n", MyClass.x)
+MyClass.x

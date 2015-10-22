@@ -38,6 +38,8 @@ public class ScriptClass  implements TypeAware,ScriptClassBehaviour.Executable {
 
     public static final String _INIT_ = "__new__";
 
+    public static final String _CL_INIT_ = "__class__";
+
     public static final String SELF = "me";
 
     Interpreter interpreter;
@@ -60,6 +62,16 @@ public class ScriptClass  implements TypeAware,ScriptClassBehaviour.Executable {
 
     public Map getMethods() {
         return methods;
+    }
+
+    ScriptMethod classInit;
+
+    protected void classInit(){
+        try{
+            classInit.invoke(this,this.interpreter,new Object[]{});
+        }catch (Exception e){
+            throw new Error(e);
+        }
     }
 
     ScriptMethod constructor;
@@ -172,6 +184,10 @@ public class ScriptClass  implements TypeAware,ScriptClassBehaviour.Executable {
         clazz = null ;
         statics = new ConcurrentHashMap<>();
         this.interpreter.getContext().set(this.name,this);
+        classInit = methods.get(_CL_INIT_);
+        if ( classInit != null ){
+            classInit();
+        }
     }
 
     public final Class clazz;

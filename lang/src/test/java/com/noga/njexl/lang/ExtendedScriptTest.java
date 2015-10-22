@@ -262,6 +262,12 @@ public class ExtendedScriptTest extends JexlTestCase {
         assertEquals(174,o);
     }
 
+    @Test
+    public void testStaticMethod() throws Exception{
+        Object o = runScript(JEXL, "samples/class_static.jxl");
+        assertEquals(42,o);
+    }
+
     /****
     @Test
     public void testDB() throws Exception{
