@@ -1,0 +1,43 @@
+import 'java.lang.System.out' as out
+import 'java.lang.String' as String
+
+// a class  
+def Super{
+    def __new__(me, svar=0){
+        me.svar = svar
+        out:printf("new %s : %s\n", me.$.name, me.svar )
+    }
+}
+// multiple inheritence from nJexl and Java 
+def Child : Super,String{
+    def __new__(me, cvar=4, svar=2, my_str = 'I am a string' ){
+        me.__anc__('Super',svar)
+        me.__anc__('String', my_str )
+        me.cvar = cvar 
+        out:printf("new %s : %s\n", me.$.name, me.cvar )
+    }
+    def __str__(me){
+        str:format("%s : (%d%d)", me.supers['String'] , me.cvar , me.svar)
+    }
+    def my_hash(me){
+        me.svar + me.cvar + #|me.supers['String']|
+    }
+}
+count = 0 
+child = new('Child')
+count += child.my_hash()
+out:println(child)
+child = new ('Child',5)
+count += child.my_hash()
+out:println(child)
+child = new ('Child',5,3)
+count += child.my_hash()
+out:println(child)
+child = new ('Child',5,3, "Hello, World")
+count += child.my_hash()
+out:println(child)
+l = child.length()
+count += l
+out:printf( "I can call String's methods! .lenght() ==> %d\n" ,l)
+out:println(count)
+count 

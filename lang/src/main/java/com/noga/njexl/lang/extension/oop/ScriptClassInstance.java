@@ -44,8 +44,6 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
 
     final HashMap<String,Object> supers;
 
-    public static final String _ANCESTOR_ = "__anc__" ;
-
     protected void addSuper(ScriptClassInstance value){
         if ( $.ns.equals(value.$.ns)) {
             //make direct calling possible ONLY if the namespace of child and parent match
@@ -60,16 +58,6 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
      */
     public HashMap<String,Object> getSupers(){ return supers ; }
 
-    boolean hasJSuper;
-
-    /**
-     * If the class has inherited from Java
-     * @return true if it did, false if did not
-     */
-    public boolean hasJSuper(){
-        return hasJSuper;
-    }
-
     Interpreter interpreter;
 
     final ScriptClass $;
@@ -81,7 +69,6 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
         this.$ = scriptClass ;
         this.fields = new HashMap<>();
         this.supers = new HashMap<>();
-        this.hasJSuper = false ;
     }
 
     public JexlMethod getJSuperMethod(String name, Object[] sups, Object[] args) throws Exception {
@@ -121,15 +108,13 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
 
 
     public void ancestor(Object sName,Object[]args) throws Exception {
-        Object old = supers.get(sName);
-        if ( old != null && old instanceof ScriptClassInstance ) {
-            ScriptClassInstance _new_ = ((ScriptClassInstance)old).$.instance(interpreter, args);
+        Object old = interpreter.resolveJexlClassName(sName.toString());
+        if ( old != null && ((ScriptClass)old).clazz == null ) {
+            ScriptClassInstance _new_ = ((ScriptClass)old).instance(interpreter, args);
             addSuper( _new_ ); // this should replace the old
             return;
         }
-        if ( !hasJSuper ){
-            return;
-        }
+
         String name;
         if ( sName instanceof  String ){
             sName = interpreter.getContext().get((String)sName);
@@ -148,7 +133,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     @Override
     public Object execMethod(String method, Object[] args)  {
         try {
-            if ( method.equals(_ANCESTOR_)){
+            if ( method.equals(ScriptClass._ANCESTOR_)){
                 Object arg0 = args[0];
                 args = TypeUtility.shiftArrayLeft(args, 1);
                 ancestor(arg0,args);
@@ -156,14 +141,14 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
             }
             ScriptMethod methodDef = $.getMethod(method);
             if (methodDef == null ) {
-                if ( hasJSuper ) {
-                    Object[] sups = new Object[1];
-                    JexlMethod jexlMethod = getJSuperMethod(method, sups, args);
-                    if (jexlMethod != null) {
-                        // call jexl method
-                        return jexlMethod.invoke(sups[0], args);
-                    }
+
+                Object[] sups = new Object[1];
+                JexlMethod jexlMethod = getJSuperMethod(method, sups, args);
+                if (jexlMethod != null) {
+                    // call jexl method
+                    return jexlMethod.invoke(sups[0], args);
                 }
+
                 throw new NoSuchMethodException("Method : '" + method + "' is not found in class : " + this.$.name);
             }
             if (methodDef.instance) {

@@ -268,6 +268,11 @@ public class ExtendedScriptTest extends JexlTestCase {
         assertEquals(42,o);
     }
 
+    @Test
+    public void testMultipleInherit() throws Exception{
+        Object o = runScript(JEXL, "samples/multiple_inheritance.jxl");
+        assertEquals(92,o);
+    }
     /****
     @Test
     public void testDB() throws Exception{

@@ -37,6 +37,8 @@ import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Executable;
  */
 public class ScriptClass  implements TypeAware, Executable {
 
+    public static final String _ANCESTOR_ = "__anc__" ;
+
     /**
      * A wrapper for instance method instances
      */
@@ -74,7 +76,6 @@ public class ScriptClass  implements TypeAware, Executable {
             return executable.execMethod(methodName,args );
         }
     }
-
 
 
     public static final String _INIT_ = "__new__";
@@ -133,6 +134,8 @@ public class ScriptClass  implements TypeAware, Executable {
 
     ScriptMethod constructor;
 
+    public final boolean callAncestors;
+
     final Map<String, ScriptClass> supers;
 
     public Map getSupers() {
@@ -186,24 +189,29 @@ public class ScriptClass  implements TypeAware, Executable {
 
         ScriptClassInstance instance = new ScriptClassInstance(this, interpreter);
         Set<String> superKeys = new HashSet<>(supers.keySet());
-        for (String n : superKeys ) {
-            ScriptClass superClass = supers.get(n);
-            if (superClass == null) {
-                superClass = interpreter.resolveJexlClassName(n);
-                if ( superClass == null ) {
-                    throw new Exception("Superclass : '" + n + "' not found!");
+            // invoke default constructors as
+            for (String n : superKeys) {
+                if (n.contains(":")) continue;
+                //direct call...
+                ScriptClass superClass = supers.get(n);
+                if (superClass == null) {
+                    superClass = interpreter.resolveJexlClassName(n);
+                    if (superClass == null) {
+                        throw new ClassNotFoundException("Superclass : '" + n + "' not found!");
+                    }
+
+                    // one time resolving of this
+                    addSuper(superClass.ns, superClass.name, superClass);
                 }
-                instance.hasJSuper = (superClass.clazz != null );
-                // one time resolving of this
-                addSuper(superClass.ns, superClass.name, superClass);
+                if ( !callAncestors ) {
+                    if (superClass.clazz == null) {
+                        ScriptClassInstance superClassInstance = superClass.instance(interpreter, args);
+                        instance.addSuper(superClassInstance);
+                    } else {
+                        instance.addJSuper(superClass.name, superClass.clazz, args);
+                    }
+                }
             }
-            if ( superClass.clazz == null ) {
-                ScriptClassInstance superClassInstance = superClass.instance(interpreter, args);
-                instance.addSuper(superClassInstance);
-            }else{
-                instance.addJSuper( superClass.name, superClass.clazz, args);
-            }
-        }
         if (constructor != null) {
             instance.execMethod(_INIT_, args);
         }
@@ -237,7 +245,10 @@ public class ScriptClass  implements TypeAware, Executable {
         }
         findMethods(ref.jjtGetChild(numChild - 1));
         constructor = methods.get(_INIT_);
-        hash = TypeUtility.hash(Debugger.getText(ref));
+        String bodyText = Debugger.getText(ref);
+        // hack at best
+        callAncestors = bodyText.contains(_ANCESTOR_);
+        hash = TypeUtility.hash(bodyText);
         clazz = null ;
         statics = new ConcurrentHashMap<>();
         this.interpreter.getContext().set(this.name,this);
@@ -265,6 +276,7 @@ public class ScriptClass  implements TypeAware, Executable {
         methods = new HashMap<>();
         supers = new HashMap<>();
         statics = new ConcurrentHashMap<>();
+        callAncestors = false ;
     }
 
     @Override
