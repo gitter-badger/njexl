@@ -24,7 +24,9 @@ import com.noga.njexl.lang.parser.JexlNode;
 import com.noga.njexl.lang.Interpreter;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.TypeAware;
 
@@ -38,18 +40,31 @@ public class ScriptClass  implements TypeAware {
 
     public static final String SELF = "me";
 
-    final HashMap<String, ScriptMethod> methods;
+    final Map<String,Object> statics;
 
-    public HashMap getMethods() {
+    public Map<String,Object> statics(){
+        return statics;
+    }
+
+    public Object get(String prop){
+        return statics.get(prop);
+    }
+
+    public Object set(String prop, Object value){
+        return statics.put(prop, value);
+    }
+
+    final Map<String, ScriptMethod> methods;
+
+    public Map getMethods() {
         return methods;
     }
 
     ScriptMethod constructor;
 
+    final Map<String, ScriptClass> supers;
 
-    final HashMap<String, ScriptClass> supers;
-
-    public HashMap getSupers() {
+    public Map getSupers() {
         return supers;
     }
 
@@ -152,6 +167,7 @@ public class ScriptClass  implements TypeAware {
         constructor = methods.get(_INIT_);
         hash = TypeUtility.hash(Debugger.getText(ref));
         clazz = null ;
+        statics = new ConcurrentHashMap<>();
     }
 
     public final Class clazz;
@@ -170,6 +186,7 @@ public class ScriptClass  implements TypeAware {
         // we will do something about them later
         methods = new HashMap<>();
         supers = new HashMap<>();
+        statics = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -220,6 +237,12 @@ public class ScriptClass  implements TypeAware {
     public Object execMethod(String methodName,Interpreter interpreter, Object[] args) throws Exception {
         ScriptMethod scriptMethod = getMethod(methodName);
         if ( scriptMethod == null ) throw new NoSuchMethodException(methodName);
-        return scriptMethod.invoke(null,interpreter,args);
+        try {
+            interpreter.addFunctionNamespace(SELF,this);
+            return scriptMethod.invoke(this, interpreter, args);
+        }finally {
+            // do some housekeeping
+            interpreter.removeFunctionNamespace(SELF) ;
+        }
     }
 }

@@ -131,6 +131,11 @@ public class Interpreter implements ParserVisitor {
      * The map of registered functions.
      */
     protected final Map<String, Object> functions;
+
+    public void addFunctionNamespace(String ns, Object o){ functions.put(ns,o) ; }
+
+    public void removeFunctionNamespace(String ns){ functions.remove(ns) ; }
+
     /**
      * The map of registered functions.
      */
