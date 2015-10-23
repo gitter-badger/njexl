@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.regex.Pattern;
 
 /**
  * <p>A JEXL Script.</p>
@@ -44,7 +45,7 @@ public interface Script {
 
     String DEFAULT_IMPORT_NAME = "JexlMain";
 
-    String DEFAULT_EXTENSION = ".jexl";
+    Pattern DEFAULT_NAME_MATCH = Pattern.compile(".*\\.j(e)?xl$", Pattern.CASE_INSENSITIVE);
 
     String RELATIVE = "_";
 

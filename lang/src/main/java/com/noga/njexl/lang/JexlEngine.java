@@ -16,20 +16,12 @@
 
 package com.noga.njexl.lang;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.Reader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.lang.ref.SoftReference;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.noga.njexl.lang.internal.logging.Log;
 import com.noga.njexl.lang.internal.logging.LogFactory;
@@ -580,6 +572,18 @@ public class JexlEngine {
         return importScript(from, as, null);
     }
 
+    File tryFindFile(String from) throws Exception{
+        File f = new File(from);
+        String d = f.getParent();
+        File dir = new File(d);
+        File[] files = dir.listFiles();
+        for ( File file : files ){
+            boolean b = Script.DEFAULT_NAME_MATCH.matcher(file.getName()).matches();
+            if ( b ) return file;
+        }
+        String msg = String.format("No jexl file named '%s' found in dir : %s", f.getName(), d );
+        throw  new FileNotFoundException(msg);
+    }
 
     /**
      * Import a script from a location
@@ -605,8 +609,7 @@ public class JexlEngine {
         String n = f.getName();
         if ( !n.contains(".")){
             // I do not have extension :
-            from += Script.DEFAULT_EXTENSION;
-            f = new File(from);
+            f = tryFindFile(from);
         }
         BufferedReader reader = new BufferedReader(new FileReader(f));
         scriptText = readerToString(reader);
