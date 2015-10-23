@@ -48,6 +48,22 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
 
     final HashMap<String,Integer> jumps;
 
+    /**
+     * This is to ensure that we can return values w/o
+     * defaulting to the exact need
+     * @param prop name of the class or method
+     * @return the class or method, else null
+     */
+    public Object get(String prop){
+        if ( classes.containsKey(prop)){
+            return classes.get(prop);
+        }
+        if ( methods.containsKey(prop)){
+            return methods.get(prop);
+        }
+        return null;
+    }
+
 
     /** The engine for this expression. */
     protected final JexlEngine jexl;
