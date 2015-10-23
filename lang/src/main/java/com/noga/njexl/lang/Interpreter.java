@@ -2028,6 +2028,10 @@ public class Interpreter implements ParserVisitor {
                     return scriptClass.instance(this, argv);
                 }
             }
+            if (cobject instanceof ScriptClass) {
+                ScriptClass scriptClass = ((ScriptClass) cobject);
+                return scriptClass.instance(this, argv);
+            }
             JexlMethod ctor = uberspect.getConstructorMethod(cobject, argv, node);
             // DG: If we can't find an exact match, narrow the parameters and try again
             if (ctor == null) {
