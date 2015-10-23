@@ -545,9 +545,11 @@ public class TypeUtility {
     public static void writeFile(Object... args) throws Exception {
         if (args.length == 0) {
             System.out.println();
+            return;
         }
         if (args.length == 1) {
-            System.out.println(args[0]);
+            System.out.printf("%s",args[0]);
+            return;
         }
         String fileName = args[0].toString();
         String data = args[1].toString();
