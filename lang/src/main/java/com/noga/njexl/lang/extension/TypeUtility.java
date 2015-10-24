@@ -547,12 +547,33 @@ public class TypeUtility {
             System.out.println();
             return;
         }
-        if (args.length == 1) {
-            System.out.printf("%s",args[0]);
+        PrintStream ps = System.out ;
+        if ( args[0] instanceof PrintStream ){
+            ps = (PrintStream)args[0];
+            args = shiftArrayLeft(args,1);
+        }
+        if ( args.length == 0 ){
+            ps.println();
             return;
         }
-        String fileName = args[0].toString();
-        String data = args[1].toString();
+        if (args.length == 1) {
+            ps.printf("%s\n", args[0]);
+            return;
+        }
+
+        String fmt = String.valueOf(args[0]);
+        args = shiftArrayLeft(args,1);
+        if ( fmt.contains("%")){
+            // formats...
+            ps.printf(fmt,args);
+            return;
+        }
+
+        String fileName = fmt ;
+        String data = "42" ;
+        if ( args.length > 0 ){
+            data = String.valueOf(args[0]);
+        }
         Files.write(new File(fileName).toPath(), data.getBytes());
     }
 
