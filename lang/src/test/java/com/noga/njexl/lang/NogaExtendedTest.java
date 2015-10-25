@@ -1062,5 +1062,25 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.execute(jc);
         assertEquals(2, o);
 
+        s = "x = [3,4] ; y = [1,2,3,4]; x =~ y ;";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = "x = [5] ; y = [1,2,3,4]; x =~ y ;";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse((Boolean) o);
+
+        s = "null  =~ null ;";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "x = [5] ; y = null ; x =~ y ;";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse((Boolean) o);
+
     }
 }

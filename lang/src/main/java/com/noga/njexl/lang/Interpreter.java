@@ -1491,6 +1491,10 @@ public class Interpreter implements ParserVisitor {
     public Object visit(ASTERNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
+        if ( right == null ){
+            if ( left == null ) return true ;
+            return false ;
+        }
         try {
             // use arithmetic / pattern matching ?
             if (right instanceof java.util.regex.Pattern || right instanceof String) {
@@ -1504,6 +1508,9 @@ public class Interpreter implements ParserVisitor {
             // try contains on map key
             if (right instanceof Map<?, ?>) {
                 return ((Map<?, ?>) right).containsKey(left) ? Boolean.TRUE : Boolean.FALSE;
+            }
+            if ( JexlArithmetic.areListOrArray(left,right )){
+                return (TypeUtility.index(left, right) >= 0) ;
             }
             // try contains on collection
             if (right instanceof Collection<?>) {
