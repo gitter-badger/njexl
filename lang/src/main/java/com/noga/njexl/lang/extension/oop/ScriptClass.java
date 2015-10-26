@@ -64,6 +64,11 @@ public class ScriptClass  implements TypeAware, Executable {
             methodName = method ;
         }
 
+        @Override
+        public Object get(String prop) {
+            return this;
+        }
+
         /**
          * Calls the methodName
          * @param method name of the method - ignored

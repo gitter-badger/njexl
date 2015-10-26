@@ -536,10 +536,21 @@ public class Interpreter implements ParserVisitor {
                 try {
                     //perhaps a field ?
                     String actClass = from.substring(0, from.lastIndexOf("."));
-                    Class<?> c = Class.forName(actClass);
+                    Object c = null;
+                    if ( context.has(actClass)){
+                        c = context.get(actClass);
+                    }else{
+                        c = Class.forName(actClass);
+                    }
+
                     String fieldName = from.substring(from.lastIndexOf(".") + 1);
-                    JexlPropertyGet pg = uberspect.getPropertyGet(c, fieldName, null);
-                    Object o = pg.invoke(null);
+                    Object o = null;
+                    if ( c instanceof Executable ){
+                        o = ((Executable)c).get(fieldName);
+                    }else {
+                        JexlPropertyGet pg = uberspect.getPropertyGet(c, fieldName, null);
+                        o = pg.invoke(null);
+                    }
                     try {
                         functions.put(as, o);
                         context.set(as, o);

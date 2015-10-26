@@ -54,6 +54,7 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
      * @param prop name of the class or method
      * @return the class or method, else null
      */
+    @Override
     public Object get(String prop){
         if ( classes.containsKey(prop)){
             return classes.get(prop);

@@ -172,6 +172,14 @@ public final class ScriptClassBehaviour {
          */
         Object execMethod(String method, Object[] args) ;
 
+        /**
+         * Gets a property
+         * @param prop name of the property
+         * @return the property if exists, null otherwise
+         * @throws Exception when property is not found
+         */
+        Object get(String prop) throws Exception;
+
     }
 
     /**
