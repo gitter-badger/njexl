@@ -1734,7 +1734,7 @@ public class TypeUtility {
             args = shiftArrayLeft(args,1);
             Thread t = new Thread(anonymousParam);
             anonymousParam.setIterationContext(args, t, t.getId() );
-            t.run();
+            t.start();
             return t;
         }
         return Thread.currentThread();

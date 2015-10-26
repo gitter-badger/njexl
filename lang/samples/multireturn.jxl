@@ -3,20 +3,19 @@
  Which showcases how to use multiple return feature,
  Also, how to handle exceptions if need be
 */
-import 'java.lang.System.out' as out
 import 'java.lang.Integer' as Integer
 
 // this shows the tuple usage & multiple return
 l = [ 10, 34, 21, 11,  55 ]
 #(a,r) = partition{ $ > 20 }(l)
-out:printf("Accepted : %s\n", a)
-out:printf("Rejected : %s\n", r)
+write("Accepted : %s\n", a)
+write("Rejected : %s\n", r)
 // This shows exception handling
 #(o,:e) = i // This is an error, for sure because i does not exist
-out:printf("Error is : %s\n", e)
+write("Error is : %s\n", e)
 // Now error handling in methods
 #(o,:e) = Integer:parseInt('42')
-out:printf("Output is %d Error is : %s\n",o,e)
+write("Output is %d Error is : %s\n",o,e)
 #(o,:e) = Integer:parseInt('Sri 420')
-out:printf("Output is %d Error is : %s\n",o,e)
+write("Output is %d Error is : %s\n",o,e)
 r = #(o,e)

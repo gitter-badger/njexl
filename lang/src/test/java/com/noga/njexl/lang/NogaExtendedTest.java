@@ -218,11 +218,12 @@ public class NogaExtendedTest extends JexlTestCase {
 
     @Test
     public void testThreading() throws Exception {
-        Script e = JEXL.createScript("t = thread{ $.sleep(1000)  ; x = x + 1 ; }()");
+        Script e = JEXL.createScript("t = thread{ $.sleep(300)  ; x = x + 1 ; }()");
         JexlContext jc = new MapContext();
         jc.set("x",0);
         Object o = e.execute(jc);
         assertTrue( o instanceof Thread);
+        Thread.sleep(600);
         o = jc.get("x");
         assertEquals(1,o);
     }

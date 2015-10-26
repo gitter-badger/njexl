@@ -1,10 +1,9 @@
 /*
  Showcases the named parameters 
 */
-import 'java.lang.System.out' as out 
 
 def some_method(param1='1',param2='2'){
-     out:printf('p1 is : %s\tp2 is %s\n', param1,param2)
+    write('p1 is : %s\tp2 is %s\n', param1,param2)
 }
 // should take defaults 
 some_method()
