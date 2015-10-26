@@ -1,16 +1,17 @@
-import 'java.lang.System.out' as out
-
+/* 
+ Basic demo of class structure 
+*/
 def Some1{
     def __new__ (me){
           me.s = 'xxx'
       }
     def do_print(me){
-        out:println('Some1!')
+        write('Some1!')
     }
 }
 def Some2{
    def do_print(me){
-       out:println('Some2!')
+       write('Some2!')
    }
 }
 def Complex : Some1 , Some2 {
@@ -22,7 +23,6 @@ def Complex : Some1 , Some2 {
         str:format('%s : (%f,i %f)', me.s, me.x, me.y)
     }
     def __add__(me,o){
-
         return new ('Complex' , me.x + o.x , me.y + o.y )
     }
     def __sub__(me,o){
@@ -32,11 +32,11 @@ def Complex : Some1 , Some2 {
         return new ('Complex' , me.x * o.x  - me.y * o.y , me.x * o.y + me.y * o.x )
     }
     def do_print(me){
-        out:println(me)
+        write(me)
     }
 }
 def print(p='hello, world' , v){
-    out:println(p + ':' + v)
+    write(p + ':' + v)
 }
 c1 = new ( 'Complex' , 1.0, 2.0 )
 print( 'Complex No :' , c1 )
@@ -61,7 +61,7 @@ c2.s = 'zzz'
 c1.do_print()
 c2.do_print()
 
-out:println(c1 isa c2)
+write(c1 isa c2)
 s1 = new ( 'Some1' )
-out:println(c1 isa s1)
-out:println(s1 isa c1)
+write(c1 isa s1)
+write(s1 isa c1)

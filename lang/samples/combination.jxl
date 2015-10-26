@@ -1,17 +1,17 @@
-import 'java.lang.System.out' as out
+/* A demo of combination */
 
 // get the list 
 l = list(1,2,3,4)
 // generate the argument 
 x = list{ l }( [0:2].list() )
-out:printf("list : \n%s\n", x)
+write("list : \n%s\n", x)
 // generate the permutation   
 p = join{ #|set($)| == #|$| }(__args__=x)
-out:printf("permutation : \n%s\n", p)
+write("permutation : \n%s\n", p)
 // generate the combination 
 c = join{ #|set($)| == #|$| and 
 	index{ _ > 0 and  $$[_-1] > $ }($) < 0 
 	}(__args__=x)
-out:printf("combinations: \n%s\n", c )
+write("combinations: \n%s\n", c )
 // return for validation 
 return [p,c]

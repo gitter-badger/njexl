@@ -1,7 +1,6 @@
 /*
   Shows how instance methods can be passed 
 */
-import 'java.lang.System.out' as out
 // a global variable count 
 var count = 0 
 // a class 
@@ -11,13 +10,13 @@ def MyClass{
     }
     // this is the method to be added as before method 
     def my_before(me){
-        out:println(me.v)
+        write(me.v)
         count += me.v 
     }
     // this is a static method 
     def my_static(){
         count += 42
-        out:println("I am static!")
+        write("I am static!")
     }
 }
 // create one instance 

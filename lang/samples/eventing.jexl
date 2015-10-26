@@ -2,47 +2,41 @@
  Showcases Eventing.
  The crucial methods are __before__ and __after__
 */
-import 'java.lang.System.out' as out
 
 def generic(){
-   out:println("I am generic function")
+   write("I am generic function")
 }
-
 def gen_event(){
    event = __args__[0]
-   out:printf("I am generic %s \n", event )
+   write("I am generic %s \n", event )
 }
-
 def  MyEventClass {
      //  before hook
      def __before__(){
-         out:printf("Before : %s\n", __args__)
+         write("Before : %s\n", list( __args__ ) )
      }
      // after hook 
      def __after__(){
-         out:printf("After : %s\n", __args__)        
+         write("After : %s\n", list( __args__ ) )        
      }
      // define a standard function 
      def say_hello(){
-        out:printf("Hello : %s\n", __args__)
+        write("Hello : %s\n", list( __args__ ) )
      }
 }
 x = new ( 'MyEventClass' )
-// get the say_hello method 
-m = x.NClass.method.say_hello
-out:println(m)
+// get the say_hello method : $ is the NClass of an instance 
+m = x.$.methods.say_hello
+write(m)
 // this get's the method 
 e = #def( 'my:gen_event' )
-out:println(e)
+write(e)
 m.before.add(e)
 // before this method __before__ would be called 
 @@x.say_hello(" I am Eventing ")
 // __after__ would be called after this 
-
-
-m = #def( 'my:generic' )
-out:println(m)
-
+m_exists = #def( 'my:generic' )
+write(m_exists)
 // add before handler 
 m.before.add(e)
 // call and see what happens ?

@@ -1,6 +1,5 @@
 import  '_/class_demo.jexl' as  CD 
 
-
 def ExternalImport : CD:Some1 {}
 
 s1 = new ( 'CD:Some1' )

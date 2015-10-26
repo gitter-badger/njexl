@@ -1,5 +1,4 @@
-import 'java.lang.System.out' as out
-
+/* General demo of class stuff */
 def Complex {
     def __new__ (me,x=0.0,y=0.0){
       me.x = x
@@ -19,9 +18,9 @@ def Complex {
     }
 }
 c1 = new ( 'Complex' , 1.0, 2.0 )
-out:printf( 'c1 : %s\n' , c1 )
+write( 'c1 : %s\n' , c1 )
 c2 = new ( 'Complex' , 2.0, 1.0 )
-out:printf( 'c2 : %s\n' , c2 )
-out:printf( 'c1 + c2 : %s\n' , c1 + c2 )
-out:printf( 'c1 - c2 : %s\n' , c1 - c2 )
-out:printf( 'c1 * c2 : %s\n' , c1 * c2 )
+write( 'c2 : %s\n' , c2 )
+write( 'c1 + c2 : %s\n' , c1 + c2 )
+write( 'c1 - c2 : %s\n' , c1 - c2 )
+write( 'c1 * c2 : %s\n' , c1 * c2 )

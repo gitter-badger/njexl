@@ -2,11 +2,7 @@
 ref : http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/8-b132/java/lang/String.java
 One can use this to find out the internals
 */
-
-import 'java.lang.System.out' as out
 import 'java.lang.String' as String
-
-
 def XString : String {
      // have a constructor
      def __new__(me,s=''){
@@ -19,15 +15,14 @@ def XString : String {
      def something(me){
         // time it out 
     for ( i : [0:1000000] ){ /*  do nothing */ }
-        out:println("Eventing Demo!")
-
+        write("Eventing Demo!")
      }
 }
 
 cs = new ('XString',"hello, world!")
-out:println(cs)
-out:println(cs.length())
-out:println(cs.charAt(3))
-out:println(cs isa String)
+write(cs)
+write(cs.length())
+write(cs.charAt(3))
+write(cs isa String)
 // eventing demo 
 @@cs.something()

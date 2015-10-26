@@ -1,5 +1,4 @@
-import 'java.lang.System.out' as out
-// a class demo 
+// a static methods in a class demo 
 def MyClass{
     // static constructor 
     def __class__(){
@@ -7,27 +6,27 @@ def MyClass{
     }
     // one static method : note implicit *me*
     def static_method1(){
-       out:printf("(m1) before subtracting %s\n", me.x)
+       write("(m1) before subtracting %s\n", me.x)
        me.x -= 24 // static variable 
-       out:printf("(m1) after subtracting %s\n", me.x)
+       write("(m1) after subtracting %s\n", me.x)
     }
     // another static method 2
     def static_method2(){
-       out:printf("(m2) before adding  %s\n", me.x)
+       write("(m2) before adding  %s\n", me.x)
        me.x += 24
-       out:printf("(m2) after adding %s, now calling m1 again\n", me.x)
+       write("(m2) after adding %s, now calling m1 again\n", me.x)
        me:static_method1()
     }
     // another static method 3
     def static_method3(){
-       out:printf("(m3) before adding %s\n", me.x)
+       write("(m3) before adding %s\n", me.x)
        me.x += 12
-       out:printf("(m3) after adding %s\n", me.x)
+       write("(m3) after adding %s\n", me.x)
     }
     // now showing how to call static 
     // from instance method
     def instance_method(me){
-       out:printf ( "My static 'x' has value %s \n", me.$.x )
+       write( "My static 'x' has value %s \n", me.$.x )
        // call static method?
        me.$.static_method1() 
     } 
@@ -46,5 +45,5 @@ ci = new('MyClass')
 ci.instance_method()
 // see it works 
 MyClass.x += 60
-out:printf("Final result is %d\n", MyClass.x)
+write("Final result is %d\n", MyClass.x)
 MyClass.x

@@ -1,4 +1,3 @@
-import 'java.lang.System.out' as out
 import 'com.noga.njexl.lang.extension.dataaccess.DBManager' as db
 
 // which connection profile ? 
@@ -7,4 +6,4 @@ db:init('db.json')
 matrix =  db:results("noga", "select * from noga_demo")
 // which lets you further subquery if need be 
 qr = matrix.select{ _ > 1 and _ < 4 }( "Name" )
-out:println(qr)
+write(qr)

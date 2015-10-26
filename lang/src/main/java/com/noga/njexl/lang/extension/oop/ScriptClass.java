@@ -196,7 +196,6 @@ public class ScriptClass  implements TypeAware, Executable {
         Set<String> superKeys = new HashSet<>(supers.keySet());
             // invoke default constructors as
             for (String n : superKeys) {
-                if (n.contains(":")) continue;
                 //direct call...
                 ScriptClass superClass = supers.get(n);
                 if (superClass == null) {
@@ -204,9 +203,11 @@ public class ScriptClass  implements TypeAware, Executable {
                     if (superClass == null) {
                         throw new ClassNotFoundException("Superclass : '" + n + "' not found!");
                     }
-
-                    // one time resolving of this
-                    addSuper(superClass.ns, superClass.name, superClass);
+                    //if already added, do not add
+                    if ( !supers.values().contains(superClass ) ){
+                        // one time resolving of this
+                        addSuper(superClass.ns, superClass.name, superClass);
+                    }
                 }
                 if ( !callAncestors ) {
                     if (superClass.clazz == null) {

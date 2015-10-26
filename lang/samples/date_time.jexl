@@ -3,24 +3,19 @@
   Format is : PyYmMwWdDThHmMsS 
 */
 
-import 'java.lang.System.out' as out
-
 start_time = time()
 end_time = start_time + "P10D" 
-
 count = 0 
-
 time_range = [ start_time : end_time : "PT10H" ] 
-
 for ( m :  time_range ){
-    count = count + 1
+    count += 1
 }
 
-out:println(count)
-out:println(time_range.years )
-out:println(time_range.months )
-out:println(time_range.weeks )
-out:println(time_range.days )
-out:println(time_range.hours )
-out:println(time_range.minutes )
-out:println(time_range.seconds )
+write(count)
+write(time_range.years )
+write(time_range.months )
+write(time_range.weeks )
+write(time_range.days )
+write(time_range.hours )
+write(time_range.minutes )
+write(time_range.seconds )

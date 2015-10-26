@@ -1,9 +1,8 @@
 /*
    Demonstrates functional arg passing in Jexl functions 
 */
-
-import 'java.lang.System.out' as out
-import '_/samples/dummy.jexl' as dummy
+import 'java.lang.System.out' as out // why?
+import '_/dummy.jexl' as dummy
 
 // This does not take any param, so, a call to this 
 def my_max_function(){
@@ -11,19 +10,17 @@ def my_max_function(){
     o = sqlmath(__args__)
     return o[1]
 }
-
 def func_taking_other_function( func ){
    y = func( 10, 1, 2 )
-   out:println(y)
+   write(y)
 }
 // in here would result in var args
-out.println(str(__args__))
+write(str(__args__))
 x = my_max_function{ int($) }( '1', 2, '3', 4, '5')
-out.println(str(__args__))
-out:println(x)
+write(str(__args__))
+write(x)
 // current script
-func_taking_other_function( 'my_max_function' )
+func_taking_other_function( my_max_function )
 // other script
-func_taking_other_function( 'dummy:some_func' )
-
-out.println(str(__args__))
+func_taking_other_function( dummy.some_func )
+write(str(__args__))
