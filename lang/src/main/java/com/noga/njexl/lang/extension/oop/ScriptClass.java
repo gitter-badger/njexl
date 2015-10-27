@@ -18,6 +18,7 @@ package com.noga.njexl.lang.extension.oop;
 
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.Debugger;
+import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.parser.ASTClassDef;
 import com.noga.njexl.lang.parser.ASTMethodDef;
 import com.noga.njexl.lang.parser.JexlNode;
@@ -143,6 +144,15 @@ public class ScriptClass  implements TypeAware, Executable {
 
     final Map<String, ScriptClass> supers;
 
+    Set<ScriptClass> parents;
+
+    public Set<ScriptClass> parents(){
+        if ( parents == null ){
+            parents = new ListSet<>( supers.values());
+        }
+        return parents;
+    }
+
     public Map getSupers() {
         return supers;
     }
@@ -165,8 +175,8 @@ public class ScriptClass  implements TypeAware, Executable {
         } else {
             ScriptMethod m1;
             ScriptMethod m2 = null;
-            for (String sup : supers.keySet()) {
-                m1 = supers.get(sup).getMethod(method);
+            for (ScriptClass sup : parents() ) {
+                m1 = sup.getMethod(method);
                 if (m1 != null) {
                     if (m2 == null) {
                         m2 = m1;

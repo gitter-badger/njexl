@@ -1,0 +1,21 @@
+import  '_/class_demo.jexl' as  CD 
+var count = 0 
+def Some1{
+    def local_print(me){
+       write("I am local Some1")
+       count += 1 
+    }
+}
+def ExternalImport : CD:Some1 , Some1 {}
+
+es = new ( 'CD:Some1' )
+es.do_print()
+
+s = new ( 'Some1' )
+s.local_print()
+
+ei = new ( ExternalImport )
+ei.do_print()
+ei.local_print()
+write(count)
+count
