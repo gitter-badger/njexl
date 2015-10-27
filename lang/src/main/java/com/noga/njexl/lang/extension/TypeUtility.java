@@ -148,6 +148,8 @@ public class TypeUtility {
     public static final String READ = "read";
     public static final String READ_LINES = "lines";
     public static final String WRITE = "write";
+    public static final String FOPEN = "fopen";
+
 
     public static final String JSON = "json";
     public static final String XML = "xml";
@@ -165,6 +167,39 @@ public class TypeUtility {
             int[].class, float[].class, double[].class, boolean[].class,
             byte[].class, short[].class, long[].class, char[].class};
 
+    /**
+     * Opens a file for read/write
+     * @param args arguments, 2nd one is the mode "r/w/a"
+     * @return PrintStream or BufferedReader
+     * @throws Exception
+     */
+    public static Object fopen(Object...args) throws Exception{
+        if ( args.length == 0 ){
+            return new BufferedReader(new InputStreamReader(System.in));
+        }
+        String file = String.valueOf(args[0]) ;
+        if ( args.length == 1 ){
+            return new BufferedReader(
+                    new InputStreamReader( new FileInputStream(file)));
+        }
+        String mode = String.valueOf(args[1]);
+        if ( "r".equalsIgnoreCase(mode)){
+            if ( "@IN".equalsIgnoreCase( file )) {
+                return new BufferedReader(new InputStreamReader(System.in));
+            }
+            return new BufferedReader(
+                    new InputStreamReader( new FileInputStream(file)));
+        }
+        if ( "w".equalsIgnoreCase(mode)){
+            if ( "@OUT".equalsIgnoreCase( file )) return System.out ;
+            if ( "@ERR".equalsIgnoreCase( file )) return System.err ;
+            return new PrintStream( file ) ;
+        }
+        if ( "a".equalsIgnoreCase(mode)){
+            return new PrintStream( new FileOutputStream(file, true) ) ;
+        }
+        return System.err;
+    }
 
     /**
      * Tokenizes a string
@@ -1674,7 +1709,8 @@ public class TypeUtility {
                 return tokenize(argv);
             case HASH:
                 return hash(argv);
-
+            case FOPEN:
+                return fopen(argv);
             default:
                 if (success != null) {
                     success[0] = false;
