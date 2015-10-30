@@ -593,6 +593,11 @@ public class IssuesTest extends JexlTestCase {
         assertEquals(42, value);
     }
 
+    /**
+     * This test is dead confusing, the ant style variables has to go I presume.
+     * The only way to support this would be automatic dictionaries which I would add.
+     * @throws Exception
+     */
     public void test110() throws Exception {
         JexlEngine jexl = new JexlEngine();
         String[] names = {"foo"};

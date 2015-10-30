@@ -728,7 +728,7 @@ void PrimaryExpression() #void : {}
 
 void ArrayAccess() : {}
 {
-    Identifier() (LOOKAHEAD(1) <LBRACKET> Expression() <RBRACKET>)+
+    Identifier(true) (LOOKAHEAD(1) <LBRACKET> Expression() <RBRACKET>)+
 }
 
 void DotReference() #void : {}

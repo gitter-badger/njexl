@@ -2259,7 +2259,7 @@ public class Interpreter implements ParserVisitor {
                 isVariable &= (theNode instanceof ASTIdentifier);
                 result = theNode.jjtAccept(this, result);
             }
-            // if we get null back a result, check for an ant variable
+            // if we get null back as a result, check for an ant variable
             if (result == null && isVariable) {
                 if (v == 0) {
                     variableName = new StringBuilder(node.jjtGetChild(0).image);

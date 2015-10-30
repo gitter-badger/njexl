@@ -1009,6 +1009,27 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testListInVar() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "var s =  [ 42 ] ; s[0] "  ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertEquals(42, o);
+
+        s = "var s =  { 'a' : 42  , 1 : 0 } ; s.a + s.1 "  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(42, o);
+
+        s = "var s =  { 'a' : 42  , 1 : 0 } ; s['a'] + s[1]"  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(42, o);
+
+    }
+
+
+    @Test
     public void testAssignAdditive() throws Exception{
         JexlContext jc = new MapContext();
         // += test
