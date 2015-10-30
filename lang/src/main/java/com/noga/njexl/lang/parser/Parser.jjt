@@ -681,7 +681,7 @@ void Function() #FunctionNode: {}
 
 void Method() #MethodNode: {}
 {
-   Identifier() ( Block() )? <LPAREN>[  ArgDef() ( <COMMA> ArgDef() )* ] <RPAREN>
+   Identifier(true) ( Block() )? <LPAREN>[  ArgDef() ( <COMMA> ArgDef() )* ] <RPAREN>
 }
 
 void AnyMethod() #void : {}
