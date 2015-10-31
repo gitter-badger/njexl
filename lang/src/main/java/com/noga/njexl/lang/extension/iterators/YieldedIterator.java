@@ -67,6 +67,12 @@ public abstract class YieldedIterator implements Iterator, Cloneable{
      */
     public abstract void reset();
 
+    /**
+     * Gets a reverse iterator from this one
+     * @return another iterator, in reverse
+     */
+    public abstract YieldedIterator inverse();
+
     @Override
     public Object clone(){
         try {

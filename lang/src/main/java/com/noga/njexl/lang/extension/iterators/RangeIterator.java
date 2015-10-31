@@ -107,6 +107,12 @@ public  class RangeIterator extends YieldedIterator {
         return (cur += s) ;
     }
 
+
+    @Override
+    public YieldedIterator inverse() {
+        return new RangeIterator(this.b, this.e,-this.s);
+    }
+
     /**
      * Splices the target
      * @param target an array or a list or a String

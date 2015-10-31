@@ -113,10 +113,7 @@ public class SymbolIterator extends YieldedIterator {
     }
 
     @Override
-    public void forEachRemaining(Consumer action) {
-    }
-
-    @Override
-    public void remove() {
+    public YieldedIterator inverse() {
+        return new SymbolIterator(this.b, this.e, (short)-this.s);
     }
 }

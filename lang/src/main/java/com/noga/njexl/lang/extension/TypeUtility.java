@@ -260,12 +260,35 @@ public class TypeUtility {
             args = shiftArrayLeft(args,1);
         }
         if ( args.length == 0 ) return  null ;
-
-        List l = combine(args[0]);
         Object partial = null;
         if ( args.length > 1 ){
             partial = args[1];
         }
+        if ( args[0] instanceof YieldedIterator ){
+            // this is a separate branch of stuff
+            YieldedIterator itr = (YieldedIterator)args[0];
+            if ( right ){
+                // switch it...
+                itr = itr.inverse();
+            }
+            if ( anon == null ){ return castString( itr.list() ); }
+            int i = 0;
+            while ( itr.hasNext() ){
+                Object o = itr.next();
+                anon.setIterationContextWithPartial(itr,o,i,partial);
+                try {
+                    partial = anon.execute();
+                }catch (JexlException.Break b){
+                    break;
+                }catch (JexlException.Continue c){
+                    continue;
+                }
+            }
+            return partial;
+        }
+
+        List l = combine(args[0]);
+
         int size = l.size() ;
         if ( anon == null ){
             if ( right ){

@@ -182,4 +182,9 @@ public class DateIterator extends YieldedIterator{
     public String toString(){
         return stringRep ;
     }
+
+    @Override
+    public YieldedIterator inverse() {
+        return new DateIterator(this.start, this.end, this.interval );
+    }
 }
