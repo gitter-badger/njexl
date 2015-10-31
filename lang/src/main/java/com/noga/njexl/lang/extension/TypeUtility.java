@@ -970,7 +970,10 @@ public class TypeUtility {
         if (object instanceof Collection) {
             Collection l = (Collection) object;
             list.addAll(l);
-        } else if (object.getClass().isArray()) {
+        } else if ( object instanceof YieldedIterator ){
+            list.addAll(((YieldedIterator)object).list());
+        }
+        else if (object.getClass().isArray()) {
             Object[] array = getArray(object);
             List l = Arrays.asList(array);
             list.addAll(l);
