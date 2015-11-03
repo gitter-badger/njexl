@@ -1,6 +1,6 @@
 # nJexl
 
-A  language based on apache JEXL for Business Programming as well as software testing needs.
+A  language based on [apache JEXL](http://commons.apache.org/proper/commons-jexl/) for Business Programming as well as software testing needs.
 This is a result of my experience and experiment with software development for over a decade.
 A wise man once told me  "Never build a fool proof software. When you complete building one 1.0 version, 
 the fool will release foolishness 2.0.". He was 15 years in Industry then, and is an MBA from IIM-A.
@@ -10,6 +10,11 @@ It also is a software testing framework, and for multibrowser/multisystem testin
 this project use and reccomends [BrowserStack](www.browserstack.com/) for the web testing part.
 I belive that resources in the internet should remain open, and free of cost.
 I believe in the [Mozilla Manifesto](https://www.mozilla.org/en-US/about/manifesto/).
+
+For including this programmatically into your JVM code see the examples [here](http://commons.apache.org/proper/commons-jexl/reference/examples.html).
+
+The improved language manual can be found ( always updated ) in the wiki.
+Also a cached summarized [pdf booklet](https://github.com/nmondal/njexl/blob/master/doc/pdfs/nJexl-Merged.pdf) is maintained.
 
 ## Summary
 
@@ -71,25 +76,19 @@ Business logic should reside outside code. This is a lesson tried and tested and
 Lesson no 2 learned if anyone studied computer science ( not software ) :
 
 >> No Business Process is beyond Turing Complete, never will be. So preaching complexity does not help. 
-   Objective is to reduce complexity not add more to it.
+   Objective should be *to reduce complexity*,  not to add more into it.
 
-
-
-Over dependence on Java is the root cause in here, which is a terrible choice at business programming (in fact any programming), 
-the verbosity makes it a killer on the loose. Python can do things in 10 lines what Java can do in 100. Scala is a good language and utmost geeky - impractical for business user and use. Python can not talk to Java business objects (Jython does not count, really), 
+Over dependence on Java is the root cause in here, which is a terrible choice at business programming (in fact any decent programming),  the verbosity makes it a killer on the loose. Python can do things in 10 lines what Java can do in 100. Scala is a good language and utmost geeky - impractical for business user and use. Python can not talk to Java business objects (Jython does not count, really), 
 and then Python is not a business process automation language or a software testing language.
 But it is a beautiful language never the less.  
 
-
 >> Git was developed in 14 Days. Old Rome was not. Git exists as of now, while Old Rome does not.
-
 
 Testing and Business Programming should be less talk, more work. 
 If the work takes more than 14 days, you have a talent problem.
 
 Who tests the test code? Who watches the watchers? 
 How business code can ever be *tested* ? Pure theory says never. 
-
 
 ## Business IS NOT Technology
 
@@ -145,4 +144,3 @@ I wrote this so that I, personally can use a language that makes sense to ME
 and I can use it for my own daily work - automation validation. 
 Let me know what you think of the style of the language. 
 Live long, and Prosper.
-
