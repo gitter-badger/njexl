@@ -81,7 +81,7 @@ public class UberspectImpl extends Introspector implements Uberspect {
             return new ArrayIterator(obj);
         }
         if (obj instanceof Map<?, ?>) {
-            return ((Map<?, ?>) obj).values().iterator();
+            return ((Map<?, ?>) obj).entrySet().iterator();
         }
         if (obj instanceof Enumeration<?>) {
             return new EnumerationIterator<Object>((Enumeration<Object>) obj);

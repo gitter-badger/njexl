@@ -16,10 +16,7 @@
 
 package com.noga.njexl.lang;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 
 /**
@@ -85,7 +82,7 @@ public class ForEachTest extends JexlTestCase {
     }
 
     public void testForEachWithMap() throws Exception {
-        Expression e = JEXL.createExpression("for(item : list) item");
+        Expression e = JEXL.createExpression("for(item : list) item.value ");
         JexlContext jc = new MapContext();
         Map<?, ?> map = System.getProperties();
         String lastProperty = (String) new ArrayList<Object>(map.values()).get(System.getProperties().size() - 1);
