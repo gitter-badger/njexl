@@ -20,7 +20,6 @@ import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.noga.njexl.lang.Interpreter;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
-import com.noga.njexl.lang.extension.dataaccess.XmlMap;
 import com.noga.njexl.testing.TestAssert;
 import com.noga.njexl.testing.Utils;
 import com.noga.njexl.testing.dataprovider.DataSource;
@@ -39,8 +38,6 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.safari.SafariDriver;
-import org.openqa.selenium.support.ui.Select;
-
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -80,6 +77,154 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
     public static final int BLINK_DELAY = 1000 ;
 
     public static final String BLINK_COLOR = "red" ;
+
+
+    public static class XSelect {
+
+        public final WebElement element;
+
+        public final JavascriptExecutor executor;
+
+        private final boolean multiple;
+
+        public XSelect(WebElement element, JavascriptExecutor executor) {
+            this.element = element ;
+            this.executor = executor;
+            String script = "return arguments[0].multiple;" ;
+            multiple = (Boolean)executor.executeScript(script, element);
+        }
+
+        public void selectByVisibleText(String text) {
+            String script = "  for(var i=0; i< arguments[0].options.length; i++) { " +
+                "if ( arguments[0].options[i].text == arguments[1] ) { " +
+                "    arguments[0].selectedIndex = i; break; } } " ;
+            executor.executeScript( script, element, text );
+        }
+
+        public void selectByIndex(int index) {
+            String script = "arguments[0].selectedIndex = arguments[1];" ;
+            executor.executeScript( script, element, index );
+        }
+
+        public void selectByValue(String value) {
+            String script = "arguments[0].value = arguments[1];" ;
+            executor.executeScript( script, element, value );
+        }
+
+        public void deselectAll() {
+            if ( multiple ){
+               selectByIndex(-1); // should deselect all
+            }
+        }
+
+        public void deselectByValue(String value) {
+            if ( multiple ) return;
+            String script = "  for(var i=0; i< arguments[0].options.length; i++) { " +
+                    "if ( arguments[0].options[i].value == arguments[1] ) { " +
+                    "    arguments[0].options[i].selected = false ; break; } } " ;
+            executor.executeScript( script, element, value );
+        }
+
+        public void deselectByIndex(int index) {
+            if ( multiple ) return;
+            String script = "  for(var i=0; i< arguments[0].options.length; i++) { " +
+                    "if ( i == arguments[1] ) { " +
+                    "    arguments[0].options[i].selected = false ; break; } } " ;
+            executor.executeScript( script, element, index );
+        }
+
+        public void deselectByVisibleText(String text) {
+            if ( multiple ) return;
+            String script = "  for(var i=0; i< arguments[0].options.length; i++) { " +
+                    "if ( arguments[0].options[i].text == arguments[1] ) { " +
+                    "    arguments[0].options[i].selected = false ; break; } } " ;
+            executor.executeScript( script, element, text );
+        }
+
+        private String[] convertObjectToStringArray(Object o){
+            String[] array = new String[]{};
+            if ( o instanceof List ){
+                array = new String[((List) o).size() ];
+                for ( int i = 0 ; i < array.length ; i++ ){
+                    String s = String.valueOf( ((List) o).get(i) );
+                    array[i] = s;
+                }
+            }
+            return array ;
+        }
+
+        public String[] getSelectOptions(){
+            String script = "var l = Array();  for(var i=0; i< arguments[0].options.length; i++) { " +
+                    " var x = { 'value' : arguments[0].options[i].value , 'text' : arguments[0].options[i].text  }  ; l.push(x);  } return l ; " ;
+            Object o = executor.executeScript( script, element );
+            return convertObjectToStringArray(o) ;
+        }
+
+        public String[] getSelectedLabels(){
+            String script = "var l = Array();  for(var i=0; i< arguments[0].options.length; i++) { " +
+                    "if ( arguments[0].options[i].selected == true ) { " +
+                    "    l.push( arguments[0].options[i].text );  } } return l ; " ;
+            Object o = executor.executeScript( script, element );
+            return convertObjectToStringArray(o) ;
+        }
+        public String[] getSelectedValues(){
+            String script = "var l = Array();  for(var i=0; i< arguments[0].options.length; i++) { " +
+                    "if ( arguments[0].options[i].selected == true ) { " +
+                    "    l.push( arguments[0].options[i].value );  } } return l ; " ;
+            Object o = executor.executeScript( script, element );
+            return convertObjectToStringArray(o) ;
+        }
+
+        public String[] getSelectedIndexes(){
+            String script = "var l = Array();  for(var i=0; i< arguments[0].options.length; i++) { " +
+                    "if ( arguments[0].options[i].selected == true ) { " +
+                    "    l.push(i);  } } return l ; " ;
+            Object o = executor.executeScript( script, element );
+            return convertObjectToStringArray(o) ;
+        }
+
+        public String[] getSelectedIds(){
+            String script = "var l = Array();  for(var i=0; i< arguments[0].options.length; i++) { " +
+                    "if ( arguments[0].options[i].selected == true ) { " +
+                    "    l.push( arguments[0].options[i].id );  } } return l ; " ;
+            Object o = executor.executeScript( script, element );
+            return convertObjectToStringArray(o) ;
+        }
+
+        public String getSelectedValue(){
+            if ( !isSomethingSelected() ){ return  null ; }
+            String script = "return arguments[0].value ;" ;
+            Object o = executor.executeScript( script, element );
+            return (o == null) ? null : String.valueOf(o);
+        }
+
+        public String getSelectedLabel(){
+            if ( !isSomethingSelected() ){ return  null ; }
+            String script = "return arguments[0].options[ arguments[0].selectedIndex ].text;" ;
+            Object o = executor.executeScript( script, element );
+            return (o == null) ? null : String.valueOf(o);
+        }
+
+        public String getSelectedIndex(){
+            if ( !isSomethingSelected() ){ return  null ; }
+            String script = "return arguments[0].selectedIndex ;" ;
+            Object o = executor.executeScript( script, element );
+            return (o == null) ? null : String.valueOf(o);
+        }
+
+        public String getSelectedId(){
+            if ( !isSomethingSelected() ){ return  null ; }
+            String script = "return arguments[0].options[ arguments[0].selectedIndex ].id ;" ;
+            Object o = executor.executeScript( script, element );
+            return (o == null) ? null : String.valueOf(o);
+        }
+        public boolean isSomethingSelected(){
+            String script = "return ( arguments[0].selectedIndex != -1 ) ;" ;
+            Object o = executor.executeScript( script, element );
+            if ( o instanceof Boolean ){ return (Boolean)o ;}
+            return false ;
+        }
+    }
 
     protected int typeDelay = 580 ;
 
@@ -468,10 +613,10 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
         return (String) ((JavascriptExecutor) driver).executeScript(jscript, webElement);
     }
 
-    Select getSelect(String locator) {
+    XSelect getSelect(String locator) {
         By by = getByFromLocator(locator);
         WebElement elem = driver.findElement(by);
-        Select select = new Select(elem);
+        XSelect select = new XSelect(elem,(JavascriptExecutor)driver);
         return select;
     }
 
@@ -516,7 +661,7 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
         return new SelectOption(SelectOption.Using.label, item);
     }
 
-    public void selectItem(Select select, String optionLocator) {
+    public void selectItem(XSelect select, String optionLocator) {
         SelectOption option = getSelectOption(optionLocator);
         switch (option.using) {
             case id:
@@ -539,7 +684,7 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
         }
     }
 
-    public void deSelectItem(Select select, String optionLocator) {
+    public void deSelectItem(XSelect select, String optionLocator) {
         SelectOption option = getSelectOption(optionLocator);
         switch (option.using) {
             case id:
@@ -645,8 +790,8 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
 
     @Override
     public void select(String selectLocator, String optionLocator) {
-        Select select = getSelect(selectLocator);
-        if (select.isMultiple()) {
+        XSelect select = getSelect(selectLocator);
+        if (select.multiple ) {
             select.deselectAll();
         }
         selectItem(select, optionLocator);
@@ -654,19 +799,19 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
 
     @Override
     public void addSelection(String locator, String optionLocator) {
-        Select select = getSelect(locator);
+        XSelect select = getSelect(locator);
         selectItem(select, optionLocator);
     }
 
     @Override
     public void removeSelection(String locator, String optionLocator) {
-        Select select = getSelect(locator);
+        XSelect select = getSelect(locator);
         deSelectItem(select, optionLocator);
     }
 
     @Override
     public void removeAllSelections(String locator) {
-        Select select = getSelect(locator);
+        XSelect select = getSelect(locator);
         select.deselectAll();
     }
 
@@ -897,99 +1042,68 @@ public class XSelenium  implements Selenium, Eventing , TestAssert.AssertionEven
 
     @Override
     public String[] getSelectedLabels(String selectLocator) {
-        Select select = getSelect(selectLocator);
-        List<WebElement> options = select.getAllSelectedOptions();
-        String[] labels = new String[options.size()];
-        for (int i = 0; i < labels.length; i++) {
-            labels[i] = options.get(i).getText();
-        }
+        XSelect select = getSelect(selectLocator);
+        String[] labels = select.getSelectedLabels();
         return labels;
     }
 
     @Override
     public String getSelectedLabel(String selectLocator) {
-        Select select = getSelect(selectLocator);
-        return select.getFirstSelectedOption().getText();
+        XSelect select = getSelect(selectLocator);
+        return select.getSelectedLabel();
     }
 
     @Override
     public String[] getSelectedValues(String selectLocator) {
-        Select select = getSelect(selectLocator);
-        List<WebElement> options = select.getAllSelectedOptions();
-        String[] values = new String[options.size()];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = options.get(i).getAttribute("value");
-        }
+        XSelect select = getSelect(selectLocator);
+        String[] values = select.getSelectedValues();
         return values;
     }
 
     @Override
     public String getSelectedValue(String selectLocator) {
-        Select select = getSelect(selectLocator);
-        return select.getFirstSelectedOption().getAttribute("value");
+        XSelect select = getSelect(selectLocator);
+        return select.getSelectedValue();
     }
 
     @Override
     public String[] getSelectedIndexes(String selectLocator) {
-        Select select = getSelect(selectLocator);
-        List<WebElement> selected = select.getAllSelectedOptions();
-        List<WebElement> options = select.getOptions();
-        String[] indices = new String[selected.size()];
-        int j = 0;
-        for (int i = 0; i < options.size(); i++) {
-            String value = options.get(i).getAttribute("value");
-            String sel = selected.get(j).getAttribute("value");
-            if (value.equals(sel)) {
-                indices[j] = Integer.toString(i);
-                j++;
-            }
-        }
+        XSelect select = getSelect(selectLocator);
+        String[] indices = select.getSelectedIndexes();
         return indices;
     }
 
     @Override
     public String getSelectedIndex(String selectLocator) {
-        String[] indices = getSelectedIndexes(selectLocator);
-        if (indices.length > 0) {
-            return indices[0];
-        }
-        return null;
+        XSelect select = getSelect(selectLocator);
+        String index = select.getSelectedIndex();
+        return index;
     }
 
     @Override
     public String[] getSelectedIds(String selectLocator) {
-        Select select = getSelect(selectLocator);
-        List<WebElement> options = select.getOptions();
-        String[] ids = new String[options.size()];
-        for (int i = 0; i < options.size(); i++) {
-            ids[i] = options.get(i).getAttribute("id");
-        }
+        XSelect select = getSelect(selectLocator);
+        String[] ids = select.getSelectedIds();
         return ids;
     }
 
     @Override
     public String getSelectedId(String selectLocator) {
-        String[] ids = getSelectedIds(selectLocator);
-        if (ids.length > 1) {
-            return ids[0];
-        }
-        return null;
+        XSelect select = getSelect(selectLocator);
+        String id = select.getSelectedId();
+        return id;
     }
 
     @Override
     public boolean isSomethingSelected(String selectLocator) {
-        Select select = getSelect(selectLocator);
-        return select.getFirstSelectedOption() != null;
+        XSelect select = getSelect(selectLocator);
+        return select.isSomethingSelected();
     }
 
     @Override
     public String[] getSelectOptions(String selectLocator) {
-        Select select = getSelect(selectLocator);
-        List<WebElement> options = select.getOptions();
-        String[] labels = new String[options.size()];
-        for (int i = 0; i < options.size(); i++) {
-            labels[i] = options.get(i).getText();
-        }
+        XSelect select = getSelect(selectLocator);
+        String[] labels = select.getSelectOptions();
         return labels;
     }
 
