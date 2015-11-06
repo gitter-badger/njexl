@@ -592,7 +592,7 @@ public class NogaExtendedTest extends JexlTestCase {
     public void testDict() throws Exception {
         JexlContext jc = new MapContext();
         jc.set("l", new Object[]{  new XClass(),new XClass() , new XClass() }  );
-        Script e = JEXL.createScript("dict{ _ = { $.i : $ } }(l)");
+        Script e = JEXL.createScript("dict{ [$.i , $] }(l)");
         Object o = e.execute(jc);
         assertTrue(o instanceof Map);
         assertTrue(((Map)o).size() == 3);

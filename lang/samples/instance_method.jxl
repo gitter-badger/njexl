@@ -24,7 +24,7 @@ mc1 = new ( 'MyClass' , 42 )
 // create another instance 
 mc2 = new ( 'MyClass' , 24 )
 // define the add method 
-def add(a,b){ out:println( a + b )}
+def add(a,b){ write( a + b )}
 // adding one instance method instance as before call 
 add.before.add( mc1.my_before )
 // adding another instance method instance as before call 

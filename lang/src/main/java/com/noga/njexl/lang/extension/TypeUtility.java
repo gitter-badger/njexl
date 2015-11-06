@@ -516,7 +516,7 @@ public class TypeUtility {
 
         text = text.replaceAll("[\\r\\n]", " ");
         // this is for the empty dict issue : {:}
-        text = text.replaceAll("\\{\\}", "\\{:\\}");
+        text = text.replaceAll("\\{[ \t\n\r]*\\}", "\\{:\\}");
 
         JexlEngine jexlEngine = new JexlEngine();
         Script sc = jexlEngine.createScript(text);
