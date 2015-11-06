@@ -878,6 +878,17 @@ public class TypeUtility {
         }
 
         if (args[0] instanceof AnonymousParam) {
+            if ( args.length > 1 ) {
+                if ( args[1] instanceof Collection || args[1].getClass().isArray() ) {
+                    Object[] _args = new Object[]{args[0], args[1]};
+                    String sep = SetOperations.SEP ;
+                    if (args.length > 2) {
+                        sep = String.valueOf(args[2]);
+                    }
+                    List l = combine(_args);
+                    return castString(l,sep);
+                }
+            }
             AnonymousParam anon = (AnonymousParam) args[0];
             args = shiftArrayLeft(args, 1);
             if ( args.length > 0 ) {
