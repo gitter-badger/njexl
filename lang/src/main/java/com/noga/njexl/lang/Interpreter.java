@@ -548,8 +548,14 @@ public class Interpreter implements ParserVisitor {
                     if ( c instanceof Executable ){
                         o = ((Executable)c).get(fieldName);
                     }else {
-                        JexlPropertyGet pg = uberspect.getPropertyGet(c, fieldName, null);
-                        o = pg.invoke(null);
+                        try {
+                            JexlPropertyGet pg = uberspect.getPropertyGet(c, fieldName, null);
+                            o = pg.invoke(null);
+                        }catch (Exception ex){
+                            if ( fieldName.equals("class")){
+                                o = c ;
+                            }
+                        }
                     }
                     try {
                         functions.put(as, o);

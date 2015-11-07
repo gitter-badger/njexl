@@ -1008,6 +1008,17 @@ public class NogaExtendedTest extends JexlTestCase {
 
     }
 
+
+    @Test
+    public void testObjectClassImport() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "import 'java.lang.Object.class' as OBJ_CLASS"  ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertEquals(Object.class, o);
+    }
+
+
     @Test
     public void testListInVar() throws Exception{
         JexlContext jc = new MapContext();
