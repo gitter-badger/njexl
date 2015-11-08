@@ -1020,6 +1020,16 @@ public class NogaExtendedTest extends JexlTestCase {
 
 
     @Test
+    public void testLambda() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "def f( a, F ){ F(a) } ; f(a=10, F = def(a){ a**2 } ) ;"  ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertEquals(100, o);
+
+    }
+
+    @Test
     public void testListInVar() throws Exception{
         JexlContext jc = new MapContext();
         String s = "var s =  [ 42 ] ; s[0] "  ;

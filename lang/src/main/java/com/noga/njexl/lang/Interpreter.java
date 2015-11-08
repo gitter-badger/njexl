@@ -613,8 +613,15 @@ public class Interpreter implements ParserVisitor {
         if (numChild == 1) {
             return node.jjtGetChild(0).jjtAccept(this, data);
         }
-        NamedArgs na = new NamedArgs(node.jjtGetChild(0).image,
-                node.jjtGetChild(1).jjtAccept(this, data));
+        String name = node.jjtGetChild(0).image ;
+        JexlNode valNode = node.jjtGetChild(1) ;
+        Object val = null;
+        if ( valNode instanceof ASTMethodDef ){
+            val = new ScriptMethod((ASTMethodDef)valNode );
+        }else {
+            val = valNode.jjtAccept(this,data);
+        }
+        NamedArgs na = new NamedArgs(name, val);
         return na;
     }
 
