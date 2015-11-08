@@ -1,0 +1,6 @@
+context = spark:ctx( spark:conf( app='demo' , master='local' ) )
+file = context.textFile( "/Codes/java/njexl/src/spark/samples/big.txt" )
+words = file.flatMap { tokens{ $ }($ , '[a-zA-Z]+' ) }() 
+pairs = words.mapToPair{ [$,1] }()
+counters = pairs.reduceByKey{ $[0] + $[1] }()
+counters.saveAsTextFile('/Codes/java/njexl/src/spark/op')
