@@ -22,24 +22,32 @@ public class XJavaRDD extends JavaRDD {
         super(rdd.rdd(), ScalaInteract.$TAG );
     }
 
-    @Override
-    public JavaRDD filter(Function f) {
-        return super.filter(f);
+    public XJavaRDD filter(AnonymousParam a) {
+        JavaRDD jdd =  super.filter(new XFunction(a));
+        return new XJavaRDD(jdd);
     }
 
-    @Override
-    public JavaRDD sortBy(Function f, boolean ascending, int numPartitions) {
-        return super.sortBy(f, ascending, numPartitions);
+    public XJavaRDD sortBy(AnonymousParam a, boolean ascending, int numPartitions) {
+        JavaRDD jdd = super.sortBy(new XFunction(a), ascending, numPartitions);
+        return new XJavaRDD(jdd);
     }
 
-    @Override
-    public JavaRDD map(Function f) {
-        return super.map(f);
+    public XJavaRDD sortBy(AnonymousParam a, boolean ascending) {
+        return sortBy(a,ascending, context().defaultMinPartitions() );
     }
 
-    @Override
-    public JavaRDD mapPartitionsWithIndex(Function2 f, boolean preservesPartitioning) {
-        return super.mapPartitionsWithIndex(f, preservesPartitioning);
+    public XJavaRDD sortBy(AnonymousParam a) {
+        return sortBy(a,false);
+    }
+
+    public XJavaRDD map(AnonymousParam a) {
+        JavaRDD jdd = super.map(new XFunction(a));
+        return new XJavaRDD(jdd);
+    }
+
+    public XJavaRDD mapPartitionsWithIndex(AnonymousParam a, boolean preservesPartitioning) {
+        JavaRDD jdd = super.mapPartitionsWithIndex(new XFunction2(a), preservesPartitioning);
+        return new XJavaRDD(jdd);
     }
 
     @Override

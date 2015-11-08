@@ -16,6 +16,22 @@ public class AnonymousFunction extends ScalaInteract {
         super(anon);
     }
 
+
+    public static final class XFunction extends AnonymousFunction
+            implements Function{
+
+        public XFunction(AnonymousParam a){
+            super(a);
+        }
+
+        @Override
+        public Object call(Object v1) throws Exception {
+            Object ret = safeCall(v1);
+            if ( Interpreter.NULL == ret) throw new Exception("XFunction has thrown exception!");
+            return ret;
+        }
+    }
+
     public static final class XFunction2 extends AnonymousFunction
             implements org.apache.spark.api.java.function.Function2{
 

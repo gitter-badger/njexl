@@ -22,8 +22,8 @@ import com.noga.njexl.lang.extension.TypeUtility;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
 import scala.Tuple2;
+import scala.collection.Seq;
 import scala.reflect.ClassTag;
 
 /**
@@ -49,6 +49,11 @@ public class ScalaInteract implements Serializable {
 
     public static Tuple2 $t(Object o1, Object o2) {
         return new Tuple2(o1,o2);
+    }
+
+    public static Seq $s(Object o){
+        List l = TypeUtility.from(o);
+        return $l(l);
     }
 
     public final String anonScript;

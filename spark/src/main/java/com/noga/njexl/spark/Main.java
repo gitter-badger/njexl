@@ -83,14 +83,18 @@ public class Main {
         counter.saveAsTextFile(outputDirName);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static Object executeScript(String script) throws Exception {
         JexlContext  context = com.noga.njexl.lang.Main.getContext();
         Map map = com.noga.njexl.lang.Main.getFunction(context);
         map.put("spark", XSpark.class );
         context.set( ScalaInteract.MY_NAME , ScalaInteract.class );
         JexlEngine engine = com.noga.njexl.lang.Main.getJexl( context );
         engine.setFunctions( map );
-        Script s = engine.importScript("samples/wc.jxl");
-        s.execute(context);
+        Script s = engine.importScript(script);
+        return s.execute(context);
+    }
+
+    public static void main(String[] args) throws Exception {
+        executeScript(args[0]);
     }
 }

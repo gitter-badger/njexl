@@ -16,12 +16,24 @@
 
 package com.noga.njexl.tests;
 
+import com.noga.njexl.spark.Main;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class IntegrationTest {
 
-    @Test
-    public void jClassTest() throws Exception{
+    public static final String WC_SCRIPT = "samples/wc.jxl" ;
 
+    public static final String PI_SCRIPT = "samples/pi.jxl" ;
+
+    @Test
+    public void wcTest() throws Exception{
+        Main.executeScript(WC_SCRIPT);
+    }
+
+    @Test
+    public void piTest() throws Exception{
+        Object o = Main.executeScript(PI_SCRIPT);
+        assertTrue((Boolean)o);
     }
 }

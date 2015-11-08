@@ -1,0 +1,10 @@
+context = spark:ctx( spark:conf( app='demo' , master='local' ) )
+NUM_SAMPLES = 10000
+p = context.parallelize( [ 0 : NUM_SAMPLES ] ).filter{  
+    x = math:random() ; y = math:random()  
+    x**2 + y**2 < 1 }()
+
+count = p.count() 
+__pi__ = 4.0 * count / NUM_SAMPLES
+write("Pi is roughly %f\n", __pi__)
+__pi__  > 3 and  __pi__ < 3.5 
