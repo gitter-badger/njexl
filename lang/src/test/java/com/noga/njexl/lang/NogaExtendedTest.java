@@ -1105,6 +1105,31 @@ public class NogaExtendedTest extends JexlTestCase {
 
     }
 
+
+    @Test
+    public void testWrite() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "a = { 'u' : 'noga' , 'm' : 'post' } ; s = write('https://httpbin.org/post',a)";
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue(o instanceof String);
+        s = "p = json(s) ; p.form.u == 'noga' and p.form.m == 'post' ; ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = "a = { 'u' : 'noga' , 'm' : 'post' } ; s = send('https://httpbin.org/get','GET',a)";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof String);
+        s = "p = json(s) ; p.args.u == 'noga' and p.args.m == 'post' ; ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+
+    }
+
     @Test
     public void testIndexFunction() throws Exception {
         JexlContext jc = new MapContext();

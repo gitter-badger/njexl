@@ -40,8 +40,10 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -53,6 +55,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.noga.njexl.lang.Interpreter.AnonymousParam;
+import static com.noga.njexl.lang.Interpreter.NULL ;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -149,6 +152,8 @@ public class TypeUtility {
     public static final String READ = "read";
     public static final String READ_LINES = "lines";
     public static final String WRITE = "write";
+    public static final String SEND = "send";
+
     public static final String FOPEN = "fopen";
 
 
@@ -610,11 +615,73 @@ public class TypeUtility {
         return buffer.toString();
     }
 
-    public static void writeFile(Object... args) throws Exception {
+    public static final Pattern URL =
+            Pattern.compile("^http(s)?://.+", Pattern.CASE_INSENSITIVE );
+
+
+    public static String send(String u, String method, Map<String,String> params ) throws Exception{
+
+        boolean get = false ;
+
+        if ( "GET".equalsIgnoreCase(method )) {
+            get = true ;
+        }
+        StringBuffer buf = new StringBuffer();
+        Iterator<String> iterator = params.keySet().iterator();
+        if ( iterator.hasNext() ){
+            String k = iterator.next();
+            String v = params.get(k);
+            buf.append(k).append("=").append( v );
+            while ( iterator.hasNext() ){
+                buf.append("&");
+                k = iterator.next();
+                v = params.get(k) ;
+                buf.append(k).append("=").append(v);
+            }
+        }
+        String urlParameters = buf.toString();
+
+        if ( get ){
+            URL url = new URL(u +"?" + urlParameters );
+            return readUrl(url );
+        }
+
+        URL url = new URL(u);
+        URLConnection conn = url.openConnection();
+        conn.setDoOutput(true);
+        ((HttpURLConnection)conn).setRequestMethod(method);
+        String type = "application/x-www-form-urlencoded";
+        conn.setRequestProperty( "Content-Type", type );
+        conn.setRequestProperty( "Content-Length", String.valueOf(urlParameters.length()));
+
+        OutputStream writer = conn.getOutputStream();
+        writer.write(urlParameters.getBytes());
+        writer.flush();
+
+        String line;
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(conn.getInputStream()));
+
+        buf = new StringBuffer();
+        while ((line = reader.readLine()) != null) {
+            buf.append(line).append("\n");
+        }
+        reader.close();
+        writer.close();
+        return buf.toString();
+    }
+
+    public static Object writeFile(Object... args) throws Exception {
         if (args.length == 0) {
             System.out.println();
-            return;
+            return NULL;
         }
+        String path = String.valueOf(args[0]);
+        if ( URL.matcher(path).matches() ){
+            args = shiftArrayLeft(args,1);
+            return send(path,"POST", makeDict(args));
+        }
+
         PrintStream ps = System.out ;
         if ( args[0] instanceof PrintStream ){
             ps = (PrintStream)args[0];
@@ -622,11 +689,11 @@ public class TypeUtility {
         }
         if ( args.length == 0 ){
             ps.println();
-            return;
+            return NULL;
         }
         if (args.length == 1) {
             ps.printf("%s\n", args[0]);
-            return;
+            return NULL;
         }
 
         String fmt = String.valueOf(args[0]);
@@ -634,7 +701,7 @@ public class TypeUtility {
         if ( fmt.contains("%")){
             // formats...
             ps.printf(fmt,args);
-            return;
+            return NULL;
         }
 
         String fileName = fmt ;
@@ -643,6 +710,7 @@ public class TypeUtility {
             data = String.valueOf(args[0]);
         }
         Files.write(new File(fileName).toPath(), data.getBytes());
+        return NULL;
     }
 
     public static String read(Object... args) throws Exception {
@@ -1333,8 +1401,7 @@ public class TypeUtility {
             return map;
         }
         // clone the dict
-        if (args.length == 1 &&
-                Map.class.isAssignableFrom(args[0].getClass())) {
+        if (args.length == 1 && args[0] instanceof Map ) {
             map.putAll((Map) args[0]);
             return map;
         }
@@ -1712,8 +1779,10 @@ public class TypeUtility {
             case READ_LINES:
                 return readLines(argv);
             case WRITE:
-                writeFile(argv);
-                break;
+                return writeFile(argv);
+            case SEND:
+                return send(String.valueOf(argv[0]),
+                        String.valueOf(argv[1]), makeDict(argv[2]));
             case BYE:
                 bye(argv);
                 break;

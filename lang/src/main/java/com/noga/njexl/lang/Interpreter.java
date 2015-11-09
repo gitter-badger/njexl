@@ -2603,6 +2603,8 @@ public class Interpreter implements ParserVisitor {
      * Shows that result was a valid null
      */
     public static class Null {
+        private Null(){
+        }
     }
 
     public static final Null NULL = new Null();
