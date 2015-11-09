@@ -610,11 +610,14 @@ public class Interpreter implements ParserVisitor {
     @Override
     public Object visit(ASTArgDef node, Object data) {
         int numChild = node.jjtGetNumChildren();
+        JexlNode valNode = node.jjtGetChild(numChild-1);
         if (numChild == 1) {
-            return node.jjtGetChild(0).jjtAccept(this, data);
+            if ( valNode instanceof ASTMethodDef ){
+                return new ScriptMethod((ASTMethodDef)valNode);
+            }
+            return valNode.jjtAccept(this, data);
         }
         String name = node.jjtGetChild(0).image ;
-        JexlNode valNode = node.jjtGetChild(1) ;
         Object val = null;
         if ( valNode instanceof ASTMethodDef ){
             val = new ScriptMethod((ASTMethodDef)valNode );

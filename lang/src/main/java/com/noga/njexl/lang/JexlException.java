@@ -397,6 +397,7 @@ public class JexlException extends RuntimeException {
         /**
          * Creates a new instance of Continue.
          * @param node the node where the Continue was detected
+         * @param value the value of the continue
          */
         public Continue(JexlNode node, Object value) {
             super(node, "loop continued", null);

@@ -171,7 +171,7 @@ public class TypeUtility {
      * Opens a file for read/write
      * @param args arguments, 2nd one is the mode "r/w/a"
      * @return PrintStream or BufferedReader
-     * @throws Exception
+     * @throws Exception in case of any error
      */
     public static Object fopen(Object...args) throws Exception{
         if ( args.length == 0 ){

@@ -1027,6 +1027,12 @@ public class NogaExtendedTest extends JexlTestCase {
         Object o = e.execute(jc);
         assertEquals(100, o);
 
+        s = "def g( a, F ){ F(a) } ; g(10, def(a){ a**2 } ) ;"  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(100, o);
+
+
     }
 
     @Test

@@ -812,11 +812,13 @@ void ParamDef() #ParamDef : {}
 
 void ArgDef() #ArgDef : {}
 {
-    LOOKAHEAD(3) Identifier()  <assign> MethodDef()
+       LOOKAHEAD(3) Identifier()  <assign> MethodDef()
     |
-    LOOKAHEAD(2) Identifier()  <assign> Expression()
+       LOOKAHEAD(2) Identifier()  <assign> Expression()
     |
-    Expression()
+       LOOKAHEAD(1) MethodDef()
+    |
+       Expression()
 }
 
 void MethodDef() #MethodDef : {}
