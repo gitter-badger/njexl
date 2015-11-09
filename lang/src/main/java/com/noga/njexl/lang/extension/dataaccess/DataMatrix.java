@@ -25,6 +25,7 @@ import com.noga.njexl.lang.extension.datastructures.XList;
 import com.noga.njexl.lang.extension.iterators.RangeIterator;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -207,7 +208,7 @@ public class DataMatrix {
      * A row, as a tuple structure.
      * See @link{http://en.wikipedia.org/wiki/Tuple}
      * @param r the row index
-     * @return the ruple corrseponding to the row
+     * @return the tuple corresponding to the row
      */
     public Tuple tuple(int r){
         if ( r >= rows.size() ){
@@ -215,6 +216,11 @@ public class DataMatrix {
         }
         Tuple t = new Tuple(columns, rows.get(r));
         return t;
+    }
+
+    // short for the tuple
+    public Tuple t(int r){
+        return tuple(r);
     }
 
     /**
@@ -232,11 +238,19 @@ public class DataMatrix {
      * @param agg these rows will be selected
      * @return list of selected row values for the column
      */
-    public List<String> c(int c, List<Integer> agg ){
+    public List<String> c(int c, Object agg ){
+        if ( agg != null ){
+            agg = TypeUtility.from(agg);
+            for ( int i = 0 ; i < ((List)agg).size() ; i++ ){
+                Object o =  ((List)agg).get(i);
+                ((List)agg).set(i, TypeUtility.castInteger( o ));
+            }
+        }
+
         XList l = new XList();
         for ( int r = 0; r < rows.size() ; r++ ){
             if ( agg == null ||
-                    agg!= null && agg.contains( r ) ){
+                    agg!= null && ((List)agg).contains( r )){
                 String value = rows.get(r).get(c);
                 l.add(value);
             }

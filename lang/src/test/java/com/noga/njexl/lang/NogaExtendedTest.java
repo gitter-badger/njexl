@@ -16,6 +16,7 @@
 
 package com.noga.njexl.lang;
 
+import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.lang.extension.datastructures.Graph;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.SetOperations;
@@ -1081,6 +1082,26 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertTrue((Boolean)o);
+
+    }
+
+    @Test
+    public void testDataMatrixLoad() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "m = matrix('samples/test.tsv')";
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue(o instanceof DataMatrix);
+
+        s = "size ( m.c(0,[0:3]) );";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(3,o);
+
+        s = "size ( m.c(0,[0,1,2]) );";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(3,o);
 
     }
 

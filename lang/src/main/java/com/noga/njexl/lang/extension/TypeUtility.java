@@ -17,6 +17,7 @@
 package com.noga.njexl.lang.extension;
 
 import com.noga.njexl.lang.*;
+import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.lang.extension.dataaccess.XmlMap;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.datastructures.XList;
@@ -156,6 +157,7 @@ public class TypeUtility {
     public static final String TOKEN = "tokens";
     public static final String HASH = "hash";
 
+    public static final String MATRIX = "matrix";
 
     /**
      * <pre>
@@ -166,6 +168,14 @@ public class TypeUtility {
     public static final Class<?>[] ARRAY_PRIMITIVE_TYPES = {
             int[].class, float[].class, double[].class, boolean[].class,
             byte[].class, short[].class, long[].class, char[].class};
+
+
+    public static Object matrix(Object...args) throws Exception {
+        if ( args.length == 0 ) return  null ;
+        String loc  = String.valueOf(args[0]);
+        args = shiftArrayLeft(args,1);
+        return DataMatrix.loc2matrix(loc,args);
+    }
 
     /**
      * Opens a file for read/write
@@ -1748,6 +1758,8 @@ public class TypeUtility {
                 return hash(argv);
             case FOPEN:
                 return fopen(argv);
+            case MATRIX:
+                return matrix(argv);
             default:
                 if (success != null) {
                     success[0] = false;
