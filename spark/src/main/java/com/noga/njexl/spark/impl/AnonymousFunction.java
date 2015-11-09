@@ -1,7 +1,23 @@
+/**
+ * Copyright 2015 Nabarun Mondal
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.noga.njexl.spark.impl;
 
 import com.noga.njexl.lang.Interpreter;
 import com.noga.njexl.lang.Interpreter.AnonymousParam ;
+import com.noga.njexl.lang.extension.TypeUtility;
 import org.apache.spark.api.java.function.*;
 import scala.Tuple2;
 import java.lang.reflect.Array;
@@ -16,6 +32,19 @@ public class AnonymousFunction extends ScalaInteract {
         super(anon);
     }
 
+    public static final class XVoidFunction extends AnonymousFunction
+            implements VoidFunction{
+
+        public XVoidFunction(AnonymousParam a){
+            super(a);
+        }
+
+        @Override
+        public void call(Object o) throws Exception {
+            Object ret = safeCall(o);
+            if ( Interpreter.NULL == ret) throw new Exception("XFunction has thrown exception!");
+        }
+    }
 
     public static final class XFunction extends AnonymousFunction
             implements Function{
@@ -47,6 +76,21 @@ public class AnonymousFunction extends ScalaInteract {
         }
     }
 
+    public static final class XDoubleFunction extends AnonymousFunction
+            implements DoubleFunction {
+        public XDoubleFunction(AnonymousParam a){
+            super(a);
+        }
+
+        @Override
+        public double call(Object o) throws Exception {
+            Object safe = safeCall(o);
+            if ( safe instanceof Number ){
+                return ((Number) safe).doubleValue();
+            }
+            throw new Exception("XDoubleFunction failed!");
+        }
+    }
 
     public static final class XPairFunction extends AnonymousFunction implements PairFunction{
 
@@ -74,7 +118,8 @@ public class AnonymousFunction extends ScalaInteract {
         }
     }
 
-    public static final class XFlatMapFunction extends AnonymousFunction implements FlatMapFunction{
+    public static final class XFlatMapFunction extends AnonymousFunction
+            implements FlatMapFunction,PairFlatMapFunction, DoubleFlatMapFunction {
 
         public XFlatMapFunction(AnonymousParam a){
             super(a);
@@ -87,5 +132,6 @@ public class AnonymousFunction extends ScalaInteract {
             throw new Exception("FlatMapFunction throw error!");
         }
     }
+
 
 }

@@ -1,3 +1,18 @@
+/**
+ * Copyright 2015 Nabarun Mondal
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.noga.njexl.spark.impl;
 
 import com.noga.njexl.lang.Interpreter.AnonymousParam;
@@ -50,9 +65,8 @@ public class XJavaRDD extends JavaRDD {
         return new XJavaRDD(jdd);
     }
 
-    @Override
-    public JavaDoubleRDD mapToDouble(DoubleFunction f) {
-        return super.mapToDouble(f);
+    public JavaDoubleRDD mapToDouble(AnonymousParam a) {
+        return super.mapToDouble( new XDoubleFunction(a));
     }
 
     public XJavaPairRDD mapToPair(AnonymousParam a) {
@@ -65,79 +79,69 @@ public class XJavaRDD extends JavaRDD {
         return new XJavaRDD(jrdd);
     }
 
-    @Override
-    public JavaDoubleRDD flatMapToDouble(DoubleFlatMapFunction f) {
-        return super.flatMapToDouble(f);
+    public JavaDoubleRDD flatMapToDouble(AnonymousParam a) {
+        return super.flatMapToDouble(new XFlatMapFunction(a));
     }
 
-    @Override
-    public JavaPairRDD flatMapToPair(PairFlatMapFunction f) {
-        return super.flatMapToPair(f);
+
+    public XJavaPairRDD flatMapToPair(AnonymousParam a) {
+        JavaPairRDD jpdd =  super.flatMapToPair(new XFlatMapFunction(a));
+        return new XJavaPairRDD(jpdd.rdd());
     }
 
-    @Override
-    public JavaRDD mapPartitions(FlatMapFunction f) {
-        return super.mapPartitions(f);
+
+    public XJavaRDD mapPartitions(AnonymousParam a,boolean preservesPartitioning) {
+        JavaRDD jrdd = super.mapPartitions(new XFlatMapFunction(a),preservesPartitioning);
+        return new XJavaRDD(jrdd);
     }
 
-    @Override
-    public JavaRDD mapPartitions(FlatMapFunction f, boolean preservesPartitioning) {
-        return super.mapPartitions(f, preservesPartitioning);
+    public XJavaRDD mapPartitions(AnonymousParam a ) {
+        return mapPartitions(a,true);
     }
 
-    @Override
-    public JavaDoubleRDD mapPartitionsToDouble(DoubleFlatMapFunction f) {
-        return super.mapPartitionsToDouble(f);
+    public JavaDoubleRDD mapPartitionsToDouble(AnonymousParam a,boolean preservesPartitioning) {
+        return super.mapPartitionsToDouble(new XFlatMapFunction(a),preservesPartitioning);
+    }
+    public JavaDoubleRDD mapPartitionsToDouble(AnonymousParam a) {
+        return mapPartitionsToDouble(a,true);
     }
 
-    @Override
-    public JavaPairRDD mapPartitionsToPair(PairFlatMapFunction f) {
-        return super.mapPartitionsToPair(f);
+    public XJavaPairRDD mapPartitionsToPair(AnonymousParam a,boolean preservesPartitioning) {
+        JavaPairRDD jpdd =  super.mapPartitionsToPair(new XFlatMapFunction(a),preservesPartitioning);
+        return new XJavaPairRDD(jpdd.rdd());
     }
 
-    @Override
-    public JavaDoubleRDD mapPartitionsToDouble(DoubleFlatMapFunction f, boolean preservesPartitioning) {
-        return super.mapPartitionsToDouble(f, preservesPartitioning);
+    public XJavaPairRDD mapPartitionsToPair(AnonymousParam a) {
+        return mapPartitionsToPair(a,true);
     }
 
-    @Override
-    public JavaPairRDD mapPartitionsToPair(PairFlatMapFunction f, boolean preservesPartitioning) {
-        return super.mapPartitionsToPair(f, preservesPartitioning);
+    public void foreachPartition(AnonymousParam a) {
+        super.foreachPartition(new XVoidFunction(a));
     }
 
-    @Override
-    public void foreachPartition(VoidFunction f) {
-        super.foreachPartition(f);
+    public XJavaPairRDD groupBy(AnonymousParam a,int numPartitions) {
+        JavaPairRDD jpdd = super.groupBy(new XFunction(a),numPartitions);
+        return new XJavaPairRDD(jpdd.rdd());
     }
 
-    @Override
-    public JavaPairRDD groupBy(Function f) {
-        return super.groupBy(f);
+    public XJavaPairRDD groupBy(AnonymousParam a) {
+        return groupBy(a, context().defaultMinPartitions());
     }
 
-    @Override
-    public JavaPairRDD groupBy(Function f, int numPartitions) {
-        return super.groupBy(f, numPartitions);
+    public Object reduce(AnonymousParam a) {
+        return super.reduce(new XFunction2(a));
     }
 
-    @Override
-    public Object reduce(Function2 f) {
-        return super.reduce(f);
+    public Object treeReduce(AnonymousParam a, int depth) {
+        return super.treeReduce(new XFunction2(a), depth);
     }
 
-    @Override
-    public Object treeReduce(Function2 f, int depth) {
-        return super.treeReduce(f, depth);
+    public Object treeReduce(AnonymousParam a) {
+        return super.treeReduce(new XFunction2(a));
     }
 
-    @Override
-    public Object treeReduce(Function2 f) {
-        return super.treeReduce(f);
-    }
-
-    @Override
-    public Object fold(Object zeroValue, Function2 f) {
-        return super.fold(zeroValue, f);
+    public Object fold(Object zeroValue, AnonymousParam a) {
+        return super.fold(zeroValue, new XFunction2(a));
     }
 
     @Override
@@ -147,7 +151,7 @@ public class XJavaRDD extends JavaRDD {
 
     @Override
     public Object treeAggregate(Object zeroValue, Function2 seqOp, Function2 combOp, int depth) {
-        return super.treeAggregate(zeroValue, seqOp, combOp, depth);
+        return super.treeAggregate(zeroValue, seqOp , combOp, depth);
     }
 
     @Override
@@ -155,18 +159,17 @@ public class XJavaRDD extends JavaRDD {
         return super.treeAggregate(zeroValue, seqOp, combOp);
     }
 
-    @Override
-    public JavaPairRDD keyBy(Function f) {
-        return super.keyBy(f);
+
+    public XJavaPairRDD keyBy(AnonymousParam a) {
+        JavaPairRDD jrdd = super.keyBy(new XFunction(a));
+        return new XJavaPairRDD(jrdd.rdd());
     }
 
-    @Override
-    public JavaFutureAction<Void> foreachAsync(VoidFunction f) {
-        return super.foreachAsync(f);
+    public JavaFutureAction<Void> foreachAsync(AnonymousParam a) {
+        return super.foreachAsync(new XVoidFunction(a));
     }
 
-    @Override
-    public JavaFutureAction<Void> foreachPartitionAsync(VoidFunction f) {
-        return super.foreachPartitionAsync(f);
+    public JavaFutureAction<Void> foreachPartitionAsync(AnonymousParam a) {
+        return super.foreachPartitionAsync(new XVoidFunction(a));
     }
 }
