@@ -28,6 +28,7 @@ import com.noga.njexl.lang.parser.JexlNode;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Eventing.Event;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Eventing;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -36,21 +37,23 @@ import java.util.Set;
  * Also supports closure...
  * Created by noga on 08/04/15.
  */
-public class ScriptMethod {
+public class ScriptMethod implements Serializable {
 
-    public final String name;
+    public final transient String name;
 
-    public final ASTBlock astBlock;
+    public final transient ASTBlock astBlock;
 
-    public final boolean instance;
+    public final transient boolean instance;
 
-    public final HashMap<String, Object> defaultValues;
+    public final transient HashMap<String, Object> defaultValues;
 
-    public final ListSet<String> params;
+    public final transient ListSet<String> params;
 
-    public final boolean nested ;
+    public final transient boolean nested ;
 
-    public final JexlContext parentContext;
+    public final transient JexlContext parentContext;
+
+    public final String definitionText ;
 
     public static boolean isNested(JexlNode current){
         while ( current != null ){
@@ -60,11 +63,25 @@ public class ScriptMethod {
         return false ;
     }
 
+    /**
+     * Creates a method back from definition text !
+     * @param definitionText the text of the method
+     * @return  a @{ScriptMethod}
+     */
+    public static ScriptMethod fromDefinitionText(String definitionText, JexlContext context){
+        JexlEngine e = new JexlEngine();
+        Script s = e.createScript( definitionText );
+        s.execute(context);
+        return s.methods().values().iterator().next() ;
+    }
+
     public ScriptMethod(ASTMethodDef def){
         this(def,null);
     }
 
     public ScriptMethod(ASTMethodDef def, JexlContext parent) {
+
+        definitionText = Debugger.getText(def);
 
         JexlNode n = def.jjtGetChild(0);
         int start ;
@@ -101,9 +118,9 @@ public class ScriptMethod {
         after = new XList<>();
     }
 
-    public final List before;
+    public final transient List before;
 
-    public final List after;
+    public final transient List after;
 
     private void dispatch(String p, Interpreter interpreter, Object[] args, List listeners){
         Event event = new Event( p, this, args );

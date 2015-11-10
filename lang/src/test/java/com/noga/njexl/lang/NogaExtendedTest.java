@@ -27,7 +27,7 @@ import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -1102,7 +1102,25 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertEquals(3,o);
+    }
 
+
+    @Test
+    public void testMethodSerializable() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "def f(a){ a**2 } ";
+        ScriptMethod sm = ScriptMethod.fromDefinitionText(s,jc);
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        ObjectOutputStream os =  new ObjectOutputStream(b);
+        os.writeObject(sm);
+        os.close();
+        ObjectInputStream is = new ObjectInputStream( new ByteArrayInputStream(b.toByteArray()));
+        Object o = is.readObject();
+        assertNotNull(o);
+        assertTrue(o instanceof ScriptMethod );
+        Interpreter i = new Interpreter(JEXL,jc,true,false);
+        o = sm.invoke(null,i, new Object[]{ 10 } );
+        assertEquals(100,o);
     }
 
 
