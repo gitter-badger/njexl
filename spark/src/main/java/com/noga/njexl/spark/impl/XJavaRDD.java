@@ -15,7 +15,6 @@
 
 package com.noga.njexl.spark.impl;
 
-import com.noga.njexl.lang.Interpreter.AnonymousParam;
 import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaFutureAction;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -37,121 +36,119 @@ public class XJavaRDD extends JavaRDD {
         super(rdd.rdd(), ScalaInteract.$TAG );
     }
 
-    public XJavaRDD filter(AnonymousParam a) {
+    public XJavaRDD filter(Object a) {
         JavaRDD jdd =  super.filter(new XFunction(a));
         return new XJavaRDD(jdd);
     }
 
-    public XJavaRDD sortBy(AnonymousParam a, boolean ascending, int numPartitions) {
+    public XJavaRDD sortBy(Object a, boolean ascending, int numPartitions) {
         JavaRDD jdd = super.sortBy(new XFunction(a), ascending, numPartitions);
         return new XJavaRDD(jdd);
     }
 
-    public XJavaRDD sortBy(AnonymousParam a, boolean ascending) {
+    public XJavaRDD sortBy(Object a, boolean ascending) {
         return sortBy(a,ascending, context().defaultMinPartitions() );
     }
 
-    public XJavaRDD sortBy(AnonymousParam a) {
+    public XJavaRDD sortBy(Object a) {
         return sortBy(a,false);
     }
 
-    public XJavaRDD map(AnonymousParam a) {
+    public XJavaRDD map(Object a) {
         JavaRDD jdd = super.map(new XFunction(a));
         return new XJavaRDD(jdd);
     }
 
-    public XJavaRDD mapPartitionsWithIndex(AnonymousParam a, boolean preservesPartitioning) {
+    public XJavaRDD mapPartitionsWithIndex(Object a, boolean preservesPartitioning) {
         JavaRDD jdd = super.mapPartitionsWithIndex(new XFunction2(a), preservesPartitioning);
         return new XJavaRDD(jdd);
     }
 
-    public JavaDoubleRDD mapToDouble(AnonymousParam a) {
+    public JavaDoubleRDD mapToDouble(Object a) {
         return super.mapToDouble( new XDoubleFunction(a));
     }
 
-    public XJavaPairRDD mapToPair(AnonymousParam a) {
+    public XJavaPairRDD mapToPair(Object a) {
         JavaPairRDD jpdd = super.mapToPair(new XPairFunction(a));
         return new XJavaPairRDD(jpdd.rdd());
     }
 
-    public XJavaRDD flatMap(AnonymousParam a) {
+    public XJavaRDD flatMap(Object a) {
         JavaRDD jrdd = super.flatMap( new XFlatMapFunction(a));
         return new XJavaRDD(jrdd);
     }
 
-    public JavaDoubleRDD flatMapToDouble(AnonymousParam a) {
+    public JavaDoubleRDD flatMapToDouble(Object a) {
         return super.flatMapToDouble(new XFlatMapFunction(a));
     }
 
 
-    public XJavaPairRDD flatMapToPair(AnonymousParam a) {
+    public XJavaPairRDD flatMapToPair(Object a) {
         JavaPairRDD jpdd =  super.flatMapToPair(new XFlatMapFunction(a));
         return new XJavaPairRDD(jpdd.rdd());
     }
 
 
-    public XJavaRDD mapPartitions(AnonymousParam a,boolean preservesPartitioning) {
+    public XJavaRDD mapPartitions(Object a,boolean preservesPartitioning) {
         JavaRDD jrdd = super.mapPartitions(new XFlatMapFunction(a),preservesPartitioning);
         return new XJavaRDD(jrdd);
     }
 
-    public XJavaRDD mapPartitions(AnonymousParam a ) {
+    public XJavaRDD mapPartitions(Object a ) {
         return mapPartitions(a,true);
     }
 
-    public JavaDoubleRDD mapPartitionsToDouble(AnonymousParam a,boolean preservesPartitioning) {
+    public JavaDoubleRDD mapPartitionsToDouble(Object a,boolean preservesPartitioning) {
         return super.mapPartitionsToDouble(new XFlatMapFunction(a),preservesPartitioning);
     }
-    public JavaDoubleRDD mapPartitionsToDouble(AnonymousParam a) {
+    public JavaDoubleRDD mapPartitionsToDouble(Object a) {
         return mapPartitionsToDouble(a,true);
     }
 
-    public XJavaPairRDD mapPartitionsToPair(AnonymousParam a,boolean preservesPartitioning) {
+    public XJavaPairRDD mapPartitionsToPair(Object a,boolean preservesPartitioning) {
         JavaPairRDD jpdd =  super.mapPartitionsToPair(new XFlatMapFunction(a),preservesPartitioning);
         return new XJavaPairRDD(jpdd.rdd());
     }
 
-    public XJavaPairRDD mapPartitionsToPair(AnonymousParam a) {
+    public XJavaPairRDD mapPartitionsToPair(Object a) {
         return mapPartitionsToPair(a,true);
     }
 
-    public void foreachPartition(AnonymousParam a) {
+    public void foreachPartition(Object a) {
         super.foreachPartition(new XVoidFunction(a));
     }
 
-    public XJavaPairRDD groupBy(AnonymousParam a,int numPartitions) {
+    public XJavaPairRDD groupBy(Object a,int numPartitions) {
         JavaPairRDD jpdd = super.groupBy(new XFunction(a),numPartitions);
         return new XJavaPairRDD(jpdd.rdd());
     }
 
-    public XJavaPairRDD groupBy(AnonymousParam a) {
+    public XJavaPairRDD groupBy(Object a) {
         return groupBy(a, context().defaultMinPartitions());
     }
 
-    public Object reduce(AnonymousParam a) {
+    public Object reduce(Object a) {
         return super.reduce(new XFunction2(a));
     }
 
-    public Object treeReduce(AnonymousParam a, int depth) {
+    public Object treeReduce(Object a, int depth) {
         return super.treeReduce(new XFunction2(a), depth);
     }
 
-    public Object treeReduce(AnonymousParam a) {
+    public Object treeReduce(Object a) {
         return super.treeReduce(new XFunction2(a));
     }
 
-    public Object fold(Object zeroValue, AnonymousParam a) {
+    public Object fold(Object zeroValue, Object a) {
         return super.fold(zeroValue, new XFunction2(a));
     }
 
-    @Override
-    public Object aggregate(Object zeroValue, Function2 seqOp, Function2 combOp) {
-        return super.aggregate(zeroValue, seqOp, combOp);
+    public Object aggregate(Object zeroValue, Object seqOp, Object combOp) {
+        return super.aggregate(zeroValue, new XFunction2(seqOp), new XFunction2(combOp));
     }
 
-    @Override
-    public Object treeAggregate(Object zeroValue, Function2 seqOp, Function2 combOp, int depth) {
-        return super.treeAggregate(zeroValue, seqOp , combOp, depth);
+    public Object treeAggregate(Object zeroValue, Object seqOp, Object combOp, int depth) {
+        return super.treeAggregate(zeroValue, new XFunction2(seqOp), new XFunction2(combOp), depth);
     }
 
     @Override
@@ -160,16 +157,16 @@ public class XJavaRDD extends JavaRDD {
     }
 
 
-    public XJavaPairRDD keyBy(AnonymousParam a) {
+    public XJavaPairRDD keyBy(Object a) {
         JavaPairRDD jrdd = super.keyBy(new XFunction(a));
         return new XJavaPairRDD(jrdd.rdd());
     }
 
-    public JavaFutureAction<Void> foreachAsync(AnonymousParam a) {
+    public JavaFutureAction<Void> foreachAsync(Object a) {
         return super.foreachAsync(new XVoidFunction(a));
     }
 
-    public JavaFutureAction<Void> foreachPartitionAsync(AnonymousParam a) {
+    public JavaFutureAction<Void> foreachPartitionAsync(Object a) {
         return super.foreachPartitionAsync(new XVoidFunction(a));
     }
 }

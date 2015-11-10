@@ -16,8 +16,6 @@
 package com.noga.njexl.spark.impl;
 
 import com.noga.njexl.lang.Interpreter;
-import com.noga.njexl.lang.Interpreter.AnonymousParam ;
-import com.noga.njexl.lang.extension.TypeUtility;
 import org.apache.spark.api.java.function.*;
 import scala.Tuple2;
 import java.lang.reflect.Array;
@@ -28,14 +26,14 @@ import java.util.List;
  */
 public class AnonymousFunction extends ScalaInteract {
 
-    public AnonymousFunction(AnonymousParam anon){
+    public AnonymousFunction(Object anon){
         super(anon);
     }
 
     public static final class XVoidFunction extends AnonymousFunction
             implements VoidFunction{
 
-        public XVoidFunction(AnonymousParam a){
+        public XVoidFunction(Object a){
             super(a);
         }
 
@@ -49,7 +47,7 @@ public class AnonymousFunction extends ScalaInteract {
     public static final class XFunction extends AnonymousFunction
             implements Function{
 
-        public XFunction(AnonymousParam a){
+        public XFunction(Object a){
             super(a);
         }
 
@@ -64,7 +62,7 @@ public class AnonymousFunction extends ScalaInteract {
     public static final class XFunction2 extends AnonymousFunction
             implements org.apache.spark.api.java.function.Function2{
 
-        public XFunction2(AnonymousParam a){
+        public XFunction2(Object a){
             super(a);
         }
 
@@ -78,7 +76,7 @@ public class AnonymousFunction extends ScalaInteract {
 
     public static final class XDoubleFunction extends AnonymousFunction
             implements DoubleFunction {
-        public XDoubleFunction(AnonymousParam a){
+        public XDoubleFunction(Object a){
             super(a);
         }
 
@@ -94,7 +92,7 @@ public class AnonymousFunction extends ScalaInteract {
 
     public static final class XPairFunction extends AnonymousFunction implements PairFunction{
 
-        public XPairFunction(AnonymousParam a){
+        public XPairFunction(Object a){
             super(a);
         }
 
@@ -121,7 +119,7 @@ public class AnonymousFunction extends ScalaInteract {
     public static final class XFlatMapFunction extends AnonymousFunction
             implements FlatMapFunction,PairFlatMapFunction, DoubleFlatMapFunction {
 
-        public XFlatMapFunction(AnonymousParam a){
+        public XFlatMapFunction(Object a){
             super(a);
         }
 

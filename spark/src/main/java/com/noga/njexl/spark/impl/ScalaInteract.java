@@ -22,6 +22,8 @@ import com.noga.njexl.lang.extension.TypeUtility;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+
+import com.noga.njexl.lang.extension.oop.ScriptMethod;
 import scala.Tuple2;
 import scala.collection.Seq;
 import scala.reflect.ClassTag;
@@ -58,19 +60,29 @@ public class ScalaInteract implements Serializable {
 
     public final String anonScript;
 
+    public final boolean isMethod;
+
     transient Script script;
+
+    transient ScriptMethod scriptMethod;
+
+    transient Interpreter interpreter ;
 
     transient JexlContext context;
 
-    public ScalaInteract(AnonymousParam anon) {
+    public ScalaInteract(Object anon) {
 
-        if (anon != null) {
-            this.anonScript = Debugger.getText(anon.block );
-        } else {
-            this.anonScript = ";";
+        if (anon instanceof AnonymousParam ) {
+            anonScript = Debugger.getText(((AnonymousParam)anon).block );
+            isMethod = false ;
+        } else if ( anon instanceof ScriptMethod ){
+            anonScript = ((ScriptMethod)anon).definitionText ;
+            isMethod = true ;
+        }else {
+            anonScript = ";";
+            isMethod = false ;
         }
     }
-
 
     protected Object safeCall(Object... args) {
         Object ret = Interpreter.NULL;
@@ -86,11 +98,20 @@ public class ScalaInteract implements Serializable {
             Map m = Main.getFunction(context);
             engine.setFunctions(m);
             script = engine.createScript(anonScript);
+            if ( isMethod ){
+                script.execute(context);
+                scriptMethod = script.methods().values().iterator().next();
+                interpreter = ((ExpressionImpl)script).interpreter();
+            }
         }
         try {
             context.set(Script._ITEM_, o);
-            ret = script.execute(context);
-        } catch (Error e) {
+            if ( isMethod ){
+                ret = scriptMethod.invoke(this,interpreter, args );
+            }else {
+                ret = script.execute(context);
+            }
+        } catch (Throwable e) {
             System.err.println("Error " + e.getMessage());
         }
         return ret;
@@ -104,7 +125,7 @@ public class ScalaInteract implements Serializable {
         if (!(args[0] instanceof AnonymousParam)) {
             return Function1.IDENTITY;
         }
-        AnonymousParam anon = (AnonymousParam) args[0];
+        Object anon = args[0];
         int numArgs = TypeUtility.castInteger(args[1], 0);
         switch (numArgs) {
             case 0:
@@ -126,7 +147,7 @@ public class ScalaInteract implements Serializable {
 
         public final ScalaInteract f;
 
-        public Function0(AnonymousParam a) {
+        public Function0(Object a) {
             f = new ScalaInteract(a);
         }
 
@@ -148,7 +169,7 @@ public class ScalaInteract implements Serializable {
 
         public final ScalaInteract f;
 
-        public Function1(AnonymousParam a) {
+        public Function1(Object a) {
             f = new ScalaInteract(a);
         }
 
@@ -180,7 +201,7 @@ public class ScalaInteract implements Serializable {
 
         public final ScalaInteract f;
 
-        public Function2(AnonymousParam a) {
+        public Function2(Object a) {
             f = new ScalaInteract(a);
         }
 
