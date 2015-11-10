@@ -117,6 +117,10 @@ public class ScalaInteract implements Serializable {
         return Function1.IDENTITY;
     }
 
+    public static AnonymousFunction.XFunction2 f2(Object... args) throws Exception {
+        return new AnonymousFunction.XFunction2(  (AnonymousParam)args[0] ) ;
+    }
+
     public static class Function0 extends
             scala.runtime.AbstractFunction0 implements Serializable {
 
