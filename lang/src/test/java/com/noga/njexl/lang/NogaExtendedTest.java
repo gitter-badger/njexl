@@ -1086,6 +1086,42 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testBooleanCast() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "bool(0,[1,0])";
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertFalse((Boolean)o );
+
+        s = "bool(1,[1,0])";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = "bool('x', ['x','y'] )" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+        // now unconventional code
+
+        jc.set("x", new Object[]{ 1, 2 } );
+        jc.set("y", new Object[]{ 3, 4 } );
+
+        s = "bool(x, [x,y] )" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = "bool(y, [x,y] )" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse((Boolean)o);
+
+    }
+
+
+    @Test
     public void testDataMatrixLoad() throws Exception{
         JexlContext jc = new MapContext();
         String s = "m = matrix('samples/test.tsv')";

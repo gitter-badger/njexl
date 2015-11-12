@@ -938,6 +938,14 @@ public class TypeUtility {
             return new Boolean(d != 0);
         }
         if (args.length > 1) {
+            List opts = from(args[1]);
+            if ( opts.size() > 1 ){
+                // options are passed to match
+                Object t = opts.get(0);
+                Object f = opts.get(1);
+                if ( Objects.equals(args[0], t ) ) return true ;
+                if ( Objects.equals(args[0], f ) ) return false ;
+            }
             return castBoolean(args[1]);
         }
         return null;
