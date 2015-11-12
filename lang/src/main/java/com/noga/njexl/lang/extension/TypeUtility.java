@@ -575,6 +575,7 @@ public class TypeUtility {
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
             buf.append(inputLine);
+            buf.append("\n");
         }
         in.close();
         return buf.toString();
