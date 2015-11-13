@@ -39,6 +39,12 @@ import java.util.Set;
  */
 public class ScriptMethod implements Serializable {
 
+    public static final String IDENTITY = "def(){ __args__ ; }" ;
+
+    public static final String COMPOSE = "def(){ _L_ = def() %s ; _R_ = def() %s ;  _L_(_R_(__args__) ) ; }" ;
+
+    public static final String POW = "def(){ _ME_ = def() %s ; _a_ = __args__ ; for( i : [0:%d] ){ _a_ = _ME_( _a_ ) } ; _a_ }" ;
+
     public final transient String name;
 
     public final transient ASTBlock astBlock;
@@ -73,6 +79,31 @@ public class ScriptMethod implements Serializable {
         Script s = e.createScript( definitionText );
         s.execute(context);
         return s.methods().values().iterator().next() ;
+    }
+
+    /**
+     * Compose functions f of g , f is myself
+     * @param other other, the g
+     * @return composition
+     */
+    public ScriptMethod compose( ScriptMethod other){
+        String me = Debugger.getText( astBlock );
+        String him = Debugger.getText( other.astBlock );
+        String defText = String.format( COMPOSE , me, him );
+        return fromDefinitionText( defText, parentContext );
+    }
+
+    /**
+     * Compose f^l(x)
+     * @param l the power in long
+     * @return a function composition of power
+     */
+    public ScriptMethod pow( long l ){
+        if ( l < 0 ) throw new IllegalArgumentException("Power of a function must be >= 0 !");
+        if ( l == 0 ) return fromDefinitionText( IDENTITY , parentContext );
+        String me = Debugger.getText( astBlock );
+        String defText = String.format( POW , me, l );
+        return fromDefinitionText( defText, parentContext );
     }
 
     public ScriptMethod(ASTMethodDef def){

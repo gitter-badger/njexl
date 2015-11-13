@@ -30,6 +30,7 @@ import java.util.*;
 import com.noga.njexl.lang.extension.iterators.DateIterator;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Arithmetic;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Logic;
+import com.noga.njexl.lang.extension.oop.ScriptMethod;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
@@ -623,6 +624,9 @@ public class JexlArithmetic {
             if ( areListOrArray(left,right) ){
                 return SetOperations.join(left,right);
             }
+            if ( left instanceof ScriptMethod && right instanceof ScriptMethod ){
+                return ((ScriptMethod) left).compose((ScriptMethod)right );
+            }
             if ( left instanceof Arithmetic){
                 return ((Arithmetic) left).mul(right);
             }
@@ -772,6 +776,12 @@ public class JexlArithmetic {
                     l = SetOperations.join(l, left);
                 }
                 return l;
+            }
+            if ( left instanceof ScriptMethod ){
+                if ( isNumberable(right)){
+                    long l = toLong(right);
+                    return ((ScriptMethod) left).pow(l);
+                }
             }
             if (left instanceof Arithmetic) {
                 return ((Arithmetic) left).exp(right);
