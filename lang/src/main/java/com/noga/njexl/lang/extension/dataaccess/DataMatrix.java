@@ -120,7 +120,7 @@ public class DataMatrix {
             }
             ArrayList rows = new ArrayList();
             for ( String line : lines ){
-                String[] words =  line.split(sep);
+                String[] words =  line.split(sep,-1);
                 ArrayList row = new ArrayList(Arrays.asList(words));
                 rows.add(row);
             }

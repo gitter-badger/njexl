@@ -1,5 +1,5 @@
-Number	First Name	Last Name	Points
-1	Eve	Jackson	94
-2	John	Doe	80
-3	Adam	Johnson	67
-4	Jill	Smith	50
+Number	First Name	Last Name	Points	Extra
+1	Eve	Jackson	94	
+2	John	Doe	80	x
+3	Adam	Johnson	67	
+4	Jill	Smith	50	xx

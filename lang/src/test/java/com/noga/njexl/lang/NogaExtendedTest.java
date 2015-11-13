@@ -1122,7 +1122,7 @@ public class NogaExtendedTest extends JexlTestCase {
 
 
     @Test
-    public void testDataMatrixLoad() throws Exception{
+    public void testDataMatrix() throws Exception{
         JexlContext jc = new MapContext();
         String s = "m = matrix('samples/test.tsv')";
         Script e = JEXL.createScript(s);
@@ -1138,6 +1138,19 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertEquals(3,o);
+
+        s = "m.select{ $.'First Name' == 'Jill' }() ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof List);
+        assertEquals(1, ((List)o).size()  );
+
+        s = "m.select{ not empty ( $.Extra ) }() ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof List);
+        assertEquals(2, ((List)o).size()  );
+
     }
 
 
