@@ -16,6 +16,7 @@
 package com.noga.njexl.lang.extension.dataaccess;
 
 import com.noga.njexl.lang.Interpreter;
+import com.noga.njexl.lang.JexlException;
 import com.noga.njexl.lang.Script;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.SetOperations;
@@ -352,10 +353,21 @@ public class DataMatrix {
         XList rs = new XList();
         HashMap<Integer,Tuple> selectedRows = new HashMap<>();
         for ( int i = 0 ; i < rows.size();i++ ){
+            boolean broken = false ;
             if ( anon != null ){
                 //process this ...
                 anon.setIterationContextWithPartial(this, tuple(i),i,rs);
                 Object ret = anon.execute();
+                if ( ret instanceof JexlException.Break ){
+                    if ( ((JexlException.Break) ret).hasValue ) {
+                        broken = true;
+                    }else{
+                        break;
+                    }
+                }
+                if ( ret instanceof JexlException.Continue ){
+                    continue;
+                }
                 if ( !TypeUtility.castBoolean(ret,false)){
                     continue;
                 }
@@ -377,6 +389,7 @@ public class DataMatrix {
                 }
             }
             rs.add(cs);
+            if ( broken ){ break; }
         }
         if ( anon != null ){
             anon.removeIterationContext();

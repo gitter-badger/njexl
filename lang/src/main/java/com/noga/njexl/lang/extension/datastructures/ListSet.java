@@ -16,7 +16,11 @@
 
 package com.noga.njexl.lang.extension.datastructures;
 
+import com.noga.njexl.lang.Interpreter;
+import com.noga.njexl.lang.JexlException;
+import com.noga.njexl.lang.Script;
 import com.noga.njexl.lang.extension.SetOperations;
+import com.noga.njexl.lang.extension.TypeUtility;
 
 import java.util.*;
 
@@ -29,7 +33,7 @@ public class ListSet<T> extends HashSet<T> implements List<T> {
     /**
      * A list to shadow the hash map
      */
-    protected List<T> behind;
+    protected XList<T> behind;
 
     public ListSet() {
         this.behind = new XList<>();
@@ -199,5 +203,44 @@ public class ListSet<T> extends HashSet<T> implements List<T> {
     @Override
     public int hashCode() {
        return super.hashCode();
+    }
+
+    public ListSet map(Interpreter.AnonymousParam anon){
+        return behind.set(anon);
+    }
+    public ListSet set(Interpreter.AnonymousParam anon){
+        return map(anon);
+    }
+    public ListSet select(Interpreter.AnonymousParam anon){
+        if ( anon == null ) {
+            return new ListSet(this);
+        }
+        ListSet xList = new ListSet();
+        Iterator iterator = iterator();
+        int i = -1;
+        while(iterator.hasNext()){
+            i++;
+            Object item = iterator.next();
+            anon.setIterationContextWithPartial( this, item ,i, xList);
+            Object ret = anon.execute();
+            if ( ret instanceof JexlException.Break ){
+                if ( ((JexlException.Break) ret).hasValue ){
+                    ret = ((JexlException.Break) ret).value ;
+                    if (TypeUtility.castBoolean(ret,false)){
+                        // ensure update to the variable is considered
+                        item = anon.getVar( Script._ITEM_);
+                        xList.add(item);
+                    }
+                }
+                break;
+            }
+            if (TypeUtility.castBoolean(ret,false)){
+                // ensure update to the variable is considered
+                item = anon.getVar( Script._ITEM_);
+                xList.add(item);
+            }
+        }
+        anon.removeIterationContext();
+        return xList;
     }
 }

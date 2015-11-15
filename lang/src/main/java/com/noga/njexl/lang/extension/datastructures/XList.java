@@ -17,6 +17,7 @@
 package com.noga.njexl.lang.extension.datastructures;
 
 import com.noga.njexl.lang.Interpreter;
+import com.noga.njexl.lang.JexlException;
 import com.noga.njexl.lang.Script;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
@@ -100,16 +101,20 @@ public class XList<T> extends ArrayList<T> {
         Interpreter.AnonymousParam anon = (Interpreter.AnonymousParam)o;
 
         Iterator iterator = iterator();
-        int i = 0;
+        int i = -1;
         while(iterator.hasNext()){
+            i++;
             Object item = iterator.next();
             anon.setIterationContext( this, item ,i);
             Object ret = anon.execute();
+            if ( ret instanceof JexlException.Continue ){
+                continue;
+            }
+
             if (TypeUtility.castBoolean(ret,false)){
                 anon.removeIterationContext();
                 return i ;
             }
-            i++;
         }
         anon.removeIterationContext();
         return -1;
@@ -132,17 +137,29 @@ public class XList<T> extends ArrayList<T> {
         }
         XList xList = new XList();
         Iterator iterator = iterator();
-        int i = 0;
+        int i = -1;
         while(iterator.hasNext()){
+            i++;
             Object item = iterator.next();
             anon.setIterationContextWithPartial( this, item ,i, xList);
             Object ret = anon.execute();
+
+            if ( ret instanceof JexlException.Break ){
+                if ( ((JexlException.Break) ret).hasValue ){
+                    ret = ((JexlException.Break) ret).value ;
+                    if (TypeUtility.castBoolean(ret,false)){
+                        // ensure update to the variable is considered
+                        item = anon.getVar( Script._ITEM_);
+                        xList.add(item);
+                    }
+                }
+                break;
+            }
             if (TypeUtility.castBoolean(ret,false)){
                 // ensure update to the variable is considered
                 item = anon.getVar( Script._ITEM_);
                 xList.add(item);
             }
-            i++;
         }
         anon.removeIterationContext();
         return xList;
@@ -157,14 +174,29 @@ public class XList<T> extends ArrayList<T> {
             return new ListSet(this);
         }
         ListSet listSet = new ListSet();
-        int i = 0;
+        int i = -1;
         Iterator iterator = iterator();
         while(iterator.hasNext()){
+            i++;
             Object item = iterator.next();
             anon.setIterationContextWithPartial( this, item ,i, listSet);
             Object ret = anon.execute();
+            if ( ret instanceof JexlException.Continue ){
+                if ( ((JexlException.Continue) ret).hasValue ){
+                    ret = ((JexlException.Continue) ret).value ;
+                    listSet.add(ret);
+                }
+                continue;
+            }
+
+            if ( ret instanceof JexlException.Break ){
+                if ( ((JexlException.Break) ret).hasValue ){
+                    ret = ((JexlException.Break) ret).value ;
+                    listSet.add(ret);
+                }
+                break;
+            }
             listSet.add(ret);
-            i++;
         }
         anon.removeIterationContext();
         return listSet;
@@ -175,14 +207,29 @@ public class XList<T> extends ArrayList<T> {
             return new XList(this);
         }
         XList list = new XList();
-        int i = 0;
+        int i = -1;
         Iterator iterator = iterator();
         while(iterator.hasNext()){
+            i++;
             Object item = iterator.next();
             anon.setIterationContextWithPartial( this, item ,i, list);
             Object ret = anon.execute();
+            if ( ret instanceof JexlException.Continue ){
+                if ( ((JexlException.Continue) ret).hasValue ){
+                    ret = ((JexlException.Continue) ret).value ;
+                    list.add(ret);
+                }
+                continue;
+            }
+
+            if ( ret instanceof JexlException.Break ){
+                if ( ((JexlException.Break) ret).hasValue ){
+                    ret = ((JexlException.Break) ret).value ;
+                    list.add(ret);
+                }
+                break;
+            }
             list.add(ret);
-            i++;
         }
         anon.removeIterationContext();
         return list;
@@ -204,6 +251,33 @@ public class XList<T> extends ArrayList<T> {
             Object item = iterator.next();
             anon.setIterationContextWithPartial(this, item, i, map);
             Object key = anon.execute();
+            if ( key instanceof JexlException.Continue ){
+                if ( ((JexlException.Continue) key).hasValue ){
+                    key = ((JexlException.Continue) key).value ;
+                    if ( map.containsKey(key)){
+                        map.get(key).add(item);
+                    }else{
+                        XList list = new XList();
+                        list.add(item);
+                        map.put(key,list);
+                    }
+                }
+                continue;
+            }
+
+            if ( key instanceof JexlException.Break ){
+                if ( ((JexlException.Break) key).hasValue ){
+                    key = ((JexlException.Break) key).value ;
+                    if ( map.containsKey(key)){
+                        map.get(key).add(item);
+                    }else{
+                        XList list = new XList();
+                        list.add(item);
+                        map.put(key,list);
+                    }
+                }
+                break;
+            }
 
             if ( map.containsKey(key)){
                 map.get(key).add(item);

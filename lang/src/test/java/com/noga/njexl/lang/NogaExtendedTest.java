@@ -1163,6 +1163,19 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue(o instanceof List);
         assertEquals(2, ((List)o).size()  );
 
+        s = "m.select{ continue( empty ( $.Extra ) ) ; true  }() ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof List);
+        assertEquals(2, ((List)o).size()  );
+
+        s = "m.select{ break( _ / 2 > 0  ) ; true  }() ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof List);
+        assertEquals(2, ((List)o).size()  );
+
+
     }
 
 

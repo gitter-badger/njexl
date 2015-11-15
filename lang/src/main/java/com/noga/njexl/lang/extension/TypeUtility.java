@@ -1297,6 +1297,9 @@ public class TypeUtility {
         for (Object o : list) {
             anon.setIterationContext(list, o, i);
             Object ret = anon.execute();
+            if ( ret instanceof JexlException.Continue ){
+                continue;
+            }
             found = castBoolean(ret, false);
             if (found) {
                 break;
