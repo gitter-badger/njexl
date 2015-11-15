@@ -101,6 +101,7 @@ public class ScriptMethod implements Serializable {
     public ScriptMethod pow( long l ){
         if ( l < 0 ) throw new IllegalArgumentException("Power of a function must be >= 0 !");
         if ( l == 0 ) return fromDefinitionText( IDENTITY , parentContext );
+        if ( l == 1 ) return this ;
         String me = Debugger.getText( astBlock );
         String defText = String.format( POW , me, l );
         return fromDefinitionText( defText, parentContext );
