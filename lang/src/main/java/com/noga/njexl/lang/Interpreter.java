@@ -1786,7 +1786,9 @@ public class Interpreter implements ParserVisitor {
 
         /**
          * Executes the anonymous function
-         *
+         * If it has resulted in a break; it returns the break exception
+         * If it has resulted in a continue ; it returns the continue exception
+         * Hence, caller must not catch these two exceptions at all
          * @return the result of the call
          */
         public Object execute() {

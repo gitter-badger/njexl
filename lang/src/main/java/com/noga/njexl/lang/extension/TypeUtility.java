@@ -242,16 +242,25 @@ public class TypeUtility {
         if ( anon == null ) return matcher ;
         List l = new XList<>();
         // else ?
-        int i = 0 ;
+        int i = -1 ;
         while ( matcher.find() ){
-            anon.setIterationContextWithPartial(text, matcher.group(), i++, l);
+            anon.setIterationContextWithPartial(text, matcher.group(), ++i, l);
             Object o ;
             try {
                 o = anon.execute();
-            }catch (JexlException.Break b){
-                break;
-            }catch (JexlException.Continue c){
-                continue;
+                if ( o instanceof JexlException.Continue ){
+                    if ( ((JexlException.Continue) o).hasValue ){
+                        l.add(((JexlException.Continue) o).value);
+                    }
+                    continue;
+                }
+                if ( o instanceof JexlException.Break ){
+                    if ( ((JexlException.Break) o).hasValue ){
+                        l.add(((JexlException.Break) o).value);
+                    }
+                    break;
+                }
+
             }catch (Exception e){
                 o = null;
             }
@@ -287,16 +296,28 @@ public class TypeUtility {
                 itr = itr.inverse();
             }
             if ( anon == null ){ return castString( itr.list() ); }
-            int i = 0;
+            int i = -1;
             while ( itr.hasNext() ){
+                i++;
                 Object o = itr.next();
                 anon.setIterationContextWithPartial(itr,o,i,partial);
                 try {
-                    partial = anon.execute();
-                }catch (JexlException.Break b){
-                    break;
-                }catch (JexlException.Continue c){
-                    continue;
+                    Object r = anon.execute();
+                    if ( r instanceof JexlException.Continue ){
+                        if ( ((JexlException.Continue) r).hasValue ){
+                            partial = ((JexlException.Continue) r).value ;
+                        }
+                        continue;
+                    }
+                    if ( r instanceof JexlException.Break ){
+                        if ( ((JexlException.Break) r).hasValue ){
+                            partial = ((JexlException.Break) r).value ;
+                        }
+                        break;
+                    }
+                    partial = r ;
+                }catch (Throwable e){
+                    System.err.println(e);
                 }
             }
             return partial;
@@ -323,11 +344,22 @@ public class TypeUtility {
             Object o = l.get(j);
             anon.setIterationContextWithPartial(l,o,i,partial);
             try {
-                partial = anon.execute();
-            }catch (JexlException.Break b){
-                break;
-            }catch (JexlException.Continue c){
-                continue;
+                Object r = anon.execute();
+                if ( r instanceof JexlException.Continue ){
+                    if ( ((JexlException.Continue) r).hasValue ){
+                        partial = ((JexlException.Continue) r).value ;
+                    }
+                    continue;
+                }
+                if ( r instanceof JexlException.Break ){
+                    if ( ((JexlException.Break) r).hasValue ){
+                        partial = ((JexlException.Break) r).value ;
+                    }
+                    break;
+                }
+                partial = r ;
+            }catch (Throwable e){
+                System.err.println(e);
             }
         }
         return partial;

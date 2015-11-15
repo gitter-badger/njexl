@@ -198,11 +198,13 @@ public class XList<T> extends ArrayList<T> {
         }
         HashMap<Object,List> map = new HashMap<>();
         Iterator iterator = iterator();
-        int i = 0;
+        int i = -1;
         while(iterator.hasNext()){
+            i++;
             Object item = iterator.next();
             anon.setIterationContextWithPartial(this, item, i, map);
             Object key = anon.execute();
+
             if ( map.containsKey(key)){
                 map.get(key).add(item);
             }else{
@@ -210,7 +212,6 @@ public class XList<T> extends ArrayList<T> {
                 list.add(item);
                 map.put(key,list);
             }
-            i++;
         }
         anon.removeIterationContext();
         return map;

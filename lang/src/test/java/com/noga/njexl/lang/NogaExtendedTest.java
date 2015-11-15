@@ -32,7 +32,6 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.function.BooleanSupplier;
 
 /**
  * Tests for while statement.
@@ -990,6 +989,19 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue( o instanceof List);
         assertEquals(3, ((List) o).size());
 
+        s = "s = '11,13,34,44,60' ; tokens{ n = int($) ; continue( n > 20 ) ; n  }(s,'[0-9]+') ;"  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue( o instanceof List);
+        assertEquals(2, ((List) o).size());
+
+        s = "s = '11,13,34,44,60' ; tokens{ n = int($) ; break( n > 20 ){ n } ; n  }(s,'[0-9]+') ;"  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue( o instanceof List);
+        assertEquals(3, ((List) o).size());
+
+
     }
 
     @Test
@@ -1219,6 +1231,51 @@ public class NogaExtendedTest extends JexlTestCase {
         assertEquals(0, Array.get(o,0) );
 
     }
+
+    @Test
+    public void testFold() throws Exception{
+        JexlContext jc = new MapContext();
+        // this darn 's' is called a successor function
+        String s = "lfold{ continue( $ > 5 ){ _$_[_] = $ ; _$_ } ; _$_ } ( [0:10] , dict() )  ";
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue(o instanceof Map);
+        assertEquals(4, ((Map)o).size() );
+
+        s = "rfold{ continue( $ > 5 ){ _$_[_] = $ ; _$_ } ; _$_ } ( [0:10] , dict() )  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Map);
+        assertEquals(5, ((Map)o).size() );
+
+        s = "lfold{ continue( $ > 5 ){ _$_[_] = $ ; _$_ } ; _$_ } ( [0,1,2,3,4,5,6] , dict() )  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Map);
+        assertEquals(1, ((Map)o).size() );
+
+
+        s = "rfold{ continue( $ > 5 ){ _$_[_] = $ ; _$_ } ; _$_ } ( [0,1,2,3,4,5,6] , dict() )  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Map);
+        assertEquals(1, ((Map)o).size() );
+
+
+        s = "lfold{ break( $ > 5 ){ _$_[_] = $ ; _$_ } ; _$_ } ( [0,1,2,3,4,5,6,7,8,9] , dict() )  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Map);
+        assertEquals(1, ((Map)o).size() );
+
+        s = "rfold{ break( $ > 5 ){ _$_[_] = $ ; _$_ } ; _$_ } ( [0,1,2,3,4,5,6,7,8,9] , dict() )  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Map);
+        assertEquals(1, ((Map)o).size() );
+
+    }
+
 
     @Test
     public void testIndexFunction() throws Exception {
