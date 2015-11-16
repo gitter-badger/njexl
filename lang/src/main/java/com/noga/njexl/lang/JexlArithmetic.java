@@ -586,7 +586,8 @@ public class JexlArithmetic {
         if (BigInteger.ZERO.equals(r)) {
             throw new ArithmeticException("%");
         }
-        return narrowBigInteger(left, right, result);
+        // must use right as the bound, because it is mod...
+        return narrowBigInteger((short)0, right, result);
     }
 
     /**
