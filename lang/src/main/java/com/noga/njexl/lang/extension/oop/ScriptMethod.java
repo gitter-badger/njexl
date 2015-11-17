@@ -179,9 +179,6 @@ public class ScriptMethod implements Serializable {
     private Object getDefault(String paramName,Interpreter interpreter) {
         if (defaultValues.containsKey(paramName)) {
             Object defValue =  defaultValues.get(paramName);
-            if ( defValue instanceof ASTMethodDef) {
-                return new ScriptMethod((ASTMethodDef)defValue,interpreter.getContext());
-            }
             if ( defValue instanceof JexlNode) {
                 defValue = ((JexlNode)defValue).jjtAccept(interpreter, null);
             }

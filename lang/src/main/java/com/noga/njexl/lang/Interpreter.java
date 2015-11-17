@@ -641,7 +641,8 @@ public class Interpreter implements ParserVisitor {
             }
             return method ;
         }
-        return null; // anonymous functions should not be there inside a main script?
+        // anonymous functions should not be there inside a main script?
+        return new ScriptMethod(node, context);
     }
 
     @Override
