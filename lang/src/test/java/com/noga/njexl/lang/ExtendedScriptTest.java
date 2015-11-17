@@ -278,6 +278,12 @@ public class ExtendedScriptTest extends JexlTestCase {
         Object o = runScript(JEXL, "samples/same_name_diff_ns.jxl");
         assertEquals(2,o);
     }
+    @Test
+    public void testFunctionTakingDefaultFunctionAsArg() throws Exception{
+        Object o = runScript(JEXL, "samples/function_arg.jxl");
+        assertEquals(0,o);
+    }
+
     /****
     @Test
     public void testDB() throws Exception{
