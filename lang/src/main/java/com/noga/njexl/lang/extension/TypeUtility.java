@@ -1075,6 +1075,11 @@ public class TypeUtility {
             String ret = buf.substring(0,buf.lastIndexOf(sep));
             return ret;
         }
+        if ( args[0] instanceof BigInteger ){
+            if ( args.length > 1 ){
+                return ((BigInteger)args[0]).toString( castInteger(args[1] ));
+            }
+        }
         return args[0].toString();
     }
 

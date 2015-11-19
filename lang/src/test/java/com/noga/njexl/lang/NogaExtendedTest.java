@@ -122,6 +122,17 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.evaluate(jc);
         assertTrue(o.equals("0.01"));
 
+        BigInteger bi = new BigInteger("11", 2);
+        jc.set("bi",bi);
+        // test for big int radix
+        e = JEXL.createExpression("str(bi,2)");
+        o = e.evaluate(jc);
+        assertEquals(bi.toString(2), o);
+
+        e = JEXL.createExpression("str(bi)");
+        o = e.evaluate(jc);
+        assertEquals("3", o);
+
     }
 
     @Test
