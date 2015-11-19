@@ -72,6 +72,7 @@ public class ScriptMethod implements Serializable {
     /**
      * Creates a method back from definition text !
      * @param definitionText the text of the method
+     * @param context a @{JexlContext} within which the method would be created
      * @return  a @{ScriptMethod}
      */
     public static ScriptMethod fromDefinitionText(String definitionText, JexlContext context){

@@ -1068,6 +1068,45 @@ public class NogaExtendedTest extends JexlTestCase {
 
     }
 
+    @Test
+    public void testAssertions() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "assert()"  ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "assert(true, 'Hard coded to truth!')"  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        String msg = "Hard coded to Fail!" ;
+        jc.set("msg", msg );
+        s = " assert(false, msg) "  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o.getClass().isArray());
+        assertTrue( msg.equals( Array.get(o,0) ) );
+
+        s = " assert{ false }(msg) "  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o.getClass().isArray());
+        assertTrue( msg.equals( Array.get(o,0) ) );
+
+        s = " assert{ 1/0  }(msg) "  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o.getClass().isArray());
+        assertTrue( msg.equals( Array.get(o,0) ) );
+
+        s = " assert{ 1 == 1  }(msg) "  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+    }
+
 
     @Test
     public void testAssignAdditive() throws Exception{

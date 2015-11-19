@@ -25,6 +25,7 @@ import com.noga.njexl.lang.extension.iterators.DateIterator;
 import com.noga.njexl.lang.extension.iterators.SymbolIterator;
 import com.noga.njexl.lang.extension.iterators.YieldedIterator;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
+import com.noga.njexl.lang.extension.oop.ScriptMethod;
 import com.noga.njexl.lang.parser.ASTReturnStatement;
 import com.noga.njexl.lang.parser.ASTStringLiteral;
 import com.noga.njexl.lang.parser.JexlNode;
@@ -93,6 +94,7 @@ public class TypeUtility {
 
     public static final String BYE = "bye";
 
+    public static final String ASSERT = "assert";
     public static final String TEST = "test";
 
     /**
@@ -1565,7 +1567,24 @@ public class TypeUtility {
         if (args.length == 0) {
             return true;
         }
-        boolean ret = castBoolean(args[0], false);
+        boolean ret;
+        Object args0 = args[0];
+        args = shiftArrayLeft(args,1);
+        if ( args0 instanceof AnonymousParam ){
+            ((AnonymousParam)args0).setIterationContext(args,args,0);
+            try {
+                Object o = ((AnonymousParam) args0).execute();
+                ret = castBoolean(o);
+            }catch (Throwable t){
+                ret = false ;
+            }
+        }
+        else {
+            ret = castBoolean(args0, false);
+        }
+        if ( !ret ){
+            bye(args);
+        }
         // log it - later problem - not now
         return ret;
     }
@@ -1830,6 +1849,7 @@ public class TypeUtility {
             case BYE:
                 bye(argv);
                 break;
+            case ASSERT:
             case TEST:
                 return test(argv);
             case LOAD_PATH:
