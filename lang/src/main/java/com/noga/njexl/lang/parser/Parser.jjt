@@ -805,9 +805,11 @@ void ClassDef() #ClassDef : {}
 
 void ParamDef() #ParamDef : {}
 {
-    LOOKAHEAD(2) Identifier()  <assign> Expression()
+      LOOKAHEAD(3) Identifier()  <assign> MethodDef()
     |
-    Identifier()
+      LOOKAHEAD(2) Identifier()  <assign> Expression()
+    |
+      Identifier()
 }
 
 void ArgDef() #ArgDef : {}

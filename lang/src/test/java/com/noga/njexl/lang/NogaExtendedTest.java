@@ -803,6 +803,12 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertTrue((Boolean) o);
+
+        s = "x = 3L % 2 " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(1, o);
+
     }
 
     @Test

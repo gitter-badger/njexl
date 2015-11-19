@@ -612,18 +612,10 @@ public class Interpreter implements ParserVisitor {
         int numChild = node.jjtGetNumChildren();
         JexlNode valNode = node.jjtGetChild(numChild-1);
         if (numChild == 1) {
-            if ( valNode instanceof ASTMethodDef ){
-                return new ScriptMethod((ASTMethodDef)valNode);
-            }
             return valNode.jjtAccept(this, data);
         }
         String name = node.jjtGetChild(0).image ;
-        Object val = null;
-        if ( valNode instanceof ASTMethodDef ){
-            val = new ScriptMethod((ASTMethodDef)valNode );
-        }else {
-            val = valNode.jjtAccept(this,data);
-        }
+        Object val = valNode.jjtAccept(this,data);
         NamedArgs na = new NamedArgs(name, val);
         return na;
     }
@@ -641,7 +633,8 @@ public class Interpreter implements ParserVisitor {
             }
             return method ;
         }
-        return null; // anonymous functions should not be there inside a main script?
+        // anonymous functions should not be there inside a main script?
+        return new ScriptMethod(node, context);
     }
 
     @Override
