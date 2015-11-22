@@ -406,6 +406,13 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue(x.get(0).equals(-0.1f));
         assertTrue(x.get(x.size() - 1).equals(2.0f));
 
+        // now the anonymous stuff!
+        e = JEXL.createScript("x=[ '1.23', 2.0, -0.1,'0.0' ] ; x = sorta{ double($[0]) < double($[1]) }(x);");
+        e.execute(jc);
+        Object[] xx = (Object[])jc.get("x");
+        assertTrue(xx[0].equals(-0.1f));
+        assertTrue(xx[xx.length - 1].equals(2.0f));
+
 
         // now the anonymous stuff!
         e = JEXL.createScript("x=list('1.23', 2.0, -0.1,'0.0') ; x = sortd{ double($[0]) < double($[1]) }(x);");
@@ -413,6 +420,14 @@ public class NogaExtendedTest extends JexlTestCase {
         x = (List)jc.get("x");
         assertTrue(x.get(x.size() - 1).equals(-0.1f));
         assertTrue(x.get(0).equals(2.0f));
+
+        // array should be returned by array again
+
+        e = JEXL.createScript("x=[ '1.23', 2.0, -0.1,'0.0']  ; x = sortd{ double($[0]) < double($[1]) }(x);");
+        e.execute(jc);
+        xx = (Object[])jc.get("x");
+        assertTrue(xx[xx.length - 1].equals(-0.1f));
+        assertTrue(xx[0].equals(2.0f));
 
     }
 

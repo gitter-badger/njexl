@@ -1679,11 +1679,11 @@ public class TypeUtility {
 
         public final AnonymousParam anon;
 
-        public final Collection collection;
+        public final Object collection;
 
         public final boolean reverse;
 
-        public AnonymousComparator(AnonymousParam anon,Collection collection,boolean reverse){
+        public AnonymousComparator(AnonymousParam anon,Object collection,boolean reverse){
             this.anon = anon ;
             this.collection = collection ;
             this.reverse = reverse ;
@@ -1709,41 +1709,79 @@ public class TypeUtility {
         }
     }
 
-    public static Collection ascending(Object...args){
+    public static Object ascending(Object...args){
         if ( args.length == 0 ){
             return Collections.emptyList();
         }
+        boolean isArray = false ;
+        Object l ;
         if ( args.length > 0 ){
             if ( args[0] instanceof AnonymousParam ){
                 AnonymousParam anon = (AnonymousParam)args[0];
                 args = shiftArrayLeft(args, 1);
-                List l = combine( args);
+                if ( args.length == 1 && args[0] != null && args[0].getClass().isArray()  ){
+                    l = array(args[0]) ;
+                    isArray = true ;
+                }else{
+                    l = combine( args);
+                }
+
                 AnonymousComparator comparator = new AnonymousComparator(anon,l,false) ;
-                Collections.sort( l, comparator);
+                if ( isArray ) {
+                    Arrays.sort((Object[]) l,comparator);
+
+                } else {
+                    Collections.sort((List)l, comparator);
+                }
                 return l;
             }
         }
-        List l = combine( args);
-        Collections.sort(l);
+        if ( args.length == 1 && args[0] != null && args[0].getClass().isArray()  ){
+            l = array(args[0]) ;
+            Arrays.sort((Object[])l);
+        }else{
+            l = combine( args);
+            Collections.sort((List)l);
+        }
+
         return l;
     }
 
-    public static Collection descending(Object...args){
+    public static Object descending(Object...args){
         if ( args.length == 0 ){
             return Collections.emptyList();
         }
+        boolean isArray = false ;
+        Object l ;
         if ( args.length > 0 ){
             if ( args[0] instanceof AnonymousParam ){
                 AnonymousParam anon = (AnonymousParam)args[0];
                 args = shiftArrayLeft(args, 1);
-                List l = combine( args);
+                if ( args.length == 1 && args[0] != null && args[0].getClass().isArray()  ){
+                    l = array(args[0]) ;
+                    isArray = true ;
+                }else{
+                    l = combine( args);
+                }
+
                 AnonymousComparator comparator = new AnonymousComparator(anon,l,true) ;
-                Collections.sort( l, comparator);
+                if ( isArray ) {
+                    Arrays.sort((Object[]) l,comparator);
+
+                } else {
+                    Collections.sort((List)l, comparator);
+                }
                 return l;
             }
         }
-        List l = combine(args) ;
-        Collections.sort(l, Collections.reverseOrder());
+        if ( args.length == 1 && args[0] != null && args[0].getClass().isArray()  ){
+            l = array(args[0]) ;
+            Arrays.sort((Object[])l,Collections.reverseOrder());
+        }else{
+            l = combine( args);
+            Collections.sort((List)l, Collections.reverseOrder());
+        }
+
         return l;
     }
 
