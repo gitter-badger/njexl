@@ -1345,7 +1345,6 @@ public class NogaExtendedTest extends JexlTestCase {
 
     }
 
-
     @Test
     public void testIndexFunction() throws Exception {
         JexlContext jc = new MapContext();
@@ -1394,4 +1393,50 @@ public class NogaExtendedTest extends JexlTestCase {
         assertFalse((Boolean) o);
 
     }
+
+    @Test
+    public void testReverseIndexFunction() throws Exception {
+        JexlContext jc = new MapContext();
+        String s = "rindex(null,null)";
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertEquals(-1, o);
+        s = "rindex([],[1,2,3])";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        // axiomatically empty list is a member of any list
+        assertEquals(2, o);
+
+        s = "rindex([2],[1,2,3])";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(1, o);
+
+        s = "rindex([1],[1,2,3])";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(0, o);
+
+        s = "rindex([2,3],[1,2,3])";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(1, o);
+
+        s = "rindex([2,3],[1,2,3,2,3,4])";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(3, o);
+
+        s = "rindex([2,3],[1,2,3,2,3])";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(3, o);
+
+        s = "rindex{ $ > 3 } ( [ 6,4,5,6,9,1,2,3] )";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertEquals(4, o);
+
+    }
+
 }

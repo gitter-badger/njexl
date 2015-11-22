@@ -109,6 +109,7 @@ public class TypeUtility {
 
     public static final String FIND = "find";
     public static final String INDEX = "index";
+    public static final String RINDEX = "rindex";
 
     public static final String JOIN = "join";
 
@@ -1321,6 +1322,79 @@ public class TypeUtility {
         return -1;
     }
 
+    public static int rindex(Object... args) {
+        AnonymousParam anon = null;
+        XList list = new XList();
+        if (args.length > 1) {
+            if (args[0] instanceof AnonymousParam) {
+                anon = (AnonymousParam) args[0];
+                args = shiftArrayLeft(args, 1);
+            }
+        }
+        if ( args.length < 1){ return -1; }
+        Object item = args[0];
+        int start = 0;
+        if (anon == null) {
+            if ( args.length < 2){ return -1; }
+            if ( args[1] instanceof CharSequence ){
+                if ( item == null ) return -1;
+                return args[1].toString().lastIndexOf( item.toString() );
+            }
+            if ( JexlArithmetic.areListOrArray( item , args[1] )){
+                String l = castString(item,SetOperations.SEP);
+                String r = castString(args[1],SetOperations.SEP);
+                if ( l.isEmpty() ){
+                    if ( args[1] instanceof List ){
+                        return ((List)args[1]).size() - 1;
+                    }
+                    return Array.getLength(args[1]) - 1;
+                }
+                int inx = r.lastIndexOf(l);
+                // how many seps are there?
+                int c = 0;
+                char sep = SetOperations.SEP.charAt(0);
+                for ( int i = 0 ; i < inx; i++ ){
+                    if (  r.charAt(i) == sep ){
+                        c++;
+                    }
+                }
+                return inx - c ;
+            }
+
+            start = 1;
+        }
+        for (int i = start; i < args.length; i++) {
+            List l = from(args[i]);
+            if ( l == null ) continue;
+            list.addAll(l);
+        }
+        if (anon == null) {
+            return list.lastIndexOf(item);
+        }
+
+        int i = list.size() - 1 ;
+
+        boolean found = false;
+        for (; i >= 0 ; i-- ) {
+            anon.setIterationContext(list, list.get(i), i);
+            Object ret = anon.execute();
+            if ( ret instanceof JexlException.Continue ){
+                continue;
+            }
+            found = castBoolean(ret, false);
+            if (found) {
+                break;
+            }
+        }
+        anon.removeIterationContext();
+        if (found) {
+            return i;
+        }
+
+        return -1;
+    }
+
+
     public static Iterator range(Object... args) throws Exception {
 
         if (args.length == 0) {
@@ -1826,6 +1900,8 @@ public class TypeUtility {
             case FIND:
             case INDEX:
                 return index(argv);
+            case RINDEX:
+                return rindex(argv);
             case JOIN:
                 return SetOperations.join_c(argv);
             case ARRAY:
