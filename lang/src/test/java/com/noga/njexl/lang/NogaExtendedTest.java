@@ -567,6 +567,43 @@ public class NogaExtendedTest extends JexlTestCase {
         assertNotNull(o);
     }
 
+    @Test
+    public void testRandomRange() throws Exception {
+        JexlContext jc = new MapContext();
+
+        String s = "random() " ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue(o instanceof Random );
+
+        s = "random(0)" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Double );
+
+        s = "random(0.2f)" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Float );
+
+        s = "random(0.2d)" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Double );
+
+        s = "random(1l)" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Long );
+
+        s = "random(10, 100 )" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Integer );
+        assertTrue((int)o < 100 && (int)o >=10  );
+
+    }
+
     private static class XClass {
 
         private long i;

@@ -403,8 +403,21 @@ public class TypeUtility {
         return true;
     }
 
+    public static final SecureRandom random = new SecureRandom();
+
+    /**
+     * Generates some random stuff
+     * If args length is empty or args[0]  null returns a SecureRandom object
+     * For a list, string, iterator, selects a random element from it and returns that
+     * If input type is float, double, long it returns the nextType()
+     * If input is precisely 0, or 0,0 it returns nextGaussian
+     * If input it integer and non zero, that is random(x) and random(x,y)
+     * Then returns nextInt(x) and ranges it off
+     * @param args arguments
+     * @return see the doc
+     */
     public static Object random(Object...args){
-        SecureRandom random = new SecureRandom();
+
         if ( args.length == 0 ) return random ;
         if ( args[0] == null ) return random ;
 
@@ -413,6 +426,30 @@ public class TypeUtility {
         }
         else if ( args[0] instanceof Iterator){
             args[0] = YieldedIterator.list((Iterator) args[0]);
+        }
+        if ( args[0] instanceof Number){
+            if ( args[0] instanceof Long ){
+                return random.nextLong() ;
+            }
+            if ( args[0] instanceof Double ){
+                return random.nextDouble() ;
+            }
+            if ( args[0] instanceof Float ){
+                return random.nextFloat() ;
+            }
+
+            int x = 0 ;
+            int y = ((Number)args[0]).intValue() ;
+            if ( args.length > 1  ){
+                x = y ;
+                y = ((Number)args[1]).intValue() ;
+            }
+            int min = Math.min(x,y);
+            int max = Math.max(x,y);
+            if ( max == 0 ){
+                return random.nextGaussian();
+            }
+            return (  min + random.nextInt( max - min ) );
         }
         if ( args[0] instanceof String){
             String l = (String)args[0];
@@ -497,7 +534,7 @@ public class TypeUtility {
             // return the tuple
             return new Object[] { l.get(index) , m.get( l.get(index) ) };
         }
-        return null;
+        return random;
     }
 
     public static Object type(Object...args){
