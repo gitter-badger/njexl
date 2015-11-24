@@ -1150,10 +1150,13 @@ public class TypeUtility {
             String ret = buf.substring(0,buf.lastIndexOf(sep));
             return ret;
         }
-        if ( args[0] instanceof BigInteger ){
-            if ( args.length > 1 ){
-                return ((BigInteger)args[0]).toString( castInteger(args[1] ));
+        if ( args.length > 1 && args[1] instanceof Number && args[0] instanceof Number ){
+            int base = ((Number)args[1]).intValue();
+            if ( args[0] instanceof BigInteger ){
+                return ((BigInteger)args[0]).toString(base);
             }
+            long l = ((Number)args[0]).longValue();
+            return BigInteger.valueOf(l).toString(base);
         }
         return args[0].toString();
     }

@@ -133,6 +133,18 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.evaluate(jc);
         assertEquals("3", o);
 
+        e = JEXL.createExpression("str(3,2)");
+        o = e.evaluate(jc);
+        assertEquals("11", o);
+
+        e = JEXL.createExpression("str(3l,2l)");
+        o = e.evaluate(jc);
+        assertEquals("11", o);
+
+        e = JEXL.createExpression("str(3,2.0)");
+        o = e.evaluate(jc);
+        assertEquals("11", o);
+
     }
 
     @Test
