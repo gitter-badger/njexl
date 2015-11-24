@@ -17,6 +17,7 @@
 package com.noga.njexl.lang;
 
 
+import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.dataaccess.DBManager;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.lang.extension.dataaccess.XmlMap;
@@ -189,8 +190,24 @@ public class ExtendedScriptTest extends JexlTestCase {
 
     @Test
     public void testJSONLoading() throws Exception{
-        DBManager.init("samples/" + DBManager.DB_CONFIG_FILE_LOC);
-        assertTrue(DBManager.dataBaseDOMHash != null );
+        DBManager mgr =(DBManager) TypeUtility.dataBase("samples/" + DBManager.DB_CONFIG_FILE_LOC);
+        assertTrue(mgr.dataBaseDOMHash != null );
+    }
+
+    @Test
+    public void testInspect() throws Exception{
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript("x = 10 ; inspect(x) ; ");
+        Object o = e.execute(jc);
+        assertTrue(o instanceof String);
+        assertFalse(((String)o).isEmpty() );
+
+        e = JEXL.createScript("inspect(null)");
+        o = e.execute(jc);
+        assertNotNull(o);
+        e = JEXL.createScript("inspect()");
+        o = e.execute(jc);
+        assertNotNull(o);
     }
 
     @Test
@@ -283,19 +300,4 @@ public class ExtendedScriptTest extends JexlTestCase {
         Object o = runScript(JEXL, "samples/function_arg.jxl");
         assertEquals(0,o);
     }
-
-    /****
-    @Test
-    public void testDB() throws Exception{
-        testJSONLoading();
-        Object l = DBManager.results("noga", "select * from noga_demo");
-        assertTrue( l instanceof DataMatrix);
-        DataMatrix dm = (DataMatrix)l;
-        l = dm.select(0);
-        assertTrue( l instanceof ArrayList);
-        l = dm.select("Name");
-        assertTrue( l instanceof ArrayList);
-    }
-    ****/
-
 }

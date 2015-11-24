@@ -291,6 +291,7 @@ public class Interpreter implements ParserVisitor {
      */
     public Object interpret(JexlNode node) {
         try {
+            TypeUtility.introspector = (UberspectImpl)uberspect ;
             return node.jjtAccept(this, null);
         } catch (JexlException.Return xreturn) {
             Object value = xreturn.getValue();

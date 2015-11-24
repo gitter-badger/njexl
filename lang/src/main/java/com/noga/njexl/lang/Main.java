@@ -81,6 +81,7 @@ public class Main {
         console.setExpandEvents(false);
         console.setCopyPasteDetection(true);
         console.setPrompt(PROMPT);
+        Runtime runtime = Runtime.getRuntime();
 
         while(true){
             String line = console.readLine();
@@ -96,7 +97,17 @@ public class Main {
                 console.println(version);
                 continue;
             }
-
+            if ( line.equals("--m")){
+                System.out.printf("Total : %d\n", runtime.totalMemory() );
+                System.out.printf("Free : %d\n", runtime.freeMemory() );
+                continue;
+            }
+            if ( line.equals("--gc")){
+                System.out.printf("Mem free before : %d\n", runtime.freeMemory() );
+                runtime.gc();
+                System.out.printf("Mem free after : %d\n", runtime.freeMemory() );
+                continue;
+            }
 
             line = line.trim();
             if ( line.isEmpty() ){

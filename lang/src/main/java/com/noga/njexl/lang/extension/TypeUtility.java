@@ -17,6 +17,7 @@
 package com.noga.njexl.lang.extension;
 
 import com.noga.njexl.lang.*;
+import com.noga.njexl.lang.extension.dataaccess.DBManager;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.lang.extension.dataaccess.XmlMap;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
@@ -26,6 +27,7 @@ import com.noga.njexl.lang.extension.iterators.SymbolIterator;
 import com.noga.njexl.lang.extension.iterators.YieldedIterator;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
 import com.noga.njexl.lang.extension.oop.ScriptMethod;
+import com.noga.njexl.lang.internal.Introspector;
 import com.noga.njexl.lang.parser.ASTReturnStatement;
 import com.noga.njexl.lang.parser.ASTStringLiteral;
 import com.noga.njexl.lang.parser.JexlNode;
@@ -68,8 +70,9 @@ import org.w3c.dom.NodeList;
  */
 public class TypeUtility {
 
-
     public static final String TYPE = "type";
+
+    public static Introspector introspector;
 
     /**
      * ***** The Casting Calls  ******
@@ -166,6 +169,9 @@ public class TypeUtility {
     public static final String HASH = "hash";
 
     public static final String MATRIX = "matrix";
+    public static final String DATABASE = "db";
+    public static final String INSPECT = "inspect";
+
 
     /**
      * <pre>
@@ -177,6 +183,37 @@ public class TypeUtility {
             int[].class, float[].class, double[].class, boolean[].class,
             byte[].class, short[].class, long[].class, char[].class};
 
+
+    public static Object dataBase(Object...args) throws Exception {
+        if ( args.length == 0 ) return new DBManager();
+        String loc  = String.valueOf(args[0]);
+        return new DBManager(loc);
+    }
+
+    public static Object inspect(Object...args) throws Exception {
+        if ( args.length == 0 ) return introspector;
+        if ( args[0] == null ) return introspector ;
+        Class z ;
+        if ( args[0] instanceof Class ){
+            z = (Class)args[0];
+        }else{
+          z = args[0].getClass() ;
+        }
+
+        StringBuffer buf = new StringBuffer();
+        buf.append("Type : ").append(z.getName()).append("\n");
+        buf.append("==== Fields ===").append("\n");
+        String[] fields = introspector.getFieldNames(z);
+        for ( String f : fields ){
+            buf.append(f).append("\n");
+        }
+        buf.append("=== Methods ===").append("\n");
+        String[] methods = introspector.getMethodNames(z);
+        for ( String m : methods ){
+            buf.append(m).append("\n");
+        }
+        return buf.toString();
+    }
 
     public static Object matrix(Object...args) throws Exception {
         if ( args.length == 0 ) return  null ;
@@ -2049,6 +2086,10 @@ public class TypeUtility {
                 return fopen(argv);
             case MATRIX:
                 return matrix(argv);
+            case DATABASE:
+                return dataBase(argv);
+            case INSPECT:
+                return inspect(argv);
             default:
                 if (success != null) {
                     success[0] = false;

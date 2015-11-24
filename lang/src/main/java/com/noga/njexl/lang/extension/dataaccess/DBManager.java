@@ -102,14 +102,14 @@ public final class DBManager {
     }
 
     /**
-     * The database connectiondoms with names
+     * The database connection doms with names
      */
-    public static ConcurrentHashMap<String,DatabaseDOM> dataBaseDOMHash ;
+    public ConcurrentHashMap<String,DatabaseDOM> dataBaseDOMHash ;
 
     /**
      * Current connections - cached
      */
-    public static final ConcurrentHashMap<String, Connection> connectionMap = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, Connection> connectionMap = new ConcurrentHashMap<>();
 
     /**
      * Creates the database dom
@@ -137,7 +137,7 @@ public final class DBManager {
      * @param configFile the json file
      * @return true if done, false if failed
      */
-    public static boolean init(String configFile) {
+    public boolean init(String configFile) {
         try {
             dataBaseDOMHash = getDatabaseDetails(configFile);
             System.out.println("Successfully Loaded DB Config");
@@ -156,7 +156,7 @@ public final class DBManager {
      * @param entry map entry
      * @return true if successful, false if already exist
      */
-    public static boolean addCon(String n, Map entry){
+    public boolean addCon(String n, Map entry){
         DatabaseDOM dom = new DatabaseDOM(n, entry);
         if ( dataBaseDOMHash.containsKey(dom.name )){
             return false ;
@@ -171,7 +171,7 @@ public final class DBManager {
      * @return the connection
      * @throws Exception in case of error
      */
-    private static Connection getConnection(String dbConnectionId) throws Exception {
+    private Connection getConnection(String dbConnectionId) throws Exception {
 
         Connection conn = null;
 
@@ -209,7 +209,7 @@ public final class DBManager {
      * @return either a result set or an int
      * @throws Exception in case of error
      */
-    public static Object exec(String dbConnectionId, String sql) throws Exception {
+    public Object exec(String dbConnectionId, String sql) throws Exception {
 
         Connection conn = getConnection(dbConnectionId);
 
@@ -235,7 +235,7 @@ public final class DBManager {
      * @return Returns @{DataMatrix} or int
      * @throws Exception in case of error
      */
-    public static Object results(String dbConnectionId, String sql) throws Exception {
+    public  Object results(String dbConnectionId, String sql) throws Exception {
         Object retObject = exec(dbConnectionId, sql);
 
         ArrayList results = new ArrayList();
@@ -263,4 +263,12 @@ public final class DBManager {
         return new DataMatrix(results, new ListSet<>(columns));
     }
 
+    public DBManager(){
+    }
+
+    public DBManager(String configLocation) throws Exception {
+        if ( !init(configLocation ) ){
+            throw new Exception("Can not initialize DB from config file!");
+        }
+    }
 }
