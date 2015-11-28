@@ -194,6 +194,19 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createExpression("1 === 1");
         o = e.evaluate(jc);
         assertTrue((Boolean) o);
+        e = JEXL.createExpression("1 === int(1.0) ");
+        o = e.evaluate(jc);
+        assertTrue((Boolean) o);
+
+        e = JEXL.createExpression("-1 === int(-1.4) ");
+        o = e.evaluate(jc);
+        assertTrue((Boolean) o);
+
+
+        e = JEXL.createExpression("-1l === long(-1.4) ");
+        o = e.evaluate(jc);
+        assertTrue((Boolean) o);
+
     }
 
     @Test

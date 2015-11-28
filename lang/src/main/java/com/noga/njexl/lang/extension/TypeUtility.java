@@ -896,7 +896,7 @@ public class TypeUtility {
                 return ((Float) args[0]).doubleValue();
             }
             Object objectValue = args[0];
-            Double val = Double.valueOf(objectValue.toString());
+            Double val = Double.valueOf(objectValue.toString().trim());
             return val;
         } catch (Exception e) {
             if (args.length > 1) {
@@ -909,8 +909,7 @@ public class TypeUtility {
     public static Float castFloat(Object... args) {
         Double doubleValue = castDouble(args);
         if (doubleValue != null) {
-            float f = doubleValue.floatValue();
-            return new Float(f);
+            return Float.valueOf( doubleValue.floatValue());
         }
         return null;
     }
@@ -959,8 +958,7 @@ public class TypeUtility {
     public static Integer castInteger(Object... args) {
         Double doubleValue = castDouble(args);
         if (doubleValue != null) {
-            int i = (int) Math.floor(doubleValue);
-            return new Integer(i);
+            return Integer.valueOf( doubleValue.intValue());
         }
         return null;
     }
@@ -968,8 +966,7 @@ public class TypeUtility {
     public static Long castLong(Object... args) {
         Double doubleValue = castDouble(args);
         if (doubleValue != null) {
-            long l = (long) Math.floor(doubleValue);
-            return new Long(l);
+            return Long.valueOf( doubleValue.longValue());
         }
         return null;
     }
