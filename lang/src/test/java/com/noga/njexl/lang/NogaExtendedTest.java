@@ -684,6 +684,12 @@ public class NogaExtendedTest extends JexlTestCase {
         Object o = e.execute(jc);
         assertTrue(o instanceof Map);
         assertTrue(((Map)o).size() == 3);
+
+        e = JEXL.createScript("x = [date(), date(), date() ] ; "
+                + " dict{ s = $.seconds ; [ s , (s @ _$_) ? (_$_[s]+= $) : list() ] }(x)");
+        o = e.execute(jc);
+        assertTrue(o instanceof Map);
+
     }
 
     @Test

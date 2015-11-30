@@ -1612,7 +1612,7 @@ public class TypeUtility {
                 List list = from(args[0]);
                 for ( int i = 0 ; i < list.size();i++ ){
                     Object o = list.get(i);
-                    anon.setIterationContext(list,o,i);
+                    anon.setIterationContextWithPartial(list,o,i,map);
                     Object ret = anon.execute();
                     if ( ret == null ){
                         map.put(o,null);
@@ -1636,8 +1636,8 @@ public class TypeUtility {
                     Object k = keyList.get(i);
                     Object v = valueList.get(i);
 
-                    anon.setIterationContext(new Object[]{ keyList,valueList}
-                            ,new Object[]{k,v},i);
+                    anon.setIterationContextWithPartial(new Object[]{ keyList,valueList}
+                            ,new Object[]{k,v},i,map);
                     Object ret = anon.execute();
                     if ( ret == null ){
                         break;
