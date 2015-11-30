@@ -493,6 +493,20 @@ public class TypeUtility {
                 return new BigInteger(buf.toString());
             }
 
+            if (args[0] instanceof BigDecimal) {
+                int size = ((BigDecimal)args[0]).precision() + 1 ;
+                StringBuffer buf = new StringBuffer();
+                if ( random.nextBoolean() ){
+                    buf.append("-");
+                }
+                buf.append("0.");
+                for ( int i = 0 ; i < size; i++ ){
+                    long l = Math.abs(random.nextLong());
+                    buf.append(l);
+                }
+                return new BigDecimal(buf.toString());
+            }
+
             int x = 0;
             int y = ((Number) args[0]).intValue();
             if (args.length > 1) {
