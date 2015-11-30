@@ -621,6 +621,16 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.execute(jc);
         assertTrue(o instanceof Long );
 
+        s = "random(false)" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean );
+
+        s = "random(10h)" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof BigInteger );
+
         s = "random(10, 100 )" ;
         e = JEXL.createScript(s);
         o = e.execute(jc);

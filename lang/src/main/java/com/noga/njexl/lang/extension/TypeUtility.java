@@ -1,18 +1,17 @@
 /**
-* Copyright 2015 Nabarun Mondal
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
+ * Copyright 2015 Nabarun Mondal
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.noga.njexl.lang.extension;
 
@@ -58,7 +57,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.noga.njexl.lang.Interpreter.AnonymousParam;
-import static com.noga.njexl.lang.Interpreter.NULL ;
+
+import static com.noga.njexl.lang.Interpreter.NULL;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -184,42 +185,42 @@ public class TypeUtility {
             byte[].class, short[].class, long[].class, char[].class};
 
 
-    public static Object dataBase(Object...args) throws Exception {
-        if ( args.length == 0 ) return new DBManager();
-        String loc  = String.valueOf(args[0]);
+    public static Object dataBase(Object... args) throws Exception {
+        if (args.length == 0) return new DBManager();
+        String loc = String.valueOf(args[0]);
         return new DBManager(loc);
     }
 
-    public static Object inspect(Object...args) throws Exception {
-        if ( args.length == 0 ) return introspector;
-        if ( args[0] == null ) return introspector ;
-        Class z ;
-        if ( args[0] instanceof Class ){
-            z = (Class)args[0];
-        }else{
-          z = args[0].getClass() ;
+    public static Object inspect(Object... args) throws Exception {
+        if (args.length == 0) return introspector;
+        if (args[0] == null) return introspector;
+        Class z;
+        if (args[0] instanceof Class) {
+            z = (Class) args[0];
+        } else {
+            z = args[0].getClass();
         }
 
         StringBuffer buf = new StringBuffer();
         buf.append("Type : ").append(z.getName()).append("\n");
         buf.append("==== Fields ===").append("\n");
         String[] fields = introspector.getFieldNames(z);
-        for ( String f : fields ){
+        for (String f : fields) {
             buf.append(f).append("\n");
         }
         buf.append("=== Methods ===").append("\n");
         String[] methods = introspector.getMethodNames(z);
-        for ( String m : methods ){
+        for (String m : methods) {
             buf.append(m).append("\n");
         }
         return buf.toString();
     }
 
-    public static Object matrix(Object...args) throws Exception {
-        if ( args.length == 0 ) return  null ;
-        String loc  = String.valueOf(args[0]);
-        args = shiftArrayLeft(args,1);
-        return DataMatrix.loc2matrix(loc,args);
+    public static Object matrix(Object... args) throws Exception {
+        if (args.length == 0) return null;
+        String loc = String.valueOf(args[0]);
+        args = shiftArrayLeft(args, 1);
+        return DataMatrix.loc2matrix(loc, args);
     }
 
     /**
@@ -228,30 +229,30 @@ public class TypeUtility {
      * @return PrintStream or BufferedReader
      * @throws Exception in case of any error
      */
-    public static Object fopen(Object...args) throws Exception{
-        if ( args.length == 0 ){
+    public static Object fopen(Object... args) throws Exception {
+        if (args.length == 0) {
             return new BufferedReader(new InputStreamReader(System.in));
         }
-        String file = String.valueOf(args[0]) ;
-        if ( args.length == 1 ){
+        String file = String.valueOf(args[0]);
+        if (args.length == 1) {
             return new BufferedReader(
-                    new InputStreamReader( new FileInputStream(file)));
+                    new InputStreamReader(new FileInputStream(file)));
         }
         String mode = String.valueOf(args[1]);
-        if ( "r".equalsIgnoreCase(mode)){
-            if ( "@IN".equalsIgnoreCase( file )) {
+        if ("r".equalsIgnoreCase(mode)) {
+            if ("@IN".equalsIgnoreCase(file)) {
                 return new BufferedReader(new InputStreamReader(System.in));
             }
             return new BufferedReader(
-                    new InputStreamReader( new FileInputStream(file)));
+                    new InputStreamReader(new FileInputStream(file)));
         }
-        if ( "w".equalsIgnoreCase(mode)){
-            if ( "@OUT".equalsIgnoreCase( file )) return System.out ;
-            if ( "@ERR".equalsIgnoreCase( file )) return System.err ;
-            return new PrintStream( file ) ;
+        if ("w".equalsIgnoreCase(mode)) {
+            if ("@OUT".equalsIgnoreCase(file)) return System.out;
+            if ("@ERR".equalsIgnoreCase(file)) return System.err;
+            return new PrintStream(file);
         }
-        if ( "a".equalsIgnoreCase(mode)){
-            return new PrintStream( new FileOutputStream(file, true) ) ;
+        if ("a".equalsIgnoreCase(mode)) {
+            return new PrintStream(new FileOutputStream(file, true));
         }
         return System.err;
     }
@@ -261,47 +262,47 @@ public class TypeUtility {
      * @param args first is the string, next the regex, then true|false for the case matching
      * @return a matcher if there is no anonymous arg, else a list of result of all matches
      */
-    public static Object tokenize(Object... args){
-        if ( args.length == 0 ) return false;
+    public static Object tokenize(Object... args) {
+        if (args.length == 0) return false;
         AnonymousParam anon = null;
-        if ( args[0] instanceof AnonymousParam ){
-            anon = (AnonymousParam)args[0];
-            args = shiftArrayLeft(args,1);
+        if (args[0] instanceof AnonymousParam) {
+            anon = (AnonymousParam) args[0];
+            args = shiftArrayLeft(args, 1);
         }
-        if ( args.length < 2 ) return false;
+        if (args.length < 2) return false;
         String text = args[0].toString();
         String regex = args[1].toString();
-        int flags = Pattern.DOTALL|Pattern.MULTILINE ;
-        if ( args.length > 2 ){
-            if ( castBoolean(args[2])){
-                flags |= Pattern.CASE_INSENSITIVE ;
+        int flags = Pattern.DOTALL | Pattern.MULTILINE;
+        if (args.length > 2) {
+            if (castBoolean(args[2])) {
+                flags |= Pattern.CASE_INSENSITIVE;
             }
         }
-        Pattern pattern = Pattern.compile(regex,flags);
+        Pattern pattern = Pattern.compile(regex, flags);
         Matcher matcher = pattern.matcher(text);
-        if ( anon == null ) return matcher ;
+        if (anon == null) return matcher;
         List l = new XList<>();
         // else ?
-        int i = -1 ;
-        while ( matcher.find() ){
+        int i = -1;
+        while (matcher.find()) {
             anon.setIterationContextWithPartial(text, matcher.group(), ++i, l);
-            Object o ;
+            Object o;
             try {
                 o = anon.execute();
-                if ( o instanceof JexlException.Continue ){
-                    if ( ((JexlException.Continue) o).hasValue ){
+                if (o instanceof JexlException.Continue) {
+                    if (((JexlException.Continue) o).hasValue) {
                         l.add(((JexlException.Continue) o).value);
                     }
                     continue;
                 }
-                if ( o instanceof JexlException.Break ){
-                    if ( ((JexlException.Break) o).hasValue ){
+                if (o instanceof JexlException.Break) {
+                    if (((JexlException.Break) o).hasValue) {
                         l.add(((JexlException.Break) o).value);
                     }
                     break;
                 }
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 o = null;
             }
             l.add(o);
@@ -316,47 +317,49 @@ public class TypeUtility {
      * @param args the arguments to the fold
      * @return the result of the fold
      */
-    public static Object fold(boolean right, Object...args){
-        if ( args.length == 0 ) return  null ;
+    public static Object fold(boolean right, Object... args) {
+        if (args.length == 0) return null;
         AnonymousParam anon = null;
-        if ( args[0] instanceof AnonymousParam ){
-            anon = (AnonymousParam)args[0];
-            args = shiftArrayLeft(args,1);
+        if (args[0] instanceof AnonymousParam) {
+            anon = (AnonymousParam) args[0];
+            args = shiftArrayLeft(args, 1);
         }
-        if ( args.length == 0 ) return  null ;
+        if (args.length == 0) return null;
         Object partial = null;
-        if ( args.length > 1 ){
+        if (args.length > 1) {
             partial = args[1];
         }
-        if ( args[0] instanceof YieldedIterator ){
+        if (args[0] instanceof YieldedIterator) {
             // this is a separate branch of stuff
-            YieldedIterator itr = (YieldedIterator)args[0];
-            if ( right ){
+            YieldedIterator itr = (YieldedIterator) args[0];
+            if (right) {
                 // switch it...
                 itr = itr.inverse();
             }
-            if ( anon == null ){ return castString( itr.list() ); }
+            if (anon == null) {
+                return castString(itr.list());
+            }
             int i = -1;
-            while ( itr.hasNext() ){
+            while (itr.hasNext()) {
                 i++;
                 Object o = itr.next();
-                anon.setIterationContextWithPartial(itr,o,i,partial);
+                anon.setIterationContextWithPartial(itr, o, i, partial);
                 try {
                     Object r = anon.execute();
-                    if ( r instanceof JexlException.Continue ){
-                        if ( ((JexlException.Continue) r).hasValue ){
-                            partial = ((JexlException.Continue) r).value ;
+                    if (r instanceof JexlException.Continue) {
+                        if (((JexlException.Continue) r).hasValue) {
+                            partial = ((JexlException.Continue) r).value;
                         }
                         continue;
                     }
-                    if ( r instanceof JexlException.Break ){
-                        if ( ((JexlException.Break) r).hasValue ){
-                            partial = ((JexlException.Break) r).value ;
+                    if (r instanceof JexlException.Break) {
+                        if (((JexlException.Break) r).hasValue) {
+                            partial = ((JexlException.Break) r).value;
                         }
                         break;
                     }
-                    partial = r ;
-                }catch (Throwable e){
+                    partial = r;
+                } catch (Throwable e) {
                     System.err.println(e);
                 }
             }
@@ -365,40 +368,40 @@ public class TypeUtility {
 
         List l = combine(args[0]);
 
-        int size = l.size() ;
-        if ( anon == null ){
-            if ( right ){
+        int size = l.size();
+        if (anon == null) {
+            if (right) {
                 StringBuffer sb = new StringBuffer();
-                for ( int i = 0 ; i < size ; i++ ){
-                    sb.append( l.get(size - i -1) );
+                for (int i = 0; i < size; i++) {
+                    sb.append(l.get(size - i - 1));
                     sb.append(SetOperations.SEP);
                 }
                 String s = sb.toString();
                 s = s.substring(0, s.lastIndexOf(SetOperations.SEP));
                 return s;
             }
-            return castString(l, SetOperations.SEP );
+            return castString(l, SetOperations.SEP);
         }
-        for ( int i = 0 ; i < size; i++ ){
-            int j =  right? (size -i -1) : i ;
+        for (int i = 0; i < size; i++) {
+            int j = right ? (size - i - 1) : i;
             Object o = l.get(j);
-            anon.setIterationContextWithPartial(l,o,i,partial);
+            anon.setIterationContextWithPartial(l, o, i, partial);
             try {
                 Object r = anon.execute();
-                if ( r instanceof JexlException.Continue ){
-                    if ( ((JexlException.Continue) r).hasValue ){
-                        partial = ((JexlException.Continue) r).value ;
+                if (r instanceof JexlException.Continue) {
+                    if (((JexlException.Continue) r).hasValue) {
+                        partial = ((JexlException.Continue) r).value;
                     }
                     continue;
                 }
-                if ( r instanceof JexlException.Break ){
-                    if ( ((JexlException.Break) r).hasValue ){
-                        partial = ((JexlException.Break) r).value ;
+                if (r instanceof JexlException.Break) {
+                    if (((JexlException.Break) r).hasValue) {
+                        partial = ((JexlException.Break) r).value;
                     }
                     break;
                 }
-                partial = r ;
-            }catch (Throwable e){
+                partial = r;
+            } catch (Throwable e) {
                 System.err.println(e);
             }
         }
@@ -410,31 +413,31 @@ public class TypeUtility {
      * @param args the argument
      * @return true if did shuffle, false if could not
      */
-    public static boolean shuffle(Object... args){
+    public static boolean shuffle(Object... args) {
 
-        if ( args.length == 0 ) return false;
-        if ( args[0] == null ) return false;
+        if (args.length == 0) return false;
+        if (args[0] == null) return false;
 
         SecureRandom random = new SecureRandom();
 
-        if ( args[0] instanceof List ){
-            List l = (List)args[0];
+        if (args[0] instanceof List) {
+            List l = (List) args[0];
             int size = l.size();
-            for ( int i = size-1; i>=0;i--){
-                int j = random.nextInt(i+1);
+            for (int i = size - 1; i >= 0; i--) {
+                int j = random.nextInt(i + 1);
                 Object tmp = l.get(j);
                 l.set(j, l.get(i));
-                l.set(i,tmp);
+                l.set(i, tmp);
             }
         }
-        if ( args[0].getClass().isArray() ){
+        if (args[0].getClass().isArray()) {
             //different treatment
             int size = Array.getLength(args[0]);
-            for ( int i = size-1; i>=0;i--){
-                int j = random.nextInt(i+1);
+            for (int i = size - 1; i >= 0; i--) {
+                int j = random.nextInt(i + 1);
                 Object tmp = Array.get(args[0], j);
-                Array.set( args[0], j, Array.get(args[0],i));
-                Array.set( args[0], i,tmp);
+                Array.set(args[0], j, Array.get(args[0], i));
+                Array.set(args[0], i, tmp);
             }
         }
         return true;
@@ -453,98 +456,113 @@ public class TypeUtility {
      * @param args arguments
      * @return see the doc
      */
-    public static Object random(Object...args){
+    public static Object random(Object... args) {
 
-        if ( args.length == 0 ) return random ;
-        if ( args[0] == null ) return random ;
+        if (args.length == 0) return random;
+        if (args[0] == null) return random;
 
-        if ( args[0] instanceof YieldedIterator ){
-            args[0] = ((YieldedIterator)args[0]).list();
-        }
-        else if ( args[0] instanceof Iterator){
+        if (args[0] instanceof YieldedIterator) {
+            args[0] = ((YieldedIterator) args[0]).list();
+        } else if (args[0] instanceof Iterator) {
             args[0] = YieldedIterator.list((Iterator) args[0]);
         }
-        if ( args[0] instanceof Number){
-            if ( args[0] instanceof Long ){
-                return random.nextLong() ;
+        if (args[0] instanceof Boolean ) {
+            return random.nextBoolean();
+        }
+
+        if (args[0] instanceof Number) {
+            if (args[0] instanceof Long) {
+                return random.nextLong();
             }
-            if ( args[0] instanceof Double ){
-                return random.nextDouble() ;
+            if (args[0] instanceof Double) {
+                return random.nextDouble();
             }
-            if ( args[0] instanceof Float ){
-                return random.nextFloat() ;
+            if (args[0] instanceof Float) {
+                return random.nextFloat();
+            }
+            if (args[0] instanceof BigInteger) {
+                int size = ((BigInteger)args[0]).toString(2).length();
+                StringBuffer buf = new StringBuffer();
+                if ( random.nextBoolean() ){
+                    buf.append("-");
+                }
+                for ( int i = 0 ; i < size; i++ ){
+                    long l = Math.abs(random.nextLong());
+                    buf.append(l);
+                }
+                return new BigInteger(buf.toString());
             }
 
-            int x = 0 ;
-            int y = ((Number)args[0]).intValue() ;
-            if ( args.length > 1  ){
-                x = y ;
-                y = ((Number)args[1]).intValue() ;
+            int x = 0;
+            int y = ((Number) args[0]).intValue();
+            if (args.length > 1) {
+                x = y;
+                y = ((Number) args[1]).intValue();
             }
-            int min = Math.min(x,y);
-            int max = Math.max(x,y);
-            if ( max == 0 ){
+            int min = Math.min(x, y);
+            int max = Math.max(x, y);
+            if (max == 0) {
                 return random.nextGaussian();
             }
-            return (  min + random.nextInt( max - min ) );
+            return (min + random.nextInt(max - min));
         }
-        if ( args[0] instanceof String){
-            String l = (String)args[0];
-            int index = random.nextInt(  l.length() );
-            if  ( args.length > 1 ){
+        if (args[0] instanceof String) {
+            String l = (String) args[0];
+            int index = random.nextInt(l.length());
+            if (args.length > 1) {
                 // how many stuff we need?
                 int count = castInteger(args[1], 1);
                 StringBuffer buf = new StringBuffer();
-                while(count-- > 0 ){
+                while (count-- > 0) {
                     char c = l.charAt(index);
                     buf.append(c);
-                    index = random.nextInt(  l.length() );
+                    index = random.nextInt(l.length());
                 }
                 return buf.toString();
             }
             return l.charAt(index);
         }
 
-        if ( args[0] instanceof List){
-            List l = (List)args[0];
-            int index = random.nextInt(  l.size() );
-            if  ( args.length > 1 ){
+        if (args[0] instanceof List) {
+            List l = (List) args[0];
+            int index = random.nextInt(l.size());
+            if (args.length > 1) {
                 // how many stuff we need?
                 int count = castInteger(args[1], 1);
                 List r = new ArrayList<>();
-                while(count-- > 0 ){
+                while (count-- > 0) {
                     Object o = l.get(index);
                     r.add(o);
-                    index = random.nextInt(  l.size() );
+                    index = random.nextInt(l.size());
                 }
                 return r;
             }
             return l.get(index);
         }
-        if ( args[0].getClass().isArray()){
+        if (args[0].getClass().isArray()) {
             int size = Array.getLength(args[0]);
             int index = random.nextInt(size);
-            if  ( args.length > 1 ){
+            if (args.length > 1) {
                 // how many stuff we need?
                 int count = castInteger(args[1], 1);
                 List r = new ArrayList<>();
-                while(count-- > 0 ){
+                while (count-- > 0) {
                     Object o = Array.get(args[0], index);
                     r.add(o);
                     index = random.nextInt(size);
                 }
                 return r;
             }
-            return Array.get( args[0], index);
+            return Array.get(args[0], index);
         }
-        if ( args[0].getClass().isEnum()){
+        if (args[0].getClass().isEnum()) {
             Object[] values = args[0].getClass().getEnumConstants();
             int index = random.nextInt(values.length);
-            if  ( args.length > 1 ){
+            if (args.length > 1) {
                 // how many stuff we need?
                 int count = castInteger(args[1], 1);
                 List r = new ArrayList<>();
-                while(count-- > 0 ){
+                while (count-- > 0) {
                     Object o = values[index];
                     r.add(o);
                     index = random.nextInt(values.length);
@@ -553,50 +571,50 @@ public class TypeUtility {
             }
             return values[index];
         }
-        if ( args[0] instanceof Map ){
-            Map m = (Map)args[0];
-            List  l = new ListSet<>(m.keySet()) ;
-            int index = random.nextInt(  l.size() );
-            if  ( args.length > 1 ){
+        if (args[0] instanceof Map) {
+            Map m = (Map) args[0];
+            List l = new ListSet<>(m.keySet());
+            int index = random.nextInt(l.size());
+            if (args.length > 1) {
                 // how many stuff we need?
                 int count = castInteger(args[1], 1);
                 Map r = new HashMap<>();
-                while(count-- > 0 ){
+                while (count-- > 0) {
                     Object k = l.get(index);
-                    r.put(k,m.get(k));
-                    index = random.nextInt(  l.size() );
+                    r.put(k, m.get(k));
+                    index = random.nextInt(l.size());
                 }
                 return r;
             }
             // return the tuple
-            return new Object[] { l.get(index) , m.get( l.get(index) ) };
+            return new Object[]{l.get(index), m.get(l.get(index))};
         }
         return random;
     }
 
-    public static Object type(Object...args){
-        if ( args.length == 0 ){
+    public static Object type(Object... args) {
+        if (args.length == 0) {
             return null;
         }
-        if ( args[0] == null ){
+        if (args[0] == null) {
             return null;
         }
-        if ( args[0] instanceof ScriptClassInstance ){
-            return ((ScriptClassInstance)args[0]).getNClass();
+        if (args[0] instanceof ScriptClassInstance) {
+            return ((ScriptClassInstance) args[0]).getNClass();
         }
         return args[0].getClass();
     }
 
-    public static final String HASH_MD5 = "MD5" ;
+    public static final String HASH_MD5 = "MD5";
 
 
-    public static String hash(Object...args) {
-        if ( args.length == 0 ) return  "" ;
-        String algorithm = HASH_MD5 ;
-        String text = args[0].toString() ;
-        if ( args.length > 1 ){
-            algorithm = text ;
-            text = args[1].toString() ;
+    public static String hash(Object... args) {
+        if (args.length == 0) return "";
+        String algorithm = HASH_MD5;
+        String text = args[0].toString();
+        if (args.length > 1) {
+            algorithm = text;
+            text = args[1].toString();
         }
         try {
             MessageDigest m = MessageDigest.getInstance(algorithm);
@@ -613,26 +631,25 @@ public class TypeUtility {
         if (args.length == 0) {
             return null;
         }
-        String text = "" ;
-        if ( args.length > 1 ){
+        String text = "";
+        if (args.length > 1) {
             String directive = args[0].toString().toLowerCase();
             text = args[1].toString();
-            if ( directive.startsWith("f")){
+            if (directive.startsWith("f")) {
                 // file
                 File file = new File(text);
-                if ( file.exists() ) {
+                if (file.exists()) {
                     // this is the file name
                     text = readToEnd(text);
-                }else{
-                    return  null;
+                } else {
+                    return null;
                 }
             }
-        }
-        else{
+        } else {
             // auto resolve mode...
             text = args[0].toString();
             File file = new File(text);
-            if ( file.exists() ) {
+            if (file.exists()) {
                 // this is the file name
                 text = readToEnd(text);
             }
@@ -652,15 +669,15 @@ public class TypeUtility {
         if (args.length == 0) {
             return null;
         }
-        if ( args[0] instanceof Node){
-            Node n = (Node)args[0];
+        if (args[0] instanceof Node) {
+            Node n = (Node) args[0];
             XmlMap.XmlElement e = new XmlMap.XmlElement(n, null);
             return e;
         }
-        if ( args[0] instanceof NodeList){
-            NodeList nL = (NodeList)args[0];
+        if (args[0] instanceof NodeList) {
+            NodeList nL = (NodeList) args[0];
             ArrayList list = new ArrayList();
-            for ( int i = 0 ; i <  nL.getLength() ; i++ ){
+            for (int i = 0; i < nL.getLength(); i++) {
                 Node n = nL.item(i);
                 XmlMap.XmlElement e = new XmlMap.XmlElement(n, null);
                 list.add(e);
@@ -670,7 +687,7 @@ public class TypeUtility {
 
         String text = args[0].toString();
         File file = new File(text);
-        if ( file.exists() ) {
+        if (file.exists()) {
             // this is the file name
             return XmlMap.file2xml(file.getAbsolutePath());
         }
@@ -690,12 +707,12 @@ public class TypeUtility {
         return buf.toString();
     }
 
-    public static String readUrl(URL url, Object...args) throws Exception{
+    public static String readUrl(URL url, Object... args) throws Exception {
         // set reasonable timeout
-        int conTimeOut = 10000 ;
+        int conTimeOut = 10000;
         // set reasonable read timeout
-        int readTimeOut = 10000 ;
-        if ( args.length > 0 ) {
+        int readTimeOut = 10000;
+        if (args.length > 0) {
             conTimeOut = castInteger(args[0], conTimeOut);
             if (args.length > 1) {
                 readTimeOut = castInteger(args[1], readTimeOut);
@@ -710,11 +727,11 @@ public class TypeUtility {
     public static String readToEnd(String location, Object... args) throws Exception {
         // if the fileName is URL?
         String name = location.toLowerCase();
-        if( name.startsWith("http://") ||
+        if (name.startsWith("http://") ||
                 name.startsWith("https://") ||
-                name.startsWith("ftp://") ){
+                name.startsWith("ftp://")) {
             URL url = new URL(location);
-            return readUrl(url,args);
+            return readUrl(url, args);
         }
 
         List<String> lines = Files.readAllLines(new File(location).toPath());
@@ -726,43 +743,43 @@ public class TypeUtility {
     }
 
     public static final Pattern URL =
-            Pattern.compile("^http(s)?://.+", Pattern.CASE_INSENSITIVE );
+            Pattern.compile("^http(s)?://.+", Pattern.CASE_INSENSITIVE);
 
 
-    public static String send(String u, String method, Map<String,String> params ) throws Exception{
+    public static String send(String u, String method, Map<String, String> params) throws Exception {
 
-        boolean get = false ;
+        boolean get = false;
 
-        if ( "GET".equalsIgnoreCase(method )) {
-            get = true ;
+        if ("GET".equalsIgnoreCase(method)) {
+            get = true;
         }
         StringBuffer buf = new StringBuffer();
         Iterator<String> iterator = params.keySet().iterator();
-        if ( iterator.hasNext() ){
+        if (iterator.hasNext()) {
             String k = iterator.next();
             String v = params.get(k);
-            buf.append(k).append("=").append( v );
-            while ( iterator.hasNext() ){
+            buf.append(k).append("=").append(v);
+            while (iterator.hasNext()) {
                 buf.append("&");
                 k = iterator.next();
-                v = params.get(k) ;
+                v = params.get(k);
                 buf.append(k).append("=").append(v);
             }
         }
         String urlParameters = buf.toString();
 
-        if ( get ){
-            URL url = new URL(u +"?" + urlParameters );
-            return readUrl(url );
+        if (get) {
+            URL url = new URL(u + "?" + urlParameters);
+            return readUrl(url);
         }
 
         URL url = new URL(u);
         URLConnection conn = url.openConnection();
         conn.setDoOutput(true);
-        ((HttpURLConnection)conn).setRequestMethod(method);
+        ((HttpURLConnection) conn).setRequestMethod(method);
         String type = "application/x-www-form-urlencoded";
-        conn.setRequestProperty( "Content-Type", type );
-        conn.setRequestProperty( "Content-Length", String.valueOf(urlParameters.length()));
+        conn.setRequestProperty("Content-Type", type);
+        conn.setRequestProperty("Content-Length", String.valueOf(urlParameters.length()));
 
         OutputStream writer = conn.getOutputStream();
         writer.write(urlParameters.getBytes());
@@ -787,17 +804,17 @@ public class TypeUtility {
             return NULL;
         }
         String path = String.valueOf(args[0]);
-        if ( URL.matcher(path).matches() ){
-            args = shiftArrayLeft(args,1);
-            return send(path,"POST", makeDict(args));
+        if (URL.matcher(path).matches()) {
+            args = shiftArrayLeft(args, 1);
+            return send(path, "POST", makeDict(args));
         }
 
-        PrintStream ps = System.out ;
-        if ( args[0] instanceof PrintStream ){
-            ps = (PrintStream)args[0];
-            args = shiftArrayLeft(args,1);
+        PrintStream ps = System.out;
+        if (args[0] instanceof PrintStream) {
+            ps = (PrintStream) args[0];
+            args = shiftArrayLeft(args, 1);
         }
-        if ( args.length == 0 ){
+        if (args.length == 0) {
             ps.println();
             return NULL;
         }
@@ -807,16 +824,16 @@ public class TypeUtility {
         }
 
         String fmt = String.valueOf(args[0]);
-        args = shiftArrayLeft(args,1);
-        if ( fmt.contains("%")){
+        args = shiftArrayLeft(args, 1);
+        if (fmt.contains("%")) {
             // formats...
-            ps.printf(fmt,args);
+            ps.printf(fmt, args);
             return NULL;
         }
 
-        String fileName = fmt ;
-        String data = "42" ;
-        if ( args.length > 0 ){
+        String fileName = fmt;
+        String data = "42";
+        if (args.length > 0) {
             data = String.valueOf(args[0]);
         }
         Files.write(new File(fileName).toPath(), data.getBytes());
@@ -827,21 +844,21 @@ public class TypeUtility {
         if (args.length == 0) {
             return System.console().readLine();
         }
-        if ( args[0] instanceof InputStream ){
+        if (args[0] instanceof InputStream) {
             return readStream((InputStream) args[0]);
         }
-        if ( args[0] instanceof String ) {
+        if (args[0] instanceof String) {
             String loc = (String) args[0];
-            args = shiftArrayLeft(args,1);
-            return readToEnd(loc,args);
+            args = shiftArrayLeft(args, 1);
+            return readToEnd(loc, args);
         }
-        if ( args[0] instanceof URL ) {
+        if (args[0] instanceof URL) {
             URL loc = (URL) args[0];
-            args = shiftArrayLeft(args,1);
+            args = shiftArrayLeft(args, 1);
             return readUrl(loc, args);
         }
-        if ( args[0] instanceof Path) {
-            return readToEnd( ((Path)args[0]).toFile().getCanonicalPath() ) ;
+        if (args[0] instanceof Path) {
+            return readToEnd(((Path) args[0]).toFile().getCanonicalPath());
         }
         return null;
     }
@@ -859,7 +876,7 @@ public class TypeUtility {
             }
             return lines;
         }
-        lines = new XList<>( Files.readAllLines(new File(args[0].toString()).toPath()) );
+        lines = new XList<>(Files.readAllLines(new File(args[0].toString()).toPath()));
         return lines;
     }
 
@@ -909,7 +926,7 @@ public class TypeUtility {
     public static Float castFloat(Object... args) {
         Double doubleValue = castDouble(args);
         if (doubleValue != null) {
-            return Float.valueOf( doubleValue.floatValue());
+            return Float.valueOf(doubleValue.floatValue());
         }
         return null;
     }
@@ -932,7 +949,9 @@ public class TypeUtility {
         }
         if (args[0] instanceof String) {
             String s = ((String) args[0]);
-            if ( s.length() != 1 ){ return  null; }
+            if (s.length() != 1) {
+                return null;
+            }
             return s.charAt(0);
         }
         Double doubleValue = castDouble(args);
@@ -958,7 +977,7 @@ public class TypeUtility {
     public static Integer castInteger(Object... args) {
         Double doubleValue = castDouble(args);
         if (doubleValue != null) {
-            return Integer.valueOf( doubleValue.intValue());
+            return Integer.valueOf(doubleValue.intValue());
         }
         return null;
     }
@@ -966,7 +985,7 @@ public class TypeUtility {
     public static Long castLong(Object... args) {
         Double doubleValue = castDouble(args);
         if (doubleValue != null) {
-            return Long.valueOf( doubleValue.longValue());
+            return Long.valueOf(doubleValue.longValue());
         }
         return null;
     }
@@ -1007,8 +1026,8 @@ public class TypeUtility {
             if (args.length > 1) {
                 dateTimeFormatter = new SimpleDateFormat(args[1].toString());
                 if (args.length > 2) {
-                    dateTimeFormatter.setLenient(castBoolean(args[2],false));
-                    if ( args.length > 3 ){
+                    dateTimeFormatter.setLenient(castBoolean(args[2], false));
+                    if (args.length > 3) {
                         dateTimeFormatter.setTimeZone(TimeZone.getTimeZone(args[3].toString()));
                     }
                 }
@@ -1046,12 +1065,12 @@ public class TypeUtility {
         }
         if (args.length > 1) {
             List opts = from(args[1]);
-            if ( opts.size() > 1 ){
+            if (opts.size() > 1) {
                 // options are passed to match
                 Object t = opts.get(0);
                 Object f = opts.get(1);
-                if ( Objects.equals(args[0], t ) ) return true ;
-                if ( Objects.equals(args[0], f ) ) return false ;
+                if (Objects.equals(args[0], t)) return true;
+                if (Objects.equals(args[0], f)) return false;
             }
             return castBoolean(args[1]);
         }
@@ -1062,36 +1081,36 @@ public class TypeUtility {
         if (args.length == 0) {
             return "";
         }
-        if ( args[0] == null ){
+        if (args[0] == null) {
             /* what should I return?
                 Theoretically null, "" , "null" are possible.
                 But then, I choose 'null'.
             */
-            return "null" ; // because it is nJexl null param
+            return "null"; // because it is nJexl null param
         }
 
         if (args[0] instanceof AnonymousParam) {
-            if ( args.length > 1 ) {
-                if ( args[1] instanceof Collection || args[1].getClass().isArray() ) {
+            if (args.length > 1) {
+                if (args[1] instanceof Collection || args[1].getClass().isArray()) {
                     Object[] _args = new Object[]{args[0], args[1]};
-                    String sep = SetOperations.SEP ;
+                    String sep = SetOperations.SEP;
                     if (args.length > 2) {
                         sep = String.valueOf(args[2]);
                     }
                     List l = combine(_args);
-                    return castString(l,sep);
+                    return castString(l, sep);
                 }
             }
             AnonymousParam anon = (AnonymousParam) args[0];
             args = shiftArrayLeft(args, 1);
-            if ( args.length > 0 ) {
+            if (args.length > 0) {
                 anon.setIterationContext(args[0], args[0], -1);
                 Object ret = anon.execute();
                 anon.removeIterationContext();
                 args[0] = ret; //set it up
                 return castString(args);
             }
-            return  "" ;
+            return "";
         }
 
         if (args[0] instanceof String) {
@@ -1105,9 +1124,10 @@ public class TypeUtility {
             try {
                 return dateTimeFormatter.print((DateTime) args[0]);
             } catch (Exception e) {
-                return args[0].toString() ; // make it return faster...
+                return args[0].toString(); // make it return faster...
             }
-        } if (args[0] instanceof Date) {
+        }
+        if (args[0] instanceof Date) {
             SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyyMMdd");
             if (args.length > 1 && args[1] != null) {
                 dateTimeFormatter = new SimpleDateFormat(args[1].toString());
@@ -1115,19 +1135,20 @@ public class TypeUtility {
             try {
                 return dateTimeFormatter.format(args[0]);
             } catch (Exception e) {
-                return args[0].toString() ;
+                return args[0].toString();
             }
-        } if ( args[0] instanceof Float ||
+        }
+        if (args[0] instanceof Float ||
                 args[0] instanceof Double ||
-                 args[0] instanceof BigDecimal){
-            if ( args.length > 1 ){
-                if ( args[1] instanceof Integer ){
+                args[0] instanceof BigDecimal) {
+            if (args.length > 1) {
+                if (args[1] instanceof Integer) {
                     String fmt = String.format("%%.%df", args[1]);
-                     return String.format(fmt, args[0]);
+                    return String.format(fmt, args[0]);
                 }
-                if ( args[1] instanceof String ){
+                if (args[1] instanceof String) {
                     DecimalFormat format = new DecimalFormat(args[1].toString());
-                    return format.format( args[0] );
+                    return format.format(args[0]);
                 }
             }
             return args[0].toString();
@@ -1143,16 +1164,18 @@ public class TypeUtility {
             for (Object o : l) {
                 buf.append(o).append(sep);
             }
-            if ( buf.length() == 0 ){ return  "" ; }
-            String ret = buf.substring(0,buf.lastIndexOf(sep));
+            if (buf.length() == 0) {
+                return "";
+            }
+            String ret = buf.substring(0, buf.lastIndexOf(sep));
             return ret;
         }
-        if ( args.length > 1 && args[1] instanceof Number && args[0] instanceof Number ){
-            int base = ((Number)args[1]).intValue();
-            if ( args[0] instanceof BigInteger ){
-                return ((BigInteger)args[0]).toString(base);
+        if (args.length > 1 && args[1] instanceof Number && args[0] instanceof Number) {
+            int base = ((Number) args[1]).intValue();
+            if (args[0] instanceof BigInteger) {
+                return ((BigInteger) args[0]).toString(base);
             }
-            long l = ((Number)args[0]).longValue();
+            long l = ((Number) args[0]).longValue();
             return BigInteger.valueOf(l).toString(base);
         }
         return args[0].toString();
@@ -1205,18 +1228,16 @@ public class TypeUtility {
         if (object instanceof Collection) {
             Collection l = (Collection) object;
             list.addAll(l);
-        } else if ( object instanceof YieldedIterator ){
-            list.addAll(((YieldedIterator)object).list());
-        }
-        else if (object.getClass().isArray()) {
+        } else if (object instanceof YieldedIterator) {
+            list.addAll(((YieldedIterator) object).list());
+        } else if (object.getClass().isArray()) {
             Object[] array = getArray(object);
             List l = Arrays.asList(array);
             list.addAll(l);
-        } else if (object instanceof Map ) {
-            Map m = ((Map)object);
+        } else if (object instanceof Map) {
+            Map m = ((Map) object);
             list = new XList(m);
-        }
-        else {
+        } else {
             list.add(object);
         }
         return list;
@@ -1252,14 +1273,14 @@ public class TypeUtility {
             XList l = new XList();
             int i = 0;
             for (Object o : list) {
-                anon.setIterationContextWithPartial(list, o, i,l);
+                anon.setIterationContextWithPartial(list, o, i, l);
                 Object ret = anon.execute();
-                if ( ret instanceof JexlException.Continue ){
+                if (ret instanceof JexlException.Continue) {
                     continue;
                 }
-                if ( ret instanceof JexlException.Break ){
-                    JexlException.Break br = ((JexlException.Break)ret) ;
-                    if ( br.hasValue ){
+                if (ret instanceof JexlException.Break) {
+                    JexlException.Break br = ((JexlException.Break) ret);
+                    if (br.hasValue) {
                         l.add(br.value);
                     }
                     break;
@@ -1292,36 +1313,38 @@ public class TypeUtility {
             XList l = new XList();
             int i = 0;
             for (Object o : list) {
-                boolean broken = false ;
-                anon.setIterationContextWithPartial(list, o, i,l);
+                boolean broken = false;
+                anon.setIterationContextWithPartial(list, o, i, l);
                 Object ret = anon.execute();
-                if ( ret instanceof JexlException.Continue ){
+                if (ret instanceof JexlException.Continue) {
                     continue;
                 }
-                if ( ret instanceof JexlException.Break ){
-                    JexlException.Break br = (JexlException.Break)ret;
+                if (ret instanceof JexlException.Break) {
+                    JexlException.Break br = (JexlException.Break) ret;
                     /* breaks inclusive : by default takes the item
                       unless explicitly specified not to. */
-                    ret = true ;
-                    if ( br.hasValue ){
-                        ret = br.value ;
+                    ret = true;
+                    if (br.hasValue) {
+                        ret = br.value;
                     }
-                    broken = true ;
+                    broken = true;
                 }
 
                 if (castBoolean(ret, false)) {
                     //should add _ITEM_ 's value, if anyone modified it
                     l.add(anon.interpreter.getContext().get(Script._ITEM_));
-                }else{
-                    reject.add( anon.interpreter.getContext().get(Script._ITEM_) );
+                } else {
+                    reject.add(anon.interpreter.getContext().get(Script._ITEM_));
                 }
-                if ( broken ){ break; }
+                if (broken) {
+                    break;
+                }
                 i++;
             }
             list = l;
             anon.removeIterationContext();
         }
-        return new XList[]{ list , reject};
+        return new XList[]{list, reject};
     }
 
     public static List filter(Object... args) {
@@ -1338,35 +1361,39 @@ public class TypeUtility {
                 args = shiftArrayLeft(args, 1);
             }
         }
-        if ( args.length < 1){ return -1; }
+        if (args.length < 1) {
+            return -1;
+        }
         Object item = args[0];
         int start = 0;
         if (anon == null) {
-            if ( args.length < 2){ return -1; }
-            if ( args[1] instanceof CharSequence ){
-                if ( item == null ) return -1;
-                return args[1].toString().indexOf( item.toString() );
+            if (args.length < 2) {
+                return -1;
             }
-            if ( JexlArithmetic.areListOrArray( item , args[1] )){
-                String l = castString(item,SetOperations.SEP);
-                String r = castString(args[1],SetOperations.SEP);
+            if (args[1] instanceof CharSequence) {
+                if (item == null) return -1;
+                return args[1].toString().indexOf(item.toString());
+            }
+            if (JexlArithmetic.areListOrArray(item, args[1])) {
+                String l = castString(item, SetOperations.SEP);
+                String r = castString(args[1], SetOperations.SEP);
                 int inx = r.indexOf(l);
                 // how many seps are there?
                 int c = 0;
                 char sep = SetOperations.SEP.charAt(0);
-                for ( int i = 0 ; i < inx; i++ ){
-                    if (  r.charAt(i) == sep ){
+                for (int i = 0; i < inx; i++) {
+                    if (r.charAt(i) == sep) {
                         c++;
                     }
                 }
-                return inx - c ;
+                return inx - c;
             }
 
             start = 1;
         }
         for (int i = start; i < args.length; i++) {
             List l = from(args[i]);
-            if ( l == null ) continue;
+            if (l == null) continue;
             list.addAll(l);
         }
         if (anon == null) {
@@ -1379,7 +1406,7 @@ public class TypeUtility {
         for (Object o : list) {
             anon.setIterationContext(list, o, i);
             Object ret = anon.execute();
-            if ( ret instanceof JexlException.Continue ){
+            if (ret instanceof JexlException.Continue) {
                 continue;
             }
             found = castBoolean(ret, false);
@@ -1405,21 +1432,25 @@ public class TypeUtility {
                 args = shiftArrayLeft(args, 1);
             }
         }
-        if ( args.length < 1){ return -1; }
+        if (args.length < 1) {
+            return -1;
+        }
         Object item = args[0];
         int start = 0;
         if (anon == null) {
-            if ( args.length < 2){ return -1; }
-            if ( args[1] instanceof CharSequence ){
-                if ( item == null ) return -1;
-                return args[1].toString().lastIndexOf( item.toString() );
+            if (args.length < 2) {
+                return -1;
             }
-            if ( JexlArithmetic.areListOrArray( item , args[1] )){
-                String l = castString(item,SetOperations.SEP);
-                String r = castString(args[1],SetOperations.SEP);
-                if ( l.isEmpty() ){
-                    if ( args[1] instanceof List ){
-                        return ((List)args[1]).size() - 1;
+            if (args[1] instanceof CharSequence) {
+                if (item == null) return -1;
+                return args[1].toString().lastIndexOf(item.toString());
+            }
+            if (JexlArithmetic.areListOrArray(item, args[1])) {
+                String l = castString(item, SetOperations.SEP);
+                String r = castString(args[1], SetOperations.SEP);
+                if (l.isEmpty()) {
+                    if (args[1] instanceof List) {
+                        return ((List) args[1]).size() - 1;
                     }
                     return Array.getLength(args[1]) - 1;
                 }
@@ -1427,32 +1458,32 @@ public class TypeUtility {
                 // how many seps are there?
                 int c = 0;
                 char sep = SetOperations.SEP.charAt(0);
-                for ( int i = 0 ; i < inx; i++ ){
-                    if (  r.charAt(i) == sep ){
+                for (int i = 0; i < inx; i++) {
+                    if (r.charAt(i) == sep) {
                         c++;
                     }
                 }
-                return inx - c ;
+                return inx - c;
             }
 
             start = 1;
         }
         for (int i = start; i < args.length; i++) {
             List l = from(args[i]);
-            if ( l == null ) continue;
+            if (l == null) continue;
             list.addAll(l);
         }
         if (anon == null) {
             return list.lastIndexOf(item);
         }
 
-        int i = list.size() - 1 ;
+        int i = list.size() - 1;
 
         boolean found = false;
-        for (; i >= 0 ; i-- ) {
+        for (; i >= 0; i--) {
             anon.setIterationContext(list, list.get(i), i);
             Object ret = anon.execute();
-            if ( ret instanceof JexlException.Continue ){
+            if (ret instanceof JexlException.Continue) {
                 continue;
             }
             found = castBoolean(ret, false);
@@ -1478,42 +1509,42 @@ public class TypeUtility {
         long start = 1;
 
         if (args.length > 0) {
-            if ( args[0] instanceof Date || args[0] instanceof DateTime ){
+            if (args[0] instanceof Date || args[0] instanceof DateTime) {
                 // a different iterator ...
                 DateTime et = castTime(args[0]);
-                if ( args.length > 1 ){
-                    if ( args[1] instanceof Date || args[1] instanceof DateTime  ){
+                if (args.length > 1) {
+                    if (args[1] instanceof Date || args[1] instanceof DateTime) {
                         DateTime st = castTime(args[1]);
-                        if ( args.length > 2 ){
-                            String d = args[2].toString() ;
+                        if (args.length > 2) {
+                            String d = args[2].toString();
                             try {
                                 long dur = Long.parseLong(d);
                                 return new DateIterator(et, st, new Duration(dur));
-                            }catch (Exception e){
-                                return new DateIterator(et, st, new Duration( DateIterator.parseDuration(d)));
+                            } catch (Exception e) {
+                                return new DateIterator(et, st, new Duration(DateIterator.parseDuration(d)));
                             }
                         }
-                        return new DateIterator(et,st);
+                        return new DateIterator(et, st);
                     }
                 }
                 return new DateIterator(et);
             }
-            if ( args[0] instanceof String ){
+            if (args[0] instanceof String) {
                 // a different iterator ...
                 Character et = castChar(args[0]);
-                if ( args.length > 1 ){
-                    if ( args[1] instanceof String ){
+                if (args.length > 1) {
+                    if (args[1] instanceof String) {
                         Character st = castChar(args[1]);
-                        if ( args.length > 2 ){
-                            String d = args[2].toString() ;
+                        if (args.length > 2) {
+                            String d = args[2].toString();
                             try {
                                 short dur = Short.parseShort(d);
-                                return new SymbolIterator(et, st,dur);
-                            }catch (Exception e){
-                                return new SymbolIterator(et, st,(short)1);
+                                return new SymbolIterator(et, st, dur);
+                            } catch (Exception e) {
+                                return new SymbolIterator(et, st, (short) 1);
                             }
                         }
-                        return new SymbolIterator(et,st);
+                        return new SymbolIterator(et, st);
                     }
                 }
                 return new SymbolIterator(et);
@@ -1546,108 +1577,107 @@ public class TypeUtility {
     }
 
     public static Object[] minmax(Object... args) throws Exception {
-        if ( args.length == 0 ) return null ;
-        if ( args[0] instanceof AnonymousParam ){
-            AnonymousParam  anon = (AnonymousParam)args[0];
-            args = shiftArrayLeft(args,1);
+        if (args.length == 0) return null;
+        if (args[0] instanceof AnonymousParam) {
+            AnonymousParam anon = (AnonymousParam) args[0];
+            args = shiftArrayLeft(args, 1);
             List l = combine(args);
-            if ( l.size() == 0 ) return  null;
+            if (l.size() == 0) return null;
             Object min = l.get(0);
             Object max = min;
-            for ( int i = 1 ; i < l.size() ;i++ ){
+            for (int i = 1; i < l.size(); i++) {
                 Object item = l.get(i);
-                Object o = new Object[]{ item , min };
-                anon.setIterationContext(l, o ,i);
+                Object o = new Object[]{item, min};
+                anon.setIterationContext(l, o, i);
                 Object ret = anon.execute();
-                boolean lt = castBoolean(ret,false);
-                if ( lt ){
+                boolean lt = castBoolean(ret, false);
+                if (lt) {
                     // change min
-                    min = item ;
+                    min = item;
                 }
-                o = new Object[]{ max , item };
-                anon.setIterationContext(l, o ,i);
+                o = new Object[]{max, item};
+                anon.setIterationContext(l, o, i);
                 ret = anon.execute();
-                lt = castBoolean(ret,false);
-                if ( lt ){
+                lt = castBoolean(ret, false);
+                if (lt) {
                     // change max
-                    max = item ;
+                    max = item;
                 }
             }
-            Object[] container = new Object[]{ min, max };
-            return container ;
+            Object[] container = new Object[]{min, max};
+            return container;
         }
         List l = combine(args);
-        if ( l.size() == 0 ) return  null;
+        if (l.size() == 0) return null;
         Object min = l.get(0);
         Object max = min;
-        for ( int i = 1 ; i < l.size() ;i++ ){
-            Comparable item = (Comparable)l.get(i);
-            if ( item.compareTo(min) < 0 ){
-                min = item ;
+        for (int i = 1; i < l.size(); i++) {
+            Comparable item = (Comparable) l.get(i);
+            if (item.compareTo(min) < 0) {
+                min = item;
             }
-            if ( item.compareTo(max) > 0 ){
-                max = item ;
+            if (item.compareTo(max) > 0) {
+                max = item;
             }
         }
-        Object[] container = new Object[]{ min, max };
-        return container ;
+        Object[] container = new Object[]{min, max};
+        return container;
     }
 
     public static HashMap makeDict(Object... args) throws Exception {
         HashMap map = new HashMap();
         // empty dict
-        if ( args.length == 0 ){
+        if (args.length == 0) {
             return map;
         }
         // clone the dict
-        if (args.length == 1 && args[0] instanceof Map ) {
+        if (args.length == 1 && args[0] instanceof Map) {
             map.putAll((Map) args[0]);
             return map;
         }
-        if ( args[0] instanceof AnonymousParam ){
+        if (args[0] instanceof AnonymousParam) {
             // now what we do?
-            AnonymousParam anon = (AnonymousParam)args[0];
-            args = shiftArrayLeft(args,1);
-            if ( args.length == 1 ) {
+            AnonymousParam anon = (AnonymousParam) args[0];
+            args = shiftArrayLeft(args, 1);
+            if (args.length == 1) {
                 List list = from(args[0]);
-                for ( int i = 0 ; i < list.size();i++ ){
+                for (int i = 0; i < list.size(); i++) {
                     Object o = list.get(i);
-                    anon.setIterationContextWithPartial(list,o,i,map);
+                    anon.setIterationContextWithPartial(list, o, i, map);
                     Object ret = anon.execute();
-                    if ( ret == null ){
-                        map.put(o,null);
-                    }
-                    else if ( ret instanceof Map ){
-                        map.putAll( (Map)ret );
-                    }else if ( ret.getClass().isArray() ){
-                        Object key = Array.get( ret, 0 );
-                        Object value = Array.get( ret, 1 );
-                        map.put(key,value);
+                    if (ret == null) {
+                        map.put(o, null);
+                    } else if (ret instanceof Map) {
+                        map.putAll((Map) ret);
+                    } else if (ret.getClass().isArray()) {
+                        Object key = Array.get(ret, 0);
+                        Object value = Array.get(ret, 1);
+                        map.put(key, value);
                     }
                 }
-            }else{
+            } else {
                 List keyList = from(args[0]);
                 List valueList = from(args[1]);
-                if ( keyList.size() != valueList.size()){
+                if (keyList.size() != valueList.size()) {
                     return map;
                 }
                 int size = keyList.size();
-                for ( int i = 0 ; i < size ;i++ ){
+                for (int i = 0; i < size; i++) {
                     Object k = keyList.get(i);
                     Object v = valueList.get(i);
 
-                    anon.setIterationContextWithPartial(new Object[]{ keyList,valueList}
-                            ,new Object[]{k,v},i,map);
+                    anon.setIterationContextWithPartial(new Object[]{keyList, valueList}
+                            , new Object[]{k, v}, i, map);
                     Object ret = anon.execute();
-                    if ( ret == null ){
+                    if (ret == null) {
                         break;
                     }
-                    if ( ret instanceof Map ){
-                        map.putAll( (Map)ret );
-                    }else if ( ret.getClass().isArray() ){
-                        Object key = Array.get( ret, 0 );
-                        Object value = Array.get( ret, 1 );
-                        map.put(key,value);
+                    if (ret instanceof Map) {
+                        map.putAll((Map) ret);
+                    } else if (ret.getClass().isArray()) {
+                        Object key = Array.get(ret, 0);
+                        Object value = Array.get(ret, 1);
+                        map.put(key, value);
                     }
                 }
             }
@@ -1722,20 +1752,19 @@ public class TypeUtility {
         }
         boolean ret;
         Object args0 = args[0];
-        args = shiftArrayLeft(args,1);
-        if ( args0 instanceof AnonymousParam ){
-            ((AnonymousParam)args0).setIterationContext(args,args,0);
+        args = shiftArrayLeft(args, 1);
+        if (args0 instanceof AnonymousParam) {
+            ((AnonymousParam) args0).setIterationContext(args, args, 0);
             try {
                 Object o = ((AnonymousParam) args0).execute();
                 ret = castBoolean(o);
-            }catch (Throwable t){
-                ret = false ;
+            } catch (Throwable t) {
+                ret = false;
             }
-        }
-        else {
+        } else {
             ret = castBoolean(args0, false);
         }
-        if ( !ret ){
+        if (!ret) {
             bye(args);
         }
         // log it - later problem - not now
@@ -1749,7 +1778,7 @@ public class TypeUtility {
         return a;
     }
 
-    public static class AnonymousComparator implements Comparator{
+    public static class AnonymousComparator implements Comparator {
 
         public final AnonymousParam anon;
 
@@ -1757,189 +1786,189 @@ public class TypeUtility {
 
         public final boolean reverse;
 
-        public AnonymousComparator(AnonymousParam anon,Object collection,boolean reverse){
-            this.anon = anon ;
-            this.collection = collection ;
-            this.reverse = reverse ;
+        public AnonymousComparator(AnonymousParam anon, Object collection, boolean reverse) {
+            this.anon = anon;
+            this.collection = collection;
+            this.reverse = reverse;
         }
 
         @Override
         public int compare(Object o1, Object o2) {
-            Object[] pair = new Object[]{ o1, o2 };
-            anon.setIterationContext(collection, pair , -1);
+            Object[] pair = new Object[]{o1, o2};
+            anon.setIterationContext(collection, pair, -1);
             Object ret = anon.execute();
             anon.removeIterationContext();
-            boolean smaller = castBoolean(ret,false);
-            if ( reverse ){
-                if ( smaller ){
-                    return 1 ;
+            boolean smaller = castBoolean(ret, false);
+            if (reverse) {
+                if (smaller) {
+                    return 1;
                 }
                 return -1;
             }
-            if ( smaller ){
-                return -1 ;
+            if (smaller) {
+                return -1;
             }
-            return 1 ; // unstable... but fine I suppose
+            return 1; // unstable... but fine I suppose
         }
     }
 
-    public static Object ascending(Object...args){
-        if ( args.length == 0 ){
+    public static Object ascending(Object... args) {
+        if (args.length == 0) {
             return Collections.emptyList();
         }
-        boolean isArray = false ;
-        Object l ;
-        if ( args.length > 0 ){
-            if ( args[0] instanceof AnonymousParam ){
-                AnonymousParam anon = (AnonymousParam)args[0];
+        boolean isArray = false;
+        Object l;
+        if (args.length > 0) {
+            if (args[0] instanceof AnonymousParam) {
+                AnonymousParam anon = (AnonymousParam) args[0];
                 args = shiftArrayLeft(args, 1);
-                if ( args.length == 1 && args[0] != null && args[0].getClass().isArray()  ){
-                    l = array(args[0]) ;
-                    isArray = true ;
-                }else{
-                    l = combine( args);
+                if (args.length == 1 && args[0] != null && args[0].getClass().isArray()) {
+                    l = array(args[0]);
+                    isArray = true;
+                } else {
+                    l = combine(args);
                 }
 
-                AnonymousComparator comparator = new AnonymousComparator(anon,l,false) ;
-                if ( isArray ) {
-                    Arrays.sort((Object[]) l,comparator);
+                AnonymousComparator comparator = new AnonymousComparator(anon, l, false);
+                if (isArray) {
+                    Arrays.sort((Object[]) l, comparator);
 
                 } else {
-                    Collections.sort((List)l, comparator);
+                    Collections.sort((List) l, comparator);
                 }
                 return l;
             }
         }
-        if ( args.length == 1 && args[0] != null && args[0].getClass().isArray()  ){
-            l = array(args[0]) ;
-            Arrays.sort((Object[])l);
-        }else{
-            l = combine( args);
-            Collections.sort((List)l);
+        if (args.length == 1 && args[0] != null && args[0].getClass().isArray()) {
+            l = array(args[0]);
+            Arrays.sort((Object[]) l);
+        } else {
+            l = combine(args);
+            Collections.sort((List) l);
         }
 
         return l;
     }
 
-    public static Object descending(Object...args){
-        if ( args.length == 0 ){
+    public static Object descending(Object... args) {
+        if (args.length == 0) {
             return Collections.emptyList();
         }
-        boolean isArray = false ;
-        Object l ;
-        if ( args.length > 0 ){
-            if ( args[0] instanceof AnonymousParam ){
-                AnonymousParam anon = (AnonymousParam)args[0];
+        boolean isArray = false;
+        Object l;
+        if (args.length > 0) {
+            if (args[0] instanceof AnonymousParam) {
+                AnonymousParam anon = (AnonymousParam) args[0];
                 args = shiftArrayLeft(args, 1);
-                if ( args.length == 1 && args[0] != null && args[0].getClass().isArray()  ){
-                    l = array(args[0]) ;
-                    isArray = true ;
-                }else{
-                    l = combine( args);
+                if (args.length == 1 && args[0] != null && args[0].getClass().isArray()) {
+                    l = array(args[0]);
+                    isArray = true;
+                } else {
+                    l = combine(args);
                 }
 
-                AnonymousComparator comparator = new AnonymousComparator(anon,l,true) ;
-                if ( isArray ) {
-                    Arrays.sort((Object[]) l,comparator);
+                AnonymousComparator comparator = new AnonymousComparator(anon, l, true);
+                if (isArray) {
+                    Arrays.sort((Object[]) l, comparator);
 
                 } else {
-                    Collections.sort((List)l, comparator);
+                    Collections.sort((List) l, comparator);
                 }
                 return l;
             }
         }
-        if ( args.length == 1 && args[0] != null && args[0].getClass().isArray()  ){
-            l = array(args[0]) ;
-            Arrays.sort((Object[])l,Collections.reverseOrder());
-        }else{
-            l = combine( args);
-            Collections.sort((List)l, Collections.reverseOrder());
+        if (args.length == 1 && args[0] != null && args[0].getClass().isArray()) {
+            l = array(args[0]);
+            Arrays.sort((Object[]) l, Collections.reverseOrder());
+        } else {
+            l = combine(args);
+            Collections.sort((List) l, Collections.reverseOrder());
         }
 
         return l;
     }
 
-    public static Object guardedBlock(Object...args){
-        if ( args.length == 0 ){
+    public static Object guardedBlock(Object... args) {
+        if (args.length == 0) {
             return null;
         }
-        if ( !(args[0] instanceof AnonymousParam) ){
+        if (!(args[0] instanceof AnonymousParam)) {
             return args[0];
         }
-        AnonymousParam anon = (AnonymousParam)args[0];
-        args = shiftArrayLeft(args,1);
-        try{
+        AnonymousParam anon = (AnonymousParam) args[0];
+        args = shiftArrayLeft(args, 1);
+        try {
             return anon.execute();
-        }catch (Throwable throwable){
-            if ( args.length == 0 ){
-                return throwable.getCause() ;
+        } catch (Throwable throwable) {
+            if (args.length == 0) {
+                return throwable.getCause();
             }
             return args[0];
         }
     }
 
-    public static Object benchmark(Object...args){
-        Object[] ret = new Object[ ]{0,null};
-        if ( args.length == 0 ){
+    public static Object benchmark(Object... args) {
+        Object[] ret = new Object[]{0, null};
+        if (args.length == 0) {
             return ret;
         }
-        if ( !(args[0] instanceof AnonymousParam) ){
+        if (!(args[0] instanceof AnonymousParam)) {
             return ret;
         }
-        AnonymousParam anon = (AnonymousParam)args[0];
-        args = shiftArrayLeft(args,1);
+        AnonymousParam anon = (AnonymousParam) args[0];
+        args = shiftArrayLeft(args, 1);
         long start = System.nanoTime();
         long end;
 
-        try{
+        try {
             ret[1] = anon.execute();
-        }catch (Throwable throwable){
-            ret[1] = throwable ;
-        }finally {
+        } catch (Throwable throwable) {
+            ret[1] = throwable;
+        } finally {
             end = System.nanoTime();
         }
-        ret[0] = end - start ;
-        return ret ;
+        ret[0] = end - start;
+        return ret;
     }
 
-    public static boolean wait(Object...args) throws Exception {
+    public static boolean wait(Object... args) throws Exception {
 
-        int pollInterval = 100 ; // in ms
-        int duration = 3000 ; // in ms
+        int pollInterval = 100; // in ms
+        int duration = 3000; // in ms
 
-        if ( args.length == 0 ){
+        if (args.length == 0) {
             Thread.sleep(duration);
-            return true ;
+            return true;
         }
-        AnonymousParam anon = null ;
-        if ( args[0] instanceof AnonymousParam) {
+        AnonymousParam anon = null;
+        if (args[0] instanceof AnonymousParam) {
             anon = (AnonymousParam) args[0];
             args = shiftArrayLeft(args, 1);
         }
 
-        if ( args.length > 0 ){
-            duration = castInteger(args[0],duration);
-            if ( anon == null ){
+        if (args.length > 0) {
+            duration = castInteger(args[0], duration);
+            if (anon == null) {
                 Thread.sleep(duration);
-                return true ;
+                return true;
             }
-            if ( args.length > 1 ){
-                pollInterval = castInteger(args[1],pollInterval);
+            if (args.length > 1) {
+                pollInterval = castInteger(args[1], pollInterval);
             }
         }
 
         long start = System.currentTimeMillis();
-        while(true){
+        while (true) {
             try {
                 Thread.sleep(pollInterval);
                 Object er = anon.execute();
-                boolean ret = castBoolean(er,false);
-                if ( ret ) return true ;
+                boolean ret = castBoolean(er, false);
+                if (ret) return true;
             } catch (Throwable throwable) {
                 // do nothing
             }
             long cur = System.currentTimeMillis();
-            if ( cur - start > duration ) break;
+            if (cur - start > duration) break;
         }
         return false;
     }
@@ -1950,25 +1979,27 @@ public class TypeUtility {
             success[0] = true;
         }
         // when length is non zero and last arg is this __args__ then we are overwriting
-        if ( argv.length > 0 && argv[argv.length-1] instanceof Interpreter.NamedArgs ){
-            Interpreter.NamedArgs na = (Interpreter.NamedArgs)argv[argv.length-1];
-            if ( !Script.ARGS.equals(na.name )) { throw new Exception("Named Args is not " + Script.ARGS ) ; }
-            Object[] args = array(na.value );
-            if ( argv.length == 2 && argv[0] instanceof AnonymousParam ){
-                AnonymousParam anon = ( AnonymousParam)argv[0];
+        if (argv.length > 0 && argv[argv.length - 1] instanceof Interpreter.NamedArgs) {
+            Interpreter.NamedArgs na = (Interpreter.NamedArgs) argv[argv.length - 1];
+            if (!Script.ARGS.equals(na.name)) {
+                throw new Exception("Named Args is not " + Script.ARGS);
+            }
+            Object[] args = array(na.value);
+            if (argv.length == 2 && argv[0] instanceof AnonymousParam) {
+                AnonymousParam anon = (AnonymousParam) argv[0];
                 argv = new Object[args.length + 1];
-                argv[0] = anon ;
-                for ( int i = 1 ; i < argv.length ;i++){
-                    argv[i] = args[i-1];
+                argv[0] = anon;
+                for (int i = 1; i < argv.length; i++) {
+                    argv[i] = args[i - 1];
                 }
-            }else{
+            } else {
                 // overwrite everything
-                argv = args ;
+                argv = args;
             }
         }
 
         switch (methodName) {
-            case TYPE :
+            case TYPE:
                 return type(argv);
             case BYTE:
                 return castByte(argv);
@@ -2075,9 +2106,9 @@ public class TypeUtility {
                 return thread(argv);
 
             case LEFT_FOLD:
-                return fold(false,argv);
+                return fold(false, argv);
             case RIGHT_FOLD:
-                return fold(true,argv);
+                return fold(true, argv);
             case TOKEN:
                 return tokenize(argv);
             case HASH:
@@ -2119,20 +2150,20 @@ public class TypeUtility {
         return r;
     }
 
-    public static int system(Object...args) throws Exception {
+    public static int system(Object... args) throws Exception {
 
-        if ( args.length ==  1 ){
+        if (args.length == 1) {
             Process p = Runtime.getRuntime().exec(args[0].toString());
             p.waitFor();
 
             // terrible nomenclature in Java
-            BufferedReader or = new BufferedReader( new InputStreamReader(p.getInputStream()));
-            BufferedReader er = new BufferedReader( new InputStreamReader(p.getErrorStream()));
-            String line ;
-            while( (line = or.readLine())!= null ){
+            BufferedReader or = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader er = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            String line;
+            while ((line = or.readLine()) != null) {
                 System.out.println(line);
             }
-            while( (line = er.readLine())!= null ){
+            while ((line = er.readLine()) != null) {
                 System.err.println(line);
             }
             return p.exitValue();
@@ -2140,15 +2171,15 @@ public class TypeUtility {
         return 0;
     }
 
-    public static Thread thread(Object...args) throws Exception{
-        if ( args.length == 0 ){
+    public static Thread thread(Object... args) throws Exception {
+        if (args.length == 0) {
             return Thread.currentThread();
         }
-        if ( args[0] instanceof AnonymousParam ){
-            AnonymousParam anonymousParam = (AnonymousParam)args[0];
-            args = shiftArrayLeft(args,1);
+        if (args[0] instanceof AnonymousParam) {
+            AnonymousParam anonymousParam = (AnonymousParam) args[0];
+            args = shiftArrayLeft(args, 1);
             Thread t = new Thread(anonymousParam);
-            anonymousParam.setIterationContext(args, t, t.getId() );
+            anonymousParam.setIterationContext(args, t, t.getId());
             t.start();
             return t;
         }
