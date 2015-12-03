@@ -817,6 +817,15 @@ public final class SetOperations {
                 }
             }
         }
+        if ( c2 instanceof Iterator ){
+            Iterator itr = ((Iterator)c2) ;
+            while ( itr.hasNext() ){
+                Object o = itr.next() ;
+                if ( Objects.equals(o,c1) ){
+                    return true ;
+                }
+            }
+        }
         return false;
     }
 

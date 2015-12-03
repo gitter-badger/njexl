@@ -629,6 +629,46 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testCastString() throws Exception {
+        JexlContext jc = new MapContext();
+        String s = "str(null) == 'null' " ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "str([1,2]) == '1,2' " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "str(list(1,2) ) == '1,2' " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "str(2.3456,3) === '2.346' " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "str(2.3456,'##.###') === '2.346' " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "str(date(), 'dd-MM-yyyy' ) === str(time(), 'dd-MM-yyyy' ) " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "str{[1,2] }('','&') === '1&2'" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+    }
+
+    @Test
     public void testRandomRange() throws Exception {
         JexlContext jc = new MapContext();
 
@@ -690,8 +730,7 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue(o instanceof Boolean );
         assertTrue((Boolean)o);
 
-
-        s = "L = LIST(0,1,2,3,4) ; r = random( L ) ; r @ L " ;
+        s = "L = [0:5] ; r = random( L ) ; r @ L " ;
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertTrue(o instanceof Boolean );
