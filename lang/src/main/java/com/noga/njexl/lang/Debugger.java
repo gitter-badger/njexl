@@ -933,6 +933,7 @@ public final class Debugger implements ParserVisitor {
         builder.append("#");
         accept(node.jjtGetChild(0), data);
         if (node.jjtGetNumChildren() > 1) {
+            builder.append(" ");
             acceptStatement(node.jjtGetChild(1), data);
         }
         builder.append(" ;");

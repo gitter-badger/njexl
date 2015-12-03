@@ -577,8 +577,12 @@ public class JexlEngine {
         String d = f.getParent();
         File dir = new File(d);
         File[] files = dir.listFiles();
+        String[] paths = from.split(File.separator);
+        String name = paths[ paths.length-1 ];
+
         for ( File file : files ){
-            boolean b = Script.DEFAULT_NAME_MATCH.matcher(file.getName()).matches();
+            String fileName = file.getName() ;
+            boolean b = fileName.startsWith(name) && Script.DEFAULT_NAME_MATCH.matcher(fileName).matches();
             if ( b ) return file;
         }
         String msg = String.format("No jexl file named '%s' found in dir : %s", f.getName(), d );

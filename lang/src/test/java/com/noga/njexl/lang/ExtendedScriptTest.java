@@ -359,7 +359,7 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
     @Test
     public void testFunctionTakingDefaultFunctionAsArg() throws Exception{
-        Object o = runScript(JEXL, "samples/function_arg.jxl");
+        Object o = runScript(JEXL, "samples/function_arg");
         assertEquals(0,o);
     }
 }

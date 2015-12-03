@@ -458,21 +458,21 @@ public class JexlException extends RuntimeException {
         public final boolean jump;
 
         /**
-         * Creates a new instance of Break.
+         * Creates a new instance of Jump.
          * @param node the node from where the jump should take place
-         * @param location the location of the break
+         * @param location the location of the jump
          */
         public Jump(JexlNode node, int location) {
-            super(node, "loop broken", null);
+            super(node, "Jump Took Place", null);
             this.location = location ;
             this.jump = true ;
         }
         /**
-         * Creates a new instance of Break.
-         * @param node the node where the Break was detected
+         * Creates a new instance of Jump.
+         * @param node the node where the Jump was detected
          */
         public Jump(JexlNode node) {
-            super(node, "loop broken", null);
+            super(node, "Jump Did not take Place!", null);
             this.location = -1 ;
             this.jump = false ;
         }
