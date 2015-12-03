@@ -451,9 +451,9 @@ public class JexlArithmetic {
                 return ((Arithmetic)left).add(right);
             }
             if ( left instanceof Set ){
-                ListSet r = new ListSet((List) left);
-                if (right instanceof Set) {
-                    r.addAll((List) right);
+                ListSet r = new ListSet((Set) left);
+                if (right instanceof Collection) {
+                    r.addAll((Collection) right);
 
                 }else{
                     r.add(right);
@@ -826,8 +826,8 @@ public class JexlArithmetic {
         }catch (Exception e){
             // if set ?
             if (left instanceof Set ) {
-                if ( right instanceof Set) {
-                    return SetOperations.set_d((Set) left, (Set) right);
+                if ( right instanceof Collection ) {
+                    return SetOperations.set_d((Set) left, (Collection) right );
                 }
                 ListSet l = new ListSet((Set)left);
                 l.remove(right);

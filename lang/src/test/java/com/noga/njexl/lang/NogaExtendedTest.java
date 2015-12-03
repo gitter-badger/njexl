@@ -360,7 +360,16 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.execute(jc);
         assertTrue(o instanceof BigDecimal);
 
-        
+        e = JEXL.createScript("x = [0,1]**-1 ; x.0 == 1 and x.1 == 0 ");
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean);
+        assertTrue((Boolean) o);
+
+        e = JEXL.createScript("x = [0,1] ** 0 ; empty(x) ");
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean);
+        assertTrue((Boolean) o);
+
     }
 
     @Test
@@ -954,7 +963,7 @@ public class NogaExtendedTest extends JexlTestCase {
         Script e = JEXL.createScript(s);
         Object o = e.execute(jc);
         assertTrue((boolean)o);
-        s = "until{ i = i - 1 ; i == 0 ; }(100,10)" ;
+        s = "until{ i = i - 1 ; return ( i == 0 ) ; }(100,10)" ;
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertTrue((boolean) o);

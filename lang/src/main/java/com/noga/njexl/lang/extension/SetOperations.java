@@ -145,6 +145,22 @@ public final class SetOperations {
 
     /**
      * Set Difference
+     * @param s1 Collection 1
+     * @param s2 Collection 2
+     * @return difference of the sets : s1 - s2
+     */
+    public static Set set_d(Collection s1, Collection s2) {
+        ListSet d = new ListSet(s1);
+        for (Object o : s2) {
+            if (d.contains(o)) {
+                d.remove(o);
+            }
+        }
+        return d;
+    }
+
+    /**
+     * Set Difference
      * @param s1 set 1
      * @param s2 set 2
      * @return difference of the sets : s1 - s2
@@ -152,7 +168,7 @@ public final class SetOperations {
     public static Set set_d(Set s1, Set s2) {
         ListSet d = new ListSet(s1);
         for (Object o : s2) {
-            if (s1.contains(o)) {
+            if (d.contains(o)) {
                 d.remove(o);
             }
         }

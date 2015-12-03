@@ -26,6 +26,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by noga on 28/03/15.
@@ -204,6 +205,53 @@ public class ExtendedScriptTest extends JexlTestCase {
         e = JEXL.createScript("inspect()");
         o = e.execute(jc);
         assertNotNull(o);
+    }
+
+    @Test
+    public void testCollectionAddAll() throws Exception{
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript("x = set(1,2) ; y = set(3,4) ; z = x + y ; z == set(1,2,3,4)");
+        Object o = e.execute(jc);
+        assertTrue(o instanceof Boolean);
+        assertTrue((Boolean)o);
+
+        e = JEXL.createScript("x = list(1,2) ; z += x ; z == set(1,2,3,4) ");
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean);
+        assertTrue((Boolean)o);
+
+        e = JEXL.createScript("x = {1:2} ; y = {3:4} ; z = x + y ;  z == { 1:2, 3:4 } ");
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean);
+        assertTrue((Boolean)o);
+
+    }
+
+    @Test
+    public void testCollectionSubtractAll() throws Exception{
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript("x = set(1,2) ; z = set(1,2,3,4) ; y = z - x ; y == set(3,4) ; ");
+        Object o = e.execute(jc);
+        assertTrue(o instanceof Boolean);
+        assertTrue((Boolean)o);
+
+        e = JEXL.createScript("x = list(1,2) ; y = z - x ; y == set(3,4) ; ");
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean);
+        assertTrue((Boolean)o);
+
+
+        e = JEXL.createScript("y -= 3 ; y == [4] ");
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean);
+        assertTrue((Boolean)o);
+
+
+        e = JEXL.createScript("x = {1:2} ; z = { 1:2, 3:4 } ; y = z - x ; y == {3:4} ; ");
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean);
+        assertTrue((Boolean)o);
+
     }
 
     @Test
