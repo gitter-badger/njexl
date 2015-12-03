@@ -16,11 +16,14 @@
 
 package com.noga.njexl.lang.extension.datastructures;
 
+import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.Main;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * An implementation of tuple.
@@ -103,5 +106,29 @@ public class Tuple  {
     @Override
     public String toString(){
         return String.format( "<%s,%s>", mapping, Main.strArr(t) );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tuple tuple = (Tuple) o;
+        if (SetOperations.SetRelation.EQUAL != SetOperations.set_relation(names.keySet(), tuple.names.keySet() ) ) return false ;
+        for ( String name : names.keySet() ){
+            int inxThis = names.get(name);
+            int inxThat = tuple.names.get(name);
+            if ( !Objects.equals( t[inxThis], tuple.t[inxThat] ) ){
+                return false ;
+            }
+        }
+        return true ;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = names != null ? names.hashCode() : 0;
+        result = 31 * result + (mapping != null ? mapping.hashCode() : 0);
+        result = 31 * result + Arrays.hashCode(t);
+        return result;
     }
 }

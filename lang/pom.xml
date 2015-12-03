@@ -97,7 +97,7 @@ limitations under the License.
         <maven.compile.target>1.8</maven.compile.target>
         <maven.javadoc.skip>false</maven.javadoc.skip>
         <gpg.skip>true</gpg.skip>
-        <coverage.fraction>0.50</coverage.fraction>
+        <coverage.fraction>0.66</coverage.fraction>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -311,7 +311,7 @@ limitations under the License.
                                             <element>BUNDLE</element>
                                             <limits>
                                                 <limit>
-                                                    <counter>COMPLEXITY</counter>
+                                                    <counter>INSTRUCTION</counter>
                                                     <value>COVEREDRATIO</value>
                                                     <minimum>${coverage.fraction}</minimum>
                                                 </limit>

@@ -557,7 +557,7 @@ public class DataMatrix {
         }
         ArrayList d2 = new ArrayList();
         for (  Object i : diffKey[1] ){
-            d1.add(  right.keys.get(i) );
+            d2.add(  right.keys.get(i) );
         }
         matrixDiff.lr = d1;
         matrixDiff.rl = d2 ;

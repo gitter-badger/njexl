@@ -23,11 +23,7 @@ import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.lang.extension.dataaccess.XmlMap;
 import com.noga.njexl.lang.extension.datastructures.Tuple;
 import org.junit.Test;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -217,11 +213,28 @@ public class ExtendedScriptTest extends JexlTestCase {
         Object o = e.execute(jc);
         assertTrue(o instanceof List);
         assertTrue(((List)o).isEmpty() );
+        // now load again w/o header
+        e = JEXL.createScript("m = matrix('samples/test_header_only.tsv','\\t', false) ; ");
+        o = e.execute(jc);
+        assertTrue(o instanceof DataMatrix );
+        assertEquals(1, ((DataMatrix)o).rows.size() );
+
+        e = JEXL.createScript("m.t(0)");
+        o = e.execute(jc);
+        assertTrue(o instanceof Tuple );
+        assertEquals(5, ((Tuple)o).t.length );
+
+        e = JEXL.createScript("m.c(0)");
+        o = e.execute(jc);
+        assertTrue(o instanceof List );
+        assertEquals(1, ((List)o).size() );
+
     }
 
     @Test
     public void testDataMatrixComparison() throws Exception{
         DataMatrix m1 = DataMatrix.loc2matrix("samples/test.tsv");
+        System.out.println(m1);
         m1 = m1.sub(0,3);
         assertTrue(m1 != null);
         DataMatrix m2 = DataMatrix.loc2matrix("samples/test.tsv");
@@ -236,6 +249,46 @@ public class ExtendedScriptTest extends JexlTestCase {
 
         DataMatrix.MatrixDiff diff  = DataMatrix.diff(m1, m2);
         assertFalse( diff.diff()  );
+        assertTrue(diff.id.isEmpty());
+        assertTrue(diff.lr.isEmpty());
+        assertTrue(diff.rl.isEmpty());
+
+
+        DataMatrix m3 = DataMatrix.loc2matrix("samples/test_header_only.tsv");
+        System.out.println(m3);
+
+        m3 = m3.sub(0,3);
+        m3.keys(0);
+        m3 = m3.aggregate("Points");
+        diff  = DataMatrix.diff(m1, m3);
+        assertTrue( diff.diff()  );
+        assertTrue(diff.rl.isEmpty());
+        assertFalse(diff.lr.isEmpty());
+
+        System.out.println(diff);
+
+        diff  = DataMatrix.diff(m3, m1);
+        assertTrue( diff.diff()  );
+
+        assertTrue(diff.lr.isEmpty());
+        assertFalse(diff.rl.isEmpty());
+
+        System.out.println(diff);
+
+        JexlContext jc = new MapContext();
+        jc.set("m1",m1);
+        jc.set("m2",m2);
+        jc.set("m3",m3);
+
+        // the equals of the tuple should kick in
+        Script e = JEXL.createScript("d = m1.diff{ $[0] == $[1]  }(m1,m2) ; d.diff() ");
+        Object o = e.execute(jc);
+        assertFalse((Boolean)o);
+
+        //the general stuff should kick in
+        e = JEXL.createScript("d = m1.diff{ $[0].Points == $[1].Points  }(m1,m2) ; d.diff() ");
+        o = e.execute(jc);
+        assertFalse((Boolean)o);
 
     }
 
