@@ -211,6 +211,15 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testHeaderOnlyTable() throws Exception{
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript("m = matrix('samples/test_header_only.tsv') ; m.select('Number', 'First Name') ;");
+        Object o = e.execute(jc);
+        assertTrue(o instanceof List);
+        assertTrue(((List)o).isEmpty() );
+    }
+
+    @Test
     public void testDataMatrixComparison() throws Exception{
         DataMatrix m1 = DataMatrix.loc2matrix("samples/test.tsv");
         m1 = m1.sub(0,3);

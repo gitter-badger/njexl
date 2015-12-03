@@ -18,6 +18,7 @@ package com.noga.njexl.lang.extension.dataaccess;
 import com.noga.njexl.lang.Interpreter;
 import com.noga.njexl.lang.JexlException;
 import com.noga.njexl.lang.Script;
+import com.noga.njexl.lang.UnifiedJEXL;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.datastructures.Tuple;
@@ -122,6 +123,10 @@ public class DataMatrix {
             ArrayList rows = new ArrayList();
             for ( String line : lines ){
                 String[] words =  line.split(sep,-1);
+                if ( header && words.length != cols.size() ){
+                    String message = "Invalid no of columns in data row! Expected :%d, Actual %d" ;
+                    throw new Exception(String.format(message, cols.size(), words.length )) ;
+                }
                 ArrayList row = new ArrayList(Arrays.asList(words));
                 rows.add(row);
             }
@@ -268,6 +273,9 @@ public class DataMatrix {
 
         SelectSetup selectSetup = new SelectSetup();
         selectSetup.colIndexes = new HashSet<>();
+
+        // no point going further here... always will be empty
+        if ( rows.isEmpty() ){ return selectSetup ; }
 
         if ( args.length > 0 ){
             if ( args[0] instanceof Interpreter.AnonymousParam){
