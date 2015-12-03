@@ -2,7 +2,7 @@
 def Complex {
     def __new__ (me,x=0.0,y=0.0){
       me.x = x
-      me.y = y
+      me.y = y 
     }
     def __str__(me){
       str:format('(%f,i %f)', me.x, me.y)
@@ -16,11 +16,19 @@ def Complex {
     def __mul__(me,o){
       return new ('Complex' , me.x * o.x  - me.y * o.y , me.x * o.y + me.y * o.x )
     }
+    def __div__(me,o){
+      x = ( me.x * o.x  + me.y * o.y )/( o.x **2  + o.y **2 )
+      y = ( me.y * o.x  - me.x * o.y )/( o.x **2  + o.y **2 )
+
+      return new ('Complex' , x, y )
+    }
 }
 c1 = new ( 'Complex' , 1.0, 2.0 )
+write('Type of c1 is %s\n', type(c1) )
 write( 'c1 : %s\n' , c1 )
 c2 = new ( 'Complex' , 2.0, 1.0 )
 write( 'c2 : %s\n' , c2 )
 write( 'c1 + c2 : %s\n' , c1 + c2 )
 write( 'c1 - c2 : %s\n' , c1 - c2 )
 write( 'c1 * c2 : %s\n' , c1 * c2 )
+write( 'c1 / c2 : %s\n' , c1 / c2 )

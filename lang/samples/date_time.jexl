@@ -3,6 +3,22 @@
   Format is : PyYmMwWdDThHmMsS 
 */
 
+// create a date
+id = date('19470815') // Indian independence day
+id2 = date('15/08/1947', 'dd/MM/yyyy')  
+write( id == id2 ) // they must be same   
+// setting leniency ?
+bad_date = date('29/02/1947', 'dd/MM/yyyy' , true )
+write(bad_date)
+// set time zone?
+tz_date = date('22/02/1947', 'dd/MM/yyyy' , false , 'Asia/Kolkata' )
+write(tz_date)
+// same with time 
+it = time('19470815')
+it2 = time('15/08/1947', 'dd/MM/yyyy')
+write( it == it2 ) // they must be same   
+
+
 start_time = time()
 end_time = start_time + "P10D" 
 count = 0 

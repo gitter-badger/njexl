@@ -148,6 +148,33 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testCastType() throws Exception {
+        Expression e = JEXL.createExpression("x = float( 0.000000010100) ");
+        JexlContext jc = new MapContext();
+        Object o = e.evaluate(jc);
+        assertTrue(o instanceof Float );
+
+        e = JEXL.createExpression("y = double( 0.000001) ");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof Double );
+
+        e = JEXL.createExpression("x =  DEC ( 0.00000001) ");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof BigDecimal );
+
+        e = JEXL.createExpression("I = INT(100) ");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof BigInteger );
+
+
+        e = JEXL.createExpression("byte(12)");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof Byte);
+        assertEquals((byte)12,o);
+
+    }
+
+    @Test
     public void testAutoBigDecimalType() throws Exception {
         Expression e = JEXL.createExpression("x =  0.000000010100");
         JexlContext jc = new MapContext();
@@ -650,6 +677,51 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.execute(jc);
         assertTrue(o instanceof Integer );
         assertTrue((int)o < 100 && (int)o >=10  );
+
+        s = "A = [0,1,2,3,4] ; r = random( A ) ; r @ A ;" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean );
+        assertTrue((Boolean)o);
+
+        s = "r = random( A, 2  ) ;  A > set(r) and size(r) == 2  ;" ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean );
+        assertTrue((Boolean)o);
+
+
+        s = "L = LIST(0,1,2,3,4) ; r = random( L ) ; r @ L " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean );
+        assertTrue((Boolean)o);
+
+        s = "r = random( L , 3 ) ; L >= set(r) and size(r) == 3 ; " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean );
+        assertTrue((Boolean)o);
+
+
+        s = "M = {1:2 , 3:4 , 5:6 , 7:8 } ; r = random( M ) ; r @ M " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean );
+        assertTrue((Boolean)o);
+
+        s = " r = random( M,2 ) ; r <= M and size(r) <= 2 ; " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean );
+        assertTrue((Boolean)o);
+
+        s = " r = random( 'abcdefghijklmnop',10 ) ; size(r) == 10 ; " ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean );
+        assertTrue((Boolean)o);
+
 
     }
 
@@ -1450,6 +1522,22 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue(o instanceof Map);
         assertEquals(1, ((Map)o).size() );
 
+        s = "L = lfold( [0,1,2,3,4,5,6,7,8,9] )  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof String);
+
+
+        s = "R = rfold( [0,1,2,3,4,5,6,7,8,9] )  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof String);
+
+        s = "R == L**-1 ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean);
+        assertTrue((Boolean)o);
     }
 
     @Test

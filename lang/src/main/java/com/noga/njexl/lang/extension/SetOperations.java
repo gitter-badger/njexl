@@ -794,6 +794,9 @@ public final class SetOperations {
             if ( c1 instanceof Map ){
                 return is_dict_relation((Map)c1,(Map)c2,"<=");
             }
+            if ( c1 instanceof Map.Entry ){
+                return ((Map)c2).entrySet().contains(c1);
+            }
             return ((Map) c2).containsKey(c1);
         }
         if (c2 instanceof Collection || c2.getClass().isArray()) {

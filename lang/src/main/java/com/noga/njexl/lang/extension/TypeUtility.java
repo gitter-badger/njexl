@@ -121,7 +121,7 @@ public class TypeUtility {
     public static final String PROJECT = "project";
     public static final String SUBLIST = "sub";
 
-    public static final String LITERAL_LIST = "listLiteral";
+    public static final String LITERAL_LIST = "LIST";
     public static final String ARRAY = "array";
     public static final String ARRAY_FROM_LIST = "arrayFromList";
     public static final String SET = "set";
@@ -601,7 +601,7 @@ public class TypeUtility {
                 return r;
             }
             // return the tuple
-            return new Object[]{l.get(index), m.get(l.get(index))};
+            return new XList.Pair( l.get(index), m.get(l.get(index))) ;
         }
         return random;
     }
@@ -2156,10 +2156,22 @@ public class TypeUtility {
             if (args.length > 2) {
                 end = castInteger(args[2], end);
             }
+            if ( start < 0 && end < 0 ){
+                end = l.size() - 1 + end ;
+                start = l.size() - 1 + start ;
+            }else if ( end < 0 ){
+                end = l.size() - 1 + end ;
+            } else if ( start < 0 ){
+                end = l.size() - 1 + start ;
+                start = 0 ;
+            }
         }
         XList r = new XList();
         for (int i = start; i <= end; i++) {
             r.add(l.get(i));
+        }
+        if ( args[0].getClass().isArray() ){
+            return r.toArray();
         }
         return r;
     }

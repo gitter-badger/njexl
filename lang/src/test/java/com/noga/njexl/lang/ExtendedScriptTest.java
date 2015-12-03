@@ -26,7 +26,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by noga on 28/03/15.
@@ -150,7 +149,7 @@ public class ExtendedScriptTest extends JexlTestCase {
 
     @Test
     public void testClassScript() throws Exception {
-        runScript(JEXL, "samples/class_demo.jexl");
+        runScript(JEXL, "samples/class_demo2.jexl");
     }
 
     @Test
@@ -248,6 +247,45 @@ public class ExtendedScriptTest extends JexlTestCase {
 
 
         e = JEXL.createScript("x = {1:2} ; z = { 1:2, 3:4 } ; y = z - x ; y == {3:4} ; ");
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean);
+        assertTrue((Boolean)o);
+
+    }
+
+    @Test
+    public void testVariousTypeUtilityMethods() throws Exception{
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript("type('foobar');");
+        Object o = e.execute(jc);
+        assertEquals(String.class, o );
+
+        e = JEXL.createScript("type() == type(null)  ");
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean);
+        assertTrue((Boolean)o);
+
+        e = JEXL.createScript("x = LIST(1,2,list(3,4)) ");
+        o = e.execute(jc);
+        assertTrue(o instanceof List);
+        assertEquals(3,((List)o).size() );
+
+        e = JEXL.createScript("y = project(x,1) ");
+        o = e.execute(jc);
+        assertTrue(o instanceof List);
+        assertEquals(2,((List)o).size() );
+
+        e = JEXL.createScript("y = project(x,1,2) ");
+        o = e.execute(jc);
+        assertTrue(o instanceof List);
+        assertEquals(2,((List)o).size() );
+
+        e = JEXL.createScript("y = project(x,-1) ; y.0 == 1 and y.1 == 2 ;");
+        o = e.execute(jc);
+        assertTrue(o instanceof Boolean);
+        assertTrue((Boolean)o);
+
+        e = JEXL.createScript("y = project([0,1,2], -1) ; y.0 == 0 and y.1 == 1 and y isa [] ");
         o = e.execute(jc);
         assertTrue(o instanceof Boolean);
         assertTrue((Boolean)o);
