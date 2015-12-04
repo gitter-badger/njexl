@@ -577,7 +577,12 @@ public class JexlEngine {
         String d = f.getParent();
         File dir = new File(d);
         File[] files = dir.listFiles();
-        String[] paths = from.split(File.separator);
+        String sep = "/" ;
+        if ( from.contains("\\")){
+            sep = "\\" ;
+        }
+
+        String[] paths = from.split(sep);
         String name = paths[ paths.length-1 ];
 
         for ( File file : files ){
