@@ -1,0 +1,8 @@
+x = read('http://www.google.co.in')
+test{ not empty(x) }('could not read google!')
+x = read('samples/test.tsv')
+test{ not empty(x) }('could not read local file!')
+x = lines('samples/test.tsv')
+test{ not empty(x) }('could not read local file!')
+write(x)
+hash(x)

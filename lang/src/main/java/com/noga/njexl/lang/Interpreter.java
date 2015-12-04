@@ -338,24 +338,6 @@ public class Interpreter implements ParserVisitor {
     }
 
     /**
-     * Sets this interpreter registers for bean access/assign expressions.
-     * <p>Use setFrame(...) instead.</p>
-     *
-     * @param theRegisters the array of registers
-     */
-    @Deprecated
-    protected void setRegisters(Object... theRegisters) {
-        if (theRegisters != null) {
-            String[] regStrs = new String[theRegisters.length];
-            for (int r = 0; r < regStrs.length; ++r) {
-                regStrs[r] = "#" + r;
-            }
-            this.parameters = regStrs;
-        }
-        this.registers = theRegisters;
-    }
-
-    /**
      * Sets this interpreter parameters and arguments.
      *
      * @param frame the calling frame

@@ -1,0 +1,82 @@
+/* 
+ Showcases the iterator capabilities 
+*/
+
+// Symbol Iterator 
+write('=======Testing Symbol Iterator=======')
+itr_sym = ['a' : 'z' ] // z is inclusive in this case 
+//create another one from this?
+itr = [ itr_sym.b : itr_sym.e ]
+write( '%s == %s ? %s\n', itr ,itr_sym , itr == itr_sym)
+write( itr_sym.str )
+for ( c : itr_sym ){
+   write('%c',c)
+}
+write()
+itr_sym.reset()
+// do again 
+for ( c : itr_sym ){
+   write('%c',c)
+}
+write()
+write( itr_sym.list() )
+write( itr_sym.reverse() )
+write( itr_sym.inverse().str )
+
+// Range Iterator
+write('=======Testing Range Iterator=======')
+itr_r = [0 : 10 ] // 10 is exclusive in this case 
+itr = [ itr_r.b : itr_r.e ]
+write( '%s == %s ? %s\n', itr ,itr_r , itr == itr_r)
+
+for ( c : itr_r ){
+   write('%d',c)
+}
+write()
+itr_r.reset()
+// do again 
+for ( c : itr_r ){
+   write('%d',c)
+}
+write()
+write( itr_r.list() )
+write( itr_r.reverse() )
+write( itr_r.inverse().list() )
+// splicing ...
+
+a = itr_r.list()
+write( 'splicing +ve %s --> %s\n', a, a[[0:4]] )
+write( 'splicing -ve %s --> %s\n', a, a[[4:-1]] )
+write( 'splicing from right %s --> %s\n', a, a[[-5:0]] )
+
+a = itr_sym.str
+write( 'splicing +ve %s --> %s\n', a, a[[0:4]] )
+write( 'splicing -ve %s --> %s\n', a, a[[4:-1]] )
+write( 'splicing from right %s --> %s\n', a, a[[-5:0]] )
+
+a = itr_sym.str.toCharArray()
+write( 'splicing +ve %s --> %s\n', str(a,'#') , str(a[[0:4]],'#') )
+write( 'splicing -ve %s --> %s\n', str(a,'#'), str(a[[4:-1]],'#') )
+write( 'splicing from right %s --> %s\n', str(a,'#'), str(a[[-5:0]],'#') )
+
+
+// Date Iterator
+write('=======Testing Date Iterator=======')
+itr_d = [ date() : time().plusDays(10) ] // Last one is exclusive in this case 
+
+itr = [ itr_d.b : itr_d.e ]
+write( '%s == %s ? %s\n', itr ,itr_d , itr == itr_d)
+
+for ( c : itr_d ){
+   write('%s ',c)
+}
+write()
+itr_d.reset()
+// do again 
+for ( c : itr_d ){
+   write('%s ',c)
+}
+write()
+write( itr_d.list() )
+write( itr_d.reverse() )
+write( itr_d.inverse().list() )

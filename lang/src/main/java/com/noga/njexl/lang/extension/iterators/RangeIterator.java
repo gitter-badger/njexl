@@ -119,7 +119,6 @@ public  class RangeIterator extends YieldedIterator {
      * @return spliced object
      */
     public Object splice(Object target) {
-        if ( target == null ) return  null ;
         if ( target instanceof String ){
             String ts = (String)target;
             StringBuffer buffer = new StringBuffer();
@@ -152,7 +151,7 @@ public  class RangeIterator extends YieldedIterator {
             }
             return l.toArray();
         }
-        return null;
+        return target;
     }
 
 }

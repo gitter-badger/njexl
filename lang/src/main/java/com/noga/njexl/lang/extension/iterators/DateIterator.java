@@ -74,11 +74,11 @@ public class DateIterator extends YieldedIterator{
         return daysWithoutWeekendDays-w1+w2;
     }
 
-    public final DateTime start;
+    public final DateTime b;
 
-    public final DateTime end;
+    public final DateTime e;
 
-    public final Duration interval ;
+    public final Duration s ;
 
     public final Duration duration ;
 
@@ -113,17 +113,17 @@ public class DateIterator extends YieldedIterator{
     }
 
     public DateIterator(DateTime end, DateTime start, Duration interval){
-        this.end  = end ;
-        this.start = start ;
-        this.interval = interval ;
-        decreasing = this.start.compareTo(this.end) > 0 ;
+        this.e  = end ;
+        this.b = start ;
+        this.s = interval ;
+        decreasing = this.b.compareTo(this.e) > 0 ;
         // inclusive
         if ( decreasing ){
-            this.cur = this.start.plus(this.interval) ;
+            this.cur = this.b.plus(this.s) ;
         }else{
-            this.cur = this.start.minus(this.interval) ;
+            this.cur = this.b.minus(this.s) ;
         }
-        this.duration = new Duration(this.start, this.end);
+        this.duration = new Duration(this.b, this.e);
         years = Years.yearsBetween(start,end).getYears();
         months = Months.monthsBetween(start, end).getMonths();
         weeks = Weeks.weeksBetween(start, end).getWeeks();
@@ -141,9 +141,9 @@ public class DateIterator extends YieldedIterator{
     public void reset() {
         // inclusive
         if ( decreasing ){
-            this.cur = this.start.plus(this.interval) ;
+            this.cur = this.b.plus(this.s) ;
         }else{
-            this.cur = this.start.minus(this.interval) ;
+            this.cur = this.b.minus(this.s) ;
         }
     }
 
@@ -151,7 +151,7 @@ public class DateIterator extends YieldedIterator{
     public boolean equals(Object obj) {
         if ( !(obj instanceof DateIterator) ) return false ;
         DateIterator o = (DateIterator)obj;
-        if ( end.equals(o.end) && start.equals(o.start) && interval.equals(o.interval) ) return true ;
+        if ( e.equals(o.e) && b.equals(o.b) && s.equals(o.s) ) return true ;
         return false ;
     }
 
@@ -163,17 +163,17 @@ public class DateIterator extends YieldedIterator{
     @Override
     public boolean hasNext() {
         if ( decreasing ){
-            return cur.minus(interval).compareTo( end ) >=0 ;
+            return cur.minus(s).compareTo( e ) >=0 ;
         }
-        return cur.plus(interval).compareTo( end ) <= 0 ;
+        return cur.plus(s).compareTo( e ) <= 0 ;
     }
 
     @Override
     public Object next() {
         if ( decreasing ){
-            cur = cur.minus(interval);
+            cur = cur.minus(s);
         }else {
-            cur = cur.plus(interval);
+            cur = cur.plus(s);
         }
         return cur;
     }
@@ -185,6 +185,6 @@ public class DateIterator extends YieldedIterator{
 
     @Override
     public YieldedIterator inverse() {
-        return new DateIterator(this.start, this.end, this.interval );
+        return new DateIterator(this.b, this.e, this.s );
     }
 }

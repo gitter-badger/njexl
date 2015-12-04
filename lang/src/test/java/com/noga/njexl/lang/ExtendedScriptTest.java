@@ -170,6 +170,17 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testIteratorsScript() throws Exception {
+        runScript(JEXL, "samples/iterators");
+    }
+
+    @Test
+    public void testIOScript() throws Exception {
+        Object o = runScript(JEXL, "samples/io");
+        assertTrue(o instanceof String);
+    }
+
+    @Test
     public void testListScript() throws Exception {
         runScript(JEXL,"samples/lists.jexl");
     }

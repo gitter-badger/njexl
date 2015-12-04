@@ -961,6 +961,9 @@ public class TypeUtility {
         if (args.length == 0) {
             return 0;
         }
+        if (args[0] instanceof Character) {
+            return (Character)args[0];
+        }
         if (args[0] instanceof String) {
             String s = ((String) args[0]);
             if (s.length() != 1) {
@@ -1543,11 +1546,11 @@ public class TypeUtility {
                 }
                 return new DateIterator(et);
             }
-            if (args[0] instanceof String) {
+            if (args[0] instanceof String || args[0] instanceof Character) {
                 // a different iterator ...
                 Character et = castChar(args[0]);
                 if (args.length > 1) {
-                    if (args[1] instanceof String) {
+                    if (args[1] instanceof String || args[1] instanceof Character ) {
                         Character st = castChar(args[1]);
                         if (args.length > 2) {
                             String d = args[2].toString();
