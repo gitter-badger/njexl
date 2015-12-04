@@ -1912,7 +1912,8 @@ public class TypeUtility {
         AnonymousParam anon = (AnonymousParam) args[0];
         args = shiftArrayLeft(args, 1);
         try {
-            return anon.execute();
+            Object r = anon.execute();
+            return r;
         } catch (Throwable throwable) {
             if (args.length == 0) {
                 return throwable.getCause();
@@ -1937,7 +1938,11 @@ public class TypeUtility {
         try {
             ret[1] = anon.execute();
         } catch (Throwable throwable) {
-            ret[1] = throwable;
+            ret[1] = throwable.getCause();
+            if ( ret[1] == null ){
+                ret[1] = throwable ;
+            }
+
         } finally {
             end = System.nanoTime();
         }

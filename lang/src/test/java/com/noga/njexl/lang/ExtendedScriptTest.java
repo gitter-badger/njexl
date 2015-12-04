@@ -23,6 +23,9 @@ import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.lang.extension.dataaccess.XmlMap;
 import com.noga.njexl.lang.extension.datastructures.Tuple;
 import org.junit.Test;
+
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -175,7 +178,11 @@ public class ExtendedScriptTest extends JexlTestCase {
     public void testXmlLoading() throws Exception{
         Object o = runScript(JEXL, "samples/xml_load.jxl", "samples/xml_load.jxl", "samples/sample.xml");
         assertTrue(o instanceof Map);
-        XmlMap xmlMap = XmlMap.file2xml("samples/sample.xml");
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript("xml('samples/sample.xml') ;");
+        o = e.execute(jc);
+        assertTrue(o instanceof XmlMap);
+        XmlMap xmlMap = (XmlMap)o;
         o = xmlMap.elements("//slide");
         assertTrue(o instanceof List);
         o = xmlMap.element("//slide[1]");
@@ -289,6 +296,48 @@ public class ExtendedScriptTest extends JexlTestCase {
         o = e.execute(jc);
         assertTrue(o instanceof Boolean);
         assertTrue((Boolean)o);
+
+        e = JEXL.createScript("system('ls')");
+        o = e.execute(jc);
+        assertEquals(0,o);
+
+        e = JEXL.createScript("system('ls -l foobar')");
+        o = e.execute(jc);
+        assertEquals(1,o);
+
+        boolean oL = JEXL.isLenient() ;
+        boolean oS = JEXL.isStrict() ;
+        JEXL.setLenient(false);
+        JEXL.setStrict(true);
+
+        e = JEXL.createScript(" try{ system('foobar') }( 'error' ) ");
+        o = e.execute(jc);
+        assertEquals("error",o);
+
+        e = JEXL.createScript(" try{ system('foobar') }( ) ");
+        o = e.execute(jc);
+        assertTrue(o instanceof IOException );
+
+        e = JEXL.createScript(" clock{ for ( i = 0 ; i < 1001; i+= 1){ i }  }( ) ");
+        o = e.execute(jc);
+        assertTrue(o instanceof Object[] );
+        assertTrue(((Object[])o)[0] instanceof Long );
+        assertEquals(1000, ((Object[])o)[1]);
+
+
+        e = JEXL.createScript(" clock{ system('foobar')  }( ) ");
+        o = e.execute(jc);
+        assertTrue(o instanceof Object[] );
+        assertTrue(((Object[])o)[1] instanceof IOException );
+        assertTrue(((Object[])o)[0] instanceof Long);
+
+        e = JEXL.createScript(" fopen('samples/test.tsv') ");
+        o = e.execute(jc);
+        assertTrue(o instanceof BufferedReader);
+        ((BufferedReader)o).close();
+
+        JEXL.setLenient(oL);
+        JEXL.setStrict(oS);
 
     }
 
