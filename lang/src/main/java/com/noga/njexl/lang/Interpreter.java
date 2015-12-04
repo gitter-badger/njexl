@@ -1223,31 +1223,7 @@ public class Interpreter implements ParserVisitor {
         return Boolean.FALSE;
     }
 
-    protected Object findScriptObject(String name) {
-        String[] arr = name.split(":");
-        Object so = null;
-        if (arr.length == 1) {
-            name = arr[0].trim();
-            so = current.classes().get(name);
-            if (so != null) {
-                return so;
-            }
-            so = current.methods().get(name);
-            return so;
-        }
-        String ns = arr[0].trim();
-        name = arr[1].trim();
-        Script script = imports.get(ns);
-        if (script == null) {
-            return null;
-        }
-        so = script.classes().get(name);
-        if (so != null) {
-            return so;
-        }
-        so = script.methods().get(name);
-        return so;
-    }
+
 
     /**
      * {@inheritDoc}
@@ -1267,13 +1243,7 @@ public class Interpreter implements ParserVisitor {
                 }
                 // now here try to do slightly better
                 Object o =  node.jjtGetChild(0).jjtAccept(this, data);
-                if (o != null) return true ;
-                o = n.jjtAccept(this, data);
-                if (o instanceof String) {
-                    // used to get the Function or class
-                    String name = (String) o;
-                    return findScriptObject(name);
-                }
+                return  (o!= null) && ( !NULL.equals(o));
             }
         } catch (Exception e) {
         }
