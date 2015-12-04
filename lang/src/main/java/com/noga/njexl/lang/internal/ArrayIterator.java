@@ -50,31 +50,21 @@ public class ArrayIterator implements Iterator<Object> {
      * @param arr The array for which an iterator is desired.
      */
     public ArrayIterator(Object arr) {
-        if (arr == null) {
-            array = null;
-            pos = 0;
-            size = 0;
-        } else if (!arr.getClass().isArray()) {
+        if (!arr.getClass().isArray()) {
             throw new IllegalArgumentException(arr.getClass() + " is not an array");
-        } else {
-            array = arr;
-            pos = 0;
-            size = Array.getLength(array);
         }
+        array = arr;
+        pos = 0;
+        size = Array.getLength(array);
     }
 
     /**
      * Move to next element in the array.
-     *
+     * Checks are removed, because clearly none should call next() w/o a hasNext()
      * @return The next object in the array.
      */
     public Object next() {
-        if (pos < size) {
-            return Array.get(array, pos++);
-        }    
-        // we screwed up...
-        throw new NoSuchElementException("No more elements: " + pos
-                                         + " / " + size);
+        return Array.get(array, pos++);
     }
     
     /**
@@ -88,8 +78,7 @@ public class ArrayIterator implements Iterator<Object> {
 
     /**
      * No op--merely added to satify the <code>Iterator</code> interface.
+     * Hence, exceptions are removed, this is a NOP.
      */
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
+    public void remove() {}
 }
