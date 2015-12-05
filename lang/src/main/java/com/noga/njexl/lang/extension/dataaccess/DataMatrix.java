@@ -374,7 +374,8 @@ public class DataMatrix {
                     }
                 }
                 if ( ret instanceof JexlException.Continue ){
-                    continue;
+                    // if the continue statement has any value, try to see what needs to be done
+                    ret = ((JexlException.Continue)ret).hasValue ;
                 }
                 if ( !TypeUtility.castBoolean(ret,false)){
                     continue;

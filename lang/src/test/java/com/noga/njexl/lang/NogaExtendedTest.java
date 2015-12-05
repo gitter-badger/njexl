@@ -858,6 +858,16 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testWithSelectAndContinue() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "x = [1,2,3,4,5,6] ; y = select{ continue( $%2==0){ $ } }(x) ; y == [2,4,6] ;" ;
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue((Boolean) o);
+    }
+
+
+    @Test
     public void testWithStaticFields() throws Exception{
         JexlContext jc = new MapContext();
         JEXL.setFunctions(Main.getFunction(jc));

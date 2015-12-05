@@ -1334,6 +1334,14 @@ public class TypeUtility {
                 anon.setIterationContextWithPartial(list, o, i, l);
                 Object ret = anon.execute();
                 if (ret instanceof JexlException.Continue) {
+                    JexlException.Continue c = (JexlException.Continue)ret;
+                    //continue exclusive, unless you pass along a value
+                    if (c.hasValue) {
+                        //should add _ITEM_ 's value, if anyone modified it
+                        l.add(anon.interpreter.getContext().get(Script._ITEM_));
+                    } else {
+                        reject.add(anon.interpreter.getContext().get(Script._ITEM_));
+                    }
                     continue;
                 }
                 if (ret instanceof JexlException.Break) {
