@@ -201,19 +201,24 @@ public class TypeUtility {
             z = args[0].getClass();
         }
 
-        StringBuffer buf = new StringBuffer();
-        buf.append("Type : ").append(z.getName()).append("\n");
-        buf.append("==== Fields ===").append("\n");
+        Map map = new HashMap<>();
+        map.put("t", z.getName() );
+        List fl = new XList<>();
         String[] fields = introspector.getFieldNames(z);
         for (String f : fields) {
-            buf.append(f).append("\n");
+            fl.add(f);
         }
-        buf.append("=== Methods ===").append("\n");
+        List ml = new XList<>();
+
         String[] methods = introspector.getMethodNames(z);
         for (String m : methods) {
-            buf.append(m).append("\n");
+            ml.add(m);
         }
-        return buf.toString();
+        map.put("f", Collections.unmodifiableList(fl));
+        map.put("m", Collections.unmodifiableList(ml));
+
+        return Collections.unmodifiableMap(map);
+
     }
 
     public static Object matrix(Object... args) throws Exception {
@@ -1649,7 +1654,7 @@ public class TypeUtility {
         return container;
     }
 
-    public static HashMap makeDict(Object... args) throws Exception {
+    public static Map makeDict(Object... args) throws Exception {
         HashMap map = new HashMap();
         // empty dict
         if (args.length == 0) {
@@ -1681,6 +1686,10 @@ public class TypeUtility {
                     }
                 }
             } else {
+                if ( args.length == 1 ){
+                    return (Map)inspect(args[0]);
+                }
+
                 List keyList = from(args[0]);
                 List valueList = from(args[1]);
                 if (keyList.size() != valueList.size()) {

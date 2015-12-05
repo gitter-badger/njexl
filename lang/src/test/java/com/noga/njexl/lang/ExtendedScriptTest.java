@@ -213,8 +213,8 @@ public class ExtendedScriptTest extends JexlTestCase {
         JexlContext jc = new MapContext();
         Script e = JEXL.createScript("x = 10 ; inspect(x) ; ");
         Object o = e.execute(jc);
-        assertTrue(o instanceof String);
-        assertFalse(((String)o).isEmpty() );
+        assertTrue(o instanceof Map);
+        assertFalse(((Map)o).isEmpty() );
 
         e = JEXL.createScript("inspect(null)");
         o = e.execute(jc);
