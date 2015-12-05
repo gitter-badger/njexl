@@ -25,7 +25,6 @@ import com.noga.njexl.lang.extension.iterators.DateIterator;
 import com.noga.njexl.lang.extension.iterators.SymbolIterator;
 import com.noga.njexl.lang.extension.iterators.YieldedIterator;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
-import com.noga.njexl.lang.extension.oop.ScriptMethod;
 import com.noga.njexl.lang.internal.Introspector;
 import com.noga.njexl.lang.parser.ASTReturnStatement;
 import com.noga.njexl.lang.parser.ASTStringLiteral;
@@ -36,16 +35,16 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
 import java.io.*;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -203,10 +202,17 @@ public class TypeUtility {
 
         Map map = new HashMap<>();
         map.put("t", z.getName() );
-        List fl = new XList<>();
+        List fi = new XList<>();
+        List fs = new XList<>();
         String[] fields = introspector.getFieldNames(z);
         for (String f : fields) {
-            fl.add(f);
+            Field field = introspector.getField(z,f);
+            XList.Pair pair = new XList.Pair(f,field.getType() );
+            if ( java.lang.reflect.Modifier.isStatic(field.getModifiers() )){
+                fs.add(pair);
+            }else{
+                fi.add(pair);
+            }
         }
         List ml = new XList<>();
 
@@ -214,7 +220,8 @@ public class TypeUtility {
         for (String m : methods) {
             ml.add(m);
         }
-        map.put("f", Collections.unmodifiableList(fl));
+        map.put("F", Collections.unmodifiableList(fs));
+        map.put("f", Collections.unmodifiableList(fi));
         map.put("m", Collections.unmodifiableList(ml));
 
         return Collections.unmodifiableMap(map);
