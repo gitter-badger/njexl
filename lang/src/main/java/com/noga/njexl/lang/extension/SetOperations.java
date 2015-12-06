@@ -17,6 +17,7 @@
 package com.noga.njexl.lang.extension;
 
 import com.noga.njexl.lang.Interpreter;
+import com.noga.njexl.lang.JexlArithmetic;
 import com.noga.njexl.lang.JexlException;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.datastructures.XList;
@@ -29,6 +30,8 @@ import java.util.*;
  * Created by noga on 10/03/15.
  */
 public final class SetOperations {
+
+    public static final JexlArithmetic arithmatic = new JexlArithmetic(true);
 
     public  enum SetRelation {
         /**
@@ -457,7 +460,7 @@ public final class SetOperations {
         for ( Object k : s.keySet() ){
             Object l = s.get(k);
             Object r = b.get(k);
-            if ( ! Objects.equals(l,r) ){
+            if ( ! arithmatic.equals(l,r) ){
                 return SetRelation.OVERLAP ;
             }
         }
@@ -811,7 +814,7 @@ public final class SetOperations {
                 int len = Array.getLength(c2);
                 for (int i = 0; i < len; i++) {
                     Object o = Array.get(c2, i);
-                    if (Objects.equals(o, c1)) {
+                    if (arithmatic.equals(o, c1)) {
                         return true;
                     }
                 }
@@ -821,7 +824,7 @@ public final class SetOperations {
             Iterator itr = ((Iterator)c2) ;
             while ( itr.hasNext() ){
                 Object o = itr.next() ;
-                if ( Objects.equals(o,c1) ){
+                if ( arithmatic.equals(o,c1) ){
                     return true ;
                 }
             }
@@ -844,7 +847,7 @@ public final class SetOperations {
                 Object v1 = m1.get(k);
                 if ( m2.containsKey(k) ){
                     Object v2 = m2.get(k);
-                    boolean e = Objects.equals(v1,v2);
+                    boolean e = arithmatic.equals(v1,v2);
                     if ( e ){ continue; }
                 }
                 // add that pair
@@ -883,7 +886,7 @@ public final class SetOperations {
             boolean right = m2.containsKey(k);
 
             if ( left && right ) {
-                if ( Objects.equals(v1,v2) ) {
+                if ( arithmatic.equals(v1,v2) ) {
                     um.put(k, v1);
                 }else{
                     um.put(k, new XList.Pair(v1,v2));
@@ -910,7 +913,7 @@ public final class SetOperations {
         for ( Object k : i ){
             Object v1 = m1.get(k);
             Object v2 = m2.get(k);
-            if ( Objects.equals(v1,v2) ){
+            if ( arithmatic.equals(v1,v2) ){
                 im.put(k,v1);
             }
         }
@@ -942,7 +945,7 @@ public final class SetOperations {
         Set s = new ListSet<>();
         for ( Object k : m.keySet() ){
             Object v = m.get(k);
-            if ( Objects.equals(o,v)){
+            if ( arithmatic.equals(o,v)){
                 s.add(k);
             }
         }
