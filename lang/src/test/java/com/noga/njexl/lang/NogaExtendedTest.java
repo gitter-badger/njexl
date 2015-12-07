@@ -90,11 +90,20 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
-    public void testNumberEquality() throws Exception {
+    public void testNumerals() throws Exception {
         Expression e = JEXL.createExpression("1 == '   1   '");
         JexlContext jc = new MapContext();
         Object o = e.evaluate(jc);
         assertTrue((Boolean) o);
+
+        e = JEXL.createExpression("char('a') + char('b') ");
+        o = e.evaluate(jc);
+        assertEquals("ab",o);
+
+        e = JEXL.createExpression("char('A') + 0 "); // ascii out
+        o = e.evaluate(jc);
+        assertEquals( 65  ,o);
+
     }
 
     @Test

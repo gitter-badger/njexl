@@ -439,6 +439,11 @@ public class JexlArithmetic {
             if ( left instanceof String ){
                 return toString(left).concat(toString(right));
             }
+            if ( left instanceof Character ){
+                 if ( !( right instanceof Number) ){
+                     return toString(left).concat(toString(right));
+                 }
+            }
 
             // otherwise treat as integers
             BigInteger l = toBigInteger(left);
