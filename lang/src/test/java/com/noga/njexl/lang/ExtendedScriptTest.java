@@ -222,6 +222,14 @@ public class ExtendedScriptTest extends JexlTestCase {
         e = JEXL.createScript("inspect()");
         o = e.execute(jc);
         assertNotNull(o);
+
+        e = JEXL.createScript("dict('hello')");
+        o = e.execute(jc);
+        assertTrue( o instanceof Map);
+        Map m = (Map)o;
+        assertTrue(m.containsKey("hash"));
+        assertTrue(m.containsKey("value"));
+
     }
 
     @Test

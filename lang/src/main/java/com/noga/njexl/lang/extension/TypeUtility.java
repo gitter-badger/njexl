@@ -1661,6 +1661,20 @@ public class TypeUtility {
         return container;
     }
 
+    public static Map obj2dict(Object o) throws Exception{
+        Map fm = (Map)inspect(o);
+        List<XList.Pair> iFields = (List)fm.get("f");
+        Map omap = new HashMap<>();
+        omap.put("@t", o.getClass().getName());
+        for (XList.Pair f : iFields ){
+            String n = String.valueOf(f.getKey()) ;
+            Field field = introspector.getField(o.getClass(),n);
+            Object value = field.get(o);
+            omap.put(n,value );
+        }
+        return Collections.unmodifiableMap(omap);
+    }
+
     public static Map makeDict(Object... args) throws Exception {
         HashMap map = new HashMap();
         // empty dict
@@ -1693,10 +1707,6 @@ public class TypeUtility {
                     }
                 }
             } else {
-                if ( args.length == 1 ){
-                    return (Map)inspect(args[0]);
-                }
-
                 List keyList = from(args[0]);
                 List valueList = from(args[1]);
                 if (keyList.size() != valueList.size()) {
@@ -1726,8 +1736,9 @@ public class TypeUtility {
             return map;
         }
 
-        if (args.length != 2) {
-            return map;
+        if (args.length == 1) {
+            // return a map representing a complex object
+            return obj2dict(args[0]);
         }
         List keyList = from(args[0]);
         List valueList = from(args[1]);
