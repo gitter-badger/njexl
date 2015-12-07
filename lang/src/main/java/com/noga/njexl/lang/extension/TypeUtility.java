@@ -911,20 +911,35 @@ public class TypeUtility {
             return BigInteger.ZERO;
         }
         int base = 10;
+        BigInteger fallBack = null;
         if (args.length > 1) {
             base = castInteger(args[1]);
+            if ( args.length > 2 ){
+                fallBack = castBigInteger( args[2]);
+            }
         }
-        return new BigInteger(args[0].toString(), base);
+        String val = String.valueOf(args[0]).trim();
+        try {
+            return new BigInteger(val, base);
+        }catch (Throwable t){
+            return fallBack;
+        }
     }
 
     public static BigDecimal castBigDecimal(Object... args) {
         if (args.length == 0) {
             return BigDecimal.ZERO;
         }
-        if (args[0] instanceof BigInteger) {
-            return new BigDecimal((BigInteger) args[0]);
+        BigDecimal fallBack = null;
+        if (args.length > 1) {
+            fallBack = castBigDecimal( args[1]);
         }
-        return new BigDecimal(args[0].toString(), MathContext.UNLIMITED);
+        String val = String.valueOf(args[0]).trim();
+        try {
+            return new BigDecimal(val, MathContext.UNLIMITED );
+        }catch (Throwable t){
+            return fallBack;
+        }
     }
 
     public static Double castDouble(Object... args) {

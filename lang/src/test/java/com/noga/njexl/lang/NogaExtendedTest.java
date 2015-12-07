@@ -173,7 +173,31 @@ public class NogaExtendedTest extends JexlTestCase {
 
         e = JEXL.createExpression("I = INT(100) ");
         o = e.evaluate(jc);
-        assertTrue(o instanceof BigInteger );
+        assertEquals(BigInteger.valueOf(100), o );
+
+        e = JEXL.createExpression("I = INT( ' 101  ' ,2) ");
+        o = e.evaluate(jc);
+        assertEquals(BigInteger.valueOf(5), o );
+
+        e = JEXL.createExpression("I = INT( ' xxx  ' ,2, 1) ");
+        o = e.evaluate(jc);
+        assertEquals(BigInteger.ONE, o );
+
+        e = JEXL.createExpression("I = INT( ' xxx  ' ,10) ");
+        o = e.evaluate(jc);
+        assertEquals(null, o );
+
+        e = JEXL.createExpression("D = DEC( ' 1  ' ,0) ");
+        o = e.evaluate(jc);
+        assertEquals(BigDecimal.ONE, o );
+
+        e = JEXL.createExpression("D = DEC( ' xxx  ' ) ");
+        o = e.evaluate(jc);
+        assertEquals(null, o );
+
+        e = JEXL.createExpression("D = DEC( ' xxx  ' , 1) ");
+        o = e.evaluate(jc);
+        assertEquals(BigDecimal.ONE, o );
 
 
         e = JEXL.createExpression("byte(12)");
