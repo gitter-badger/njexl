@@ -685,7 +685,7 @@ public final class SetOperations {
         int c = 0;
         boolean broken = false ;
         if (anon != null) {
-            anon.setIterationContext(argsList, tuple, c++);
+            anon.setIterationContextWithPartial(argsList, tuple, c++,join);
             Object r = anon.execute();
             if ( r instanceof JexlException.Continue ){
                 r = false ;
@@ -733,7 +733,7 @@ public final class SetOperations {
             }
 
             if (anon != null) {
-                anon.setIterationContext(argsList, tuple, c++);
+                anon.setIterationContextWithPartial(argsList, tuple, c++,join);
                 Object r = anon.execute();
                 if ( r instanceof JexlException.Continue ){
                     r = false ;
