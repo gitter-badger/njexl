@@ -73,10 +73,18 @@ public class XList<T> extends ArrayList<T> {
     }
 
     public XList() {
+        super();
     }
 
     public XList(Collection c) {
         super(c);
+    }
+
+    public XList(T[] c) {
+        super();
+        for ( int i = 0 ; i < c.length; i++ ){
+            this.add(c[i]);
+        }
     }
 
     public XList(Map m){

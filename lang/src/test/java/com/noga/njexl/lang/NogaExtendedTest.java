@@ -566,7 +566,18 @@ public class NogaExtendedTest extends JexlTestCase {
         int[] l = new int[]{0, 1, 2, 3};
         String[] r = new String[]{"hi","hello"};
         List ret = SetOperations.join(l, r);
-        Assert.assertTrue(ret.size() == l.length * r.length);
+        assertTrue(ret.size() == l.length * r.length);
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript("l = [0:2].list() ; x = join{ $ = '' + $.0 + $.1 ; true  }(l,l) ; x == ['00' ,'01', '10', '11' ]");
+        Object o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        e = JEXL.createScript("l = [0:2].list() ; x = join{ where(true) { } }(l,l) ;" );
+        o = e.execute(jc);
+        assertTrue( o instanceof List);
+        assertEquals( 4, ((List)o).size()  );
+        assertTrue( ((List)o).get(0) instanceof List);
+
     }
 
     @Test

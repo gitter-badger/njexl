@@ -16,9 +16,7 @@
 
 package com.noga.njexl.lang.extension;
 
-import com.noga.njexl.lang.Interpreter;
-import com.noga.njexl.lang.JexlArithmetic;
-import com.noga.njexl.lang.JexlException;
+import com.noga.njexl.lang.*;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.datastructures.XList;
 
@@ -701,17 +699,15 @@ public final class SetOperations {
                 broken = true ;
             }
             if (TypeUtility.castBoolean(r, false)) {
-                XList t = new XList();
-                for (int i = 0; i < tuple.length; i++) {
-                    t.add(tuple[i]);
+                Object t = anon.getVar(Script._ITEM_); ;
+                if ( t instanceof Object[] ){
+                    join.add( new XList<>( (Object[])t ) ) ;
+                }else{
+                    join.add(t);
                 }
-                join.add(t);
             }
         } else {
-            XList t = new XList();
-            for (int i = 0; i < tuple.length; i++) {
-                t.add(tuple[i]);
-            }
+            XList t = new XList(tuple);
             join.add(t);
         }
 
@@ -751,17 +747,15 @@ public final class SetOperations {
                     broken = true ;
                 }
                 if (TypeUtility.castBoolean(r, false)) {
-                    XList t = new XList();
-                    for (int i = 0; i < tuple.length; i++) {
-                        t.add(tuple[i]);
+                    Object t = anon.getVar(Script._ITEM_); ;
+                    if ( t instanceof Object[] ){
+                        join.add( new XList<>( (Object[])t ) ) ;
+                    }else{
+                        join.add(t);
                     }
-                    join.add(t);
                 }
             } else {
-                XList t = new XList();
-                for (int i = 0; i < tuple.length; i++) {
-                    t.add(tuple[i]);
-                }
+                XList t = new XList(tuple);
                 join.add(t);
             }
         }
