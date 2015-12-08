@@ -1683,6 +1683,37 @@ public class Interpreter implements ParserVisitor {
         // the method block
         public ASTBlock block;
 
+        public Map<String,Object> args;
+
+        private Map<String,Object> getArgs(){
+
+            if ( !interpreter.context.has( Script._CONTEXT_ )) return  Collections.EMPTY_MAP ;
+            Map<String,Object> m = new HashMap<>();
+                m.put(Script._CONTEXT_, interpreter.context.get(Script._CONTEXT_));
+                m.put(Script._ITEM_, interpreter.context.get(Script._ITEM_));
+                m.put(Script._INDEX_, interpreter.context.get(Script._INDEX_));
+                m.put(Script._PARTIAL_, interpreter.context.get(Script._PARTIAL_));
+
+            return m;
+        }
+
+        private void setArgs(Map<String,Object> m){
+            if ( args.isEmpty() ) {
+               // remove this
+                interpreter.context.remove(Script._CONTEXT_);
+                interpreter.context.remove(Script._ITEM_);
+                interpreter.context.remove(Script._INDEX_);
+                interpreter.context.remove(Script._PARTIAL_);
+
+            } else {
+                interpreter.context.set(Script._CONTEXT_, m.get(Script._CONTEXT_));
+                interpreter.context.set(Script._ITEM_, m.get(Script._ITEM_));
+                interpreter.context.set(Script._INDEX_, m.get(Script._INDEX_));
+                interpreter.context.set(Script._PARTIAL_, m.get(Script._PARTIAL_));
+            }
+
+        }
+
         /**
          * Constructs a anonymous parameter
          *
@@ -1692,6 +1723,7 @@ public class Interpreter implements ParserVisitor {
         public AnonymousParam(Interpreter i, ASTBlock block) {
             this.interpreter = i;
             this.block = block;
+            args = Collections.EMPTY_MAP ;
         }
 
         /**
@@ -1702,9 +1734,7 @@ public class Interpreter implements ParserVisitor {
          * @param i   the index - of the element in the collection
          */
         public void setIterationContext(Object con, Object o, Object i) {
-            interpreter.context.set(Script._CONTEXT_, con);
-            interpreter.context.set(Script._ITEM_, o);
-            interpreter.context.set(Script._INDEX_, i);
+            setIterationContextWithPartial(con,o,i,null);
         }
 
         /**
@@ -1716,19 +1746,13 @@ public class Interpreter implements ParserVisitor {
          * @param p   the partial result as of current iteration
          */
         public void setIterationContextWithPartial(Object con, Object o, Object i, Object p) {
-            setIterationContext(con, o, i);
-            interpreter.context.set(Script._PARTIAL_, p);
+            args = new HashMap<>();
+            args.put(Script._CONTEXT_, con);
+            args.put(Script._ITEM_, o);
+            args.put(Script._INDEX_, i);
+            args.put(Script._PARTIAL_, p);
         }
 
-        /**
-         * Cleans up the context by removing all context variables
-         */
-        public void removeIterationContext() {
-            interpreter.context.remove(Script._CONTEXT_);
-            interpreter.context.remove(Script._ITEM_);
-            interpreter.context.remove(Script._INDEX_);
-            interpreter.context.remove(Script._PARTIAL_);
-        }
 
         /**
          * Executes the anonymous function
@@ -1738,7 +1762,9 @@ public class Interpreter implements ParserVisitor {
          * @return the result of the call
          */
         public Object execute() {
+            Map oldArgs = getArgs();
             try {
+                setArgs(args);
                 Object ret = block.jjtAccept(interpreter, null);
                 return ret;
             } catch (JexlException.Return r) {
@@ -1749,6 +1775,9 @@ public class Interpreter implements ParserVisitor {
             } catch (JexlException.Continue c) {
                 // important to return itself...
                 return c;
+            } finally {
+                args = getArgs();
+                setArgs(oldArgs);
             }
         }
 
@@ -1759,7 +1788,7 @@ public class Interpreter implements ParserVisitor {
          * @return variable value on the running context
          */
         public Object getVar(String name) {
-            return interpreter.context.get(name);
+            return args.get(name);
         }
 
         @Override
@@ -1767,7 +1796,7 @@ public class Interpreter implements ParserVisitor {
             try {
                 execute();
             } finally {
-                removeIterationContext();
+                // nothing...
             }
         }
     }

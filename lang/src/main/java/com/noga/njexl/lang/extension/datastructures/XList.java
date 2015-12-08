@@ -120,11 +120,9 @@ public class XList<T> extends ArrayList<T> {
             }
 
             if (TypeUtility.castBoolean(ret,false)){
-                anon.removeIterationContext();
                 return i ;
             }
         }
-        anon.removeIterationContext();
         return -1;
     }
 
@@ -169,7 +167,6 @@ public class XList<T> extends ArrayList<T> {
                 xList.add(item);
             }
         }
-        anon.removeIterationContext();
         return xList;
     }
 
@@ -206,7 +203,6 @@ public class XList<T> extends ArrayList<T> {
             }
             listSet.add(ret);
         }
-        anon.removeIterationContext();
         return listSet;
     }
 
@@ -239,7 +235,6 @@ public class XList<T> extends ArrayList<T> {
             }
             list.add(ret);
         }
-        anon.removeIterationContext();
         return list;
     }
 
@@ -295,7 +290,6 @@ public class XList<T> extends ArrayList<T> {
                 map.put(key,list);
             }
         }
-        anon.removeIterationContext();
         return map;
     }
 

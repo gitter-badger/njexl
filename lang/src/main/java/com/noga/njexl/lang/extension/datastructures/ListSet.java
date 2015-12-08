@@ -240,7 +240,6 @@ public class ListSet<T> extends HashSet<T> implements List<T> {
                 xList.add(item);
             }
         }
-        anon.removeIterationContext();
         return xList;
     }
 }

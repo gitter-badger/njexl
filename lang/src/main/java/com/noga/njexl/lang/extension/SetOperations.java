@@ -282,7 +282,7 @@ public final class SetOperations {
                 values.add(o);
                 i++;
             }
-            anon.removeIterationContext();
+
         } else {
             for (Object o : list) {
                 if (!m.containsKey(o)) {
@@ -331,7 +331,6 @@ public final class SetOperations {
                 result.put(k,values);
             }
         }
-        anon.removeIterationContext();
         return result;
     }
 
@@ -759,9 +758,7 @@ public final class SetOperations {
                 join.add(t);
             }
         }
-        if (anon != null) {
-            anon.removeIterationContext();
-        }
+
         return join;
     }
 

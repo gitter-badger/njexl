@@ -400,9 +400,7 @@ public class DataMatrix {
             rs.add(cs);
             if ( broken ){ break; }
         }
-        if ( anon != null ){
-            anon.removeIterationContext();
-        }
+
         return rs;
     }
 
@@ -438,9 +436,7 @@ public class DataMatrix {
             }
             keys.get(key).add(i);
         }
-        if ( setup.anon != null ){
-            setup.anon.removeIterationContext();
-        }
+
         return this;
     }
 
@@ -496,9 +492,7 @@ public class DataMatrix {
             aKey.put(key, r);
             rowNum++;
         }
-        if ( anon != null ){
-            anon.removeIterationContext();
-        }
+
         DataMatrix dm = new DataMatrix(aRows,aColumns);
         dm.keys = aKey ;
         return dm;
@@ -598,10 +592,6 @@ public class DataMatrix {
             }
         }
         matrixDiff.id = diff ;
-
-        if ( anon != null ){
-            anon.removeIterationContext();
-        }
 
         return matrixDiff;
     }

@@ -1150,7 +1150,6 @@ public class TypeUtility {
             if (args.length > 0) {
                 anon.setIterationContext(args[0], args[0], -1);
                 Object ret = anon.execute();
-                anon.removeIterationContext();
                 args[0] = ret; //set it up
                 return castString(args);
             }
@@ -1333,7 +1332,6 @@ public class TypeUtility {
                 i++;
             }
             list = l;
-            anon.removeIterationContext();
         }
 
         return list;
@@ -1365,9 +1363,9 @@ public class TypeUtility {
                     //continue exclusive, unless you pass along a value
                     if (c.hasValue) {
                         //should add _ITEM_ 's value, if anyone modified it
-                        l.add(anon.interpreter.getContext().get(Script._ITEM_));
+                        l.add(anon.getVar(Script._ITEM_));
                     } else {
-                        reject.add(anon.interpreter.getContext().get(Script._ITEM_));
+                        reject.add(anon.getVar(Script._ITEM_));
                     }
                     continue;
                 }
@@ -1384,9 +1382,9 @@ public class TypeUtility {
 
                 if (castBoolean(ret, false)) {
                     //should add _ITEM_ 's value, if anyone modified it
-                    l.add(anon.interpreter.getContext().get(Script._ITEM_));
+                    l.add(anon.getVar(Script._ITEM_));
                 } else {
-                    reject.add(anon.interpreter.getContext().get(Script._ITEM_));
+                    reject.add(anon.getVar(Script._ITEM_));
                 }
                 if (broken) {
                     break;
@@ -1394,7 +1392,6 @@ public class TypeUtility {
                 i++;
             }
             list = l;
-            anon.removeIterationContext();
         }
         return new XList[]{list, reject};
     }
@@ -1467,7 +1464,7 @@ public class TypeUtility {
             }
             i++;
         }
-        anon.removeIterationContext();
+
         if (found) {
             return i;
         }
@@ -1543,7 +1540,6 @@ public class TypeUtility {
                 break;
             }
         }
-        anon.removeIterationContext();
         if (found) {
             return i;
         }
@@ -1747,7 +1743,6 @@ public class TypeUtility {
                     }
                 }
             }
-            anon.removeIterationContext();
             return map;
         }
 
@@ -1864,7 +1859,6 @@ public class TypeUtility {
             Object[] pair = new Object[]{o1, o2};
             anon.setIterationContext(collection, pair, -1);
             Object ret = anon.execute();
-            anon.removeIterationContext();
             boolean smaller = castBoolean(ret, false);
             if (reverse) {
                 if (smaller) {

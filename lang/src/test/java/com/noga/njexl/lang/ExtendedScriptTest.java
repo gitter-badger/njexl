@@ -453,8 +453,13 @@ public class ExtendedScriptTest extends JexlTestCase {
         Object[] r = (Object[])o;
         // 4P2 : 12
         assertEquals(12, ((List) r[0]).size());
+        assertEquals(2, ((List)((List) r[0]).get(0)).size() );
+
         //4C2 : 6
         assertEquals(6, ((List) r[1]).size());
+
+        assertEquals(2, ((List)((List) r[1]).get(0)).size() );
+
     }
 
     @Test
