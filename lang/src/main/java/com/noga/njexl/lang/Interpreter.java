@@ -1840,8 +1840,10 @@ public class Interpreter implements ParserVisitor {
                 argv[i] = node.jjtGetChild(i + argb).jjtAccept(this, null);
             }
             // if __args__ expansion was used?
-            if (n.jjtGetNumChildren() > 0 && n.jjtGetChild(0).jjtGetNumChildren() > 0) {
-                if (Script.ARGS.equals(n.jjtGetChild(0).jjtGetChild(0).image)) {
+            if (n.jjtGetNumChildren() > 0 && n.jjtGetChild(0).jjtGetNumChildren() > 1) {
+                // this means that it has __args__ = foo bar assignment
+                if (Script.ARGS.equals(n.jjtGetChild(0).jjtGetChild(0).image)
+                        && "=".equals( n.jjtGetChild(0).jjtGetChild(1).image ) ) {
                     argv = (Object[]) argv[0];
                 }
             }

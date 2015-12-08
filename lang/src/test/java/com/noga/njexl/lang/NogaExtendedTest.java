@@ -1586,6 +1586,17 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue(o.getClass().isArray() );
         assertEquals(0, Array.get(o,0) );
 
+        s = "def X(){  __args__  } ; X(__args__ = [1,2,3] )  === array(1,2,3) ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+
+        s = "def X(){  __args__  } ; X(1,2,3)  === array(1,2,3) ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
     }
 
     @Test
