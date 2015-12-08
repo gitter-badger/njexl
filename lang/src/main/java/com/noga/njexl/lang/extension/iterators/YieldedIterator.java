@@ -16,9 +16,10 @@
 
 package com.noga.njexl.lang.extension.iterators;
 
+import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.datastructures.XList;
+import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.*;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +29,8 @@ import java.util.List;
  * Let's you do way more thing than standard ones
  * Created by noga on 01/05/15.
  */
-public abstract class YieldedIterator implements Iterator, Cloneable{
+public abstract class YieldedIterator implements Iterator, Cloneable,
+        Arithmetic,Logic {
 
     public static final String ERROR =  "Sorry, can not make the loop infinite by range!" ;
 
@@ -117,5 +119,55 @@ public abstract class YieldedIterator implements Iterator, Cloneable{
             }
         }
         return reverseList ;
+    }
+
+    @Override
+    public Object neg() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Object sub(Object o) {
+        return SetOperations.list_diff( list(), o);
+    }
+
+    @Override
+    public Object mul(Object o) {
+        return SetOperations.join( list(),o);
+    }
+
+    @Override
+    public Object div(Object o) {
+        return SetOperations.division(list(),o);
+    }
+
+    @Override
+    public Object add(Object o) {
+        return SetOperations.arithmatic.add(list(),o);
+    }
+
+    @Override
+    public Object exp(Object o) {
+        return SetOperations.arithmatic.pow(list(),o);
+    }
+
+    @Override
+    public Object and(Object o) {
+        return SetOperations.list_i(list(),o);
+    }
+
+    @Override
+    public Object complement() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Object or(Object o) {
+        return SetOperations.list_u(list(),o);
+    }
+
+    @Override
+    public Object xor(Object o) {
+        return SetOperations.list_sym_d(list(),o);
     }
 }
