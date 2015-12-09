@@ -1272,7 +1272,7 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
-    public void testReverseRange() throws Exception{
+    public void testRange() throws Exception{
         JexlContext jc = new MapContext();
         String s = "r = [10:1]"  ;
         Script e = JEXL.createScript(s);
@@ -1282,6 +1282,12 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertFalse( o.equals(0) );
+        s = "r = [0:2] ; r ** 2  "  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue( o instanceof List );
+        assertEquals(4, ((List)o).size());
+
     }
 
     @Test
