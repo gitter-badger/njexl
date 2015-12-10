@@ -1288,6 +1288,38 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue( o instanceof List );
         assertEquals(4, ((List)o).size());
 
+        s = "l = [0:2] ; r + l  "  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue( o instanceof List );
+        assertEquals(4, ((List)o).size());
+
+        s = "r * l  "  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue( o instanceof List );
+        assertEquals(4, ((List)o).size());
+
+        s = "x = r - l ; x  == []"  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue( (Boolean)o);
+
+        s = "r == (r | l) "  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue( (Boolean)o);
+
+        s = "(r & l)  == l "  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue( (Boolean)o);
+
+        s = "(r ^ l)  == [] "  ;
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue( (Boolean)o);
+
     }
 
     @Test

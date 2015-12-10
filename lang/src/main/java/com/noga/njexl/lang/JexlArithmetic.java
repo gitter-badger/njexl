@@ -28,6 +28,7 @@ import java.math.MathContext;
 import java.util.*;
 
 import com.noga.njexl.lang.extension.iterators.DateIterator;
+import com.noga.njexl.lang.extension.iterators.YieldedIterator;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Arithmetic;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Logic;
 import com.noga.njexl.lang.extension.oop.ScriptMethod;
@@ -87,14 +88,14 @@ public class JexlArithmetic {
 
     public static boolean isListOrArray(Object a){
         if ( a != null ){
-            return  a instanceof List || a.getClass().isArray() ;
+            return  a instanceof List || a.getClass().isArray() || a instanceof YieldedIterator;
         }
         return false;
     }
 
     public static boolean isListOrSetOrArray(Object a){
         if ( a != null ){
-            return  a instanceof List || a instanceof Set || a.getClass().isArray() ;
+            return  a instanceof List || a instanceof Set || a.getClass().isArray() || a instanceof YieldedIterator;
         }
         return false;
     }

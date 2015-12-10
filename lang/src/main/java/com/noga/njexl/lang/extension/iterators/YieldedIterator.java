@@ -129,15 +129,15 @@ public abstract class YieldedIterator implements Iterator, Cloneable,
     @Override
     public Object sub(Object o) {
         if ( o instanceof YieldedIterator ){
-            return SetOperations.list_diff(list(),((YieldedIterator) o).list);
+            return SetOperations.list_d(list(),((YieldedIterator) o).list());
         }
-        return SetOperations.list_diff( list(), o);
+        return SetOperations.list_d( list(), o);
     }
 
     @Override
     public Object mul(Object o) {
         if ( o instanceof YieldedIterator ){
-            return SetOperations.join(list(),((YieldedIterator) o).list);
+            return SetOperations.join(list(),((YieldedIterator) o).list());
         }
         return SetOperations.join( list(),o);
     }
@@ -150,7 +150,7 @@ public abstract class YieldedIterator implements Iterator, Cloneable,
     @Override
     public Object add(Object o) {
         if ( o instanceof YieldedIterator ){
-            return SetOperations.arithmatic.add(list(),((YieldedIterator) o).list);
+            return SetOperations.arithmatic.add(list(),((YieldedIterator) o).list());
         }
         return SetOperations.arithmatic.add(list(),o);
     }
@@ -163,7 +163,7 @@ public abstract class YieldedIterator implements Iterator, Cloneable,
     @Override
     public Object and(Object o) {
         if ( o instanceof YieldedIterator ){
-            return SetOperations.list_i(list(),((YieldedIterator) o).list);
+            return SetOperations.list_i(list(),((YieldedIterator) o).list());
         }
         return SetOperations.list_i(list(),o);
     }
@@ -176,7 +176,7 @@ public abstract class YieldedIterator implements Iterator, Cloneable,
     @Override
     public Object or(Object o) {
         if ( o instanceof YieldedIterator ){
-            return SetOperations.list_u(list(),((YieldedIterator) o).list);
+            return SetOperations.list_u(list(),((YieldedIterator) o).list());
         }
         return SetOperations.list_u(list(),o);
     }
@@ -184,7 +184,7 @@ public abstract class YieldedIterator implements Iterator, Cloneable,
     @Override
     public Object xor(Object o) {
         if ( o instanceof YieldedIterator ){
-            return SetOperations.list_sym_d(list(),((YieldedIterator) o).list);
+            return SetOperations.list_sym_d(list(),((YieldedIterator) o).list());
         }
         return SetOperations.list_sym_d(list(),o);
     }
