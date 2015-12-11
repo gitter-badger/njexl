@@ -16,6 +16,7 @@
 
 package com.noga.njexl.lang.extension.iterators;
 
+import com.noga.njexl.lang.Interpreter;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.datastructures.XList;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.*;
@@ -97,6 +98,38 @@ public abstract class YieldedIterator implements Iterator, Cloneable,
         iterator.reset(); // reset it to the basic
         list = list(iterator);
         return list;
+    }
+
+    /**
+     * The map function for the iterator
+     * @param anon anonymous param
+     * @return the mapped list
+     */
+    public List list(Interpreter.AnonymousParam anon){
+        if ( anon == null ) return list();
+        XList xList = (XList) list();
+        return xList.map(anon);
+    }
+
+    /**
+     * The select function for the iterator
+     * @param anon anonymous param
+     * @return the selected list
+     */
+    public List select(Interpreter.AnonymousParam anon){
+        if ( anon == null ) return list();
+        XList xList = (XList) list();
+        return xList.select(anon);
+    }
+
+    public int index(Object o){
+        XList xList = (XList) list();
+        return xList.indexOf(o);
+    }
+
+    public int rindex(Object o){
+        XList xList = (XList) list();
+        return xList.lastIndexOf(o);
     }
 
     /**

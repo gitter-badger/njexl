@@ -127,10 +127,32 @@ public class XList<T> extends ArrayList<T> {
     }
 
     @Override
+    public int lastIndexOf(Object o){
+
+        if ( !( o instanceof Interpreter.AnonymousParam) ){
+            return super.lastIndexOf(o);
+        }
+        Interpreter.AnonymousParam anon = (Interpreter.AnonymousParam)o;
+
+        for ( int i = super.size() -1 ; i >= 0 ; i-- ){
+            Object item = get( i);
+            anon.setIterationContext( this, item ,i);
+            Object ret = anon.execute();
+            if ( ret instanceof JexlException.Continue ){
+                continue;
+            }
+
+            if (TypeUtility.castBoolean(ret,false)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    @Override
     public boolean contains(Object o) {
         int i = indexOf(o);
-        if ( i < 0 ) return false ;
-        return true ;
+        return ( i>= 0 );
     }
 
     public XList select(){
