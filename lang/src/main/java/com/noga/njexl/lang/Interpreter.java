@@ -1677,42 +1677,52 @@ public class Interpreter implements ParserVisitor {
      */
     public static class AnonymousParam implements Runnable {
 
+        private static class AnonContext extends MapContext {
+
+            JexlContext outer;
+
+            AnonContext(JexlContext from){
+                super();
+                outer = from ;
+            }
+
+            void putAnons(Object[] p){
+                map.put(Script._CONTEXT_, p[0]);
+                map.put(Script._ITEM_, p[1]);
+                map.put(Script._INDEX_, p[2]);
+                map.put(Script._PARTIAL_, p[3]);
+            }
+
+            @Override
+            public Object get(String name) {
+                if ( map.containsKey(name) ) {
+                    return map.get(name);
+                }
+                return outer.get(name);
+            }
+
+            @Override
+            public boolean has(String name) {
+                if ( map.containsKey(name) ) return true ;
+                return outer.has(name);
+            }
+
+            @Override
+            public void set(String name, Object value) {
+                if ( outer.has(name ) ) {
+                    outer.set(name, value);
+                }
+                map.put(name, value);
+            }
+        }
+
         // the underlying interpreter
         public Interpreter interpreter;
 
         // the method block
         public ASTBlock block;
 
-        public Map<String,Object> args;
-
-        private Map<String,Object> getArgs(){
-
-            if ( !interpreter.context.has( Script._CONTEXT_ )) return  Collections.EMPTY_MAP ;
-            Map<String,Object> m = new HashMap<>();
-                m.put(Script._CONTEXT_, interpreter.context.get(Script._CONTEXT_));
-                m.put(Script._ITEM_, interpreter.context.get(Script._ITEM_));
-                m.put(Script._INDEX_, interpreter.context.get(Script._INDEX_));
-                m.put(Script._PARTIAL_, interpreter.context.get(Script._PARTIAL_));
-
-            return m;
-        }
-
-        private void setArgs(Map<String,Object> m){
-            if ( args.isEmpty() ) {
-               // remove this
-                interpreter.context.remove(Script._CONTEXT_);
-                interpreter.context.remove(Script._ITEM_);
-                interpreter.context.remove(Script._INDEX_);
-                interpreter.context.remove(Script._PARTIAL_);
-
-            } else {
-                interpreter.context.set(Script._CONTEXT_, m.get(Script._CONTEXT_));
-                interpreter.context.set(Script._ITEM_, m.get(Script._ITEM_));
-                interpreter.context.set(Script._INDEX_, m.get(Script._INDEX_));
-                interpreter.context.set(Script._PARTIAL_, m.get(Script._PARTIAL_));
-            }
-
-        }
+        AnonContext anonContext;
 
         /**
          * Constructs a anonymous parameter
@@ -1723,7 +1733,7 @@ public class Interpreter implements ParserVisitor {
         public AnonymousParam(Interpreter i, ASTBlock block) {
             this.interpreter = i;
             this.block = block;
-            args = Collections.EMPTY_MAP ;
+            anonContext = new AnonContext( interpreter.context );
         }
 
         /**
@@ -1746,11 +1756,7 @@ public class Interpreter implements ParserVisitor {
          * @param p   the partial result as of current iteration
          */
         public void setIterationContextWithPartial(Object con, Object o, Object i, Object p) {
-            args = new HashMap<>();
-            args.put(Script._CONTEXT_, con);
-            args.put(Script._ITEM_, o);
-            args.put(Script._INDEX_, i);
-            args.put(Script._PARTIAL_, p);
+            anonContext.putAnons( new Object[]{con,o,i,p} );
         }
 
 
@@ -1762,9 +1768,8 @@ public class Interpreter implements ParserVisitor {
          * @return the result of the call
          */
         public Object execute() {
-            Map oldArgs = getArgs();
             try {
-                setArgs(args);
+                interpreter.context = anonContext ;
                 Object ret = block.jjtAccept(interpreter, null);
                 return ret;
             } catch (JexlException.Return r) {
@@ -1776,8 +1781,7 @@ public class Interpreter implements ParserVisitor {
                 // important to return itself...
                 return c;
             } finally {
-                args = getArgs();
-                setArgs(oldArgs);
+                interpreter.context = anonContext.outer ;
             }
         }
 
@@ -1788,7 +1792,7 @@ public class Interpreter implements ParserVisitor {
          * @return variable value on the running context
          */
         public Object getVar(String name) {
-            return args.get(name);
+            return anonContext.get(name);
         }
 
         @Override

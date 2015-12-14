@@ -1143,13 +1143,14 @@ public class NogaExtendedTest extends JexlTestCase {
         Script e = JEXL.createScript(s);
         Object o = e.execute(jc);
         assertTrue((boolean)o);
-        s = "until{ i = i - 1 ; return ( i == 0 ) ; }(100,10)" ;
+        s = "until{ j = 0 ; /* this j should be nullified */ j+=1 ; i = i - 1 ; return ( i == 0 ) ; }(100,10)" ;
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertTrue((boolean) o);
         jc.set("i", 40);
         o = e.execute(jc);
         assertFalse((boolean) o);
+        assertFalse(jc.has("j"));
 
     }
 
