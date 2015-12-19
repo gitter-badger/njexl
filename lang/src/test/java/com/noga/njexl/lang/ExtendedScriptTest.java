@@ -209,6 +209,33 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testRaisingError() throws Throwable{
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript("error()");
+        Object o = e.execute(jc);
+        assertFalse((Boolean)o);
+
+        e = JEXL.createScript("error(null)");
+        o = e.execute(jc);
+        assertFalse((Boolean)o);
+
+        e = JEXL.createScript("#(o,:e) = error(true,'Some Error!')");
+        o = e.execute(jc);
+        assertNotNull(o);
+        assertTrue(jc.get("e") instanceof Error );
+
+        e = JEXL.createScript("#(o,:e) = error{true}('Some Error!')");
+        o = e.execute(jc);
+        assertNotNull(o);
+        assertTrue(jc.get("e") instanceof Error );
+
+        e = JEXL.createScript(" error{false}('Some Error!')");
+        o = e.execute(jc);
+        assertFalse((Boolean)o);
+
+    }
+
+    @Test
     public void testInspect() throws Exception{
         JexlContext jc = new MapContext();
         Script e = JEXL.createScript("x = 10 ; inspect(x) ; ");

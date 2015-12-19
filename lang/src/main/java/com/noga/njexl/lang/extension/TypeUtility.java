@@ -99,6 +99,8 @@ public class TypeUtility {
 
     public static final String ASSERT = "assert";
     public static final String TEST = "test";
+    public static final String ERROR = "error";
+
 
     /**
      * ******* The Utility Calls  *********
@@ -1833,6 +1835,40 @@ public class TypeUtility {
         return ret;
     }
 
+    public static boolean error(Object... args) {
+        if (args.length == 0) {
+            return false;
+        }
+        boolean ret;
+        Object args0 = args[0];
+        args = shiftArrayLeft(args, 1);
+        if (args0 instanceof AnonymousParam) {
+            ((AnonymousParam) args0).setIterationContext(args, args, 0);
+            try {
+                Object o = ((AnonymousParam) args0).execute();
+                ret = castBoolean(o);
+            } catch (Throwable t) {
+                ret = false;
+            }
+        } else {
+            ret = castBoolean(args0, false);
+        }
+        if (ret) {
+            if ( args.length > 0  ){
+                if ( args[0] instanceof Error ){
+                    throw  (Error)args[0] ;
+                }
+                if ( args[0] instanceof Throwable ){
+                    throw new Error( (Throwable)args[0] );
+                }
+                throw new Error( castString( args[0] ) );
+            }
+            throw new Error( "Caused by *error* " );
+        }
+        // log it - later problem - not now
+        return false;
+    }
+
     public static Object[] array(Object... args) {
         List l = combine(args);
         Object[] a = new Object[l.size()];
@@ -2142,6 +2178,8 @@ public class TypeUtility {
             case ASSERT:
             case TEST:
                 return test(argv);
+            case ERROR:
+                return error(argv);
             case LOAD_PATH:
                 return ReflectionUtility.load_path(argv);
             case JSON:

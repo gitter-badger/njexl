@@ -120,7 +120,7 @@ public class Main {
                 context.set("_e_", null);
                 System.out.printf("=>%s\n", str(o));
                 ((FileHistory)console.getHistory()).flush();
-            }catch (Exception e){
+            }catch (Throwable e){
                 context.set("_e_", e);
                 context.set("_o_", null);
                 if (e instanceof JexlException) {
