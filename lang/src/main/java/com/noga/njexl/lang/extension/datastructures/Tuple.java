@@ -66,6 +66,23 @@ public class Tuple  {
     }
 
     /**
+     * Creates a tuple from
+     * @param f a list/array of objects
+     */
+    public Tuple( Object f){
+        t = TypeUtility.array(f);
+        StringBuffer buf = new StringBuffer( "[" ) ;
+        names = new HashMap<>() ;
+        for ( int i = 0 ; i < t.length ; i++ ){
+            String c = String.valueOf(i);
+            names.put(c, i);
+            buf.append(String.format("'%s'->%d ", c,i));
+        }
+        buf.append("]");
+        mapping = buf.toString();
+    }
+
+    /**
      * Get the indexed object
      * @param index the index of the item
      * @return the object at that index
@@ -80,7 +97,7 @@ public class Tuple  {
      * @param object value to be set
      * @return the object at that index now after setting
      */
-    public Object set(int index,Object object){
+    public synchronized Object set(int index,Object object){
         return ( t[index] = object ) ;
     }
 
@@ -99,7 +116,7 @@ public class Tuple  {
      * @param object value to be set
      * @return the object after setting
      */
-    public Object set(String name, Object object){
+    public synchronized Object set(String name, Object object){
         return ( t[names.get(name)] = object ) ;
     }
 

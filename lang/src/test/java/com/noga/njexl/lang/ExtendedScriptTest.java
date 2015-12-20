@@ -29,6 +29,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by noga on 28/03/15.
@@ -206,6 +209,38 @@ public class ExtendedScriptTest extends JexlTestCase {
     public void testJSONLoading() throws Exception{
         DBManager mgr =(DBManager) TypeUtility.dataBase("samples/" + DBManager.DB_CONFIG_FILE_LOC);
         assertTrue(mgr.dataBaseDOMHash != null );
+    }
+
+    @Test
+    public void testAtomicTypeFunction() throws Exception{
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript("x = 0 ; ax = atomic(x) ; ");
+        Object o = e.execute(jc);
+        assertTrue( o instanceof AtomicInteger );
+
+        e = JEXL.createScript("ax += 42 ");
+        o = e.execute(jc);
+        assertEquals(42,o);
+
+        e = JEXL.createScript("x = true ; ax = atomic(x) ; ");
+        o = e.execute(jc);
+        assertTrue( o instanceof AtomicBoolean);
+
+        e = JEXL.createScript("x = 0l ; ax = atomic(x) ; ");
+        o = e.execute(jc);
+        assertTrue( o instanceof AtomicLong);
+
+        e = JEXL.createScript("x = [ 0 ] ; ax = atomic(x) ; ");
+        o = e.execute(jc);
+        assertTrue( o instanceof Tuple );
+
+        e = JEXL.createScript("x = list( 0 ) ; ax = atomic(x) ; ");
+        o = e.execute(jc);
+        assertTrue( o instanceof List );
+
+        e = JEXL.createScript("x = { 0 : 0 } ; ax = atomic(x) ; ");
+        o = e.execute(jc);
+        assertTrue( o instanceof Map );
     }
 
     @Test

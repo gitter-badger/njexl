@@ -20,11 +20,13 @@ import com.noga.njexl.lang.extension.dataaccess.DBManager;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.lang.extension.dataaccess.XmlMap;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
+import com.noga.njexl.lang.extension.datastructures.Tuple;
 import com.noga.njexl.lang.extension.datastructures.XList;
 import com.noga.njexl.lang.extension.iterators.DateIterator;
 import com.noga.njexl.lang.extension.iterators.SymbolIterator;
 import com.noga.njexl.lang.extension.iterators.YieldedIterator;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
+import com.noga.njexl.lang.extension.oop.ScriptMethod;
 import com.noga.njexl.lang.internal.Introspector;
 import com.noga.njexl.lang.parser.ASTReturnStatement;
 import com.noga.njexl.lang.parser.ASTStringLiteral;
@@ -38,7 +40,6 @@ import org.joda.time.format.DateTimeFormatter;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -52,6 +53,10 @@ import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -173,6 +178,7 @@ public class TypeUtility {
     public static final String MATRIX = "matrix";
     public static final String DATABASE = "db";
     public static final String INSPECT = "inspect";
+    public static final String ATOMIC = "atomic";
 
 
     /**
@@ -190,6 +196,49 @@ public class TypeUtility {
         if (args.length == 0) return new DBManager();
         String loc = String.valueOf(args[0]);
         return new DBManager(loc);
+    }
+
+    public static Object atomic(Object... args) throws Exception {
+        if (args.length == 0) return null;
+        if ( args[0] instanceof AnonymousParam ){
+            AnonymousParam anon = (AnonymousParam)args[0];
+            synchronized (anon){
+                Object context = anon;
+                if ( args.length > 1 ){
+                    context = args[1];
+                }
+                anon.setIterationContext(context,anon,System.nanoTime());
+                return anon.execute();
+            }
+        }
+        if ( args[0] instanceof Boolean ){
+            return new AtomicBoolean((Boolean)args[0]);
+        }
+        if ( args[0] instanceof Integer ){
+            return new AtomicInteger((Integer) args[0]);
+        }
+        if ( args[0] instanceof Long ){
+            return new AtomicLong((Long) args[0]);
+        }
+        if ( args[0] instanceof Map ){
+            return  Collections.synchronizedMap((Map)args[0]);
+        }
+        if ( args[0] instanceof List ){
+            return  Collections.synchronizedList((List)args[0]);
+        }
+        if ( args[0] instanceof Set ){
+            return  Collections.synchronizedSet((Set)args[0]);
+        }
+        if ( args[0] instanceof Collection ){
+            return  Collections.synchronizedCollection((Collection)args[0]);
+        }
+        if ( args[0] != null ){
+            if ( args.getClass().isArray() ){
+                return new Tuple(args[0]);
+            }
+            return new AtomicReference<>(args[0]);
+        }
+        return null;
     }
 
     public static Object inspect(Object... args) throws Exception {
@@ -2225,6 +2274,8 @@ public class TypeUtility {
                 return dataBase(argv);
             case INSPECT:
                 return inspect(argv);
+            case ATOMIC:
+                return atomic(argv);
             default:
                 if (success != null) {
                     success[0] = false;
