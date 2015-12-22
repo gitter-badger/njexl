@@ -1125,44 +1125,8 @@ public class TypeUtility {
     }
 
     public static Instant castInstant(Object... args) {
-        if (args.length == 0) {
-            return Instant.now();
-        }
-        Instant instant = null;
-        String timeZone = ZoneOffset.systemDefault().getId();
-        if ( args.length > 1 ) {
-            timeZone = String.valueOf(args[args.length-1]);
-        }
-        if (args[0] instanceof Instant) {
-            return (Instant) args[0];
-        }
-        if ( args[0] instanceof Date ){
-            instant =  ((Date) args[0]).toInstant();
-        }
-        else if (args[0] instanceof DateTime) {
-            instant =  ((DateTime)args[0]).toDate().toInstant() ;
-        }
-        else if (args[0] instanceof Number) {
-            instant = Instant.ofEpochMilli( ((Number)args[0]).longValue() );
-        }
-        else if ( args[0] instanceof String  ){
-            switch (args.length ){
-                case 1 :
-                    instant = castDate(args[0]).toInstant() ;
-                    return instant ;
-                case 2 :
-                    instant = castDate(args[0], args[1] ).toInstant() ;
-                    return instant ;
-                default:
-                    instant = castDate(args[0], args[1] ).toInstant() ;
-                    break;
-            }
-        }
-        if ( args.length == 1 ) {
-            return instant ;
-        }
-        // TODO fix timezone??
-        return instant ;
+        DateTime dt = castTime(args);
+        return dt.toDate().toInstant() ;
     }
 
     public static Date castDate(Object... args) {
