@@ -25,6 +25,9 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.*;
 
 import com.noga.njexl.lang.extension.iterators.DateIterator;
@@ -99,6 +102,19 @@ public class JexlArithmetic {
         }
         return false;
     }
+
+    public static boolean isTimeLike(Object a){
+        if ( a != null ){
+            return  a instanceof Date || a instanceof DateTime
+                    || a instanceof Instant ;
+        }
+        return false;
+    }
+
+    public static boolean areTimeLike(Object l, Object r){
+        return isTimeLike(l) && isTimeLike(r);
+    }
+
 
     public static boolean areListOrArray(Object l, Object r){
         return isListOrArray(l) && isListOrArray(r);
@@ -1147,8 +1163,7 @@ public class JexlArithmetic {
                     default:
                         throw new NonComparableCollectionException(l.toString() + "," +r.toString());
                 }
-            }else if ( left instanceof Date && right instanceof DateTime ||
-                    left instanceof DateTime && right instanceof Date ){
+            }else if ( areTimeLike(left,right) ){
                 // both to dateTime and compare
                 DateTime l = TypeUtility.castTime(left);
                 DateTime r = TypeUtility.castTime(right);

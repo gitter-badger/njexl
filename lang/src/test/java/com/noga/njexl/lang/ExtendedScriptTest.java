@@ -26,7 +26,10 @@ import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -209,6 +212,36 @@ public class ExtendedScriptTest extends JexlTestCase {
     public void testJSONLoading() throws Exception{
         DBManager mgr =(DBManager) TypeUtility.dataBase("samples/" + DBManager.DB_CONFIG_FILE_LOC);
         assertTrue(mgr.dataBaseDOMHash != null );
+    }
+
+    @Test
+    public void testTimeLikeFunctions() throws Exception{
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript("d = date() ; i = instant() ; d <= i ");
+        Object o = e.execute(jc);
+        assertTrue( (Boolean)o );
+
+        e = JEXL.createScript("t = time() ;  i <= t ; ");
+        o = e.execute(jc);
+        assertTrue( (Boolean)o );
+        Time sqlt = new Time(new Date().getTime() );
+        jc.set("st", sqlt);
+        e = JEXL.createScript("t  <= st ; ");
+        o = e.execute(jc);
+        assertTrue( (Boolean)o );
+
+        Timestamp ts = new Timestamp(new Date().getTime() );
+        jc.set("ts", ts);
+        e = JEXL.createScript(" st <= ts  ; ");
+        o = e.execute(jc);
+        assertTrue( (Boolean)o );
+
+        // now timezone test
+
+        e = JEXL.createScript(" t = time(d,'HST') ; write(t) ; t < ts ");
+        o = e.execute(jc);
+        assertTrue( (Boolean)o );
+
     }
 
     @Test

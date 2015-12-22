@@ -26,7 +26,6 @@ import com.noga.njexl.lang.extension.iterators.DateIterator;
 import com.noga.njexl.lang.extension.iterators.SymbolIterator;
 import com.noga.njexl.lang.extension.iterators.YieldedIterator;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
-import com.noga.njexl.lang.extension.oop.ScriptMethod;
 import com.noga.njexl.lang.internal.Introspector;
 import com.noga.njexl.lang.parser.ASTReturnStatement;
 import com.noga.njexl.lang.parser.ASTStringLiteral;
@@ -34,6 +33,7 @@ import com.noga.njexl.lang.parser.JexlNode;
 import com.noga.njexl.lang.extension.iterators.RangeIterator;
 import com.noga.njexl.lang.parser.Parser;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -52,6 +52,7 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -59,11 +60,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import com.noga.njexl.lang.Interpreter.AnonymousParam;
-
 import static com.noga.njexl.lang.Interpreter.NULL;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -92,6 +90,8 @@ public class TypeUtility {
     public static final String LONG = "long";
     public static final String TIME = "time";
     public static final String DATE = "date";
+    public static final String INSTANT = "instant";
+
     public static final String STRING = "str";
     public static final String BOOL = "bool";
     public static final String BIGINT = "INT";
@@ -1086,11 +1086,25 @@ public class TypeUtility {
     }
 
     public static DateTime castTime(Object... args) {
+        DateTime dt = null;
         if (args.length == 0) {
             return new DateTime();
         }
         if (args[0] instanceof Date || args[0] instanceof DateTime) {
-            return new DateTime(args[0]);
+            dt = new DateTime(args[0]);
+        }
+        else if (args[0] instanceof Instant ) {
+            dt = new DateTime(Date.from ((Instant)args[0] ));
+        }
+        if (args[0] instanceof Number ) {
+            dt = new DateTime( ((Number)args[0]).longValue() );
+        }
+        if ( dt != null ){
+            if ( args.length > 1 ){
+                DateTimeZone zone = DateTimeZone.forID( String.valueOf(args[1]));
+                return dt.withZone(zone);
+            }
+            return dt;
         }
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMdd");
@@ -1098,10 +1112,57 @@ public class TypeUtility {
             if (args.length > 1) {
                 dateTimeFormatter = DateTimeFormat.forPattern(args[1].toString());
             }
-            return DateTime.parse(args[0].toString(), dateTimeFormatter);
+            dt =  DateTime.parse(args[0].toString(), dateTimeFormatter);
+            if ( args.length > 2 ){
+                DateTimeZone zone = DateTimeZone.forID( String.valueOf(args[2]));
+                return dt.withZone(zone);
+            }
+            return dt;
+
         } catch (Exception e) {
         }
         return null;
+    }
+
+    public static Instant castInstant(Object... args) {
+        if (args.length == 0) {
+            return Instant.now();
+        }
+        Instant instant = null;
+        String timeZone = ZoneOffset.systemDefault().getId();
+        if ( args.length > 1 ) {
+            timeZone = String.valueOf(args[args.length-1]);
+        }
+        if (args[0] instanceof Instant) {
+            return (Instant) args[0];
+        }
+        if ( args[0] instanceof Date ){
+            instant =  ((Date) args[0]).toInstant();
+        }
+        else if (args[0] instanceof DateTime) {
+            instant =  ((DateTime)args[0]).toDate().toInstant() ;
+        }
+        else if (args[0] instanceof Number) {
+            instant = Instant.ofEpochMilli( ((Number)args[0]).longValue() );
+        }
+        else if ( args[0] instanceof String  ){
+            switch (args.length ){
+                case 1 :
+                    instant = castDate(args[0]).toInstant() ;
+                    return instant ;
+                case 2 :
+                    instant = castDate(args[0], args[1] ).toInstant() ;
+                    return instant ;
+                default:
+                    instant = castDate(args[0], args[1] ).toInstant() ;
+                    break;
+            }
+        }
+        if ( args.length == 1 ) {
+            return instant ;
+        }
+        // TODO fix timezone??
+        return instant ;
     }
 
     public static Date castDate(Object... args) {
@@ -1113,6 +1174,14 @@ public class TypeUtility {
         }
         if (args[0] instanceof DateTime) {
             return ((DateTime) args[0]).toDate();
+        }
+
+        if (args[0] instanceof Instant) {
+            return Date.from( ((Instant) args[0]) );
+        }
+
+        if (args[0] instanceof Number) {
+            return new Date( ((Number)args[0]).longValue() );
         }
 
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyyMMdd");
@@ -2179,6 +2248,8 @@ public class TypeUtility {
                 return castTime(argv);
             case DATE:
                 return castDate(argv);
+            case INSTANT:
+                return castInstant(argv);
             case LITERAL_LIST:
                 return makeLiteralList(argv);
             case LIST:
