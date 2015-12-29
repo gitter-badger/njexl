@@ -245,6 +245,20 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testHeap() throws Exception{
+        JexlContext jc = new MapContext();
+        // max heap
+        Script e = JEXL.createScript("h = heap(2) ; h += 10 ; h += 2 ; h += 30 ; h+= 22 ; h[0] == 22 and h[1] == 30  ");
+        Object o = e.execute(jc);
+        assertTrue( (Boolean)o);
+
+        e = JEXL.createScript("h = heap(2,true) ; h += 10 ; h += 2 ; h += 30 ; h+= 22 ; h[0] == 10 and h[1] == 2  ");
+        o = e.execute(jc);
+        assertTrue( (Boolean)o);
+
+    }
+
+    @Test
     public void testAtomicTypeFunction() throws Exception{
         JexlContext jc = new MapContext();
         Script e = JEXL.createScript("x = 0 ; ax = atomic(x) ; ");

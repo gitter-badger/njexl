@@ -496,6 +496,16 @@ public class JexlArithmetic {
                 r.putAll((Map)right);
                 return r;
             }
+            if ( left instanceof Collection ){
+                Collection l = (Collection)left;
+                if ( right instanceof Collection ){
+                    Collection r = (Collection)right;
+                    l.addAll(r);
+                    return l;
+                }
+                l.add(right);
+                return l;
+            }
             if ( left instanceof DateTime ){
                 if ( right instanceof Integer ){
                     return ((DateTime) left).plus((long)right);
@@ -1072,7 +1082,7 @@ public class JexlArithmetic {
      * @throws ArithmeticException if either left or right is null
      * @since 2.1
      */
-    protected int compare(Object left, Object right, String operator) {
+    public int compare(Object left, Object right, String operator) {
         if (left != null && right != null) {
             if (left instanceof BigDecimal || right instanceof BigDecimal) {
                 BigDecimal l = toBigDecimal(left);

@@ -19,6 +19,7 @@ import com.noga.njexl.lang.*;
 import com.noga.njexl.lang.extension.dataaccess.DBManager;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.lang.extension.dataaccess.XmlMap;
+import com.noga.njexl.lang.extension.datastructures.Heap;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.datastructures.Tuple;
 import com.noga.njexl.lang.extension.datastructures.XList;
@@ -134,6 +135,7 @@ public class TypeUtility {
     public static final String MULTI_SET1 = "multiset";
     public static final String MULTI_SET2 = "mset";
     public static final String MULTI_SET3 = "setm";
+    public static final String HEAP = "heap";
 
 
     public static final String DICTIONARY = "dict";
@@ -1770,6 +1772,21 @@ public class TypeUtility {
         return Collections.unmodifiableMap(omap);
     }
 
+    public static Heap makeHeap(Object... args) throws Exception {
+        if ( args.length == 0 ) return null;
+        if ( args.length == 1 ) return new Heap(castInteger(args[0]));
+        if ( args[0] instanceof AnonymousParam ){
+            AnonymousComparator comparator = new AnonymousComparator((AnonymousParam)args[0],null,false);
+            int s = castInteger(args[1]);
+            return new Heap(s, comparator);
+        }
+        if ( args[1] instanceof Boolean ) {
+            return new Heap(castInteger(args[0]), (Boolean) args[1]);
+        }
+        return new Heap(castInteger(args[0]), (Comparator) args[1]);
+    }
+
+
     public static Map makeDict(Object... args) throws Exception {
         HashMap map = new HashMap();
         // empty dict
@@ -2239,6 +2256,8 @@ public class TypeUtility {
                 return set(argv);
             case DICTIONARY:
                 return makeDict(argv);
+            case HEAP:
+                return makeHeap(argv);
             case RANGE:
                 return range(argv);
             case ARRAY_FROM_LIST:
