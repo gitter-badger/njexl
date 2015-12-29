@@ -171,6 +171,6 @@ public class Heap implements Collection{
 
     @Override
     public String toString() {
-        return "|-|[" + TypeUtility.castString(heap)  + "]" ;
+        return "|-|[" + TypeUtility.castString(heap,',')  + "]" ;
     }
 }
