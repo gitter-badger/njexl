@@ -1395,7 +1395,11 @@ public class TypeUtility {
         }
         for (int i = 0; i < args.length; i++) {
             List l = from(args[i]);
-            list.addAll(l);
+            if ( l != null ) {
+                list.addAll(l);
+            }else{
+                list.add(l);
+            }
         }
 
         if (anon != null) {

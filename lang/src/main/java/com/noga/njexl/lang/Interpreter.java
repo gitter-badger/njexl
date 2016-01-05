@@ -1798,9 +1798,11 @@ public class Interpreter implements ParserVisitor {
         @Override
         public void run() {
             try {
+                // use a newer interpreter!
+                this.interpreter = new Interpreter(interpreter);
                 execute();
             } finally {
-                // nothing...
+                this.interpreter = null ; // mark for gc...?
             }
         }
     }
