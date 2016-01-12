@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -358,6 +359,27 @@ public class ExtendedScriptTest extends JexlTestCase {
         o = e.execute(jc);
         assertTrue(o instanceof Boolean);
         assertTrue((Boolean)o);
+
+    }
+
+    @Test
+    public void testSubList() throws Exception{
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript("l = [1,2,3,4] ; sub(l,2);");
+        Object o = e.execute(jc);
+        assertTrue(o.getClass().isArray());
+        assertEquals(2, Array.getLength(o) );
+
+        e = JEXL.createScript("x = [0:10].list() ; sub(x,1,4)");
+        o = e.execute(jc);
+        assertTrue(o instanceof List);
+        assertEquals(4, ((List)o).size() );
+
+
+        e = JEXL.createScript("x = 'abcdef' ; sub(x,2) ");
+        o = e.execute(jc);
+        assertTrue(o instanceof String);
+        assertEquals(4, ((String)o).length() );
 
     }
 

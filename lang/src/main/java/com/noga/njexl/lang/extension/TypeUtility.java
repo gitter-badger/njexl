@@ -435,17 +435,21 @@ public class TypeUtility {
 
         int size = l.size();
         if (anon == null) {
+            if ( size == 0 ) return "" ;
+            String sep = SetOperations.SEP ;
+            if ( args.length> 1 ){
+                sep = String.valueOf(args[1]);
+            }
             if (right) {
                 StringBuffer sb = new StringBuffer();
-                for (int i = 0; i < size; i++) {
+                sb.append(l.get(size - 1));
+                for (int i = 1; i < size; i++) {
+                    sb.append(sep);
                     sb.append(l.get(size - i - 1));
-                    sb.append(SetOperations.SEP);
                 }
-                String s = sb.toString();
-                s = s.substring(0, s.lastIndexOf(SetOperations.SEP));
-                return s;
+                return sb.toString();
             }
-            return castString(l, SetOperations.SEP);
+            return castString(l, sep);
         }
         for (int i = 0; i < size; i++) {
             int j = right ? (size - i - 1) : i;
@@ -1285,18 +1289,20 @@ public class TypeUtility {
         Class c = args[0].getClass();
         if (List.class.isAssignableFrom(c) || c.isArray()) {
             List l = from(args[0]);
+            if ( l.isEmpty() ) return "" ;
             StringBuffer buf = new StringBuffer();
             String sep = ",";
             if (args.length > 1 && args[1] != null) {
                 sep = args[1].toString();
             }
-            for (Object o : l) {
-                buf.append(o).append(sep);
+            Iterator itr = l.iterator() ;
+            Object o = itr.next();
+            buf.append(o);
+            while ( itr.hasNext() ) {
+                o = itr.next();
+                buf.append(sep).append(o);
             }
-            if (buf.length() == 0) {
-                return "";
-            }
-            String ret = buf.substring(0, buf.lastIndexOf(sep));
+            String ret = buf.toString();
             return ret;
         }
         if (args.length > 1 && args[1] instanceof Number && args[0] instanceof Number) {
@@ -2347,6 +2353,11 @@ public class TypeUtility {
         if (args.length == 0) {
             return null;
         }
+        boolean charSequence = false ;
+        if ( args[0] instanceof CharSequence ){
+            args[0] = String.valueOf(args[0]).toCharArray();
+            charSequence = true ;
+        }
         List l = from(args[0]);
         int start = 0;
         int end = l.size() - 1;
@@ -2370,6 +2381,7 @@ public class TypeUtility {
             r.add(l.get(i));
         }
         if ( args[0].getClass().isArray() ){
+            if ( charSequence ) return  castString(r,"");
             return r.toArray();
         }
         return r;
