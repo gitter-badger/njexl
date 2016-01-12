@@ -1948,8 +1948,11 @@ public class TypeUtility {
         if (args.length == 0) {
             return false;
         }
-        boolean ret;
         Object args0 = args[0];
+        if ( args0 instanceof String ){
+            throw new Error( String.valueOf(args0) );
+        }
+        boolean ret;
         args = shiftArrayLeft(args, 1);
         if (args0 instanceof AnonymousParam) {
             ((AnonymousParam) args0).setIterationContext(args, args, 0);

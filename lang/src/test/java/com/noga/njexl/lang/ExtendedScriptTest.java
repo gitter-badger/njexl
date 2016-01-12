@@ -363,6 +363,29 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testError() throws Exception{
+        JexlContext jc = new MapContext();
+        Script e = JEXL.createScript("#(o,:e) = error('I am error')");
+        Object o = e.execute(jc);
+        assertTrue(o.getClass().isArray());
+        Object err = jc.get("e") ;
+        assertEquals("I am error", ((Error)err).getMessage() );
+
+        e = JEXL.createScript("#(o,:e) = error(false, 'I am error')");
+        o = e.execute(jc);
+        assertTrue(o.getClass().isArray());
+        assertFalse((Boolean) jc.get("o"));
+
+        e = JEXL.createScript("#(o,:e) = error(true, 'I am error')");
+        o = e.execute(jc);
+        assertTrue(o.getClass().isArray());
+        err = jc.get("e") ;
+        assertTrue(err instanceof Error );
+        assertEquals("I am error", ((Error)err).getMessage() );
+
+    }
+
+    @Test
     public void testSubList() throws Exception{
         JexlContext jc = new MapContext();
         Script e = JEXL.createScript("l = [1,2,3,4] ; sub(l,2);");
