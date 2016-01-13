@@ -285,6 +285,7 @@ public class ScriptMethod implements Serializable {
         return "ScriptMethod{" +
                 " name='" + name + '\'' +
                 ", instance=" + instance +
+                ", body=" + definitionText +
                 '}';
     }
 
