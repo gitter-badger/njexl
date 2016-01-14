@@ -340,13 +340,13 @@ public class JexlScriptEngine extends AbstractScriptEngine implements Compilable
         /** {@inheritDoc} */
         @Override
         public JexlContext copy() {
-            // no idea how to copy
-            throw new UnsupportedOperationException("not supported!");
+            // this is the fix for bug https://github.com/nmondal/njexl/issues/7
+            return new JexlContextWrapper(this.scriptContext);
         }
 
         /** {@inheritDoc} */
         public void clear() {
-            throw new UnsupportedOperationException("not supported!");
+           // have no idea how to implement this, as of now
         }
 
     }
