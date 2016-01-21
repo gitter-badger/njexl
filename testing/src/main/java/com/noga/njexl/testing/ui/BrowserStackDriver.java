@@ -39,6 +39,8 @@ import java.util.Properties;
  */
 public class BrowserStackDriver extends XWebDriver {
 
+    public static final String BS_LOCAL_ID = "BS_LOCAL_ID" ;
+
     @XStreamAlias("BSConfig")
     public static class BrowserStackConfiguration {
 
@@ -75,6 +77,9 @@ public class BrowserStackDriver extends XWebDriver {
         @XStreamAlias("debug")
         public boolean debug;
 
+        @XStreamAlias("local")
+        public boolean local;
+
 
         public BrowserStackConfiguration() {
             user = "";
@@ -88,6 +93,7 @@ public class BrowserStackDriver extends XWebDriver {
             resolution = "";
             debug = true;
             platform = null;
+            local = true ;
         }
 
         public static BrowserStackConfiguration loadFromXml(String xmlFile) throws Exception {
@@ -133,6 +139,10 @@ public class BrowserStackDriver extends XWebDriver {
             }
             if (map.containsKey("debug")) {
                 configuration.debug = TypeUtility.castBoolean(map.get("debug"), true);
+            }
+
+            if (map.containsKey("local")) {
+                configuration.local = TypeUtility.castBoolean(map.get("local"), true);
             }
 
             return configuration;
@@ -186,7 +196,14 @@ public class BrowserStackDriver extends XWebDriver {
             caps.setCapability("os", config.os);
             caps.setCapability("os_version", config.osVersion);
             caps.setCapability("browserstack.debug", config.debug);
-
+            caps.setCapability("browserstack.local", config.local);
+            if ( config.local ){
+                Map<String, String> env = System.getenv();
+                if ( env.containsKey(BS_LOCAL_ID) ){
+                    String localId = env.get(BS_LOCAL_ID);
+                    caps.setCapability("browserstack.localIdentifier", localId );
+                }
+            }
         } else {
             caps.setPlatform(config.platform);
             caps.setCapability("browserName", config.mobileBrowser);

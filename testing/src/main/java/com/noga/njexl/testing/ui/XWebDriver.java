@@ -15,9 +15,8 @@
 
 package com.noga.njexl.testing.ui;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +24,7 @@ import java.util.Set;
  * This is a wrapper abstract class for configurable remote webdrivers.
  * Created by noga on 09/09/15.
  */
-public abstract class XWebDriver implements WebDriver{
+public abstract class XWebDriver implements WebDriver, TakesScreenshot{
 
     public final WebDriver driver ;
 
@@ -95,5 +94,13 @@ public abstract class XWebDriver implements WebDriver{
     @Override
     public Options manage() {
         return driver.manage();
+    }
+
+    @Override
+    public <X> X getScreenshotAs(OutputType<X> outputType) throws WebDriverException {
+        if ( driver instanceof TakesScreenshot ){
+            return ((TakesScreenshot)driver).getScreenshotAs(outputType);
+        }
+        throw new WebDriverException("Taking Screenshot is not supported by the underlying driver!");
     }
 }
