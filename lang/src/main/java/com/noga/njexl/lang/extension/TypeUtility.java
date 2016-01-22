@@ -47,6 +47,7 @@ import java.math.MathContext;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -690,15 +691,24 @@ public class TypeUtility {
 
     public static final String HASH_MD5 = "MD5";
 
-
     public static String hash(Object... args) {
         if (args.length == 0) return "";
         String algorithm = HASH_MD5;
-        String text = args[0].toString();
+        String text = String.valueOf(args[0]);
         if (args.length > 1) {
             algorithm = text;
-            text = args[1].toString();
+            text = String.valueOf( args[1] ) ;
         }
+        if ( "e64".equalsIgnoreCase(algorithm)){
+           // do base 64 encoding
+           return Base64.getEncoder().encodeToString(text.getBytes(StandardCharsets.UTF_8));
+        }
+        if ( "d64".equalsIgnoreCase(algorithm)){
+            // do base 64 decoding
+            byte[] barr = Base64.getDecoder().decode(text.getBytes(StandardCharsets.UTF_8));
+            return new String(barr);
+        }
+
         try {
             MessageDigest m = MessageDigest.getInstance(algorithm);
             m.update(text.getBytes(), 0, text.length());
@@ -2390,25 +2400,32 @@ public class TypeUtility {
         return r;
     }
 
-    public static int system(Object... args) throws Exception {
-
+    public static Object system(Object... args) throws Exception {
+        if ( args.length == 0 ) return Runtime.getRuntime() ;
+        Process p = null;
         if (args.length == 1) {
-            Process p = Runtime.getRuntime().exec(args[0].toString());
-            p.waitFor();
-
-            // terrible nomenclature in Java
-            BufferedReader or = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            BufferedReader er = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            String line;
-            while ((line = or.readLine()) != null) {
-                System.out.println(line);
-            }
-            while ((line = er.readLine()) != null) {
-                System.err.println(line);
-            }
-            return p.exitValue();
+            p = Runtime.getRuntime().exec(args[0].toString());
         }
-        return 0;
+        else{
+            String[] params = new String[args.length];
+            for ( int i = 0 ; i < params.length; i++ ){
+                params[i] = String.valueOf(args[i]);
+            }
+            p = Runtime.getRuntime().exec(params);
+        }
+        if ( p == null ) return 255 ;
+        p.waitFor();
+        // terrible nomenclature in Java
+        BufferedReader or = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        BufferedReader er = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+        String line;
+        while ((line = or.readLine()) != null) {
+            System.out.println(line);
+        }
+        while ((line = er.readLine()) != null) {
+            System.err.println(line);
+        }
+        return p.exitValue();
     }
 
     public static Thread thread(Object... args) throws Exception {
