@@ -211,7 +211,7 @@ public class TypeUtility {
                     context = args[1];
                 }
                 anon.setIterationContext(context,anon,System.nanoTime());
-                return anon.execute();
+                return anon.atomicExec();
             }
         }
         if ( args[0] instanceof Boolean ){
@@ -2428,19 +2428,17 @@ public class TypeUtility {
         return p.exitValue();
     }
 
-    public static Thread thread(Object... args) throws Exception {
+    public static synchronized Thread thread(Object... args) throws Exception {
         if (args.length == 0) {
             return Thread.currentThread();
         }
         if (args[0] instanceof AnonymousParam) {
-            synchronized (args[0] ) {
-                AnonymousParam anonymousParam = (AnonymousParam) args[0];
-                args = shiftArrayLeft(args, 1);
-                Thread t = new Thread(anonymousParam);
-                anonymousParam.setIterationContext(args, t, t.getId());
-                t.start();
-                return t;
-            }
+            AnonymousParam anonymousParam = (AnonymousParam) args[0];
+            args = shiftArrayLeft(args, 1);
+            Thread t = new Thread(anonymousParam);
+            anonymousParam.setIterationContext(args, t, t.getId());
+            t.start();
+            return t;
         }
         return Thread.currentThread();
     }

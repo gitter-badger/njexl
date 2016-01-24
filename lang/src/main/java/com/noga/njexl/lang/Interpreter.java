@@ -1786,6 +1786,14 @@ public class Interpreter implements ParserVisitor {
         }
 
         /**
+         * Executes the block atomically
+         * @return the result of execute
+         */
+        public synchronized Object atomicExec(){
+            return execute();
+        }
+
+        /**
          * Gets a variable
          *
          * @param name of the variable
