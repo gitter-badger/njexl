@@ -1714,6 +1714,11 @@ public class Interpreter implements ParserVisitor {
                 }
                 map.put(name, value);
             }
+
+            @Override
+            public JexlContext copy() {
+                return new AnonContext(this);
+            }
         }
 
         // the underlying interpreter

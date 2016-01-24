@@ -62,7 +62,7 @@ public class ExtendedScriptTest extends JexlTestCase {
 
     @Test
     public void testThreadStressScript() throws Exception{
-        Object o = runScript(JEXL, "samples/thread_stress.jxl");
+        Object o = runScript(JEXL, "samples/thread_stress");
         assertTrue((Boolean)o);
     }
 

@@ -1,8 +1,8 @@
-def func(t){
-   write( #def t)
+def func(){
+   write(  __args__[0] )
 }
 
-threads = list{ thread{ func($) }() }( [0:30] )
+threads = list{ thread{ func($) }() }( [0:10] )
 while( true ){
    all_expired = select{  $.isAlive }(threads)
    break( empty(all_expired) )
