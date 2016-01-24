@@ -33,6 +33,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +43,8 @@ import java.util.regex.Pattern;
  * @since 2.0
  */
 public class Interpreter implements ParserVisitor {
+
+    public static final ConcurrentHashMap<Long,Interpreter> threadInterpreters = new ConcurrentHashMap<>();
 
     HashMap<String, Script> imports;
 
@@ -1677,6 +1680,7 @@ public class Interpreter implements ParserVisitor {
      */
     public static class AnonymousParam implements Runnable {
 
+
         private static class AnonContext extends MapContext {
 
             JexlContext outer;
@@ -1810,12 +1814,18 @@ public class Interpreter implements ParserVisitor {
 
         @Override
         public void run() {
+            Long l = Thread.currentThread().getId() ;
             try {
-                // use a newer interpreter!
-                this.interpreter = new Interpreter(interpreter);
+                synchronized (this) {
+                    // use a newer interpreter!
+                    this.interpreter = new Interpreter(interpreter);
+                    threadInterpreters.put(l,this.interpreter);
+                }
                 execute();
             } finally {
+                threadInterpreters.remove(l);
                 this.interpreter = null ; // mark for gc...?
+                System.gc();
             }
         }
     }

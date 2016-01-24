@@ -242,6 +242,11 @@ public class ScriptMethod implements Serializable {
     }
 
     public Object invoke(Object me, Interpreter interpreter, Object[] args) throws Exception {
+
+        Long l = Thread.currentThread().getId();
+        if ( Interpreter.threadInterpreters.containsKey(l)){
+            interpreter = Interpreter.threadInterpreters.get(l);
+        }
         JexlContext oldContext = interpreter.getContext();
         JexlContext toBeCopiedContext = oldContext ;
         if ( nested ){
@@ -262,8 +267,8 @@ public class ScriptMethod implements Serializable {
         }
         addToContext(context, map);
         try {
-            interpreter.setContext(context);
             dispatch(Eventing.BEFORE, interpreter,args,before);
+            interpreter.setContext(context);
             Object ret = astBlock.jjtAccept(interpreter,null);
             return ret;
         }catch (Exception e){

@@ -3,10 +3,15 @@ x = 0
    x = 2 + 2    
 }
 
-def func(t){
-    write('%s with %s\n', __args__[0] , #def t )
+#atomic{
+   x = 10
+   t = p // error, x should revert back to 4
 }
-threads = list{ thread{  #atomic{ func($) } }() }( [0:10] )
+
+def func(t){
+    write('%s with %s\n', __args__[0].id , #def t )
+}
+threads = list{ thread{ func($) }() }( [0:10] )
 
 while( true ){
    all_expired = select{  $.isAlive }(threads)
