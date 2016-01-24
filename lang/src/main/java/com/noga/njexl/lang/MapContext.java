@@ -73,7 +73,7 @@ public class MapContext implements JexlContext {
 
     /** {@inheritDoc} */
     @Override
-    public JexlContext copy() {
+    public synchronized JexlContext copy() {
         HashMap<String,Object> copy = new HashMap(map);
         copy.put(PARENT_CONTEXT, this);
         return new MapContext(copy);

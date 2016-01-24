@@ -2433,12 +2433,14 @@ public class TypeUtility {
             return Thread.currentThread();
         }
         if (args[0] instanceof AnonymousParam) {
-            AnonymousParam anonymousParam = (AnonymousParam) args[0];
-            args = shiftArrayLeft(args, 1);
-            Thread t = new Thread(anonymousParam);
-            anonymousParam.setIterationContext(args, t, t.getId());
-            t.start();
-            return t;
+            synchronized (args[0] ) {
+                AnonymousParam anonymousParam = (AnonymousParam) args[0];
+                args = shiftArrayLeft(args, 1);
+                Thread t = new Thread(anonymousParam);
+                anonymousParam.setIterationContext(args, t, t.getId());
+                t.start();
+                return t;
+            }
         }
         return Thread.currentThread();
     }

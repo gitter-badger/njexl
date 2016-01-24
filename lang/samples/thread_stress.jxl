@@ -1,0 +1,11 @@
+def func(t){
+   write( #def t)
+}
+
+threads = list{ thread{ func($) }() }( [0:30] )
+while( true ){
+   all_expired = select{  $.isAlive }(threads)
+   break( empty(all_expired) )
+}
+// basically there was no error as of now ...
+return true 
