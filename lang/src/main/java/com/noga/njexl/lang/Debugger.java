@@ -950,6 +950,13 @@ public final class Debugger implements ParserVisitor {
     }
 
     /** {@inheritDoc} */
+    public Object visit(ASTAtomicStatement node, Object data) {
+        builder.append("#atomic");
+        accept(node.jjtGetChild(0), data);
+        return data;
+    }
+
+    /** {@inheritDoc} */
     public Object visit(SimpleNode node, Object data) {
         throw new UnsupportedOperationException("unexpected type of node");
     }

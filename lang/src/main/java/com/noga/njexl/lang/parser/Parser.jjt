@@ -98,6 +98,7 @@ PARSER_END(Parser)
     | < IMPORT : "import" >
     | < GOTO : "goto" >
     | < AS : "as" >
+    | < ATOMIC : "#atomic" > /* To ensure that the code block stays atomic */
 }
 
 
@@ -233,6 +234,7 @@ void Statement() #void : {}
     | LOOKAHEAD(3) ClassDef()
     | GoToStatement()
     | LabelledStatement()
+    | AtomicStatement()
 }
 
 void GoToStatement() : {}
@@ -246,6 +248,11 @@ void GoToStatement() : {}
 void LabelledStatement() : {}
 {
     <hash> Identifier() <LINE> Statement()
+}
+
+void AtomicStatement() : {}
+{
+    <ATOMIC> Block()
 }
 
 void BreakStatement() #BreakStatement : {}

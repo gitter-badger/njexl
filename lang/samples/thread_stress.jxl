@@ -1,11 +1,18 @@
-def func(){
-   write(  __args__[0] )
+x = 0 
+#atomic{
+   x = 2 + 2    
 }
 
-threads = list{ thread{ func($) }() }( [0:10] )
+def func(t){
+    write('%s with %s\n', __args__[0] , #def t )
+}
+threads = list{ thread{  #atomic{ func($) } }() }( [0:10] )
+
 while( true ){
    all_expired = select{  $.isAlive }(threads)
    break( empty(all_expired) )
 }
 // basically there was no error as of now ...
-return true 
+
+return x == 4  
+

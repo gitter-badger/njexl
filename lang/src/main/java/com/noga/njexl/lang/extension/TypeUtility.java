@@ -203,17 +203,6 @@ public class TypeUtility {
 
     public static Object atomic(Object... args) throws Exception {
         if (args.length == 0) return null;
-        if ( args[0] instanceof AnonymousParam ){
-            AnonymousParam anon = (AnonymousParam)args[0];
-            synchronized (anon){
-                Object context = anon;
-                if ( args.length > 1 ){
-                    context = args[1];
-                }
-                anon.setIterationContext(context,anon,System.nanoTime());
-                return anon.atomicExec();
-            }
-        }
         if ( args[0] instanceof Boolean ){
             return new AtomicBoolean((Boolean)args[0]);
         }

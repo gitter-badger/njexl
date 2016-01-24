@@ -2819,6 +2819,24 @@ public class Interpreter implements ParserVisitor {
         return node.jjtGetChild(1).jjtAccept(this, data);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object visit(ASTAtomicStatement node, Object data) {
+        synchronized (this) {
+            JexlContext old = context.copy() ;
+            try {
+                return node.jjtGetChild(0).jjtAccept(this, data);
+            }catch (Throwable t){
+                // revert in case of error
+                context = old ;
+                return t;
+            }
+        }
+    }
+
+
     /**
      * Unused, satisfy ParserVisitor interface.
      *
