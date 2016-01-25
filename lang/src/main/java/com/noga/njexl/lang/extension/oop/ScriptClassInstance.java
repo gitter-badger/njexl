@@ -131,7 +131,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     }
 
     @Override
-    public Object execMethod(String method, Object[] args)  {
+    public Object execMethod(String method, Interpreter i, Object[] args)  {
         try {
             if ( method.equals(ScriptClass._ANCESTOR_)){
                 Object arg0 = args[0];
@@ -223,7 +223,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     @Override
     public String toString() {
         try {
-            return execMethod(ScriptClassBehaviour.STR, new Object[]{}).toString();
+            return execMethod(ScriptClassBehaviour.STR, interpreter ,new Object[]{}).toString();
         } catch (Throwable e) {
         }
         return super.toString();
@@ -232,7 +232,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     @Override
     public boolean equals(Object o) {
         try {
-            return TypeUtility.castBoolean(execMethod(ScriptClassBehaviour.EQ, new Object[]{o}), false);
+            return TypeUtility.castBoolean(execMethod(ScriptClassBehaviour.EQ,interpreter , new Object[]{o}), false);
         } catch (Throwable e) {
 
         }
@@ -243,7 +243,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     @Override
     public int hashCode() {
         try {
-            return TypeUtility.castInteger(execMethod(ScriptClassBehaviour.HC, new Object[]{}));
+            return TypeUtility.castInteger(execMethod(ScriptClassBehaviour.HC, interpreter , new Object[]{}));
         } catch (Throwable e) {
         }
         return super.hashCode();
@@ -251,57 +251,57 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
 
     @Override
     public int compareTo(Object o) {
-        return TypeUtility.castInteger(execMethod(ScriptClassBehaviour.CMP, new Object[]{o}));
+        return TypeUtility.castInteger(execMethod(ScriptClassBehaviour.CMP,interpreter, new Object[]{o}));
     }
 
     @Override
     public Object add(Object o) {
-        return execMethod(Arithmetic.ADD, new Object[]{o});
+        return execMethod(Arithmetic.ADD,interpreter,new Object[]{o});
     }
 
     @Override
     public Object neg()  {
-        return execMethod(Arithmetic.NEG, new Object[]{});
+        return execMethod(Arithmetic.NEG,interpreter,new Object[]{});
     }
 
     @Override
     public Object sub(Object o)  {
-        return execMethod(Arithmetic.SUB, new Object[]{o});
+        return execMethod(Arithmetic.SUB, interpreter , new Object[]{o});
     }
 
     @Override
     public Object mul(Object o)  {
-        return execMethod(Arithmetic.MUL, new Object[]{o});
+        return execMethod(Arithmetic.MUL, interpreter , new Object[]{o});
     }
 
     @Override
     public Object div(Object o)  {
-        return execMethod(Arithmetic.DIV, new Object[]{o});
+        return execMethod(Arithmetic.DIV, interpreter , new Object[]{o});
     }
 
     @Override
     public Object exp(Object o)  {
-        return execMethod(Arithmetic.EXP, new Object[]{o});
+        return execMethod(Arithmetic.EXP, interpreter , new Object[]{o});
     }
 
     @Override
     public Object and(Object o)  {
-        return execMethod(Logic.AND, new Object[]{o});
+        return execMethod(Logic.AND,interpreter, new Object[]{o});
     }
 
     @Override
     public Object complement()  {
-        return execMethod(Logic.COMPLEMENT, new Object[]{});
+        return execMethod(Logic.COMPLEMENT,interpreter ,new Object[]{});
     }
 
     @Override
     public Object or(Object o) {
-        return execMethod(Logic.OR, new Object[]{o});
+        return execMethod(Logic.OR,interpreter ,new Object[]{o});
     }
 
     @Override
     public Object xor(Object o)  {
-        return execMethod(Logic.XOR, new Object[]{o});
+        return execMethod(Logic.XOR,interpreter , new Object[]{o});
     }
 
 
@@ -309,7 +309,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     public void before(Event event) {
         try{
             Object[] params = new Object[]{ event  } ;
-            execMethod(BEFORE, params );
+            execMethod(BEFORE,interpreter ,params );
         }catch (Throwable t){
             if ( t.getCause() instanceof NoSuchMethodException ) {
                 Timer.TIMER.before(event);
@@ -321,7 +321,7 @@ public class ScriptClassInstance implements Executable, Comparable,Arithmetic, L
     public void after(Event event) {
         try{
             Object[] params = new Object[]{ event } ;
-            execMethod(AFTER, params );
+            execMethod(AFTER,interpreter,params );
         }catch (Throwable t){
             if ( t.getCause() instanceof NoSuchMethodException ) {
                 Timer.TIMER.after(event);

@@ -78,8 +78,8 @@ public class ScriptClass  implements TypeAware, Executable {
          */
 
         @Override
-        public Object execMethod(String method, Object[] args) {
-            return executable.execMethod(methodName,args );
+        public Object execMethod(String method, Interpreter interpreter, Object[] args) {
+            return executable.execMethod(methodName,interpreter,args );
         }
     }
 
@@ -229,7 +229,7 @@ public class ScriptClass  implements TypeAware, Executable {
                 }
             }
         if (constructor != null) {
-            instance.execMethod(_INIT_, args);
+            instance.execMethod(_INIT_, interpreter, args);
         }
         // return
         return instance ;
@@ -341,7 +341,7 @@ public class ScriptClass  implements TypeAware, Executable {
     }
 
     @Override
-    public Object execMethod(String methodName, Object[] args) {
+    public Object execMethod(String methodName, Interpreter i, Object[] args) {
         try {
             ScriptMethod scriptMethod = getMethod(methodName);
             if ( scriptMethod == null ) {

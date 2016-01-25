@@ -44,8 +44,6 @@ import java.util.regex.Pattern;
  */
 public class Interpreter implements ParserVisitor {
 
-    public static final ConcurrentHashMap<Long,Interpreter> threadInterpreters = new ConcurrentHashMap<>();
-
     HashMap<String, Script> imports;
 
     public HashMap<String, Script> imports() {
@@ -1819,11 +1817,9 @@ public class Interpreter implements ParserVisitor {
                 synchronized (this) {
                     // use a newer interpreter!
                     this.interpreter = new Interpreter(interpreter);
-                    threadInterpreters.put(l,this.interpreter);
                 }
                 execute();
             } finally {
-                threadInterpreters.remove(l);
                 this.interpreter = null ; // mark for gc...?
                 System.gc();
             }
@@ -1904,7 +1900,7 @@ public class Interpreter implements ParserVisitor {
             boolean cacheable = cache;
             if (bean instanceof Executable) {
                 try {
-                    return ((Executable) bean).execMethod(methodName, argv);
+                    return ((Executable) bean).execMethod(methodName, this, argv);
                 }catch (Throwable e){
                     if ( e.getCause() instanceof NoSuchMethodException ){
                         // continue
@@ -1953,7 +1949,7 @@ public class Interpreter implements ParserVisitor {
                     } else if ( functor instanceof ScriptMethod ){
                         return ((ScriptMethod)functor).invoke(bean,this,argv);
                     }else if ( functor instanceof Executable ){
-                        return ((Executable)functor).execMethod(methodName,argv);
+                        return ((Executable)functor).execMethod(methodName,this,argv);
                     } else {
                         xjexl = new JexlException.Method(node, methodName);
                     }

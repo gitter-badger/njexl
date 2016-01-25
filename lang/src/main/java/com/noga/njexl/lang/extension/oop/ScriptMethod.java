@@ -163,7 +163,7 @@ public class ScriptMethod implements Serializable {
             if ( l instanceof ScriptClassBehaviour.Executable ){
                 ScriptClassBehaviour.Executable e = (ScriptClassBehaviour.Executable)l;
                 try {
-                    e.execMethod(p, args );
+                    e.execMethod(p, interpreter, args );
                 }catch (Throwable t){
                 }
             }
@@ -242,11 +242,7 @@ public class ScriptMethod implements Serializable {
     }
 
     public Object invoke(Object me, Interpreter interpreter, Object[] args) throws Exception {
-
-        Long l = Thread.currentThread().getId();
-        if ( Interpreter.threadInterpreters.containsKey(l)){
-            interpreter = Interpreter.threadInterpreters.get(l);
-        }
+        dispatch(Eventing.BEFORE, interpreter,args,before);
         JexlContext oldContext = interpreter.getContext();
         JexlContext toBeCopiedContext = oldContext ;
         if ( nested ){
@@ -267,7 +263,6 @@ public class ScriptMethod implements Serializable {
         }
         addToContext(context, map);
         try {
-            dispatch(Eventing.BEFORE, interpreter,args,before);
             interpreter.setContext(context);
             Object ret = astBlock.jjtAccept(interpreter,null);
             return ret;

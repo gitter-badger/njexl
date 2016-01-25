@@ -16,6 +16,7 @@
 
 package com.noga.njexl.lang.extension.oop;
 
+import com.noga.njexl.lang.Interpreter;
 import com.noga.njexl.lang.Main;
 
 import java.util.regex.Pattern;
@@ -166,11 +167,13 @@ public final class ScriptClassBehaviour {
 
         /**
          * Execute a method
+         * This design avoids GIL
          * @param method name of the method
+         * @param interpreter the interpreter on which to run
          * @param args to be passed as argument
          * @return result of the method
          */
-        Object execMethod(String method, Object[] args) ;
+        Object execMethod(String method, Interpreter interpreter, Object[] args) ;
 
         /**
          * Gets a property

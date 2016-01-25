@@ -212,13 +212,13 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
     }
 
     @Override
-    public Object execMethod(String method,Object[] args){
+    public Object execMethod(String method,Interpreter i, Object[] args){
         try {
             ScriptMethod methodDef = getMethod(method);
             if (methodDef == null) {
                 throw new NoSuchMethodException("Method : '" + method + "' is not found in : " + this.importName);
             }
-            return methodDef.invoke(null, this.interpreter, args);
+            return methodDef.invoke(null,i, args);
         }catch (Throwable e){
             throw new Error(e);
         }
