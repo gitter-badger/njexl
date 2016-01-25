@@ -661,13 +661,13 @@ public class Interpreter implements ParserVisitor {
                     if ("+=".equals(which)) {
                         left = arithmetic.add(left, right);
                         //assign
-                        assignToNode(-1,node,leftNode,left);
+                        assignToNode(-1, node, leftNode, left);
                         continue;
                     }
                     if ("-=".equals(which)) {
                         left = arithmetic.subtract(left, right);
                         //assign
-                        assignToNode(-1,node,leftNode,left);
+                        assignToNode(-1, node, leftNode, left);
                         continue;
                     }
                     throw new UnsupportedOperationException("unknown additive operator " + which);
@@ -2830,10 +2830,11 @@ public class Interpreter implements ParserVisitor {
      * {@inheritDoc}
      */
     public Object visit(ASTAtomicStatement node, Object data) {
-        synchronized (this) {
+        JexlNode n = node.jjtGetChild(0);
+        synchronized (n) {
             JexlContext old = context.copy() ;
             try {
-                return node.jjtGetChild(0).jjtAccept(this, data);
+                return n.jjtAccept(this, data);
             }catch (Throwable t){
                 // revert in case of error
                 context = old ;

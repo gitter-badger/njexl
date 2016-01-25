@@ -67,6 +67,12 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testAtomicThreadScript() throws Exception{
+        Object o = runScript(JEXL, "samples/atomic_thread");
+        assertTrue((Boolean)o);
+    }
+
+    @Test
     public void testClosureAndDefinedMethodScript() throws Exception{
         Object o = runScript(JEXL, "samples/closure.jxl");
         assertEquals(3,o);

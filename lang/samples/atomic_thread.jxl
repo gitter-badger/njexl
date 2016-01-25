@@ -1,0 +1,9 @@
+my_var = 0  
+list_of_threads  = list{ thread{    
+                        #atomic{ my_var += 1} }() }([0:3])
+while ( true ){
+   break( empty ( select{ $.isAlive }(list_of_threads) ) )
+}
+// will always produce 3
+write(my_var)
+my_var == 3
