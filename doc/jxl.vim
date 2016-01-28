@@ -1,84 +1,102 @@
 " Vim syntax file
-" Language: New Java Expression Language
-" Maintainer: Nabarun Mondal
-" Latest Revision: 28 Jan 2015
-"
-"
-if exists("b:current_syntax")
-    finish
-endif
+" Language:    jxl 
+" Version:     0.1
+" Maintainer:  Nabarun Mondal <nabarun.mondal at gmail.com>
+" URL:		    
+" Last Change: 2016 Jan 29
+" Disclaimer:  It's an absolut basic, very simple and by far not finished
+" syntax file! It only recognizes basic keywords and  constructs like comments
+" any help is welcome
 
+" Remove any old syntax stuff
+syn clear
+
+" syntax highlighting for words that are not identifiers:
+" int unit double String Array byte short char long float
+syn keyword jxlExternal		import as 
+syn keyword jxlConditional	if else where break continue
+syn keyword jxlRepeat			while for 
+syn keyword jxlType			bool int INT double DEC NUM byte short char long float
+syn keyword jxlType			isa type var
+
+syn keyword jxlStatement		return
+syn keyword	jxlBoolean		true false
+syn keyword jxlConstant		null
+syn keyword	jxlTypedef		my me supers  
+syn keyword jxlLangClass	    set dict list array select date time instant lfold rfold index rindex sqlmath minmax 
+syn keyword jxlLangClass	    system read write json xml matrix thread #atomic atomic random shuffle error bye
+
+" TODO differentiate the keyword class from MyClass.class -> use a match here
+
+
+syn keyword	jxlOperator		new and or xor not size empty #def def 
+syn keyword	jxlOperator		lt le gt ge ne
+
+
+" same number definition as in java.vim
+syn match   jxlNumber		"\<\(0[0-7]*\|0[xX]\x\+\|\d\+\)[lL]\=\>"
+syn match   jxlNumber     "\(\<\d\+\.\d*\|\.\d\+\)\([eE][-+]\=\d\+\)\=[fFdD]\="
+syn match   jxlNumber     "\<\d\+[eE][-+]\=\d\+[fFdD]\=\>"
+syn match   jxlNumber     "\<\d\+\([eE][-+]\=\d\+\)\=[fFdD]\>"
+
+syn match   jxlOperator  "!"
+syn match   jxlOperator  "-"
+syn match   jxlOperator  "+"
+syn match   jxlOperator  "/"
+syn match   jxlOperator  "%"
+syn match   jxlOperator  "|"
+syn match   jxlOperator  "&"
+syn match   jxlOperator  "="
+syn match   jxlOperator  "*"
+syn match   jxlOperator  "<"
+syn match   jxlOperator  ">"
+syn match   jxlOperator  "@"
+syn match   jxlOperator  "\~"
+syn match   jxlOperator  "^"
+syn match   jxlOperator  "\$"
+syn match   jxlOperator  "_"
+
+
+syn region  jxlString		start=+"+ end=+"+
+syn region  jxlString		start=+'+ end=+'+
+syn region  jxlString		start=+`+ end=+`+
+
+" Functions
+"	def [name] [(prototype)] {
+"
+syn match   jxlFunction	"\s*\<def\>"
 
 " Comments
-syn match  njexlComment "\v//.*$"
-syn match  njexlComment "\v##.*$"
-syn region njexlComment start="/\*" skip="\v\\." end="\*/"
+syn region jxlComment		start="/\*"	end="\*/"
+syn match	jxlLineComment	"//.*"
+syn match	jxlLineComment	"\#\#.*"
 
 
-" Instructions 
-syn keyword njexlKeywords nop eval goto import export exists call return  
-syn keyword njexlKeywords null as empty or and defined int INT long bool date time double NUM DEC size 
-syn keyword njexlKeywords if else else for while index lfold rfold time date def #def #atomic 
-syn keyword njexlKeywords set list dict and or ne eq gt ge lt le
-syn keyword njexlKeywords atomic str thread system json read write xml matrix 
-syn keyword njexlKeywords random shuffle range sqlmath minmax break continue
-
-syn match   njexlSpecial      "[_A-Z]*_"
-
-syn keyword njexlBoolean true false 
-syn match   njexlInstruction  "[a-zA-Z]\+:[a-z_A-Z]\+"
-
-
-" Strings
-syn region njexlString start=/\v"/ skip=/\v\\./ end=/\v"/
-syn region njexlString start=/\v'/ skip=/\v\\./ end=/\v'/
-syn region njexlString start=/\v`/ skip=/\v\\./ end=/\v`/
-
-
-" Variables
-syn match njexlVariable "\$[a-zA-Z_0-9]*"
-syn match njexlVariable "@[_0-9]\+"
-
-
-" Constants
-syn match njexlInteger "[0-9]\+"
-syn match njexlNumber  "[+-][0-9]\+\.[0-9]\+"
-
-
-" Label
-syn match  njexlReference "\v\{[a-zA-Z][a-z0-9_A-Z]*\}"
-syn match  njexlLabelDeclare "\*\* [a-zA-Z][a-zA-Z_0-9]*"
-
-
-syn match njexlOperator  "!"
-syn match njexlOperator  "-"
-syn match njexlOperator  "+"
-syn match njexlOperator  "/"
-syn match njexlOperator  "%"
-syn match njexlOperator  "|"
-syn match njexlOperator  "&"
-syn match njexlOperator  "="
-syn match njexlOperator  "*"
-syn match njexlOperator  "<"
-syn match njexlOperator  ">"
-syn match njexlOperator  "@"
-syn match njexlOperator  "~"
-syn match njexlOperator  "^"
-
-
-
-" Highlight
-hi link njexlLabelDeclare Keyword 
-hi link njexlLabelReference Label 
-hi link njexlComment Comment
-hi link njexlKeywords Keyword
-hi link njexlSpecial Keyword
-hi link njexlInstruction Function 
-hi link njexlBoolean Boolean
-hi link njexlString String
-hi link njexlInteger Constant
-hi link njexlNumber Constant
-hi link njexlVariable Identifier
-hi link njexlOperator Operator
+if !exists("did_jxl_syntax_inits")
+    let did_jxl_syntax_inits = 1
+    
+    " The default methods for highlighting. Can be overridden later
+    hi link jxlExternal		Include
+    hi link jxlStatement		Statement
+    hi link jxlConditional	Conditional
+	hi link jxlRepeat			Repeat
+    hi link jxlType			Type
+    hi link jxlTypedef		Typedef
+	hi link	jxlBoolean		Boolean
+    hi link jxlFunction		Function
+    hi link jxlLangClass		Constant
+	hi link	jxlConstant		Constant
+	hi link jxlStorageClass 	StorageClass
+	hi link jxlOperator		Operator
+    hi link jxlNumber			Number
+    hi link jxlString			String
+	hi link	jxlComment		Comment
+	hi link	jxlLineComment	Comment
+    hi link jxlSpecial Keyword
+    
+endif
 
 let b:current_syntax = "jxl"
+
+" if you want to override default methods for highlighting
+"hi Conditional	term=bold ctermfg=Cyan guifg=#80a0ff
