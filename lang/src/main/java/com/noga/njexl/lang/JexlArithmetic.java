@@ -37,6 +37,7 @@ import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Logic;
 import com.noga.njexl.lang.extension.oop.ScriptMethod;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.Period;
 
 
 /**
@@ -881,7 +882,13 @@ public class JexlArithmetic {
             if ( left instanceof Arithmetic){
                 return ((Arithmetic) left).sub(right);
             }
-            if ( left instanceof DateTime ){
+            if ( isTimeLike(left) ){
+                left = TypeUtility.castTime(left);
+                if ( isTimeLike( right ) ){
+                    right = TypeUtility.castTime(right);
+                    long diff = ((DateTime) left).getMillis() - ((DateTime) right).getMillis() ;
+                    return diff;
+                }
                 if ( right instanceof Integer ){
                     return ((DateTime) left).minus((long)right);
                 }
