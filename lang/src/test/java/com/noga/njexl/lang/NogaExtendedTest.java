@@ -206,6 +206,27 @@ public class NogaExtendedTest extends JexlTestCase {
         assertEquals((byte)12,o);
 
     }
+    @Test
+    public void testExponentialDecimalType() throws Exception {
+        Expression e = JEXL.createExpression("x =  0e-3");
+        JexlContext jc = new MapContext();
+        Object o = e.evaluate(jc);
+        assertTrue(o instanceof Float);
+
+        e = JEXL.createExpression("x =  1.0e-3");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof Float);
+
+        e = JEXL.createExpression("x =  1.3e-4");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof Float);
+
+        e = JEXL.createExpression("x = 4.2223232323232233232e-20");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof BigDecimal);
+
+    }
+
 
     @Test
     public void testAutoBigDecimalType() throws Exception {
