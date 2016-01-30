@@ -145,12 +145,14 @@ public class ASTNumberLiteral extends JexlNode implements JexlNode.Literal<Numbe
                 BigDecimal bd = new BigDecimal(s);
                 result = bd;
                 rclass = BigDecimal.class ;
-                if ( s.contains("e") || s.contains("E") ){
-                    s = bd.toPlainString();
-                    last = s.length() - 1;
+                s = bd.toPlainString();
+                last = s.length() - 1;
+                int dotInx = s.indexOf('.');
+                int sig = 0 ;
+                if ( dotInx >= 0 ){
+                    //it has dot. find no after dots?
+                    sig = last - dotInx ;
                 }
-                //it has dot. find no after dots?
-                int sig = last - s.indexOf('.') ;
                 String formatString = String.format("%%.%df", sig);
                 String sf = String.format(formatString,f);
                 String sd = String.format(formatString,d);

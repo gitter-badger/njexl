@@ -186,10 +186,9 @@ public class Main {
             if ( o.getClass().isArray() ){
                 return  strArr(o);
             }
-            return o.toString();
-        }else{
-            return "null" ;
+            return String.valueOf(o) + " ## " + o.getClass().getSimpleName() ;
         }
+        return "null" ;
     }
 
     public static void main(String[] args) throws Exception{

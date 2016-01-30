@@ -225,9 +225,12 @@ public class NogaExtendedTest extends JexlTestCase {
         o = e.evaluate(jc);
         assertTrue(o instanceof BigDecimal);
 
+        e = JEXL.createExpression("x = 0e13");
+        o = e.evaluate(jc);
+        assertTrue(o instanceof Float);
+
+
     }
-
-
     @Test
     public void testAutoBigDecimalType() throws Exception {
         Expression e = JEXL.createExpression("x =  0.000000010100");
