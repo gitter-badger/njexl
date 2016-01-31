@@ -1323,6 +1323,17 @@ public class Interpreter implements ParserVisitor {
     }
 
     @Override
+    public Object visit(ASTInOrderNode node, Object data) {
+        Object left = node.jjtGetChild(0).jjtAccept(this, data);
+        Object right = node.jjtGetChild(1).jjtAccept(this, data);
+        try{
+            int pos = TypeUtility.index(left,right);
+            return  ( pos >= 0 );
+        }catch (Exception e){}
+        return false;
+    }
+
+    @Override
     public Object visit(ASTStartWithNode node, Object data) {
         Object left = node.jjtGetChild(0).jjtAccept(this, data);
         Object right = node.jjtGetChild(1).jjtAccept(this, data);

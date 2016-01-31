@@ -1792,6 +1792,48 @@ public class NogaExtendedTest extends JexlTestCase {
     }
 
     @Test
+    public void testInOrderOperator() throws Exception {
+        JexlContext jc = new MapContext();
+        String s = "null #@ null";
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertFalse((Boolean)o);
+
+        s = "[] #@ [1,2,3] ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        // axiomatically empty list is a member of any list
+        assertTrue((Boolean) o);
+
+        s = "[1,2]  #@ [1,2,3] ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "[2,3] #@ [1,2,3] ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "[3,4] #@ [1,2,3,4] ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = "x = [5] ; y = [1,2,3,4]; x #@ y ;";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse((Boolean) o);
+
+        s = "x = [2,4] ; y = [1,2,3,4]; x #@ y ;";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse((Boolean) o);
+    }
+
+
+
+    @Test
     public void testIndexFunction() throws Exception {
         JexlContext jc = new MapContext();
         String s = "index(null,null)";

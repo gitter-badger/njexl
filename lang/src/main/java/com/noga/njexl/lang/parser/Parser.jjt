@@ -140,6 +140,7 @@ PARSER_END(Parser)
     | < isa : "isa" >
     | < start_with : "#^"  >
     | < end_with : "#$"  >
+    | < in_order : "#@" >
 }
 
 <*> TOKEN : { /* OPERATORS */
@@ -468,6 +469,8 @@ void EqualityExpression() #void :
      LOOKAHEAD(2) <start_with> RelationalExpression() #StartWithNode(2)
    |
      LOOKAHEAD(2) <end_with> RelationalExpression() #EndWithNode(2)
+   |
+     LOOKAHEAD(2) <in_order> RelationalExpression() #InOrderNode(2)
    |
      <eq> RelationalExpression() #EQNode(2)
    |
