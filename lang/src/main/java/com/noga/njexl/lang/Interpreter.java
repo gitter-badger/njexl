@@ -1308,6 +1308,30 @@ public class Interpreter implements ParserVisitor {
         }
     }
 
+    @Override
+    public Object visit(ASTEndWithNode node, Object data) {
+        Object left = node.jjtGetChild(0).jjtAccept(this, data);
+        Object right = node.jjtGetChild(1).jjtAccept(this, data);
+        try{
+            int mySize = sizeOf(node.jjtGetChild(1),right );
+            if ( mySize == 0 ){ mySize = 1 ; }
+            int containerSize = sizeOf(node.jjtGetChild(0),left );
+            int pos = TypeUtility.rindex(right,left);
+            return  ( containerSize - pos == mySize );
+        }catch (Exception e){}
+        return false;
+    }
+
+    @Override
+    public Object visit(ASTStartWithNode node, Object data) {
+        Object left = node.jjtGetChild(0).jjtAccept(this, data);
+        Object right = node.jjtGetChild(1).jjtAccept(this, data);
+        try{
+            int pos = TypeUtility.index(right,left);
+            return  ( 0 == pos );
+        }catch (Exception e){}
+        return false;
+    }
 
     /**
      * {@inheritDoc}

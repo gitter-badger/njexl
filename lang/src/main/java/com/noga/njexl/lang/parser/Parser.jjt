@@ -128,7 +128,7 @@ PARSER_END(Parser)
 
 <*> TOKEN : { /* COMPARISONS */
       < eq : "==" | "eq" >
-    | <aeq : "===" | "aeq" >
+    | < aeq : "===" | "aeq" >
     | < ne : "!=" | "ne" >
     | < req : "=~" >
     | < rne : "!~" >
@@ -137,7 +137,9 @@ PARSER_END(Parser)
     | < lt : "<" | "lt" >
     | < le : "<=" | "le" >
     | < in : "@" >
-    | <isa : "isa" >
+    | < isa : "isa" >
+    | < start_with : "#^"  >
+    | < end_with : "#$"  >
 }
 
 <*> TOKEN : { /* OPERATORS */
@@ -462,6 +464,10 @@ void EqualityExpression() #void :
    <in> AdditiveExpression() #INNode(2)
    |
      LOOKAHEAD(2) <aeq> RelationalExpression() #AEQNode(2)
+   |
+     LOOKAHEAD(2) <start_with> RelationalExpression() #StartWithNode(2)
+   |
+     LOOKAHEAD(2) <end_with> RelationalExpression() #EndWithNode(2)
    |
      <eq> RelationalExpression() #EQNode(2)
    |

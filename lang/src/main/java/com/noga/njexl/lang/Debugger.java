@@ -504,6 +504,16 @@ public final class Debugger implements ParserVisitor {
         return infixChildren(node, " === ", false, data);
     }
 
+    @Override
+    public Object visit(ASTEndWithNode node, Object data) {
+        return infixChildren(node, " #$ ", false, data);
+    }
+
+    @Override
+    public Object visit(ASTStartWithNode node, Object data) {
+        return infixChildren(node, " #^ ", false, data);
+    }
+
     /** {@inheritDoc} */
     public Object visit(ASTEQNode node, Object data) {
         return infixChildren(node, " == ", false, data);

@@ -1624,9 +1624,78 @@ public class NogaExtendedTest extends JexlTestCase {
         e = JEXL.createScript(s);
         o = e.execute(jc);
         assertTrue((Boolean)o);
-
-
     }
+
+
+    @Test
+    public void testStartWithOperator() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "x = 'abc' ; y = 'abcde' ; y #^ x ";
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = " x = null ; y = null ; y #^x  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse((Boolean)o);
+
+        s = " x = [1] ; y = [1,2,3] ; y #^ x  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = " x = [] ; y = [1,2,3] ; y #^ x  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = " x = null ; y = [1,2,3] ; y #^ x  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse((Boolean)o);
+
+        s = " x = [3] ; y = [1,2,3] ; y #^ x  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse((Boolean)o);
+    }
+
+
+    @Test
+    public void testEndsWithOperator() throws Exception{
+        JexlContext jc = new MapContext();
+        String s = "x = 'cde' ; y = 'abcde' ; y #$ x ";
+        Script e = JEXL.createScript(s);
+        Object o = e.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = " x = null ; y = null ; y #$ x  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse((Boolean)o);
+
+        s = " x = [3] ; y = [1,2,3] ; y #$ x  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = " x = [] ; y = [1,2,3] ; y #$ x  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = " x = null ; y = [1,2,3] ; y #$ x  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse((Boolean)o);
+
+        s = " x = [2] ; y = [1,2,3] ; y #$ x  ";
+        e = JEXL.createScript(s);
+        o = e.execute(jc);
+        assertFalse((Boolean)o);
+    }
+
 
     @Test
     public void testFunctionComposition() throws Exception{

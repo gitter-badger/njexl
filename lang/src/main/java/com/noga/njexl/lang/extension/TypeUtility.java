@@ -1593,10 +1593,10 @@ public class TypeUtility {
                 String l = castString(item, SetOperations.SEP);
                 String r = castString(args[1], SetOperations.SEP);
                 if (l.isEmpty()) {
-                    if (args[1] instanceof List) {
-                        return ((List) args[1]).size() - 1;
+                    if (args[1] instanceof Collection) {
+                        return ((Collection) args[1]).size() - 1;
                     }
-                    return Array.getLength(args[1]) - 1;
+                    return Array.getLength(args[1]) -1 ;
                 }
                 int inx = r.lastIndexOf(l);
                 // how many seps are there?

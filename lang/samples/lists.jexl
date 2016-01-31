@@ -36,7 +36,7 @@ y = select{ _ > 0 and l[_-1] > $ }(l)
 out:println( empty(y) ? "Sorted array" : "Not sorted." )
 
 // classic sql --> this way. 
-y = select{ where ( $ > 2 ) { $=$*10 } }( 1, 2, 3 ) 
+y = select{ where ( $ > 2 ) { $ = $*10 } }( 1, 2, 3 )
 out:println(y)
 
 // standard addition 

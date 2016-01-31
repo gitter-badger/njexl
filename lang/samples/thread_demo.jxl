@@ -19,7 +19,7 @@ def main(){
        write("Child Thread id is : %d\n", _ )
        // note the parameter passing by assigning into __args__ 
        $.sleep(2000) // $ has the current thread 
-       r = thread_func( __args__=$$ ) 
+       r = thread_func( __args__ = $$ )
        } ( 1, 2) // these would be passed 
     write( type(t) )   
     while ( t.alive ){
