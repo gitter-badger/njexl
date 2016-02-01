@@ -15,9 +15,14 @@
  */
 
 package com.noga.njexl.tests;
-
+import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.spark.Main;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.File;
+
 import static org.junit.Assert.*;
 
 public class IntegrationTest {
@@ -25,6 +30,24 @@ public class IntegrationTest {
     public static final String WC_SCRIPT = "samples/wc.jxl" ;
 
     public static final String PI_SCRIPT = "samples/pi.jxl" ;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        cleanUP();
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        cleanUP();
+    }
+
+
+    public static void cleanUP() throws Exception {
+        File opDir = new File ( "op" ) ;
+        if ( opDir.exists() ){
+            TypeUtility.system("rm -rf op");
+        }
+    }
 
     @Test
     public void wcTest() throws Exception{
