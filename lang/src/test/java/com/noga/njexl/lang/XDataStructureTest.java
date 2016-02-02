@@ -37,6 +37,11 @@ public class XDataStructureTest extends JexlTestCase {
         Object o = s.execute(jc);
         assertTrue(o instanceof List );
 
+        s = JEXL.createScript("y = str(x)");
+        o = s.execute(jc);
+        assertTrue(o instanceof String );
+        assertFalse(((String)o).isEmpty() );
+
         s = JEXL.createScript("x.select()");
         o = s.execute(jc);
         assertTrue(o instanceof List );
@@ -54,12 +59,12 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertEquals( 0 , o );
 
-        s = JEXL.createScript("x.map{  $.key + $.value }()");
+        s = JEXL.createScript("x.map{  $.0 + $.value }()");
         o = s.execute(jc);
         assertTrue(o instanceof List);
         assertEquals( 3, ((List)o).size() );
 
-        s = JEXL.createScript("x.set{  $.key  }() == [1,2,3] ");
+        s = JEXL.createScript("x.set{  $.0 + $.1  }() == [ 2, 6, 12] ");
         o = s.execute(jc);
         assertTrue((Boolean)o);
 
@@ -77,6 +82,40 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertTrue(o instanceof Map);
         assertEquals( 2 , ((Map)o).size() );
+
+    }
+
+    @Test
+    public void testListSet() throws Exception {
+        Script s = JEXL.createScript("x = set( 1,2,3,4,3,4,5,5,6 ) ");
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue(o instanceof List );
+        assertTrue(o instanceof Set );
+
+        s = JEXL.createScript("y = str(x)");
+        o = s.execute(jc);
+        assertTrue(o instanceof String );
+        assertFalse(((String)o).isEmpty() );
+
+        s = JEXL.createScript("x.select()");
+        o = s.execute(jc);
+        assertTrue(o instanceof List );
+
+        s = JEXL.createScript("x.select{ $ < 3 }()");
+        o = s.execute(jc);
+        assertTrue(o instanceof Set );
+        assertTrue(o instanceof List );
+        assertEquals( 2, ((Set)o).size() );
+
+        s = JEXL.createScript("x.map{  $**3 }()");
+        o = s.execute(jc);
+        assertTrue(o instanceof List);
+        assertEquals( 6 , ((List)o).size() );
+
+        s = JEXL.createScript(" x.set{ 2 * $  }() == [1:7].list{ 2* int($) }() ");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
 
     }
 }

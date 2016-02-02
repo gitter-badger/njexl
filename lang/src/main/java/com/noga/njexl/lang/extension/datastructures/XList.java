@@ -44,9 +44,8 @@ public class XList<T> extends ArrayList<T> {
         }
 
         public Object get(int index){
-            if ( index == 0 ) return l ;
-            if ( index == 1 ) return r ;
-            return this;
+            if ( index % 2 == 0 ) return l ;
+            return r ;
         }
 
         @Override
