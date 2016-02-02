@@ -69,10 +69,9 @@ public class Heap implements Collection{
         this(size,false);
     }
 
-
     protected int find(Object o){
         if ( o == null ) return -1;
-        return Arrays.binarySearch(heap,o);
+        return Arrays.binarySearch(heap,o,comparator);
     }
 
     protected boolean heapify(Object o){

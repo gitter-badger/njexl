@@ -17,6 +17,8 @@
 package com.noga.njexl.lang;
 
 import org.junit.Test;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -118,4 +120,100 @@ public class XDataStructureTest extends JexlTestCase {
         assertTrue((Boolean)o);
 
     }
+
+    @Test
+    public void testIterators() throws Exception {
+        Script s = JEXL.createScript("[0:10].equals( [0:10] )");
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("range(9).equals ( range(10) ) ");
+        o = s.execute(jc);
+        assertFalse((Boolean)o);
+
+        s = JEXL.createScript("t1 = time() ; t2 = t1.plusDays(10); [t1:t2].equals([t1:t2])");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("[t1:t2].equals([t2 : t2])");
+        o = s.execute(jc);
+        assertFalse((Boolean)o);
+
+        s = JEXL.createScript("['a' : 'z' ].equals([ 'a': 'z' ])");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("range('z').equals(range('y'))");
+        o = s.execute(jc);
+        assertFalse((Boolean)o);
+
+        // now the advanced stuff ...
+
+        s = JEXL.createScript("l = [0:2].mul( [0:2] )");
+        o = s.execute(jc);
+        assertTrue(o instanceof List);
+        assertEquals(4, ((List)o).size() );
+
+        s = JEXL.createScript("l = [0:2].exp( 2 ) ");
+        o = s.execute(jc);
+        assertTrue(o instanceof List);
+        assertEquals(4, ((List)o).size() );
+
+        s = JEXL.createScript("[0:10].select{ $ < 2 }() == [0l,1l ] ");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("[0:10].index{ $**2 > 4 }() == 3");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("[0:10].rindex{ $**2 < 4 }() == 1");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+    }
+
+    @Test
+    public void testHeap() throws Exception {
+        Script s = JEXL.createScript("h = heap(2)");
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue(o instanceof Collection);
+
+        s = JEXL.createScript("lfold{ h+= $ }([0:10]) ; h[0] == 8 and h[1] == 9 ");
+        o = s.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = JEXL.createScript("h = heap(2,true) ; rfold{ h+= $ }([0:10]) ; h[0] == 2 and h[1] == 1 ");
+        o = s.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = JEXL.createScript("h = heap(2,true) ; h.addAll([10:0].list ) ; h[0] == 2 and h[1] == 1 ");
+        o = s.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = JEXL.createScript("empty(h)");
+        o = s.execute(jc);
+        assertFalse((Boolean) o);
+
+        s = JEXL.createScript("#|h|");
+        o = s.execute(jc);
+        assertEquals(2, o);
+
+        s = JEXL.createScript("h.find(1)");
+        o = s.execute(jc);
+        assertEquals(1, o);
+
+        s = JEXL.createScript("l = list(1l,2l) ; l @ h ;");
+        o = s.execute(jc);
+        assertTrue( (Boolean) o);
+
+        s = JEXL.createScript("h.containsAll(l) ;");
+        o = s.execute(jc);
+        assertTrue( (Boolean) o);
+
+    }
+
+
 }
