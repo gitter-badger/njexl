@@ -73,7 +73,7 @@ import org.w3c.dom.NodeList;
  *     it is a proper language.
  * </pre>
  */
-public class TypeUtility {
+public final class TypeUtility {
 
     public static final String TYPE = "type";
 

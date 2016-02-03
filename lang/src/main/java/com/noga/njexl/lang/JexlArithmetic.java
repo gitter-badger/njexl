@@ -228,16 +228,6 @@ public class JexlArithmetic {
     }
 
     /**
-     * Test if either left or right are either a Float or Double.
-     * @param left one object to test
-     * @param right the other
-     * @return the result of the test.
-     */
-    protected boolean isFloatingPointType(Object left, Object right) {
-        return left instanceof Float || left instanceof Double || right instanceof Float || right instanceof Double;
-    }
-
-    /**
      * Test if the passed value is a floating point number, i.e. a float, double
      * or string with ( "." | "E" | "e").
      *
@@ -889,8 +879,8 @@ public class JexlArithmetic {
                     long diff = ((DateTime) left).getMillis() - ((DateTime) right).getMillis() ;
                     return diff;
                 }
-                if ( right instanceof Integer ){
-                    return ((DateTime) left).minus((long)right);
+                if ( right instanceof Number ){
+                    return ((DateTime) left).minus(((Number)right).longValue() );
                 }
                 if ( right instanceof Duration){
                     return ((DateTime) left).minus((Duration) right);
@@ -1345,39 +1335,6 @@ public class JexlArithmetic {
         }
         // TODO: is this a reasonable default?
         return false;
-    }
-
-    /**
-     * Coerce to a int.
-     *
-     * @param val Object to be coerced.
-     * @return The int coerced value.
-     */
-    public int toInteger(Object val) {
-        if (val == null) {
-            controlNullOperand();
-            return 0;
-        } else if (val instanceof Double) {
-            if (!Double.isNaN(((Double) val).doubleValue())) {
-                return 0;
-            } else {
-                return ((Double) val).intValue();
-            }
-        } else if (val instanceof Number) {
-            return ((Number) val).intValue();
-        } else if (val instanceof String) {
-            if ("".equals(val)) {
-                return 0;
-            }
-            return Integer.parseInt((String) val);
-        } else if (val instanceof Boolean) {
-            return ((Boolean) val).booleanValue() ? 1 : 0;
-        } else if (val instanceof Character) {
-            return ((Character) val).charValue();
-        }
-
-        throw new ArithmeticException("Integer coercion: "
-                + val.getClass().getName() + ":(" + val + ")");
     }
 
     /**

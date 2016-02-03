@@ -16,8 +16,15 @@
 
 package com.noga.njexl.lang;
 
+import com.noga.njexl.lang.extension.dataaccess.XmlMap;
+import org.joda.time.DateTime;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +34,19 @@ import java.util.Set;
  * Created by noga on 02/02/16.
  */
 public class XDataStructureTest extends JexlTestCase {
+
+    @BeforeClass
+    public static void beforeClass() throws Exception{
+
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception{
+        File file = new File("foo.txt");
+        if ( file.exists() ){
+            file.delete();
+        }
+    }
 
     public XDataStructureTest(String testName) {
         super(testName);
@@ -215,5 +235,74 @@ public class XDataStructureTest extends JexlTestCase {
 
     }
 
+    @Test
+    public void testFopen() throws Exception{
+        Script s = JEXL.createScript("fp = fopen('foo.txt', 'w' ) ");
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue(o instanceof PrintStream );
 
+        s = JEXL.createScript("write(fp,'hi, hello') ; fp.close() ; fp = fopen('foo.txt','r') ;");
+        o = s.execute(jc);
+        assertTrue(o instanceof BufferedReader);
+
+        s = JEXL.createScript("l = fp.readLine() ; fp.close() ; l ");
+        o = s.execute(jc);
+        assertTrue(o instanceof String );
+
+        s = JEXL.createScript("fp = fopen('foo.txt','a') ");
+        o = s.execute(jc);
+        assertTrue(o instanceof PrintStream);
+
+        s = JEXL.createScript("fp.printf('foo bar\n') ; fp.close() ; fp = fopen('foo.txt','r') ;");
+        o = s.execute(jc);
+        assertTrue(o instanceof BufferedReader);
+
+        s = JEXL.createScript("fp.close(); lines('foo.txt') ");
+        o = s.execute(jc);
+        assertTrue(o instanceof List);
+
+        s = JEXL.createScript("system('ls','foo.txt')");
+        o = s.execute(jc);
+        assertEquals(0,o);
+
+    }
+
+    @Test
+    public void testREST() throws Exception{
+        Script s = JEXL.createScript("data = read('http://www.thomas-bayer.com/sqlrest/CUSTOMER/', 10000 ,10000 ) ");
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue(o instanceof String );
+
+        s = JEXL.createScript("xml = xml(data) ; ");
+        o = s.execute(jc);
+        assertTrue(o instanceof XmlMap);
+
+        // test encode and decode data
+        String data = "hello, World" ;
+        jc.set("data", data );
+
+        s = JEXL.createScript("hash('e64', data) ");
+        o = s.execute(jc);
+        assertTrue(o instanceof String );
+        jc.set("data", o );
+
+        s = JEXL.createScript("hash('d64', data) ");
+        o = s.execute(jc);
+        assertEquals(data, o);
+    }
+
+    @Test
+    public void testExtendedJexlArithmetic() throws Exception{
+        Script s = JEXL.createScript("t1 = time() ; t2 = t1.plusDays(1) ; t2 - t1 ");
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue(o instanceof Long );
+
+        s = JEXL.createScript("t1 -= 1000 ");
+        o = s.execute(jc);
+        assertTrue(o instanceof DateTime );
+
+    }
 }
