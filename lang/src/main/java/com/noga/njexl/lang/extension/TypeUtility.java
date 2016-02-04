@@ -628,8 +628,8 @@ public final class TypeUtility {
             }
             return Array.get(args[0], index);
         }
-        if (args[0].getClass().isEnum()) {
-            Object[] values = args[0].getClass().getEnumConstants();
+        if (args[0] instanceof Class && ((Class)args[0]).isEnum() ) {
+            Object[] values = ((Class)args[0]).getEnumConstants();
             int index = random.nextInt(values.length);
             if (args.length > 1) {
                 // how many stuff we need?

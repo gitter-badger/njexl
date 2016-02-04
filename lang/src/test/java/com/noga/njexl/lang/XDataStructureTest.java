@@ -195,6 +195,31 @@ public class XDataStructureTest extends JexlTestCase {
     }
 
     @Test
+    public void testYieldedIterators() throws Exception {
+        Script s = JEXL.createScript("[0:10].add( [0:10] )");
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue(o instanceof List);
+
+        s = JEXL.createScript("x = [0:10].add(20) ; 20 @ x ");
+        o = s.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = JEXL.createScript("x = [0:10].sub([4:10]) ;  x  == [ 0,1,2,3] ");
+        o = s.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = JEXL.createScript("x = [0:10].sub(0) ; 0 @ x ");
+        o = s.execute(jc);
+        assertFalse((Boolean) o);
+
+        s = JEXL.createScript("x = [0:10].mul([0:10]) ;");
+        o = s.execute(jc);
+        assertTrue(o instanceof List);
+
+    }
+
+        @Test
     public void testHeap() throws Exception {
         Script s = JEXL.createScript("h = heap(2)");
         JexlContext jc = new MapContext();
@@ -308,5 +333,28 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertTrue(o instanceof Integer );
 
+    }
+
+    @Test
+    public void testEnum() throws Exception{
+        Script s = JEXL.createScript("import 'com.noga.njexl.lang.extension.SetOperations$SetRelation' as SR ;");
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue(o instanceof Class );
+        assertTrue(((Class)o).isEnum() );
+
+        s = JEXL.createScript("random(SR)");
+        o = s.execute(jc);
+        assertTrue(o instanceof Enum );
+
+        s = JEXL.createScript("random(SR, 3 )");
+        o = s.execute(jc);
+        assertTrue(o instanceof List );
+        assertEquals(3,  ((List)o).size() );
+
+        // can I now access something?
+        s = JEXL.createScript("str(SR.OVERLAP)");
+        o = s.execute(jc);
+        assertEquals("OVERLAP",o);
     }
 }
