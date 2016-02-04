@@ -97,14 +97,17 @@ public  class RangeIterator extends YieldedIterator {
     }
 
     @Override
-    public boolean hasNext() {
+    public synchronized boolean hasNext() {
         if ( decreasing ){ return  cur > e - s ;}
         return cur < e - s ;
     }
 
     @Override
-    public Object next() {
-        return (cur += s) ;
+    public synchronized Object next() {
+        long lv = (cur += s);
+        int iv = (int)lv;
+        if ( ((long)iv) == lv ) return iv;
+        return lv ;
     }
 
 

@@ -180,7 +180,7 @@ public class XDataStructureTest extends JexlTestCase {
         assertTrue(o instanceof List);
         assertEquals(4, ((List)o).size() );
 
-        s = JEXL.createScript("[0:10].select{ $ < 2 }() == [0l,1l ] ");
+        s = JEXL.createScript("[0:10].select{ $ < 2 }() == [0,1] ");
         o = s.execute(jc);
         assertTrue((Boolean)o);
 
@@ -225,7 +225,7 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertEquals(1, o);
 
-        s = JEXL.createScript("l = list(1l,2l) ; l @ h ;");
+        s = JEXL.createScript("l = list(1,2) ; l @ h ;");
         o = s.execute(jc);
         assertTrue( (Boolean) o);
 
@@ -303,6 +303,10 @@ public class XDataStructureTest extends JexlTestCase {
         s = JEXL.createScript("t1 -= 1000 ");
         o = s.execute(jc);
         assertTrue(o instanceof DateTime );
+
+        s = JEXL.createScript("x = [0:2].list() ; x.0 ");
+        o = s.execute(jc);
+        assertTrue(o instanceof Integer );
 
     }
 }
