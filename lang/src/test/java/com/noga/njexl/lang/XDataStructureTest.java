@@ -219,7 +219,7 @@ public class XDataStructureTest extends JexlTestCase {
 
     }
 
-        @Test
+    @Test
     public void testHeap() throws Exception {
         Script s = JEXL.createScript("h = heap(2)");
         JexlContext jc = new MapContext();
@@ -356,5 +356,42 @@ public class XDataStructureTest extends JexlTestCase {
         s = JEXL.createScript("str(SR.OVERLAP)");
         o = s.execute(jc);
         assertEquals("OVERLAP",o);
+    }
+
+    @Test
+    public void testCollectionRelations() throws Exception{
+        Script s = JEXL.createScript("l = [1,1,2] ; s = set(l) ; s == l " );
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertFalse((Boolean)o);
+
+        s = JEXL.createScript("s <= l ");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript(" l >= s  ");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript(" l > s  ");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript(" s < l ");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript(" s == l ");
+        o = s.execute(jc);
+        assertFalse((Boolean)o);
+
+        s = JEXL.createScript(" s > l ");
+        o = s.execute(jc);
+        assertFalse((Boolean)o);
+
+        s = JEXL.createScript(" s != l ");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
     }
 }

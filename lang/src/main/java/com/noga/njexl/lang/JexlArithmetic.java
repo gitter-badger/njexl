@@ -1127,7 +1127,7 @@ public class JexlArithmetic {
                 }
             } else if (left instanceof String || right instanceof String) {
                 return toString(left).compareTo(toString(right));
-            } else if ( left instanceof Set || right instanceof Set ){
+            } else if ( left instanceof Set && right instanceof Set ){
                 Set l = TypeUtility.set(left);
                 Set r = TypeUtility.set(right);
                 SetOperations.SetRelation sr = SetOperations.set_relation(l,r);
@@ -1156,7 +1156,7 @@ public class JexlArithmetic {
                         throw new NonComparableCollectionException(l.toString() + "," +r.toString());
                 }
             }
-            else if ( areListOrArray(left,right) ){
+            else if ( areListOrSetOrArray(left,right) ){
                 HashMap l = SetOperations.multiset(left);
                 HashMap r = SetOperations.multiset(right);
                 SetOperations.SetRelation sr = SetOperations.mset_relation(l, r);
