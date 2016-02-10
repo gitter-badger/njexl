@@ -610,6 +610,15 @@ public class ExtendedScriptTest extends JexlTestCase {
         o = e.execute(jc);
         assertFalse((Boolean)o);
 
+        // test the subtraction - diff must be false here
+        e = JEXL.createScript("d = m1 - m1 ; d.diff()");
+        o = e.execute(jc);
+        assertFalse((Boolean)o);
+        // another subtraction test - must be true now
+        e = JEXL.createScript("d = m1 - m3 ; d.diff()");
+        o = e.execute(jc);
+        assertTrue((Boolean)o);
+
     }
 
 

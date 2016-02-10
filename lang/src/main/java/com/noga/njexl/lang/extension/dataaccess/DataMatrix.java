@@ -18,16 +18,14 @@ package com.noga.njexl.lang.extension.dataaccess;
 import com.noga.njexl.lang.Interpreter;
 import com.noga.njexl.lang.JexlException;
 import com.noga.njexl.lang.Script;
-import com.noga.njexl.lang.UnifiedJEXL;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.datastructures.Tuple;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.datastructures.XList;
 import com.noga.njexl.lang.extension.iterators.RangeIterator;
-
+import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Arithmetic;
 import java.io.File;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -36,7 +34,7 @@ import java.util.regex.Pattern;
  * A generic Data Matrix class to manipulate on data
  * Created by noga on 03/04/15.
  */
-public class DataMatrix {
+public class DataMatrix implements Arithmetic {
 
     /**
      * A Generic diff structure for any sort of matrices
@@ -599,5 +597,40 @@ public class DataMatrix {
     @Override
     public String toString(){
         return "< " + columns + " , " + rows + " >" ;
+    }
+
+    @Override
+    public Object add(Object o) {
+        throw new UnsupportedOperationException("Not yer implemented '+' ");
+    }
+
+    @Override
+    public Object neg() {
+        throw new UnsupportedOperationException("Not yer implemented '-' ");
+    }
+
+    @Override
+    public Object sub(Object o) {
+        try {
+            Object d =  DataMatrix.diff(this, o);
+            return d;
+        }catch (Exception e){
+            throw new Error(e);
+        }
+    }
+
+    @Override
+    public Object mul(Object o) {
+        throw new UnsupportedOperationException("Not yer implemented '*' ");
+    }
+
+    @Override
+    public Object div(Object o) {
+        throw new UnsupportedOperationException("Not yer implemented '/' ");
+    }
+
+    @Override
+    public Object exp(Object o) {
+        throw new UnsupportedOperationException("Not yer implemented '**' ");
     }
 }
