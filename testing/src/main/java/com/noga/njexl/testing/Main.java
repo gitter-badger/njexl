@@ -19,6 +19,7 @@ import com.noga.njexl.lang.JexlContext;
 import com.noga.njexl.lang.JexlEngine;
 import com.noga.njexl.lang.JexlException;
 import com.noga.njexl.lang.Script;
+import com.noga.njexl.testing.dataprovider.ProviderFactory;
 import com.noga.njexl.testing.reporting.SimpleTextReporter;
 import com.noga.njexl.testing.ui.WebSuiteRunner;
 import com.noga.njexl.testing.ui.XSelenium;
@@ -260,6 +261,8 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        // just load the class : ensures that matrix can now load stuff
+        ProviderFactory.dataSource("");
         Main main = new Main();
         main.run(args);
     }
