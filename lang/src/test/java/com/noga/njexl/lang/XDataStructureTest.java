@@ -17,6 +17,10 @@
 package com.noga.njexl.lang;
 
 import com.noga.njexl.lang.extension.dataaccess.XmlMap;
+import com.noga.njexl.lang.extension.iterators.DateIterator;
+import com.noga.njexl.lang.extension.iterators.RangeIterator;
+import com.noga.njexl.lang.extension.iterators.SymbolIterator;
+import com.noga.njexl.lang.extension.iterators.YieldedIterator;
 import org.joda.time.DateTime;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -139,6 +143,35 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertTrue((Boolean)o);
 
+        s = JEXL.createScript("x.equals(x)");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("x.equals(null)");
+        o = s.execute(jc);
+        assertFalse((Boolean)o);
+
+        s = JEXL.createScript("x.equals(list(1))");
+        o = s.execute(jc);
+        assertFalse((Boolean)o);
+
+        s = JEXL.createScript("x.indexOf(5) > 0 ");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("x.lastIndexOf(5) > 0 ");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("x[0] = 42 ; 42 == x[0] ");
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("x.select{ continue( $%2 == 0 ){true} ; break( $ > 1 ){true} }() ");
+        o = s.execute(jc);
+        assertTrue(o instanceof Set );
+        assertTrue(o instanceof List );
+
     }
 
     @Test
@@ -258,6 +291,24 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertTrue( (Boolean) o);
 
+        s = JEXL.createScript("h.clear() ;");
+        // returns void
+        o = s.execute(jc);
+        assertNull(o);
+
+        s = JEXL.createScript("h = heap{ $.0 - $.1 }(2) ;");
+        // returns void
+        o = s.execute(jc);
+        assertTrue(o instanceof Collection);
+
+        s = JEXL.createScript("h.addAll( list( 3,4,1,2,10,9 ) ) ;");
+        o = s.execute(jc);
+        assertTrue(o instanceof Boolean);
+
+        s = JEXL.createScript("h[0] == 9 and h[1] == 10");
+        o = s.execute(jc);
+        assertTrue(o instanceof Boolean);
+
     }
 
     @Test
@@ -356,6 +407,23 @@ public class XDataStructureTest extends JexlTestCase {
         s = JEXL.createScript("str(SR.OVERLAP)");
         o = s.execute(jc);
         assertEquals("OVERLAP",o);
+    }
+
+    @Test
+    public void testRange() throws Exception{
+        Script s = JEXL.createScript("[0:10:2]");
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue(o instanceof RangeIterator);
+
+        s = JEXL.createScript("t = time() ; [t : t.plusDays(7) : 6000000 ] ");
+        o = s.execute(jc);
+        assertTrue(o instanceof DateIterator);
+
+        s = JEXL.createScript("['a':'z':2]");
+        o = s.execute(jc);
+        assertTrue(o instanceof SymbolIterator);
+
     }
 
     @Test

@@ -234,6 +234,17 @@ public class ListSet<T> extends HashSet<T> implements List<T> {
                 }
                 break;
             }
+            if ( ret instanceof JexlException.Continue ){
+                if ( ((JexlException.Continue) ret).hasValue ){
+                    ret = ((JexlException.Continue) ret).value ;
+                    if (TypeUtility.castBoolean(ret,false)){
+                        // ensure update to the variable is considered
+                        item = anon.getVar( Script._ITEM_);
+                        xList.add(item);
+                    }
+                }
+                continue;
+            }
             if (TypeUtility.castBoolean(ret,false)){
                 // ensure update to the variable is considered
                 item = anon.getVar( Script._ITEM_);

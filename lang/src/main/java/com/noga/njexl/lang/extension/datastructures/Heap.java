@@ -146,7 +146,11 @@ public class Heap implements Collection{
     public boolean addAll(Collection c) {
         boolean added = true ;
         for ( Object o : c ){
-            added = added && add(o);
+            if ( added ){
+                added = add(o) ;
+            }else{
+                add(o);
+            }
         }
         return added;
     }

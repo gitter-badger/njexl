@@ -2006,6 +2006,10 @@ public final class TypeUtility {
             Object[] pair = new Object[]{o1, o2};
             anon.setIterationContext(collection, pair, -1);
             Object ret = anon.execute();
+            if ( ret instanceof Number ){
+                int i = ((Comparable)ret).compareTo(0);
+                return i;
+            }
             boolean smaller = castBoolean(ret, false);
             if (reverse) {
                 if (smaller) {
