@@ -45,6 +45,8 @@ public interface Script {
 
     String DEFAULT_IMPORT_NAME = "JexlMain";
 
+    String MY_MAIN_I = "__me__" ;
+
     Pattern DEFAULT_NAME_MATCH = Pattern.compile(".*\\.j(e)?xl$", Pattern.CASE_INSENSITIVE);
 
     String RELATIVE = "_";

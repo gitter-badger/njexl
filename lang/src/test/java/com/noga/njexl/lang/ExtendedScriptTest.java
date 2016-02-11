@@ -108,6 +108,13 @@ public class ExtendedScriptTest extends JexlTestCase {
         runScript(JEXL,"samples/functional_sample.jexl");
     }
 
+    @Test
+    public void testDescartes()throws Exception {
+        JexlContext jc = new MapContext();
+        Script s = JEXL.createScript("x = 4 ; import 'samples/dummy.jexl' as DUMMY ; DUMMY:__me__(x,2) ");
+        Object o = s.execute(jc);
+        assertTrue((Boolean) o);
+    }
 
     @Test
     public void testTupleIndexing()throws Exception {

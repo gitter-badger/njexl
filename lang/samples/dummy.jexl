@@ -9,5 +9,8 @@ def some_func(s){
 def void_func(){
     return false
 }
-
+if ( #def __args__ ){
+    // should print 42 here...
+    write( str( __args__ ,'' ) )
+}
 some_func("Hello, World!")

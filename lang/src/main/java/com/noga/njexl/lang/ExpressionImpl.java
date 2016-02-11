@@ -216,6 +216,16 @@ public class ExpressionImpl implements Expression, Script , ScriptClassBehaviour
         try {
             ScriptMethod methodDef = getMethod(method);
             if (methodDef == null) {
+                if ( MY_MAIN_I.equals(method) ){
+                    JexlContext copy = i.context.copy();
+                    copy.set(ARGS, args);
+                    try {
+                        return execute(copy, args);
+                    }finally {
+                        copy.clear();
+                        copy = null;
+                    }
+                }
                 throw new NoSuchMethodException("Method : '" + method + "' is not found in : " + this.importName);
             }
             return methodDef.invoke(null,i, args);
