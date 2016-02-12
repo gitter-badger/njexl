@@ -250,6 +250,26 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertTrue(o instanceof List);
 
+        s = JEXL.createScript("[0:10]");
+        o = s.execute(jc);
+        assertTrue(o instanceof YieldedIterator);
+        YieldedIterator y1 = (YieldedIterator) o;
+
+
+        s = JEXL.createScript("[0:10:2]");
+        o = s.execute(jc);
+        assertTrue(o instanceof YieldedIterator);
+        YieldedIterator y2 = (YieldedIterator) o;
+
+        assertTrue ( y1.and(y2) instanceof List);
+        assertTrue ( y1.and(y2.list()) instanceof List);
+
+        assertTrue ( y1.or(y2) instanceof List);
+        assertTrue ( y1.or(y2.list()) instanceof List);
+
+        assertTrue ( y1.xor(y2) instanceof List);
+        assertTrue ( y1.xor(y2.list()) instanceof List);
+
     }
 
     @Test
