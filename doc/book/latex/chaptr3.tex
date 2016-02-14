@@ -1,0 +1,213 @@
+\chapter{nJexl in 3 Minutes}\label{intro-njexl}
+
+{\LARGE W}ith some understanding on C,C++, Java, then it will be very easy for you to learn nJexl. The biggest syntactic difference between nJexl and other languages is that the ';' statement end character is optional. When we consider a nJexl program it can be defined as a collection of objects that communicate via invoking each others methods. 
+
+
+\begin{section}{Building Blocks}
+
+\begin{subsection}{Identifiers}
+nJexl is case-sensitive, which means identifier Hello and hello would have different meaning.
+All nJexl components require names. Names used for objects, classes, variables and methods are called identifiers. 
+A keyword cannot be used as an identifier and identifiers are case-sensitive. 
+See here for a list of keywords. 
+
+\end{subsection}
+
+
+\begin{subsection}{Assignments}
+Most basic syntax of nJexl is, like any other language : assignment.
+\begin{lstlisting}[style=JexlStyle][float]
+ a = 1 //  assigns local variable a to Integer 1
+ b = 1.0 //assigns local variable a to b float 1.0
+ c = 'Hello, nJexl' // assigns local variable c to String 'Hello, nJexl'
+ d = "Hello, nJexl" ## same, strings are either single or double quoted 
+ /* 
+ assigns the *then* value of a to e, 
+ subsequent change in a wont reflect in e 
+ */
+ e = a \end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{Comments}
+See from the previous subsection "//" used as line comments. So is "\#\#".
+Along with the multiline comment "/*" with  "*/" :
+
+\end{subsection}
+
+
+\begin{subsection}{Basic Types}
+
+Basic types are :
+\begin{lstlisting}[style=JexlStyle][float]
+ a = 1 // Integer 
+ b = 1.0 //  float 
+ c = 'Hello, nJexl' // String 
+ d = 1.0d ## Double 
+ I = 1h // BigInteger 
+ D = 1.0D // BigDecimal  
+ tt = true // boolean 
+ tf = false // boolean 
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{Multiple Assignment}
+nJexl supports multiple assignment. It has various usage:
+
+\begin{lstlisting}[style=JexlStyle][float]
+ a = 1 // Integer 
+ b = 1.0 //  float 
+ c = 'Hello, nJexl' // String 
+ // instead, do this straight :
+ #(a,b,c ) = [ 1 , 1.0 , 'Hello, nJexl' ]   
+\end{lstlisting}
+\end{subsection}
+\end{section}
+
+\begin{section}{operators}
+
+\begin{subsection}{Arithmetic}
+
+\begin{lstlisting}[style=JexlStyle][float]
+a = 1 + 1 // addition : a <- 2
+z = 1 - 1 // subtraction : z <- 0
+m = 2 * 3 // multiply : m <- 6
+d = 3.0 / 2.0 // divide d <- 1.5   
+x = 2 ** 10 // Exponentiation x <- 1024
+y = -x // negation, y <- -1024 
+r = 3 % 2 // modulo, r <- 1 
+r = 3 mod 2 // modulo, r <- 1    
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{Logical}
+
+\begin{lstlisting}[style=JexlStyle][float]
+o = true or true // true , or operator 
+o = true || true // same 
+a = true and false // false , and operator 
+a = true && false // false, and operator  
+\end{lstlisting}
+
+\end{subsection}
+
+
+\begin{subsection}{Comparison}
+
+\begin{lstlisting}[style=JexlStyle][float]
+t = 10 < 20 // true, less than
+t = 10 lt < 20 // true , less than 
+f = 10 > 20 // false, greater then 
+f = 10 gt 20 // false, greater then 
+t = 10 <= 10 // true, less than or equal to 
+t = 10 le < 10 // true , less than or equal to 
+t = 10 >= 10 // true, greater then or equal to 
+t = 10 ge 10 // true, greater then or equal to 
+t = ( 10 == 10 ) // true, equal to 
+t = ( 10 eq 10 ) // true, equal to 
+f = ( 10 != 10 ) // false, not equal to 
+f = ( 10 ne 10 ) // false, not equal to 
+\end{lstlisting}
+
+\end{subsection}
+
+\end{section}
+
+
+\begin{section}{Conditions}
+
+People coming from any other language would find them trivial.
+
+\begin{subsection}{IF}
+
+\begin{lstlisting}[style=JexlStyle][float]
+x = 10 
+if ( x < 100 ){
+   x = x**2
+}
+write(x) // writes back x to standard output : 100
+\end{lstlisting}
+\end{subsection}
+
+\begin{subsection}{ELSE}
+\begin{lstlisting}[style=JexlStyle][float]
+x = 1000 
+if ( x < 100 ){
+   x = x**2
+}else{
+  x = x/10 
+}
+write(x) // writes back x to standard output : 100
+\end{lstlisting}
+\end{subsection}
+
+\begin{subsection}{ELSE IF}
+\begin{lstlisting}[style=JexlStyle][float]
+x = 100 
+if ( x < 10 ){
+   x = x**2
+} else if( x > 80  ){
+  x = x/10 
+} else {
+   x = x/100 
+}
+write(x) // writes back x to standard output : 10
+\end{lstlisting}
+\end{subsection}
+
+\begin{subsection}{GOTO}
+\end{subsection}
+
+\end{section}
+
+\begin{section}{Loops}
+
+\begin{subsection}{WHILE}
+\end{subsection}
+
+\begin{subsection}{FOR}
+\end{subsection}
+
+\end{section}
+
+\begin{section}{Functions}
+
+\begin{subsection}{Defining}
+\end{subsection}
+
+\begin{subsection}{Calling}
+\end{subsection}
+
+\begin{subsection}{Global Variables}
+\end{subsection}
+
+\end{section}
+
+\begin{section}{Anonymous Function as Parameter}
+
+\begin{subsection}{Why it is needed?}
+\end{subsection}
+
+\begin{subsection}{Some Use Cases}
+\end{subsection}
+
+\end{section}
+
+\begin{section}{Available Data Structures}
+
+\begin{subsection}{Array}
+\end{subsection}
+
+\begin{subsection}{List}
+\end{subsection}
+
+\begin{subsection}{Set}
+\end{subsection}
+
+\begin{subsection}{Dict}
+\end{subsection}
+
+\end{section}
+

@@ -1,0 +1,105 @@
+
+% -------------------------------------------------------------------------------
+% Preamble
+% -------------------------------------------------------------------------------
+\documentclass[a4paper, 11pt, twoside, openright, english]{memoir}
+\usepackage{mypreamble}
+\usepackage[a4paper,pdftex,margin=0.5in]{geometry}										% A4paper margins
+
+%\setlength{\oddsidemargin}{2mm}												% Remove 'twosided' indentation
+%\setlength{\evensidemargin}{2mm}
+
+
+
+% ------------------------------------------------------------------------------
+% Definitions (do not change this)
+% ------------------------------------------------------------------------------
+\newcommand{\HRule}[1]{\rule{\linewidth}{#1}} 	% Horizontal rule
+
+\makeatletter							% Title
+\def\printtitle{%						
+    {\centering \@title\par}}
+\makeatother									
+
+\makeatletter							% Author
+\def\printauthor{%					
+    {\centering \large \@author}}				
+\makeatother							
+
+
+\usepackage{makeidx} %If you want to generate an index, automatically 
+
+\usepackage{graphicx} %If you want to include postscript graphics 
+\graphicspath{{./images/}}
+\usepackage{zi4}
+\def\ttdefault{inconsolata}
+
+\usepackage[utf8]{inputenc}
+\numberwithin{equation}{section}
+
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[toc]{glossaries}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstdefinestyle{numbers} {numbers=left, stepnumber=1, numberstyle=\tiny, numbersep=10pt}
+\lstdefinestyle{MyFrame}{backgroundcolor=\color{lightgray},frame=shadowbox}
+\lstdefinestyle{MyCStyle} {language=C, style=MyFrame,frame=lines , basicstyle=\footnotesize\ttfamily}
+\lstdefinestyle{MyJavaStyle} {language=Java,style=numbers,style=MyFrame,frame=lines , basicstyle=\footnotesize\ttfamily}
+\lstdefinestyle{MyPythonStyle} {language=Python,style=numbers,style=MyFrame,frame=lines , basicstyle=\footnotesize\ttfamily}
+% Set nJexl Language Style
+\definecolor{darkgreen}{RGB}{0,102,0}
+\definecolor{darkblue}{RGB}{0,0,102}
+\definecolor{darkred}{RGB}{102,0,0}
+\definecolor{darkgray}{RGB}{96,96,96}
+
+\usepackage[T1]{fontenc}
+\lstdefinestyle{JexlStyle}{
+  language=jxl,
+  basicstyle=\fontfamily{pcr}\bfseries\selectfont\color{darkblue}, % Global Code Style : Inconsolata
+  commentstyle=\itshape\color{darkgray}, % style of comments
+  keywordstyle=\itshape\color{darkred}, % style of keywords
+  stringstyle=\color{darkgreen}, % style of strings
+  extendedchars=true, % Allows 256 instead of 128 ASCII characters
+  tabsize=2, % number of spaces indented when discovering a tab 
+  showstringspaces=false, % lets spaces in strings appear as real spaces
+  breaklines=true, % wrap lines if they don't fit
+  frame=trbl, % draw a frame at the top, right, left and bottom of the listing
+  frameround=tttt, % make the frame round at all four corners
+  framesep=4pt % quarter circle size of the round corners
+}
+
+\usepackage{hyperref} 
+\makeglossaries
+\makeindex
+%\includeonly{chaptr2} %If you just want to process chaptr2.tex 
+
+
+\begin{document} 
+
+\include{titlepage}
+
+\frontmatter 
+\tableofcontents 
+\include{preface} 
+
+\mainmatter 
+\include{chaptr1} %complete 
+\include{chaptr2} %complete
+\include{chaptr3} %complete
+%\include{chaptr4} %complete
+%\include{chaptr5} %complete
+%\include{chaptr6} %complete
+%\include{chaptr7} %complete
+%\include{chaptr8} %complete
+%\include{chaptr9} %complete
+
+
+\backmatter 
+%\include{glossary} 
+ 
+\include{bibilography} 
+\addcontentsline{toc}{chapter}{Index}
+\printglossaries
+\printindex
+
+\end{document}

@@ -1,0 +1,287 @@
+\chapter{On Software and Business Development}\label{intro}
+
+{\LARGE S}oftware is needed to do most of the business, and it is software development, that becomes sometime the bottleneck 
+of the business development. Here, we discuss the goal of nJexl, the very problems it seeks to eradicate.
+
+
+\begin{section}{Business Development}\label{buisness-development-defined}
+
+Does business need software? No and Yes. 
+Clearly how brilliantly the code was written does not matter when one owns a portal like \href{www.hellocurry.com}{hello curry}.
+Software augments business, there is no point making software the business. There are many firms doing software as business, and it is a very high niche game. In reality, most of the businesses are not about software, it is about taking user pain away, and alway - making end users happy. 
+
+\emph{Marketing brings you customers, Tech-folks retain them. -- Anon}
+
+
+\begin{subsection}{Needs of the Business}\label{business-need}\index{business needs}
+
+Start with hello curry, whose game is to distribute food to the client. Hence it has a database full of food items, which it would showcase in the portal. User would click whatever she wants to eat, and checks out. The items gets delivered in time. Users can see their orders in a page. Occasionally, some specific food items gets added as the discounted price. Together, these requirements is what drives business for hello curry.
+
+\end{subsection}
+
+\begin{subsection}{Imperative Implementation}\label{imperative-impl}
+\index{Imperative}
+
+Certain things in the implementations are invariant,  one needs a database to store the users and their settings, and the food items. The code to showcase what to display as items are also fixed in nature. The real business problem is the \emph{discounted} one . Under normal circumstances, one would write this code :
+
+\begin{lstlisting}[style=JexlStyle][float]
+for ( item : items ){
+   if ( discounted(item) ){
+      display_item_discounted(item)
+   }else{
+     display_item(item)
+   }
+}
+\end{lstlisting}
+
+This sophomore level code is indeed correct when looked at in a very naive way.
+But the whole new complexity of the business starts with this, and is a one way ticket to the land of more and more complexity and unmanageable code. To showcase, observe now, how one would have added 2 different discounted category? Of course, one needs to add \emph{necessary} code to the snippet :
+
+\begin{lstlisting}[style=JexlStyle]
+for ( item : items ){
+   if ( discounted_type_1(item) ){
+      display_item_discounted_type_1(item)
+   } else if ( discounted_type_2(item) ){
+      display_item_discounted_type_2(item)
+   } else{
+     display_item(item)
+   }
+}
+\end{lstlisting}
+
+Thus, we are looking at an abyss of complexity. 
+\end{subsection}
+
+\end{section}
+
+\begin{section}{Functional Approach}\label{functional}
+\index{functional approach}
+
+Proponent of functional programming are shamans with pedigree and degree from the land of mathematics and logic, 
+and they look down at the miserly labor class imperative programmers. Thus, there is a great divide between them and us, the imperatives. Hence, not a single functional programming paradigm was ever applied in any practical ( read who earns actual dollars and helps actual business ) way (perhaps that is an exaggeration, but mostly true). 
+But that can be changed. I intend to change that. While academia should learn that money comes from aiding businesses, our businesses must learn that under the snobbish attitude of the functional paradigm, there is a viable lesson. Thus we try to define what is functional programming, in total lay-mans terms.
+
+
+\begin{subsection}{Tenets of Functional Style}\label{functional-tenet}
+\index{functional style : tenet}
+
+\begin{enumerate}
+\item{Thou shall have functions as first class citizens and are allowed to pass function as variables 
+   ( including return values ) and assign them to variables }
+\item{Thou shall avoid loops as much as possible}
+\item{Thou shall avoid branching ( if, else ) as much as possible}
+\item{Thou shall replace these previous two constructs with higher order constructs passed onto thou by the language maker}
+\item{Thou shall try not to change system state, objects should be immutable}
+
+\end{enumerate}
+
+\end{subsection}
+
+
+\begin{subsection}{Applying Functional Style}\label{apply-functional}
+\index{functional style : application}
+Now, lets see how these \emph{tenets} of functional style helps us out here.We note the basic problem is that of list processing. 
+However, we need to \emph{apply} some \emph{transform} (rather call a function ) for each element of the list.
+Which function to call should be found by inspecting the item in question.
+
+Suppose, there is a function that takes an item, and returns a function 
+which is appropriate one to transform the item :
+
+\begin{lstlisting}[style=JexlStyle]
+transform_function = find_appropriate_transform( item )
+\end{lstlisting}
+
+And then, we can apply this function to the item :
+
+\begin{lstlisting}[style=JexlStyle]
+transform_function( item )
+\end{lstlisting}
+
+Well, now we have removed the conditionals in question :
+
+\begin{lstlisting}[style=JexlStyle]
+for ( item : items ){
+   transform_function = find_appropriate_transform( item )
+   transform_function( item )
+}
+\end{lstlisting}
+
+
+Purist will argue that how the ``find\_appropriate\_transform'' would be implemented? 
+Oh, under functional paradigm, that becomes as simple as a hash or a dictionary :
+
+\begin{lstlisting}[style=JexlStyle]
+
+def find_appropriate_transform(item){
+   return __transformation_functions__[item.transformation_function_name]
+}
+
+\end{lstlisting}
+
+
+And all is good. Now comes the more interesting part, where we use \emph{hocus focus} called a \emph{fold function}  
+from functional magic  to replace the for loop :
+
+\begin{lstlisting}[style=JexlStyle]
+
+lfold{
+   transform_function = find_appropriate_transform($)
+   transform_function($)
+}(items)
+\end{lstlisting}
+
+
+And we have practically nothing there to write. This sort of code induces what is known as Minimum Description Length coding. Whether Chaitin Solomonoff Kolmogorov complexity is minimal for this or not is up for a nice debate. But one thing is certain - no more volumes of coding with hundreds of developers. And thus if one really wants productivity, and sincere not to measure productivity by activity, but rather impact, this is for you and your business. Hard coding of code constructs itself wanes away in this style.
+
+This brings a bigger question, are not we hard coding the number of functions which we can call inside that for loop? Yes we are, and even that can also be taken away.  A generic series of computation can be achieved using something called multiplication of functions, under which function chaining and composition, which would be discussed later. 
+
+\end{subsection}
+\end{section}
+
+\begin{section}{Testing Business Software Today}\label{practical-testing}
+\index{testing : validations}
+
+Agile methodologies and the distant cousins of it stormed the industry away. Some people took it hard, one example of such is this. Many went along with it. Agile-like methodologies without reasonable testing infrastructure exists as of now because of 3 very important interconnected reasons which changed the way industry looks at QA :
+
+\begin{enumerate}
+\item{ Very few actually \emph{sales a product} with binaries which needs to be distributed to clients anymore}
+\item{ Current \emph{Products} are mostly web-portals and services ( \emph{SAAS} ) } 
+\item{Thus, cost of shipping modified, fixed code in case of any error found is reduced to zero, practically}
+\end{enumerate}
+
+
+Hence, the age old norm about how software testing was thought won't work, and is not working. Traditional QA teams are getting thinner, in fact, in many organisations QA is being done with. But not all the organisations can do this. Anyone who is still selling a service, and wants to keep a nice brand name,  there must be a QA. The amount of such activity  varies never the less. Thus, only one word comes to the foray to describe the tenet of QA discipline  - \emph{economy}.
+
+\begin{subsection}{Issues with QA Today}
+
+Tenets of today is : Churn code out, faster, and with less issues, so that the pro activity makes end user happy. That is dangerously close to the ideas of  TDD , however very few org actually does TDD. Old concepts like CI  also came in foray due to these tenets, but the lack of Unit Testing ( yes, any condition coverage below 80\% is apathetic to the customer if she is paying money, ask yourself if you would like to book ticket using an airline booking system which is less than 80\% tested or even use untested MS-Excel ), makes most of the software built that way practically mine fields.
+
+10 years back in Microsoft when we were doing CI ( MS had CI back then even, we used to call it SNAP : Shiny New Automation Process ), the whole integration test was part of the test suite that used to certify a build. Breaking a build due to a bug  in a commit was a crime. Gone are those times.
+
+Thus, the economy of testing in a fast paced release cycle focuses almost entirely to the automation front, manual testing simply can't keep up with the pace.  Given there are not  many people allocated for testing ( some firms actually makes user do their testing ) - there is an upper cut-off on what all you can accommodate economically. Effectively the tenet becomes :  get more done, with less. 
+
+But what really makes the matter worse is, all of the so called automation testing frameworks are bloated form of  what are known as \emph{application drivers}- mechanism to drive the application UI, in some cases calling web services,  along with simple logging mechanism that can produce nice and fancy reports of test passing and failing. Those things  sale, but does not do justice to the actual work they were ought to do : ``verify/validate that the system actually works out''. Software testers and Engineering managers must think \emph{validation first} and not \emph{driving the UI} or simply buzzwords like \emph{automating}.  Anyone proclaiming that ``We automated 100 test cases" should be told to go back and start \emph{testing scenarios} instead of test cases, individual scenarios include many test cases, while anyone  boasting about test scenarios should be asked : ``what are you validating on those scenarios and how are you validating them?''. Management, rather bad management takes number of test cases done after development a (satisfactory) measurement of test quality, and that is very naive, not to say anti-agile. In any case, any mundane example on testing would show, there are actually infinite possibilities adding more and more test cases, unless, of course one starts thinking a bit formally. Thus the foundational principle of statistics is :
+
+\begin{center}
+\emph{ ``increasing sample size beyond a point does not increase accuracy'' }
+\end{center}
+
+and Occams Principle suggests that : 
+
+\begin{center}
+\emph{ ``Entities must not be multiplied beyond necessity'' }
+\end{center}
+
+\end{subsection}
+
+\begin{subsection}{Testing Sorting}
+
+A very simple example can be used to illustrate this discrepancy between rapid test automation and correct test validation:
+
+\begin{center}
+\emph{Given a function that sorts ascending a list of numbers,\\ test that given an input, the function indeed sorts it as described}
+\end{center}
+
+
+Thus, given a function called \emph{sort} how does one verify that it indeed sorted a list \emph{l} ?  
+
+Let's start with what the immediate response of people, when they get asked this. They often generate  a  simplistic and wrong solution :  verify that the resulting list coming out of the \emph{sort} method is indeed \emph{sorted in ascending order}, that implementation would be indeed easy :
+
+\begin{lstlisting}[style=JexlStyle]
+def is_sorted( il ){
+   s = size(il) 
+   if ( s <= 1 ) return true 
+   for ( i = 1 ; i < s ; i += 1 ){
+       if ( il[i-1] > il[i] ) return false 
+   }
+   return true 
+}
+\end{lstlisting}
+
+
+But it would fail the test given the $sort$ method used to generate $il$ produces more or less number of elements 
+than the original list $l$. What more, it would also fail when the $sort$ method is generating same elements again and again.
+
+This shows that we need to understand what the validation code should be, rather than describing the problem of sorting in plain English. Use of English as a language for contract is detrimental to the discipline of engineering, as we have seen just now. Thus, we ask : 
+\emph{ What precisely sorting means? }
+
+\end{subsection}
+
+\begin{subsection}{Formalism}
+
+To understand sorting, we need to take two steps. First of them is to define what order is, and the next is to define what is known as permutation. First one is pretty intuitive, second one is a bit troublesome. That is because permutation is defined over a set, not on a list, which are in fact multi-set if not taken as a tuple. Thus, it is easy to declare permutations of  $(0, 1)$ as : $(0,1)$ and $(1,0)$ ; but it became problematic when we have repetition : $(a,a,b,c)$.  This problem can be solved using  permutation index.The current problem, however,  can be succinctly summarised by :
+
+\begin{center}
+\emph{ Given a list $l$, the sorted permutation of it is defined as \\ a permutation of $l$ such that the elements in the resulting list are in sorted order.}
+\end{center}
+
+As we have noticed the solution presented before missed the first part completely, that is, it does not check that if the resultant list is indeed a permutation of the original or not.
+
+To fix that we need to create a function called $is\_permutation$, and then the solution of the problem would be :
+
+\begin{lstlisting}[style=JexlStyle]
+sorting_works =  is_permutation(l,ol) and is_sorted(ol) 
+\end{lstlisting}
+
+The trick is to implement is\_permutation (l := list, ol:= output list ):
+
+\begin{lstlisting}[style=JexlStyle]
+def is_permutation(l,ol){
+   d = dict()
+   for ( i : l ) {
+      // keep counter for each item 
+      if ( not (  i @ d ) ) d[i] = 0 
+      d[i] += 1  
+   }
+   for ( i : ol ) {
+      if ( not (  i @ d ) ) return false 
+      // decrement counter for each found item 
+      d[i] -= 1  
+   }
+   for ( p : d ){
+      // given some items count mismatched 
+      if ( p.value != 0 ) return false 
+   }
+   // now, everything matched 
+   return true 
+}
+\end{lstlisting}
+
+The ``a @ b ''  defines \emph{ if a is in b or not}. But that is too much code never the less, and clearly validating that code would be a problem. Hence, in any suitable declarative language optimised for testing such stuff should have come in by default, and tester ought to write validation code as this :
+
+\begin{lstlisting}[style=JexlStyle]
+def is_sorted_permutation(l,ol){
+    return ( l == ol and // '==' defines permutation for a list 
+    /*  _ defines the current item index 
+        $ is the current item 
+        index function returns the index of occurrence of condition 
+        which was specified in the braces -->{ }
+    */
+    index{ _ > 0 and  $[_-1] > $ }(l) < 0 )
+}
+\end{lstlisting}
+
+And that is as declarative as one can get. Order in a collection matters not, all permutations of a collection is indeed the same collection, i.e. lists [1,2,3] is same as [2,1,3] which is same as [3,1,2]. For the \emph{index} function, we are letting the system know that anywhere I see previous item was larger than the current, return the index of this occurrence. Such occurrence would fail the test. Not finding such an occurrence would return -1, and the test would pass.
+
+However, one may argue that in the solution we have hard coded the notion of \emph{sorting order} . The above code  basically suggests with 
+`` \$\$[ \_ -1]  > \$ ''  that to pass the test :
+
+\begin{center}
+\emph{ previous item on the list must be always less than or equal to the current }
+\end{center}
+
+That is indeed hard coding the order \emph{ascending},  but then, this can easily be fixed by passing the operator 
+">" along with the other parameters for validation function, using some notion called higher order functions discussed later. 
+All these pseudo-code like samples are in fact - proper nJexl code, ready to be deployed. This also gives a head start on which direction we would be heading.
+\end{subsection}
+
+After 12 years of looking at the way  software test automation works out, we figured out that imperative style is not suited at all for software validation. This observation was communicated to me 10 years ago by \emph{Sai Shankar}:
+
+\begin{center}
+\emph{``Validation should be like SQL''}
+\end{center}
+
+Being imperative or OOP like would be to overtly  complicate the test code. Thus, we, moved to declarative paradigm. This post is a glimpse of how we write test automation and necessary validations. It is no wonder that we can produce formally correct automation and validation at a much faster rate, using much less workforce than the industry norm. There are really no fancy stuff here. Simple, grumpy, old Predicates. That is all the business world needs. 
+\end{section}
+
+

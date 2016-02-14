@@ -111,7 +111,7 @@ Thus, following is the philosophy of the Language:
 * Reduce the number of lines of the code;
 * In every line, reduce the number of characters; 
 * To boldly go where no developer has gone before - attaining Nirvana in terms of coding;
-    - get out of the cycle of bugs and fixes by writing scentific code ( see  [Minimum Description length](http://en.wikipedia.org/wiki/Minimum_description_length) ).
+    - get out of the cycle of bugs and fixes by writing scientific code ( see  [Minimum Description length](http://en.wikipedia.org/wiki/Minimum_description_length) ).
 
 
 ## For the Users
