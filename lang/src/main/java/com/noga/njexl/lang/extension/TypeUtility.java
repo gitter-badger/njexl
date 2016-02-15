@@ -1730,20 +1730,16 @@ public final class TypeUtility {
             Object max = min;
             for (int i = 1; i < l.size(); i++) {
                 Object item = l.get(i);
-                Object o = new Object[]{item, min};
-                anon.setIterationContext(l, o, i);
-                Object ret = anon.execute();
-                boolean lt = castBoolean(ret, false);
-                if (lt) {
-                    // change min
+                AnonymousComparator cmp = new AnonymousComparator(anon,l,false);
+                int cmpResult = cmp.compare(item, min );
+                if (cmpResult < 0 ) {
+                    // i.e. item < min, hence change min
                     min = item;
+                    continue;
                 }
-                o = new Object[]{max, item};
-                anon.setIterationContext(l, o, i);
-                ret = anon.execute();
-                lt = castBoolean(ret, false);
-                if (lt) {
-                    // change max
+                cmpResult = cmp.compare(item, max);
+                if (cmpResult > 0) {
+                    // i.e. item > max, hence change max
                     max = item;
                 }
             }

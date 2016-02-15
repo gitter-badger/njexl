@@ -484,6 +484,14 @@ public class XDataStructureTest extends JexlTestCase {
     }
 
     @Test
+    public void testAnonComparator() throws Exception{
+        Script s = JEXL.createScript("#(m,M) = minmax{ size($.0) - size($.1) }( 'bbbbb' , 'a' ) ; m == 'a' and M == 'bbbbb' " );
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue((Boolean)o);
+    }
+
+    @Test
     public void testLoadLibrary() throws Exception{
         Script s = JEXL.createScript("load('./target/lib')" );
         JexlContext jc = new MapContext();
