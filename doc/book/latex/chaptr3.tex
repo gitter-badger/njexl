@@ -100,11 +100,11 @@ a = true && false // false, and operator
 
 \begin{lstlisting}[style=JexlStyle][float]
 t = 10 < 20 // true, less than
-t = 10 lt < 20 // true , less than 
+t = 10 lt  20 // true , less than 
 f = 10 > 20 // false, greater then 
 f = 10 gt 20 // false, greater then 
 t = 10 <= 10 // true, less than or equal to 
-t = 10 le < 10 // true , less than or equal to 
+t = 10 le  10 // true , less than or equal to 
 t = 10 >= 10 // true, greater then or equal to 
 t = 10 ge 10 // true, greater then or equal to 
 t = ( 10 == 10 ) // true, equal to 
@@ -259,29 +259,29 @@ var a = 0
 x = 0 
 def use_var(){
    a = 42 
-   write(a)
-   write(x)
+   write(a) // prints 42 
+   write(x) // prints 0, can access global 
    x = 42 
-   write(x) 
+   write(x) // prints 42 
 }
 // call the method
 use_var()
-write(a)
-write(x)
+write(a) // global a, prints 42 
+write(x) // local x, prints 0 still
 \end{lstlisting}
 The result would be :
-42
-0
-42
-42
-0
 \begin{lstlisting}
+42
+0
+42
+42
+0
 \end{lstlisting}
 \end{subsection}
 
 \end{section}
 
-\begin{section}{Anonymous Function as Parameter}
+\begin{section}{Anonymous Function as a Function Parameter}
 A basic idea about what it is can be found \href{https://en.wikipedia.org/wiki/Anonymous\_function}{here}.
 As most of the Utility functions use a specific type of anonymous function, 
 which is nick-named as "Anonymous Parameter" to a utility function.
@@ -346,7 +346,28 @@ For an anonymous function parameters, there are 3 implicit guaranteed arguments 
 \end{subsection}
 
 \begin{subsection}{Some Use Cases}
-The data structure section would showcase some use cases.
+The data structure section would showcase some use cases. 
+But we would use a utility function to showcase the use of this anonymous function.
+Suppose there is this function $minmax$ which takes a collection and returns the (min,max) tuple.
+In short :
+
+\begin{lstlisting}[style=JexlStyle][float]
+#(min,max) = minmax(1,10,-1,2,4,11)
+write(min) // prints -1
+write(max) // prints 11    
+\end{lstlisting}
+But now, I want to find the minimum and maximum by length of a list of strings.
+To do so, there has to be a way to pass the comparison done by length.
+That is easy :
+
+\begin{lstlisting}[style=JexlStyle][float]
+#(min,max) = minmax{
+             size($.0) < size($.1) 
+             }( "" , "aa" , "abc" , "aa", "bbbbb" )
+write(min) // prints empty string 
+write(max) // prints bbbbb    
+\end{lstlisting}
+
 \end{subsection}
 
 \end{section}
@@ -356,10 +377,18 @@ The data structure section would showcase some use cases.
 \begin{subsection}{Range}
 A range is basically an iterable, with start and end separated by colon : $[a:b]$.
 We already have seen this in action. "a" is inclusive while "b" is exclusive, 
-this was designed the standard for loop in mind.
+this was designed the standard for loop in mind. There can also be an optional spacing parameter "s",
+thus the range type in general is $[a:b:s]$, as described below:
 
 \begin{lstlisting}[style=JexlStyle][float]
-r1 = [0:10] // a range from 0 to 9 
+/* 
+  when r = [a:b:s] 
+  the equivalent for loop is :
+  for ( i = a ; i < b ; i+= s ){
+    ... body now ...  
+  }
+*/
+r1 = [0:10] // a range from 0 to 9 with default spacing 1
 //a range from 1 to 9 with spacing 2
 r2 = [1:10:2] //1,3,5,7,9   
 \end{lstlisting}
