@@ -1,4 +1,4 @@
-\chapter{nJexl in 3 Minutes}\label{intro-njexl}
+\chapter{nJexl Syntax in 3 Minutes}\label{intro-njexl}
 
 {\LARGE W}ith some understanding on C,C++, Java, then it will be very easy for you to learn nJexl. The biggest syntactic difference between nJexl and other languages is that the ';' statement end character is optional. When we consider a nJexl program it can be defined as a collection of objects that communicate via invoking each others methods. 
 
@@ -45,7 +45,7 @@ Basic types are :
  c = 'Hello, nJexl' // String 
  d = 1.0d ## Double 
  I = 1h // BigInteger 
- D = 1.0D // BigDecimal  
+ D = 1.0b // BigDecimal  
  tt = true // boolean 
  tf = false // boolean 
 \end{lstlisting}
@@ -219,13 +219,15 @@ for ( i = 0 ; i < 42 ; i+= 1  ){ // [a:b] is a range type
 
 \begin{subsection}{Defining}
 Functions are defined using the $def$ keyword.
-
+And they can be assigned to variables, if one may wish to.
 \begin{lstlisting}[style=JexlStyle][float]
 def count_to_num(num){
    for ( i : [0:num] ){
       write(i)
    }
 }
+// just assign it 
+fp = count_to_num
 \end{lstlisting}
 
 One can obviously return a value from function :
@@ -242,7 +244,9 @@ Calling a function is trivial :
 
 \begin{lstlisting}[style=JexlStyle][float]
 // calls the function with parameter
-count_to_num(42)  
+count_to_num(42) 
+// calls the function at the variable with parameter
+fp(42) 
 // calls and assigns the return value 
 greeting = say_something("Homo Erectus!" ) 
 \end{lstlisting}

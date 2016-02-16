@@ -335,6 +335,48 @@ delta = d1 ^ d2 // delta = {'a' : 10, 'b' : 20, 'd': 40}
 \end{lstlisting}
 \end{subsection}
 
+\begin{subsection}{Collection Cross Product and Power}
+The cross product, as defined, with the multiply operator:
+
+\begin{lstlisting}[style=JexlStyle][float]
+l1 = [1,2,3]
+l2 = ['a','b' ]
+cp = l1 * l2 
+/*
+[[1, a], [1, b], [2, a], [2, b], [3, a], [3, b]] := cp 
+*/
+\end{lstlisting}
+Obviously we can think of power operation or exponentiation 
+on a collection itself. That would be easy :
+
+$$
+A^0 := \{\} \; , \; A^1 := A \; , \; A^2 := A \times A
+$$
+and thus :
+$$
+A^n :=  A^{n-1} \times A
+$$
+For general collection power can not be negative.
+Here are some examples now:
+
+\begin{lstlisting}[style=JexlStyle][float]
+b = [0,1]
+gate_2 = b*b // [ [0,0],[0,1],[1,0],[1,1] ]
+another_gate_2 = b ** 2 // same as b*b 
+gate_3 = b ** 3 // well, all truth values for 3 input gate 
+gate_4 = b ** 4 // all truth values for 4 input gate 
+\end{lstlisting}
+
+String is also a collection, and all of these are applicable for string too.
+But it is a special collection, so only power operation is allowed.
+
+\begin{lstlisting}[style=JexlStyle][float]
+s = "Hello"
+s2 = s**2 // "HelloHello"
+s_1 = s**-1 // "olleH"
+s_2 = s**-2 // "olleHolleH"
+\end{lstlisting}
+\end{subsection}
 
 \begin{subsection}{Collection Relation Comparisons}
 The operators are defined as such:
