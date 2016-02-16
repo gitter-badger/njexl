@@ -67,8 +67,13 @@
   frameround=tttt, % make the frame round at all four corners
   framesep=4pt % quarter circle size of the round corners
 }
-
+% Fix the red color for TOC  
 \usepackage{hyperref} 
+\hypersetup{%
+  colorlinks = true,
+  linkcolor  = black
+}
+
 \makeglossaries
 \makeindex
 %\includeonly{chaptr2} %If you just want to process chaptr2.tex 
