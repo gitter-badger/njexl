@@ -1,13 +1,13 @@
 \chapter{Preface}
  
-{\LARGE n}Jexl initially was a continuation of \href{http://commons.apache.org/proper/commons-jexl}{Apache Jexl} project.
+{\LARGE n}Jexl initially was a continuation of \href{http://commons.apache.org/proper/commons-jexl}{Apache Jexl}\index{apache jexl} project.
 That project was not active for 17 months, and I needed to use it, so I forked it. The reason are to be found below.
 
 \begin{subsection}{A brief History}
 
 All I wanted is a language where I can write my test automation freely - i.e. using theories from testing.
 The standard book, and there is only one for formal software testing is 
-that of \href{http://www.amazon.com/Software-Testing-Techniques-2nd-Edition/dp/1850328803}{Beizer}.
+that of \href{http://www.amazon.com/Software-Testing-Techniques-2nd-Edition/dp/1850328803}{Beizer}.\index{Beizer}
 
 There was no language available which lets me intermingle with Java POJOs and let me write my test automation (validation and verifications). 
 Worse still - one can not write test automation freely using Java. 
@@ -20,7 +20,8 @@ the vast Java libraries, but clearly not verbose enough.
 
 After cloning JEXL - and modifying it real heavy - a public release in a public repository
 seemed a better approach. There, multiple people can look into it, rather than one lone ranger working from his den.
-And hence nJexl was born. The \emph{n} stands for \emph{Neo,New}, not \emph{Noga}, which is, by the way, my nick name.
+And hence nJexl was born. The \emph{n} stands for \emph{Neo,New}, 
+not \href{https://nmandalh.wordpress.com}{Noga}, which is, by the way, my nick name.
 
 \end{subsection}
 
@@ -33,7 +34,8 @@ This actually was an \href{http://steve-yegge.blogspot.in/2006/03/execution-in-k
 ``hmm, chuckle :) This guy has too much time on his hands ! he should be doing useful work, or inventing a new language to solve the problems. Its easy to throw stones - harder to actually roll up your sleeves and fix an issue or two, or write/create a whole new language, and then he should be prepared to take the same criticism from his peers the way he's dishing it out for others. Shame - I thought developers were constructive guys and girls looking to make the lives of future software guys and girls easier and more productive, not self enamouring pseudo-intellectual debaters, as an old manager of mine used to say in banking IT - 'do some work' !''}
 
 
-And I like to think that I just did. That too, while at home, in vacation time, and in night time ( from 8 PM to 3 AM. - see the check-ins.)
+And I like to think that I just did. That too, while at home, in vacation time, and in night time 
+( from 8 PM to 3 AM. - see the \href{https://github.com/nmondal/njexl/commits/master}{check-ins}.)
 Alone. But the users are the best judge.
 
 \end{subsection}
@@ -41,7 +43,7 @@ Alone. But the users are the best judge.
 
 \begin{subsection}{About The Language}
 
-It is an interpreted language. It is asymptotically as fast as python, with a general lag of 200 ms of reading and parsing files, where native python is faster. After that the speed is the same.
+It is an interpreted language. It is asymptotically as fast as Python \index{python}, with a general lag of 200 ms of reading and parsing files, where native python is faster. After that the speed is the same.
  
 It is a multi-paradigm language. It supports functionals ( i.e. anonymous functions ) out of the box, and every function by design can take functional as input. There are tons of in built methods which uses functional.
 
@@ -60,9 +62,10 @@ Lines are statements.
 \end{subsection}
 
 
-
+\begin{subsection}{Thanks}
 And finally, all of these pages were typed using my trust worthy Mac Book Pro, at home using \href{http://pages.uoregon.edu/koch/texshop}{TexShop-64}.
 So, thanks to Richard Koch, Max Horn Dirk Olmes. For \href{http://tug.org/mactex/}{MacTex}, thanks MacTex. You guys are great!
 Thanks to Apple for creating such a beautiful systems to work on. Steve, I love you. RIP.
 For Windows, the trusty \href{http://www.tug.org/texworks}{TexWorks} was used using \href{http://miktex.org}{MikeTex} packages. Thanks to you too!
 In the end many a thanks to Gabriel Hjort Blindell - for the beautiful style file he created which can be found \href{http://web.ict.kth.se/~ghb/publications/documents/thesis-template.tar.gz}{here}. Gabriel, thanks a ton.
+\end{subsection}

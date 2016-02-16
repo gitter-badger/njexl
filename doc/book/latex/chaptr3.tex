@@ -6,6 +6,7 @@
 \begin{section}{Building Blocks}
 
 \begin{subsection}{Identifiers}
+\index{identifiers}
 nJexl is case-sensitive, which means identifier Hello and hello would have different meaning.
 All nJexl components require names. Names used for objects, classes, variables and methods are called identifiers. 
 A keyword cannot be used as an identifier and identifiers are case-sensitive. 
@@ -15,6 +16,7 @@ See here for a list of keywords.
 
 
 \begin{subsection}{Assignments}
+\index{assignment}
 Most basic syntax of nJexl is, like any other language : assignment.
 \begin{lstlisting}[style=JexlStyle][float]
  a = 1 //  assigns local variable a to Integer 1
@@ -30,6 +32,8 @@ Most basic syntax of nJexl is, like any other language : assignment.
 \end{subsection}
 
 \begin{subsection}{Comments}
+\index{comments}
+
 See from the previous subsection "//" used as line comments. So is "\#\#".
 Along with the multiline comment "/*" with  "*/" :
 
@@ -48,6 +52,7 @@ Basic types are :
  D = 1.0b // BigDecimal  
  tt = true // boolean 
  tf = false // boolean 
+ null_literal = null // special null type
 \end{lstlisting}
 
 \end{subsection}
@@ -66,6 +71,8 @@ nJexl supports multiple assignment. It has various usage:
 \end{section}
 
 \begin{section}{operators}
+\index{operators : basic}
+
 
 \begin{subsection}{Arithmetic}
 
