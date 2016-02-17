@@ -116,6 +116,11 @@ public class DataMatrix implements Arithmetic {
             if ( header ){
                 String[] words =  lines.get(0).split(sep);
                 cols = new ListSet(Arrays.asList(words));
+                if ( words.length != cols.size() ){
+                    String message = "Some column names are not unique !! Repeated columns :\n %s \n, Use with header-less mode" ;
+                    Object diff = SetOperations.list_d(words,cols );
+                    throw new Exception(String.format(message, diff )) ;
+                }
                 lines.remove(0);
             }
             ArrayList rows = new ArrayList();
