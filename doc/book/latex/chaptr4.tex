@@ -17,8 +17,11 @@ If we have noted down the \emph{sorting problem} in chapter 2, we would have res
 \end{center} 
 
 In mathematical logic, \emph{``there exists''} becomes : $\exists$ and \emph{``for all''} becomes $\forall$.
-and logical not is shown as $\neg$ ,  So, the same formulation goes in : let $S = \{ 0, 1, 2, ... , size(a)-1  \} $, then :
-
+and logical not is shown as $\neg$ ,  So, the same formulation goes in : let 
+$$
+S = \{ 0, 1, 2, ... , size(a)-1  \} =  \{  x \in \mathbb{N} | x < size(a) \} 
+$$
+then :
 $$
   i \in S ; \forall \; i  \neg \; ( \exists \; a[i] \; s.t. \; a[i] < a[i-1]    ) 
 $$ 
@@ -43,6 +46,10 @@ in = 10 @ d // in is false
 in = 10 @ d.values() // in is true 
 s = "hello"
 in = "o" @ s // in is true 
+/* This works for linear collections even */
+m = [2,3]
+in = m @ l // true 
+in = l @ l // true  
 \end{lstlisting}
 
 This was not simply put in the place simply because we dislike $x.contains(y)$, in fact we do.
@@ -441,6 +448,54 @@ l = list(1,3,3,2)
 sub = s < l  // true  
 sup = l > s // true 
 u = l | s // u = [1,2,3,3 ]
+\end{lstlisting}
+
+\end{subsection}
+
+
+\begin{subsection}{Collections as Tuples}
+When we say $[1,2] < [1,2,3,4] $ we obviously mean as collection itself.
+But what about we start thinking as \href{https://en.wikipedia.org/wiki/Tuple}{tuples}?
+Does a tuple contains in another tuple? That is we can find the items in order? 
+"@" operator solves that too :
+
+\begin{lstlisting}[style=JexlStyle][float]
+l = [1,2]
+m = [1,2,3,4]
+in = l @ m // true 
+\end{lstlisting}
+
+The $index()$, and $rindex()$ generates the index of where the match occurred:
+
+\begin{lstlisting}[style=JexlStyle][float]
+l = [1,2]
+m = [1,2,3,4,1,2]
+// read which : index is l in m?
+forward = index( l , m) // 0 
+backward = rindex( l , m) // 4   
+\end{lstlisting}
+
+Sometimes it is of importance to get the notion of $starts\_with$ and $ends\_with$.
+There are two special operators :
+
+\begin{lstlisting}[style=JexlStyle][float]
+// read m starts_with l 
+sw = m #^ l // true 
+// read m ends with l 
+ew = m #$ l // true 
+\end{lstlisting}
+
+Note that this is also true for strings, as they are collections of characters.
+So, these are legal:
+
+\begin{lstlisting}[style=JexlStyle][float]
+s = 'abracadabra'
+prefix = 'abra'
+suffix = prefix
+i = index ( prefix, s ) // 0 
+r = rindex( suffix, s ) // 7 
+sw = s #^ prefix // true 
+ew = s #$ suffix // true 
 \end{lstlisting}
 
 \end{subsection}

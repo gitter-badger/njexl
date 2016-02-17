@@ -257,6 +257,8 @@ def is_prime( n ){
     return ( n @ primes )  
 }
 \end{lstlisting}
+Observe that, if we remove the comments, it is a one liner. 
+It really is. Hence, declarative style is indeed succinct, and very powerful.
 
 \end{subsection}
 
@@ -272,12 +274,16 @@ using multiple collections. This section we introduce the $join()$ function.
 
 \begin{subsection}{Formalism}
 Suppose we have multiple sets $S_1,S_2,...S_n$.
-Now, we want to collect the tuples 
+Now, we want to generate this collection of tuples 
 $$
 e = <e_1,e_2,...,e_n> \; \in S_1 \times S_2 \times ... \times S_n
 $$ 
-such that the condition ( predicate ) $P(e) = true $.
-This is what join really means. 
+such that the condition ( {https://en.wikipedia.org/wiki/Predicate\_(mathematical\_logic)}{predicate} ) $P(e) = true $.
+This is what join really means. Formally, then :
+$$
+\{  e \in S_1 \times S_2 \times ... \times S_n \; | \; P(e) \} 
+$$
+
 \end{subsection}
 
 \begin{subsection}{As Nested Loops}
@@ -294,13 +300,14 @@ for ( a : A ){
 This is generalised for a cross product of $A,B,C$, and generally into any cross product. 
 Hence, the idea behind generating a tuple is nested loop.
 
-Thus, the $join()$ operation with $condition()$ essentially is :
+Thus, the $join()$ operation with $condition()$ predicate essentially is :
 
 \begin{lstlisting}[style=JexlStyle][float]
+collect = collection()
 for ( a : A ){
    for ( b : B ) {
       tuple = [a,b]
-      if ( condition ( tuple ) ) { collect( tuple ) } 
+      if ( condition ( tuple ) ) { collect += tuple  } 
    }
 }
 \end{lstlisting}
@@ -368,9 +375,9 @@ is in strictly increasing order or not (sorted). Thus :
 \begin{lstlisting}[style=JexlStyle][float]
 A = [ 'a' ,'b', 'c' ] 
 c = join{ // check permutation , then 
-          #|set($)| == #|$| and 
-    // check sorted - same trick we used       
-    index{ _ > 0 and  $$[_-1] > $ }($) < 0 
+       #|set($)| == #|$| and 
+       // check sorted - same trick we used earlier too!      
+       index{ _ > 0 and  $$[_-1] > $ }($) < 0 
     }(A,A)
 \end{lstlisting}
 This is how we can solve the problem with the aid of a declarative form. 

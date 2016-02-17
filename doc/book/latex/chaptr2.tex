@@ -33,7 +33,7 @@ Thus, nJexl comes with it's tenets, which are :
 \end{enumerate}
 
 Thus I made nJexl so that a language exists with it's full focus on \emph{Business Process Automation and Software Testing \& Validation},
-not on commercial fads that sucks the profit out of business. Hence it has one singular focus in mind : \emph{brevity} but not on the cost of maintainability. What can be done with 1 people, in 10 days, get it done in 1 day by one person.
+not on commercial fads that sucks the profit out of business. Hence it has one singular focus in mind : \emph{brevity} but not at the cost of maintainability. What can be done with 1 people, in 10 days, get it done in 1 day by one person.
 
 \end{section}
 
@@ -73,7 +73,9 @@ as importing the class.
 
 nJexl is also a functional language in the sense that every function is a value and because every value is an object so ultimately every function is an object. Functions are first class citizens.
 
-nJexl provides a lightweight syntax for defining anonymous functions, it supports higher-order functions, it allows functions to be nested, and supports \href{https://en.wikipedia.org/wiki/Currying}{currying} and Closures. 
+nJexl provides a lightweight syntax for defining anonymous functions, it supports higher-order functions, it allows functions to be 
+\href{https://en.wikipedia.org/wiki/Nested_function}{nested}, and supports \href{https://en.wikipedia.org/wiki/Currying}{currying} and \href{https://en.wikipedia.org/wiki/Closure_(computer_programming)}{Closures}. 
+It also supports \href{https://en.wikipedia.org/wiki/Operator_overloading}{Operator Overloading}. 
 
 \end{subsection}
 
@@ -136,7 +138,7 @@ syntactically new to Java land.}
  To test whether or not you have successfully installed it try this 
  in your command prompt :
 
-\begin{lstlisting}
+\begin{lstlisting}[style=all]
     $ java -version
     java version "1.8.0_60"
     Java(TM) SE Runtime Environment (build 1.8.0_60-b27)
@@ -155,7 +157,7 @@ Download the latest one-jar.jar file from \href{https://oss.sonatype.org/content
 
 If you are using \*nix platform, then you should create an alias :
 
-\begin{lstlisting}
+\begin{lstlisting}[style=all]
      alias njexl = "java -jar njexl.lang-0.3-<time-stamp>-onejar.jar" 
 \end{lstlisting}
 
@@ -163,7 +165,7 @@ in your .login file.
 
 If you are using Windows, then you should create a batch file that looks like this:
 
-\begin{lstlisting}
+\begin{lstlisting}[style=all]
      @echo off
      rem njexl.bat 
      java -jar njexl.lang-0.3-<time-stamp>-onejar.jar  %1 %2 %3 %4 %5 %6
@@ -179,7 +181,7 @@ and then add path to this njexl.bat file in your path variable, see
 
 Open a command prompt, and type :
 
-\begin{lstlisting}
+\begin{lstlisting}[style=all]
      $njexl 
      (njexl)
 \end{lstlisting}     
@@ -192,7 +194,7 @@ It should produce the prompt of \href{https://en.wikipedia.org/wiki/Read?eval?pr
 \begin{subsection}{Maven Setup for Java Integration}
 In the dependency section (latest release is 0.2 ) : 
 
-\begin{lstlisting}
+\begin{lstlisting}[style=all]
 <dependency>
   <groupId>com.github.nmondal</groupId>
   <artifactId>njexl.lang</artifactId>
@@ -224,14 +226,14 @@ To include for vim :
 
 Create these two files :
 
-\begin{lstlisting}
+\begin{lstlisting}[style=all]
     $HOME/.vim/ftdetect/jxl.vim
     $HOME/.vim/syntax/jxl.vim
 \end{lstlisting}
 
 For most \*nix systems it would be same as :
 
-\begin{lstlisting}
+\begin{lstlisting}[style=all]
     mkdir -p ~/.vim/ftdetect/
     touch ~/.vim/ftdetect/jxl.vim 
     touch ~/.vim/syntax/jxl.vim 
@@ -239,7 +241,7 @@ For most \*nix systems it would be same as :
 
 Now on the \$HOME/.vim/ftdetect/jxl.vim  file, put this line :
 
-\begin{lstlisting}
+\begin{lstlisting}[style=all]
     autocmd BufRead,BufNewFile *.jxl,*.jexl,*.njxl,*.njexl  set filetype=jxl
 \end{lstlisting}
 

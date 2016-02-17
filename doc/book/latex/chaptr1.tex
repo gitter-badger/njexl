@@ -1,14 +1,15 @@
 \chapter{On Software and Business Development}\label{intro}
 
 {\LARGE S}oftware is needed to do most of the business, and it is software development, that becomes sometime the bottleneck 
-of the business development. Here, we discuss the goal of nJexl, the very problems it seeks to eradicate.
+of the business development. Here, we discuss the goal of nJexl, that is the very problems it seeks to eradicate.
 
 
 \begin{section}{Business Development}\label{buisness-development-defined}
 
 Does business need software? No and Yes. \index{Hello Curry}
 Clearly how brilliantly the code was written does not matter when one owns a portal like \href{www.hellocurry.com}{hello curry}.
-Software augments business, there is no point making software the business. There are many firms doing software as business, and it is a very high niche game. In reality, most of the businesses are not about software, it is about taking user pain away, and alway - making end users happy. 
+Software augments business, there is no point making software the business. There are many firms doing software as business, and it is a very high niche game. In reality, most of the businesses are not about software, it is about taking user pain away, and always 
+- making end users happy. 
 
 \emph{Marketing brings you customers, Tech-folks retain them. -- Anon}
 
@@ -57,9 +58,12 @@ Thus, we are looking at an abyss of complexity.
 \begin{section}{Functional Approach}\label{functional}
 \index{functional approach}
 
-Proponent of functional programming are shamans with pedigree and degree from the land of mathematics and logic, 
-and they look down at the miserly labor class imperative programmers. Thus, there is a great divide between them and us, the imperatives. Hence, not a single functional programming paradigm was ever applied in any practical ( read who earns actual dollars and helps actual business ) way (perhaps that is an exaggeration, but mostly true). 
-But that can be changed. I intend to change that. While academia should learn that money comes from aiding businesses, our businesses must learn that under the snobbish attitude of the functional paradigm, there is a viable lesson. Thus we try to define what is functional programming, in total lay-mans terms.
+Proponent of \href{https://en.wikipedia.org/wiki/Functional_programming}{functional programming} 
+are shamans with pedigree and degree from the land of mathematics and logic, 
+and they look down at the miserly labor class \href{https://en.wikipedia.org/wiki/Imperative_programming}{imperative programmers}. 
+Thus, there is a great divide between them and us, the imperatives. Hence, not a single functional programming paradigm was ever applied in any practical ( read who earns actual dollars and helps actual business ) way (perhaps that is an exaggeration, but mostly true). 
+But that can be changed. I intend to change that. While academia should learn that money comes from aiding businesses, our businesses must learn that under the snobbish attitude of the functional paradigm, there are some viable lessons. 
+Thus we try to define what is functional programming, in total lay-mans terms.
 
 
 \begin{subsection}{Tenets of Functional Style}\label{functional-tenet}
@@ -192,11 +196,11 @@ Thus, given a function called \emph{sort} how does one verify that it indeed sor
 Let's start with what the immediate response of people, when they get asked this. They often generate  a  simplistic and wrong solution :  verify that the resulting list coming out of the \emph{sort} method is indeed \emph{sorted in ascending order}, that implementation would be indeed easy :
 
 \begin{lstlisting}[style=JexlStyle]
-def is_sorted( il ){
-   s = size(il) 
+def is_sorted( l ){
+   s = size(l) 
    if ( s <= 1 ) return true 
    for ( i = 1 ; i < s ; i += 1 ){
-       if ( il[i-1] > il[i] ) return false 
+       if ( l[i-1] > l[i] ) return false 
    }
    return true 
 }
