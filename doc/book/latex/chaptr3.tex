@@ -98,6 +98,10 @@ o = true or true // true , or operator
 o = true || true // same 
 a = true and false // false , and operator 
 a = true && false // false, and operator  
+defined_a = #def a // true if a is defined, false otherwise
+o = (10 != 20 ) // not, true 
+o = not ( 10 = 20 ) // true 
+o = 10 eq 20 // false
 \end{lstlisting}
 
 \end{subsection}
@@ -121,6 +125,25 @@ f = ( 10 ne 10 ) // false, not equal to
 \end{lstlisting}
 
 \end{subsection}
+
+\begin{subsection}{Ternary}
+
+\begin{lstlisting}[style=JexlStyle][float]
+// basic ternary 
+min = a < b ? a : b // general form (expression)?option1:option2 
+// try fixing null with it
+non_null = a == null? b : a
+// or use the null coalescing operator   
+non_null = a ?? b 
+// same can be used as definition coalescing
+defined = #def(a) ? a : b
+//same as above 
+defined = a ?? b
+\end{lstlisting}
+
+\end{subsection}
+
+
 
 \end{section}
 
