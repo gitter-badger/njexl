@@ -364,6 +364,18 @@ Same can easily be achived by the $plusDays()$ function :
 d = time('19470815') // Indian Day of Independence  
 nd = nd.plusDays(1) // 1947-08-16T00:00:00.000+05:30 
 \end{lstlisting}
+
+And times can be subtracted :
+\index{chrono : subtraction}
+
+\begin{lstlisting}[style=JexlStyle][float]
+d = time('19470815') // Indian Day of Independence  
+nd = d.plusDays(1) // 1947-08-16T00:00:00.000+05:30 
+diff = nd - d // 86400000 ## Long (millisec gap between two dates)
+\end{lstlisting}
+
+So we can see it generates milliseccond gap between two chrono instances.
+
 \end{subsection}
 
 \end{section}
@@ -449,38 +461,44 @@ str( i , 'dd-MMM-yyyy' ) // 18-Feb-2016
 Collections are formatted by str by default using `,'.
 The idea is same for all of the collections, thus we would simply showcase some:
 
- 
+\begin{lstlisting}[style=JexlStyle][float]
+l = [1,2,3,4]
+s = str(l) // '1,2,3,4'
+s == '1,2,3,4' // true 
+s = str(l,'#') // '1#2#3#4'
+s == '1#2#3#4' // true 
+\end{lstlisting}
 
+So, in essence, for $str()$, serializing the collection, the syntax is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+s = str( collection [ ,  seperation_string ] )
+\end{lstlisting}
 
 \end{subsection}
 
 \begin{subsection}{Generalized $toString()$ }
+\index{ str : replacing toString() }
+
+This brings to the point that we can linearize a collection of collections using $str()$.
+Observe how:
+
+\begin{lstlisting}[style=JexlStyle][float]
+l = [1,2,3,4]
+m = [ 'a' , 'b' , 'c' ] 
+j = l * m // now this is a list of lists, really 
+s_form = str{  str($,'#')  }(j, '&') // lineraize 
+/* This generates 
+1#a&1#b&1#c&2#a&2#b&2#c&3#a&3#b&3#c&4#a&4#b&4#c
+*/
+\end{lstlisting}
+
+Another way to handle the linerisation is that of dictionary like property buckets:
+\index{ str : linearize objects }
+
+\begin{lstlisting}[style=JexlStyle][float]
+d = { 'a' : 10 , 'b' : 20  } 
+s_form = str{  [ $.a , $.b ]  }(d,'@' ) // lineraize, generates : 10@20
+\end{lstlisting}
 \end{subsection}
-
-
 \end{section}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
