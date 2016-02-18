@@ -1,0 +1,235 @@
+\chapter{Reusing Code}\label{code-reuse}
+
+{\LARGE T}he tenet of nJexl is : \emph{``write once, forget''}.
+That essentially means that the code written has to be sufficiently robust.
+It also means that, we need to rely upon code written by other people.
+
+How does this work? The system must be able to reuse $any$ code 
+from Java SDK, and should be able to use any code that we ourselves wrote.
+This chapter would be elaborating on this.
+
+\begin{section}{The Import Directive}
+\index{import}
+
+\begin{subsection}{Syntax}
+
+Most of the languages choose to use a non linear, tree oriented import.
+nJexl focuses on minimising pain, so the import directive is linear.
+The syntax is simple enough :
+\index{import : java}
+\begin{lstlisting}[style=JexlStyle][float]
+import 'import_path' as unique_import_identifer
+\end{lstlisting}
+
+The directive imports the $stuff$ specified in the $import\_path$ and create 
+an alias for it, which is : \\ \emph{unique\_import\_identifer},
+Thus, there is no name collision at all in the imported script.
+This \emph{unique\_import\_identifer} is known as the namespace.
+\index{namespace}
+
+\end{subsection}
+
+ 
+\begin{subsection}{Examples}
+
+Observe, if you want to import the class $java.lang.Integer$ :
+
+\begin{lstlisting}[style=JexlStyle][float]
+import 'java.lang.Integer' as Int
+\end{lstlisting}
+
+This directive would import the class, and create an alias which is $Int$.
+To use this class further, now, we should be using :
+
+\begin{lstlisting}[style=JexlStyle][float]
+Int:parseInt('20') // int : 20
+Int:valueOf('20') // int : 20 
+\end{lstlisting}
+
+In the same way, one can import an nJexl script :
+\index{import : nJexl Script}
+
+\begin{lstlisting}[style=JexlStyle][float]
+// w/o any extension it would find the script automatically 
+import 'from/some/folder/awesome' as KungFuPanda
+// call a function in the script 
+KungFuPanda:showAwesomeness()
+\end{lstlisting}
+
+\end{subsection}
+ 
+\end{section}
+
+\begin{section}{Using Existing Java Classes}
+
+\begin{subsection}{Load Jar and Create Instance}
+\index{import : load()}
+The example of outer class, or rather a proper class 
+has been furnished already. So, we would try to import a class
+which is not there in the $CLASS\_PATH$ at all.
+
+\begin{lstlisting}[style=JexlStyle][float]
+// put all dependencies of xmlbeans.jar in there
+success = load('path/to/xmlbeans_jar_folder') // true/false 
+import 'org.apache.xmlbeans.GDate' as AGDate
+\end{lstlisting}
+
+Once we have this class now, we can choose to instantiate it,
+See the manual of this class \href{https://xmlbeans.apache.org/docs/2.1.0/reference/org/apache/xmlbeans/GDate.html}{here}:
+
+\index{new()}
+\begin{lstlisting}[style=JexlStyle][float]
+//create the class instance : use new() 
+gd1 = new ( AGDate, date() )
+// 2016-02-18T21:13:19+05:30
+// or even this works 
+gd2 = new ( 'org.apache.xmlbeans.GDate' , date() )
+// 2016-02-18T21:13:19+05:30
+\end{lstlisting}
+
+And thus, we just created a Java class instance.
+This is how we call Java objects, in general from nJexl.
+
+Calling methods now is easy:
+
+\begin{lstlisting}[style=JexlStyle][float]
+cal = gd1.getCalendar() // calls a method 
+/* 2016-02-18T21:13:19+05:30 */
+\end{lstlisting}
+
+Note that thanks to the way nJexl works, a method of the form $getXyz$
+is equivalent to a field call $xyz$ so :
+
+\begin{lstlisting}[style=JexlStyle][float]
+cal = gd1.calendar // calls the method but like a field! 
+/* 2016-02-18T21:13:19+05:30 */
+\end{lstlisting}
+
+
+\end{subsection}
+
+\begin{subsection}{Import Static Field}
+\index{import : static field}
+
+Import lets you import static fields too. For example :
+
+\begin{lstlisting}[style=JexlStyle][float]
+// put all dependencies of xmlbeans.jar in there
+import 'java.lang.System.out' as OUT
+// now call println 
+OUT.println("Hello,World") // prints it!
+\end{lstlisting}
+
+However, another way of achieving the same is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+// put all dependencies of xmlbeans.jar in there
+import 'java.lang.System' as SYS
+// now call println 
+SYS.out.println("Hello,World") // prints it!
+// something like reflection
+SYS['out'].println("Hello,World") // prints it!
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{Import Inner Class or Enum}
+\index{import : inner class, inner enum}
+Inner classes can be accessed with the "\$" separator.
+For example, observe from the SDK code of 
+\href{http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/8u40-b25/java/util/HashMap.java/}{HashMap},
+that there is this inner static class $EntrySet$. So to import that:
+
+\begin{lstlisting}[style=JexlStyle][float]
+// note that $ symbol for the inner class
+import 'java.util.HashMap$EntrySet' as ES
+\end{lstlisting}
+
+\end{subsection}
+
+\end{section}
+
+\begin{section}{Using nJexl Scripts}
+
+We have already discussed how to import an nJexl script, 
+so in this section we would discuss how to create a re-usable script.
+
+\begin{subsection}{Creating a Script}
+We start with a basic script, let's call it $hello.jxl$ :
+
+\begin{lstlisting}[style=JexlStyle][float]
+/* hello.jxl */
+def say_hello(arg){
+   write('Hello, ' + str(arg) )
+}
+s = "Some one"
+my:say_hello(s)
+/* end of script */
+\end{lstlisting}
+\index{namespace : my}
+This script is ready to be re-used.
+Observe that the function, when the script calls it, 
+comes with the namespace $my:$, which says that, 
+use current scripts $say\_hello()$ function.
+
+\end{subsection}
+
+
+\begin{subsection}{Relative Path}
+\index{import : relative}
+Suppose now we need to use this script, from another script, 
+which shares the same folder as the ``hello.jxl''. 
+Let's call this script $caller.jxl$. So, to import 
+``hello.jxl'' in $caller.jxl$ we can do the following :
+
+\begin{lstlisting}[style=JexlStyle][float]
+import './hello.jxl' as Hello
+\end{lstlisting}
+   
+but, the issue is when the runtime loads it, 
+the relative path would with respect to the runtimes 
+run directory. So, relative path, relative to the caller
+would become a mess. To solve this problem, relative import is invented.
+
+\begin{lstlisting}[style=JexlStyle][float]
+import '_/hello.jxl' as Hello
+Hello:say_hello('Waseem!" ) 
+\end{lstlisting}
+
+In this scenario, the runtime notices the ``$\_$'', and 
+starts looking from the directory the $caller.jxl$ was loaded!    
+Thus, without any $PATH$ hacks, the nJexl system works perfectly fine.
+
+\end{subsection}
+
+\begin{subsection}{Calling Functions}
+\index{import : function call}
+
+Functions can be called by using the namespace identifier, the syntax is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+import 'some/path/file' as NS
+NS:function(args,... ) 
+\end{lstlisting}
+
+If one needs to call the whole script, as a function, 
+that is also possible, and that is done using the $\_\_me\_\_$ directive:
+
+\begin{lstlisting}[style=JexlStyle][float]
+import 'some/path/file' as NS
+NS:__me__(args,... ) 
+\end{lstlisting}
+We will get back passing arguments to a function in a later chapter.
+But in short, to call $hello.jxl$, as a function, the code would be :
+\index{import : script as function}
+
+\begin{lstlisting}[style=JexlStyle][float]
+import '_/hello.jxl' as Hello
+Hello:__me__() 
+\end{lstlisting}
+
+\end{subsection}
+
+
+\end{section}
+
