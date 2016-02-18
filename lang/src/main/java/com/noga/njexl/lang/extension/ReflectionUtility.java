@@ -16,6 +16,8 @@
 
 package com.noga.njexl.lang.extension;
 
+import com.noga.njexl.lang.internal.logging.Log;
+import com.noga.njexl.lang.internal.logging.LogFactory;
 import jodd.util.ClassLoaderUtil;
 
 import java.io.File;
@@ -28,45 +30,7 @@ import java.net.URL;
  */
 public class ReflectionUtility {
 
-    /**
-     * Loads a specific jar from a path
-     * @param arg the path to the jar
-     *            can be a file, a string path or an URL
-     * @return true if success, false if failed
-     */
-    public static boolean load_jar(Object  arg){
-        try {
-            if ( arg instanceof String) {
-                ClassLoaderUtil.addFileToClassPath(new File(arg.toString()), ClassLoaderUtil.getDefaultClassLoader());
-                return true;
-            }
-            if ( arg instanceof File) {
-                ClassLoaderUtil.addFileToClassPath((File)arg, ClassLoaderUtil.getDefaultClassLoader());
-                return true;
-            }
-            if ( arg instanceof URL){
-                ClassLoaderUtil.addUrlToClassPath((URL) arg, ClassLoaderUtil.getDefaultClassLoader());
-                return true;
-            }
-            return false;
-        }catch (Exception e){
-          System.err.println(e);
-        }
-        return false;
-    }
-
-    /**
-     * Load multiple jars one by one
-     * @param args list of jars
-     * @return true if all successful, false if at least one failed loading
-     */
-    public static boolean load(Object... args){
-        boolean ret = true ;
-        for ( Object o :args ){
-            ret = ret && load_jar(o);
-        }
-        return ret;
-    }
+    private static final Log LOG = LogFactory.getLog( ReflectionUtility.class);
 
     /**
      * Searches directories and loads jars : only one level
@@ -77,60 +41,37 @@ public class ReflectionUtility {
         if ( args.length == 0){
             return false;
         }
-        boolean ret = true;
-        for ( Object o : args){
-            File f = new File(o.toString());
-            if ( !f.isDirectory()) {
-                continue;
-            }
-            File[] files = f.listFiles();
-            for (File file : files ){
-                String name = file.getName();
-                if ( !name.endsWith(".jar")){
-                    continue;
+        boolean ret = false;
+        try {
+            for (Object o : args) {
+                File f = new File(String.valueOf(o));
+                String name = f.getName();
+                if (f.isFile()) {
+                    if (name.endsWith(".jar")) {
+                        ClassLoaderUtil.addFileToClassPath(f, ClassLoaderUtil.getSystemClassLoader());
+                        LOG.info(String.format("Loading jar : %s", f.getPath()));
+                        return true;
+                    }
+                    return false;
                 }
-                ret = ret && load_jar(file);
+                File[] files = f.listFiles();
+                for (File file : files) {
+                    name = file.getName();
+                    if (file.isFile() && name.endsWith(".jar")) {
+                        ClassLoaderUtil.addFileToClassPath(file, ClassLoaderUtil.getSystemClassLoader());
+                        LOG.info(String.format("Loading jar : %s", file.getPath()));
+                        // at least one jar was hit
+                        ret = true;
+                        continue;
+                    }
+                    if (file.isDirectory()) {
+                        ret = (ret || load_path(file.getPath()));
+                    }
+                }
             }
+        }catch (Throwable t){
+            t.printStackTrace();
         }
         return ret;
-    }
-
-    /**
-     * Gets a class loader
-     * @param args strings :
-     *             "ctx" : ContextClassLoader
-     *             "sys" : SystemClassLoader
-     *             anything else : DefaultClassLoader
-     * @return the class loader
-     */
-    public static ClassLoader loader(Object...args){
-        if ( args.length > 0 ){
-            if ( args[0].toString().equalsIgnoreCase("ctx")){
-                return Thread.currentThread().getContextClassLoader();
-            }
-            if ( args[0].toString().equalsIgnoreCase("sys")){
-                return ClassLoader.getSystemClassLoader();
-            }
-        }
-        return ClassLoaderUtil.getDefaultClassLoader();
-    }
-
-    /**
-     * Reloads a class
-     * @param args the name of the class, using the class loader
-     * @return true if successful, false if failed
-     */
-    public static boolean reload(Object... args){
-        if ( args.length > 0 ){
-            String className = args[0].toString();
-            Object[] arr = TypeUtility.shiftArrayLeft(args,1);
-            ClassLoader cl = loader(arr);
-            try {
-                cl.loadClass(className);
-                return true;
-            }catch (Exception e){
-            }
-        }
-        return false;
     }
 }
