@@ -1,0 +1,351 @@
+\chapter{Types and Conversions}\label{type-conversions}
+
+{\LARGE T}ypes are not much useful for general purpose programming, save that they avoid errors.
+Sometimes they are necessary, and some types are indeed useful because they let us do 
+many useful stuff. In this chapter we shall talk about these types and how to convert
+one to another.
+
+The general form for type casting can be written :
+\begin{lstlisting}[style=JexlStyle][float]
+val = type_function(value, optional_default_value = null )
+\end{lstlisting}
+
+How does this work? The system would try to cast $value$
+into the specific type. If it failed, and there is no default value, 
+it would return $null$. However, if default is passed, it would return 
+that when conversion fails.
+This neat design saves a tonnage of $try \; ... \; catch$ stuff. 
+
+\begin{section}{Integer Family}
+This section is dedicated to the natural numbers family.
+We have :
+\begin{enumerate}
+\item{bool}
+\item{short}
+\item{char}
+\item{int}
+\item{long}
+\item{INT : Java BigInteger}
+\end{enumerate}
+
+\begin{subsection}{Boolean}\index{bool()}
+The syntax is :
+\begin{lstlisting}[style=JexlStyle][float]
+val = bool(value, optional_default_value = null )
+val = bool(value, optional_matching_values[2])
+\end{lstlisting}
+Observe both in action :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = bool("hello") // val is null
+val = bool("hello",false) // val is false
+val = bool('hi', ['hi' , 'bye' ] ) // val is true 
+val = bool('bye', ['hi' , 'bye' ] ) // val is false 
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{Short}\index{short()}
+This is almost never required, and is there for backward compatibility with Java data types.
+The syntax is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = short(value, optional_default_value = null )
+\end{lstlisting}
+
+Usage is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = short("hello") // val is null
+val = short("hello",0) // val is 0
+val = short('42') // val is 42 
+val = short(42) // val is 42 
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{Character}\index{char()}
+For almost all practical purposes, character is noting but the short value, 
+interpreted by a code page.
+
+The syntax is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = char(value, optional_default_value = null )
+\end{lstlisting}
+
+Usage is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = char("hello") // val is "h"
+val = char(121231231,0) // val is 0
+val = char('4') // val is '4' 
+// ascii stuff?
+val = char(65) // val is 'A'  
+\end{lstlisting}
+
+Generally none needs to get into this, because generally $String.charAt(index)$ is a good substitute
+for finding a character.
+\end{subsection}
+
+\begin{subsection}{Integer}\index{int()}
+This is very useful and the syntax is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = int(value, optional_default_value = null )
+\end{lstlisting}
+
+Usage is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = int("hello") // val is null
+val = int("hello",0) // val is 0
+val = int('42') // val is 42 
+val = int(42) // val is 42 
+val = int ( 10.1 ) // val is 10 
+val = int ( 10.9 ) // val is 10 
+\end{lstlisting}
+
+\end{subsection}
+
+
+\begin{subsection}{Long}\index{long()}
+This is rarely required, and the syntax is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = long(value, optional_default_value = null )
+\end{lstlisting}
+
+Usage is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = long("hello") // val is null
+val = long("hello",0) // val is 0
+val = long('42') // val is 42 
+val = long(42) // val is 42 
+val = long( 10.1 ) // val is 10 
+val = long( 10.9 ) // val is 10 
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{BigInteger}\index{INT()}
+This is sometimes required, and the syntax is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = INT(value, base=10, default_value = null )
+\end{lstlisting}
+
+Usage is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = INT("hello") // val is null
+val = INT('hi',10,42 )// val is 42
+val = INT('42') // val is 42 
+val = INT(54,13 ) // val is 42 
+\end{lstlisting}
+
+\end{subsection}
+\end{section}
+
+
+\begin{section}{Rational Numbers Family}
+This section is dedicated to the floating point numbers family.
+We have :
+\begin{enumerate}
+\item{float}
+\item{double}
+\item{BigDecimal}
+\end{enumerate}
+
+\begin{subsection}{Float}\index{float()}
+This is not very useful and the syntax is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = float(value, optional_default_value = null )
+\end{lstlisting}
+
+Usage is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = float("hello") // val is null
+val = float("hello",0) // val is 0.0
+val = float('42') // val is 42.0 
+val = float(42) // val is 42.0 
+val = float ( 10.1 ) // val is 10.1 
+val = float ( 10.9 ) // val is 10.9 
+\end{lstlisting}
+
+\end{subsection}
+
+
+\begin{subsection}{Double}\index{double()}
+This is generally required, and the syntax is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = double(value, optional_default_value = null )
+\end{lstlisting}
+
+Usage is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = double("hello") // val is null
+val = double("hello",0) // val is 0.0
+val = double('42') // val is 42.0 
+val = double(42) // val is 42.0 
+val = double( 10.1 ) // val is 10.1 
+val = double( 10.9 ) // val is 10.9 
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{BigDecimal}\index{DEC()}
+This is sometimes required, and the syntax is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = DEC(value,default_value = null )
+\end{lstlisting}
+
+Usage is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+val = DEC("hello") // val is null
+val = DEC('hi',10,42 )// val is 42.0
+val = DEC('42') // val is 42.0 
+val = DEC(42.00001 ) // val is 42.00001
+\end{lstlisting}
+
+\end{subsection}
+
+\end{section}
+
+\begin{section}{The Chrono Family}\index{date}\index{time}\index{instant}
+
+Handling date and time has been a problem, that too with timezones.
+nJexl simplifies the stuff. 
+We have three basic types to handle date/time:
+\begin{enumerate}
+\item{date : $java.lang.Date$ : because of Java compatibility with SDKs. }
+\item{time : $org.joda.time.DateTime$ : that is the best one out there. }
+\item{instant : $java.time.Instant$ : for newer systems who wants to experiment. }
+\end{enumerate}
+
+
+\begin{subsection}{Date}\index{date}
+This is how you create a date:
+\begin{lstlisting}[style=JexlStyle][float]
+val = date([ value, date_format ] )
+\end{lstlisting}
+
+With no arguments, it gives the current date time:
+
+\begin{lstlisting}[style=JexlStyle][float]
+today = date()
+\end{lstlisting}
+
+The default date format is $yyyyMMdd$, so :
+\begin{lstlisting}[style=JexlStyle][float]
+dt = date('20160218') // Thu Feb 18 00:00:00 IST 2016
+\end{lstlisting}
+
+For all the date formats on dates which are supported, 
+see \href{https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html}{SimpleDateFormat}.
+
+Take for example :
+
+\begin{lstlisting}[style=JexlStyle][float]
+dt = date('2016/02/18', 'yyyy/MM/dd' ) // Thu Feb 18 00:00:00 IST 2016
+dt = date('2016-02-18', 'yyyy-MM-dd' ) // Thu Feb 18 00:00:00 IST 2016
+\end{lstlisting}
+
+
+\end{subsection}
+
+\begin{subsection}{Time}\index{time}
+
+This is how you create a joda $DateTime$:
+\begin{lstlisting}[style=JexlStyle][float]
+val = time([ value, date_format , time_zone] )
+\end{lstlisting}
+
+With no arguments, it gives the current date time:
+
+\begin{lstlisting}[style=JexlStyle][float]
+today = time()
+\end{lstlisting}
+
+The default date format is $yyyyMMdd$, so :
+\begin{lstlisting}[style=JexlStyle][float]
+dt = time('20160218') // 2016-02-18T00:00:00.000+05:30
+\end{lstlisting}
+
+For all the date formats on dates which are supported, 
+see \href{http://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFormat.html}{DateTimeFormat}.
+
+Take for example :
+
+\begin{lstlisting}[style=JexlStyle][float]
+dt = time('2016/02/18', 'yyyy/MM/dd' ) // 2016-02-18T00:00:00.000+05:30
+dt = time('2016-02-18', 'yyyy-MM-dd' ) // 2016-02-18T00:00:00.000+05:30
+\end{lstlisting}
+
+If you want to convert one time to another timezone, you need to give the time, 
+and the \href{http://joda-time.sourceforge.net/timezones.html}{timezone}:
+
+\begin{lstlisting}[style=JexlStyle][float]
+dt = time()
+dt_honolulu = time(dt , 'Pacific/Honolulu' ) // 2016-02-17T17:23:02.754-10:00 
+dt_ny = time( dt, 'America/New_York' ) // 2016-02-17T22:23:02.754-05:00
+\end{lstlisting}
+
+\end{subsection}
+
+
+\begin{subsection}{Instant}\index{instant}
+
+With no arguments, it gives the current instant time:
+
+\begin{lstlisting}[style=JexlStyle][float]
+today = instant()
+\end{lstlisting}
+
+It is freely mixable with other chrono types.
+
+\end{subsection}
+
+
+\begin{subsection}{Comparison on Chronos}\index{operator : compare, chrono }
+All these date time types are freely mixable, 
+and all comparison operations are defined with them.
+Thus :
+
+\begin{lstlisting}[style=JexlStyle][float]
+d = date() // wait for some time 
+t = time() // wait for some time 
+i = instant()
+// now compare 
+c = ( d < t and t < i ) // true 
+c = ( i > t and t > d ) // true 
+\end{lstlisting}
+
+Tow dates can be equal to one another, but not two instances,
+that is a very low probability event, almost never.
+Thus, equality makes sense when we know it is date, and not instant :
+
+\begin{lstlisting}[style=JexlStyle][float]
+d = date('19470815') // Indian Day of Independence  
+t = time('19470815') // Indian Day of Independence  
+// now compare 
+c = ( d == t ) // true 
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{Arithmetic on Chronos}
+
+\end{subsection}
+
+
+\end{section}
+
+
