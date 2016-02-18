@@ -6,6 +6,7 @@ This section would be specifically to understand what sort of formalism we can u
 \begin{section}{Conditional Building Blocks}
 
 \begin{subsection}{Formalism}
+\index{Predicate Logic}
 In a formal logic like FOPL, the statements can be made from the basic ingredients, 
 \emph{``there exist''} and \emph{``for all''}. We need to of course put some logical stuff like $AND$, $OR$,
 and some arithmetic here and there, but that is what it is.
@@ -32,6 +33,7 @@ And the precise formulation of what is a sorted array/list is done.
 
 
 \begin{subsection}{There Exist In Containers}
+\index{Predicate Logic : there exists}
 To check, if some element is, in some sense exists inside a container ( list, set, dict, array, heap )
 one needs to use the $IN$ operator, which is $@$. \index{operator : \@}
 
@@ -101,7 +103,7 @@ e = size(nn) // 1
 
 Observe that it returns negative given input null. 
 That is a very nice way of checking null.
-The other one is the $cardinal$ operator \index{operator : \#\|\| }:
+The other one is the $cardinal$ operator \index{operator : cardinality }:
 
 \begin{lstlisting}[style=JexlStyle][float]
 n = null
@@ -128,7 +130,7 @@ such that the sorting order is violated? If not, the collection is sorted.
 This brings back the $index$ function \index{index()}.
 We are already familiar with the usage of $index()$ function from chapter 2.
 But we would showcase some usage :
-
+\index{Predicate Logic : there exist : index() }
  
 \begin{lstlisting}[style=JexlStyle][float]
 l = [ 1, 2, 3, 4, 5, 6 ]
@@ -146,6 +148,8 @@ If none of the elements matches the true value, it returns $-1$.
 Index function runs from left to right, and there is a variation $rindex()$ \index{index()}
 which runs from right to left.
 
+\index{Predicate Logic : there exist : rindex() }
+
 \begin{lstlisting}[style=JexlStyle][float]
 l = [ 1, 2, 3, 4, 5, 6 ]
 // search an element such that it is greater than 3  
@@ -162,6 +166,8 @@ Thus, the \emph{there exists} formalism is taken care by these operators and fun
 
 
 \begin{subsection}{For All elements with Condition : select }
+\index{Predicate Logic : for all : select() }
+
 We need to solve the problem of \emph{for all}. This is done by $select()$ function \index{select()}.
 The way select function works is : executes the anonymous statement block, and if the condition is true, 
 then select and collect that particular element, and returns a list of collected elements.
@@ -214,30 +220,31 @@ This is also called \emph{item rewriting} \index{item rewriting}.
 \begin{section}{Operators from Set Algebra}
 
 \begin{subsection}{Set Algebra}
+\index{Set Algebra}
 
 Set algebra, in essence runs with the notions of the following ideas :
 \begin{enumerate}
 \item{There is an unique empty set.}
 \item { The following operations are defined :
 \begin{enumerate}{
-     \item{Set Union is defined as : 
+     \item{Set Union is defined as : \index{Set Algebra : Union}
 $$
 U_{AB} = A \cup B \; :=  \{ x \in A \; or \; x \in B \} 
 $$ 
 }
-    \item{Set Intersection is defined as : 
+    \item{Set Intersection is defined as : \index{Set Algebra : Intersection}
 $$
 I_{AB} = A \cap B \; :=  \{ x \in A \; and \; x \in B \} 
 $$
 }
-\item{Set Minus is defined as : 
+\item{Set Minus is defined as : \index{Set Algebra : Minus}
 $$
-M_{AB} = A \setminus B \; :=  \{ x \in A \; and \; x \not \in B \} 
+M_{AB} := A \setminus B \; :=  \{ x \in A \; and \; x \not \in B \} 
 $$
 }
-\item{Set Symmetric Difference is defined as : 
+\item{Set Symmetric Difference is defined as : \index{Set Algebra : Symmetric Difference} 
 $$
-\Delta_{AB} = ( A \setminus B ) \cup ( B  \setminus A ) 
+\Delta_{AB} := ( A \setminus B ) \cup ( B  \setminus A ) 
 $$
 }
 \item{Set Cross Product is defined as : 
@@ -250,32 +257,32 @@ $$
 \item{ The following relations are defined:
 \begin{enumerate}
 
-\item{ Subset Equals :
+\item{ Subset Equals : \index{Set Algebra : Subset Equals}
 $$
 A \subseteq B \; when \;  x \in A \implies x \in B
 $$
 }
 
-\item{ Equals :
+\item{ Equals : \index{Set Algebra : Equals}
 $$
 A = B \; when \; A \subseteq B \; and \; B \subseteq A
 $$
 }
 
 
-\item{ Proper Subset :
+\item{ Proper Subset : \index{Set Algebra : Subset,Proper}
 $$
 A \subset B \; when \; A \subseteq B \; and \; \exists x \in B \;s.t.\; x \not \in A
 $$
 }
 
-\item{ Superset Equals:
+\item{ Superset Equals: \index{Set Algebra : Superset Equals}
 $$
 A \supseteq B \; when \; B \subseteq A 
 $$
 }
 
-\item{ Superset :
+\item{ Superset : \index{Set Algebra : Superset,Proper}
 $$
 A \supset B \; when \; B \subset A 
 $$
@@ -285,6 +292,7 @@ $$
 \end{subsection}
 
 \begin{subsection}{Set Operations on Collections}
+\index{Set Operations : Collection}
 
 For the sets, the operations are trivial.
 \begin{lstlisting}[style=JexlStyle][float]
@@ -386,6 +394,8 @@ s_2 = s**-2 // "olleHolleH"
 \end{subsection}
 
 \begin{subsection}{Collection Relation Comparisons}
+\index{Set Relations : Collection}
+
 The operators are defined as such:
 \begin{enumerate}
 \item{ $A \subset B $ is defined as $A < B $  }
@@ -454,6 +464,8 @@ u = l | s // u = [1,2,3,3 ]
 
 
 \begin{subsection}{Collections as Tuples}
+\index{Set Operations : there exist : Collections}
+
 When we say $[1,2] < [1,2,3,4] $ we obviously mean as collection itself.
 But what about we start thinking as \href{https://en.wikipedia.org/wiki/Tuple}{tuples}?
 Does a tuple contains in another tuple? That is we can find the items in order? 
@@ -477,6 +489,7 @@ backward = rindex( l , m) // 4
 
 Sometimes it is of importance to get the notion of $starts\_with$ and $ends\_with$.
 There are two special operators :
+\index{Tuple Operation : Starts With, Ends With}
 
 \begin{lstlisting}[style=JexlStyle][float]
 // read m starts_with l 

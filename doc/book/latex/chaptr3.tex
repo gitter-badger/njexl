@@ -71,11 +71,11 @@ nJexl supports multiple assignment. It has various usage:
 \end{section}
 
 \begin{section}{operators}
-\index{operators : basic}
+\index{operators}
 
 
 \begin{subsection}{Arithmetic}
-
+\index{operators : Arithmetic}
 \begin{lstlisting}[style=JexlStyle][float]
 a = 1 + 1 // addition : a <- 2
 z = 1 - 1 // subtraction : z <- 0
@@ -92,7 +92,7 @@ z -= 1 // decrement and assign
 \end{subsection}
 
 \begin{subsection}{Logical}
-
+\index{operators : Logical}
 \begin{lstlisting}[style=JexlStyle][float]
 o = true or true // true , or operator 
 o = true || true // same 
@@ -108,7 +108,7 @@ o = 10 eq 20 // false
 
 
 \begin{subsection}{Comparison}
-
+\index{operators : Comparison}
 \begin{lstlisting}[style=JexlStyle][float]
 t = 10 < 20 // true, less than
 t = 10 lt  20 // true , less than 
@@ -127,7 +127,7 @@ f = ( 10 ne 10 ) // false, not equal to
 \end{subsection}
 
 \begin{subsection}{Ternary}
-
+\index{operators : Ternary}
 \begin{lstlisting}[style=JexlStyle][float]
 // basic ternary 
 min = a < b ? a : b // general form (expression)?option1:option2 
@@ -144,15 +144,16 @@ defined = a ?? b
 \end{subsection}
 
 
-
 \end{section}
 
 
 \begin{section}{Conditions}
+\index{Conditionals}
 
 People coming from any other language would find them trivial.
 
-\begin{subsection}{IF}
+\begin{subsection}{If}
+\index{Conditionals : if}
 
 \begin{lstlisting}[style=JexlStyle][float]
 x = 10 
@@ -163,7 +164,9 @@ write(x) // writes back x to standard output : 100
 \end{lstlisting}
 \end{subsection}
 
-\begin{subsection}{ELSE}
+\begin{subsection}{Else}
+\index{Conditionals : else}
+
 \begin{lstlisting}[style=JexlStyle][float]
 x = 1000 
 if ( x < 100 ){
@@ -175,7 +178,9 @@ write(x) // writes back x to standard output : 100
 \end{lstlisting}
 \end{subsection}
 
-\begin{subsection}{ELSE IF}
+\begin{subsection}{Else If}
+\index{Conditionals : else if}
+
 \begin{lstlisting}[style=JexlStyle][float]
 x = 100 
 if ( x < 10 ){
@@ -189,7 +194,9 @@ write(x) // writes back x to standard output : 10
 \end{lstlisting}
 \end{subsection}
 
-\begin{subsection}{GOTO}
+\begin{subsection}{GoTo}
+\index{Conditionals : jump, goto}
+
 \begin{lstlisting}[style=JexlStyle][float]
 /* 
  In case anyone like to use GOTO
@@ -210,8 +217,10 @@ return i
 \end{section}
 
 \begin{section}{Loops}
+\index{Loops}
 
-\begin{subsection}{WHILE}
+\begin{subsection}{While}
+\index{Loops : while}
 
 \begin{lstlisting}[style=JexlStyle][float]
 i = 0 
@@ -223,13 +232,14 @@ while ( i < 42 ){
 
 \end{subsection}
 
-\begin{subsection}{FOR}
+\begin{subsection}{For}
+\index{Loops : for}
 
 For can iterate over any iterable, 
 in short, it can iterate over string, any collection of objects,
 a list, a dictionary or a range.
 That is the first type of for :
-
+\index{Loops : for, range}
 \begin{lstlisting}[style=JexlStyle][float]
 for ( i : [0:42] ){ // [a:b] is a range type 
   write(i)
@@ -237,6 +247,7 @@ for ( i : [0:42] ){ // [a:b] is a range type
 \end{lstlisting}
 The result is the same as the while loop.
 A standard way, from C/C++/Java is to write the same as in :
+\index{Loops : for, conditioned}
 \begin{lstlisting}[style=JexlStyle][float]
 for ( i = 0 ; i < 42 ; i+= 1  ){ // [a:b] is a range type 
   write(i)
@@ -246,8 +257,11 @@ for ( i = 0 ; i < 42 ; i+= 1  ){ // [a:b] is a range type
 \end{section}
 
 \begin{section}{Functions}
+\index{functions}
 
 \begin{subsection}{Defining}
+\index{functions : define}
+
 Functions are defined using the $def$ keyword.
 And they can be assigned to variables, if one may wish to.
 \begin{lstlisting}[style=JexlStyle][float]
@@ -270,6 +284,8 @@ def say_something(word){
 \end{subsection}
 
 \begin{subsection}{Calling}
+\index{functions : calling}
+
 Calling a function is trivial :
 
 \begin{lstlisting}[style=JexlStyle][float]
@@ -284,6 +300,7 @@ greeting = say_something("Homo Erectus!" )
 \end{subsection}
 
 \begin{subsection}{Global Variables}
+\index{global variables}
 As you would be knowing that the functions create their local scope, 
 so if you want to use variables - they must be defined in global scope.
 Every external variable is readonly to the local scope, but to write to it, use $var$ keyword.  
@@ -316,6 +333,7 @@ The result would be :
 \end{section}
 
 \begin{section}{Anonymous Function as a Function Parameter}
+\index{functions : anonymous}
 A basic idea about what it is can be found \href{https://en.wikipedia.org/wiki/Anonymous\_function}{here}.
 As most of the Utility functions use a specific type of anonymous function, 
 which is nick-named as "Anonymous Parameter" to a utility function.
@@ -409,6 +427,7 @@ write(max) // prints bbbbb
 \begin{section}{Available Data Structures}
 
 \begin{subsection}{Range}
+\index{range}
 A range is basically an iterable, with start and end separated by colon : $[a:b]$.
 We already have seen this in action. "a" is inclusive while "b" is exclusive, 
 this was designed the standard for loop in mind. There can also be an optional spacing parameter "s",
@@ -429,6 +448,8 @@ r2 = [1:10:2] //1,3,5,7,9
 \end{subsection}
 
 \begin{subsection}{Array}
+\index{array()}
+
 A very simple way to generate inline array is this:
 
 \begin{lstlisting}[style=JexlStyle][float]
@@ -445,6 +466,8 @@ a1[0] = 42 // now a1 : [ 42, 1, 2, 3 ]
 \end{subsection}
 
 \begin{subsection}{List}
+\index{list()}
+
 To solve the problem of adding and deleting item from an array, list were invented.
 \begin{lstlisting}[style=JexlStyle][float]
 l = list ( 0,1,2,3 ) // a list  
@@ -457,6 +480,8 @@ l[1] = 100 // now the list is : 1,100,3,10
 \end{subsection}
 
 \begin{subsection}{Set}
+\index{set()}
+
 A set is a list such that the elements do not repeat.
 Thus :
 
@@ -469,6 +494,8 @@ s -= 0 // now the set is : 1,2,3
 \end{subsection}
 
 \begin{subsection}{Dict}
+\index{dict()}
+
 A dictionary is a collection ( a list of ) (key,value) pairs.
 The keys are unique, they are the $keySet()$. Here is how one defines a dict:
 

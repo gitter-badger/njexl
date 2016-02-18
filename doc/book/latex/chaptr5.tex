@@ -2,6 +2,7 @@
 
 {\LARGE C}omprehension is a method which lets one create newer collection from older ones.
 In this chapter we would see how different collections can be made from existing collections.
+\index{Comprehensions}
 
 \begin{section}{Using Anonymous Argument}
 
@@ -21,6 +22,7 @@ def comprehension(function, items){
 c = collection{ function($) }(items)
 \end{lstlisting}
 Obviously $list()$ generates $list$ and $array()$ generates $array$.
+\index{Comprehensions : array(), list() }
 Hence, these are valid :
 \begin{lstlisting}[style=JexlStyle][float]
 an = array{ $ + 2 }([1,2,3,4]) // [ 3,4,5,6 ]
@@ -33,6 +35,7 @@ and finally added to the final collection.
 \end{subsection}
 
 \begin{subsection}{Set}
+\index{Comprehensions : set()}
 
 Set also follows the same behavioural pattern just like $array()$ and $list()$, but one needs 
 to remember that the $set$ collection does not allow duplicates. Thus:
@@ -48,6 +51,8 @@ with size less than the input collection.
 \end{subsection}
 
 \begin{subsection}{Dict}
+\index{Comprehensions : dict()}
+
 Dictionaries are special kind of a collection with $(key,value)$ pair with unique keys.
 Thus, creating a dictionary would mean uniquely specifying the key, value pair.
 That can be specified either in a dictionary tuple way, or simply a pair way: 
@@ -78,6 +83,7 @@ d = dict(k,v)
 \begin{section}{Alternate Iteration Flow Constructs}
 
 \begin{subsection}{Continue and Break}
+\index{Flow Control : continue, break }
 In normal iterative languages, there are continue and break.
 
 The idea of continue would be as follows :
@@ -109,6 +115,7 @@ Evidently they change the flow of control of the iterations.
 \end{subsection}
 
 \begin{subsection}{Continue}
+\index{Flow Control : continue}
 As we can see, the $condition()$ is implicit in both $break$ and $continue$,
 in nJexl this has become explicit. Observe that:  
 
@@ -139,6 +146,7 @@ earlier subsection.
 
 
 \begin{subsection}{Break}
+\index{Flow Control : break}
 As mentioned in the previous subsection, 
 $break$ also has the same features as continue. 
 
@@ -170,6 +178,7 @@ Obviously, the block of the break is optional.
 \end{subsection}
 
 \begin{subsection}{Substitute for Select}
+\index{Flow Control : usage of continue}
 One can readily use the $break$ and $continue$ in larger scheme of comprehensions.
 Observe this :
 
@@ -220,8 +229,9 @@ l = list{ continue( $ @ _$_ ) ; $ }( [1,1,2,3,1,3,4] )
 \end{lstlisting}
 
 But it gets used properly in more interesting of cases.
-What about finding the prime numbers using the Sieve of Eratosthenes?
+What about finding the prime numbers using the \href{https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes}{Sieve of Eratosthenes}?
 We all know the drill imperatively:
+\index{Sieve of Eratosthenes : imperativel}
 
 \begin{lstlisting}[style=JexlStyle][float]
 def is_prime( n ){
@@ -240,7 +250,7 @@ def is_prime( n ){
 }
 \end{lstlisting}
 Now, a declarative style coding :
-
+\index{Sieve of Eratosthenes : declarative}
 \begin{lstlisting}[style=JexlStyle][float]
 def is_prime( n ){
     primes = set{
@@ -267,6 +277,7 @@ It really is. Hence, declarative style is indeed succinct, and very powerful.
 
 
 \begin{section}{Comprehensions using Multiple Collections : Join}
+\index{Multiple Collection Comprehension : join()}
 
 In the previous sections we talked about the comprehensions using a single collection.
 But we know that there is this most general purpose comprehension, that is, 
@@ -314,6 +325,7 @@ for ( a : A ){
 \end{subsection}
 
 \begin{subsection}{Join Function}
+\index{join()}
 Observe that the free join, is really a full cross product, 
 and is available using the power operator :
 
@@ -325,17 +337,19 @@ j2 = join( A , B ) // [ [a,0] , [a,1] ,[b,0], [b,1] ]
 \end{lstlisting}
 
 But the power of $join()$ comes from the predicate expression one can pass in 
-the anonymous block. Observe now, if we need 2 permutations of a list :
+the anonymous block. Observe now, if we need 2 permutations of a list of 3 : $^3P_2$ :
 
 \begin{lstlisting}[style=JexlStyle][float]
 A = ['a','b', 'c' ]
 // generate 2 permutations 
-p2 = join{  $.0 != $.1 } ( A , A,  A ) 
+p2 = join{  $.0 != $.1 } ( A , A ) 
 \end{lstlisting}
  
 \end{subsection}
 
 \begin{subsection}{Finding Permutations }
+\index{Permutations}
+
 In the last subsection we figured out how to find 2 permutation.
 The problem is when we move beyond 2, the condition can not be aptly specified as $\$.0 != \$.1 $.
 It has to move beyond. So, for $^3P_3$ we have :
@@ -349,7 +363,9 @@ p2 = join{ #|set($)| == #|$|  } ( A , A,  A )
 which is the declarative form for permutation, given all elements are unique. 
 \end{subsection}
 
-\begin{subsection}{Searching for Addition Result }
+\begin{subsection}{Searching for a Tuple }
+\index{Searching for a tuple}
+
 In the last section we were searching for a tuple $t$ from two collections $A,B$,
 such that $c = t.0 + t.1$. We did that using power and break, now 
 we can do slightly better:
@@ -366,6 +382,8 @@ which is the declarative form of the problem.
 \end{subsection}
 
 \begin{subsection}{Finding Combinations}
+\index{Combinations}
+
 We did find permutation. What about combinations?
 What about we want to find combinations from 3 elements, 
 taken 2 at a time? We observe that every combination is still a permutation.

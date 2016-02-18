@@ -219,7 +219,8 @@ val = DEC(42.00001 ) // val is 42.00001
 
 \end{section}
 
-\begin{section}{The Chrono Family}\index{date}\index{time}\index{instant}
+\begin{section}{The Chrono Family}
+\index{date}\index{time}\index{instant}\index{format : date and time}
 
 Handling date and time has been a problem, that too with timezones.
 nJexl simplifies the stuff. 
@@ -231,7 +232,7 @@ We have three basic types to handle date/time:
 \end{enumerate}
 
 
-\begin{subsection}{Date}\index{date}
+\begin{subsection}{Date}\index{date()}
 This is how you create a date:
 \begin{lstlisting}[style=JexlStyle][float]
 val = date([ value, date_format ] )
@@ -261,9 +262,9 @@ dt = date('2016-02-18', 'yyyy-MM-dd' ) // Thu Feb 18 00:00:00 IST 2016
 
 \end{subsection}
 
-\begin{subsection}{Time}\index{time}
+\begin{subsection}{Time}\index{time()}
 
-This is how you create a joda $DateTime$:
+This is how you create a joda \href{http://joda-time.sourceforge.net/apidocs/org/joda/time/DateTime.html}{DateTime}:
 \begin{lstlisting}[style=JexlStyle][float]
 val = time([ value, date_format , time_zone] )
 \end{lstlisting}
@@ -301,7 +302,7 @@ dt_ny = time( dt, 'America/New_York' ) // 2016-02-17T22:23:02.754-05:00
 \end{subsection}
 
 
-\begin{subsection}{Instant}\index{instant}
+\begin{subsection}{Instant}\index{instant()}
 
 With no arguments, it gives the current instant time:
 
@@ -342,10 +343,144 @@ c = ( d == t ) // true
 \end{subsection}
 
 \begin{subsection}{Arithmetic on Chronos}
+\index{arithmetic : chorono}
+Dates, obviously can not be multiplied or divided.
+That would be a sin. However, dates can be added with other reasoanable values, 
+dates can be subtracted from one another, and $time()$ can be added or subtracted by days, months or even year.
+More of what all date time supports, 
+see the manual of \href{http://joda-time.sourceforge.net/apidocs/org/joda/time/DateTime.html}{DateTime}.
 
+To add time to a date, there is another nifty method :
+
+\begin{lstlisting}[style=JexlStyle][float]
+d = date('19470815') // Indian Day of Independence  
+time_delta_in_millis = 24 * 60 * 60 * 1000 // next day 
+nd = date( d.time + time_delta_in_millis ) // Sat Aug 16 00:00:00 IST 1947 
+\end{lstlisting}
+
+Same can easily be achived by the $plusDays()$ function :
+
+\begin{lstlisting}[style=JexlStyle][float]
+d = time('19470815') // Indian Day of Independence  
+nd = nd.plusDays(1) // 1947-08-16T00:00:00.000+05:30 
+\end{lstlisting}
+\end{subsection}
+
+\end{section}
+
+\begin{section}{String : Using str}
+\index{str()}
+Everything is just a string. It is. Thus every object should be able to be converted to and from out of strings.
+Converting an object to a string representation is called \href{https://en.wikipedia.org/wiki/Serialization}{Serialization},
+and converting a string back to the object format is called \emph{DeSerialization}.
+This is generally done in nJexl by the function $str()$.
+
+\begin{subsection}{Null}
+$str()$ never returns null, by design. Thus:
+\begin{lstlisting}[style=JexlStyle][float]
+s = str(null)
+s == 'null' // true  
+\end{lstlisting}
+\end{subsection}
+
+
+\begin{subsection}{Integer}
+\index{str : int,INT}
+For general integers family, $str()$ acts normally. However, it takes overload
+in case of $INT()$ or $BigInteger$ :
+\begin{lstlisting}[style=JexlStyle][float]
+bi = INT(42)
+s = str(bi) // '42'
+s = str(bi,2) // base 2 representation : 101010
+\end{lstlisting}
+\end{subsection}
+
+\begin{subsection}{Floating Point}
+\index{str : float,double,DEC}
+For general floating point family, $str()$ acts normally. 
+However, it takes overload, which is defined as :
+
+\begin{lstlisting}[style=JexlStyle][float]
+precise_string = str( float_value, num_of_digits_after_decimal )
+\end{lstlisting}
+
+To illustrate the point:
+
+\begin{lstlisting}[style=JexlStyle][float]
+d = 101.091891011
+str( d, 0 ) // 101 
+str(d,1) // 101.1  
+str(d,2) // 101.09 
+str(d,3) // 101.092 
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{Chrono}
+\index{str : date,time,instant }
+Given a chrono family instance, $str()$ can convert them to a format of your choice.
+These formats have been already discussed earlier, here they are again:
+\begin{enumerate}
+\item{Date : \href{https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html}{SimpleDateFormat} }
+\item{Time : \href{http://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFormat.html}{DateTimeFormat} }
+\end{enumerate}
+
+The syntax is :
+
+\begin{lstlisting}[style=JexlStyle][float]
+formatted_chrono = str( chrono_value , chrono_format )
+\end{lstlisting}
+
+Now, some examples :
+
+\begin{lstlisting}[style=JexlStyle][float]
+d = date()
+t = time()
+i = instant()
+str( d ) // default is 'yyyyMMdd' : 20160218
+str( t , 'dd - MM - yyyy' ) // 18 - 02 - 2016
+str( i , 'dd-MMM-yyyy' ) // 18-Feb-2016 
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{Collections}
+\index{ str : collections }
+Collections are formatted by str by default using `,'.
+The idea is same for all of the collections, thus we would simply showcase some:
+
+ 
+
+
+\end{subsection}
+
+\begin{subsection}{Generalized $toString()$ }
 \end{subsection}
 
 
 \end{section}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
