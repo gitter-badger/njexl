@@ -16,6 +16,7 @@
 package com.noga.njexl.lang.extension.dataaccess;
 
 import com.noga.njexl.lang.Interpreter;
+import com.noga.njexl.lang.JexlArithmetic;
 import com.noga.njexl.lang.JexlException;
 import com.noga.njexl.lang.Script;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
@@ -285,8 +286,10 @@ public class DataMatrix implements Arithmetic {
                 selectSetup.anon = (Interpreter.AnonymousParam)args[0];
                 args = TypeUtility.shiftArrayLeft(args,1);
             }
+            if ( args.length == 1 && JexlArithmetic.isListOrSetOrArray( args[0] ) ){
+                args = TypeUtility.array(args[0]);
+            }
         }
-
         if ( args.length == 0 ){
             //select all
             for ( int i = 0 ; i < columns.size();i++ ){
