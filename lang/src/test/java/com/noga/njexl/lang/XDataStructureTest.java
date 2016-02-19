@@ -427,6 +427,39 @@ public class XDataStructureTest extends JexlTestCase {
         s = JEXL.createScript("str(SR.OVERLAP)");
         o = s.execute(jc);
         assertEquals("OVERLAP",o);
+
+        // use the enum stuff
+
+        // can I now create an enum ?
+        s = JEXL.createScript("e1 = enum(SR)");
+        o = s.execute(jc);
+        assertNotNull(o);
+
+        // can I now create another same enum?
+        s = JEXL.createScript("e2 = enum('com.noga.njexl.lang.extension.SetOperations$SetRelation')");
+        o = s.execute(jc);
+        assertNotNull(o);
+
+        // let's do equality ?
+        s = JEXL.createScript("e2 == e1 ");
+        o = s.execute(jc);
+        assertTrue((Boolean) o);
+
+        // access properties?
+        s = JEXL.createScript("x = e1.OVERLAP  ");
+        o = s.execute(jc);
+        assertTrue(o instanceof Enum);
+
+        // call toString?
+        s = JEXL.createScript("str(e1)");
+        o = s.execute(jc);
+        assertTrue(o instanceof String);
+        assertTrue( ((String)o).startsWith("E") );
+
+        // Something not enum ?
+        s = JEXL.createScript("enum('foobar')");
+        o = s.execute(jc);
+        assertNull(o);
     }
 
     @Test

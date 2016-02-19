@@ -18,6 +18,7 @@ package com.noga.njexl.lang.extension;
 import com.noga.njexl.lang.*;
 import com.noga.njexl.lang.extension.dataaccess.DBManager;
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
+import com.noga.njexl.lang.extension.dataaccess.EnumWrapper;
 import com.noga.njexl.lang.extension.dataaccess.XmlMap;
 import com.noga.njexl.lang.extension.datastructures.Heap;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
@@ -83,6 +84,7 @@ public final class TypeUtility {
      * ***** The Casting Calls  ******
      */
 
+    public static final String ENUM = "enum";
     public static final String INT = "int";
     public static final String CHAR = "char";
     public static final String SHORT = "short";
@@ -2220,6 +2222,8 @@ public final class TypeUtility {
                 return castChar(argv);
             case SHORT:
                 return castShort(argv);
+            case ENUM :
+                return castEnum(argv);
             case INT:
                 return castInteger(argv);
             case LONG:
@@ -2349,6 +2353,18 @@ public final class TypeUtility {
                 break;
         }
         return methodName;
+    }
+
+    private static Object castEnum(Object... argv) {
+        if ( argv.length == 0 ) return null;
+        try{
+            EnumWrapper w = EnumWrapper.enumWrapper(argv[0]);
+            if ( argv.length > 1 ){
+                return w.get(argv[1]);
+            }
+            return w;
+        }catch (Exception e){}
+        return null;
     }
 
     private static Object sublist(Object... args) {
