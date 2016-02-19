@@ -16,7 +16,7 @@ syn clear
 syn keyword jxlExternal		import as 
 syn keyword jxlConditional	if else where break continue
 syn keyword jxlRepeat			while for 
-syn keyword jxlType			bool int INT double DEC NUM byte short char long float
+syn keyword jxlType			bool enum int INT double DEC NUM byte short char long float
 syn keyword jxlType			isa type var
 
 syn keyword jxlStatement		return
