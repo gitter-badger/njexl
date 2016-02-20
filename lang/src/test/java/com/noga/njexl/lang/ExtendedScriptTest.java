@@ -117,6 +117,12 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testExternalFileFunctionComposition()throws Exception {
+        Object o = runScript(JEXL, "samples/composition");
+        assertEquals(42,o);
+    }
+
+    @Test
     public void testTupleIndexing()throws Exception {
         JexlContext jc = new MapContext();
         ArrayList<String> cnames = new ArrayList<>();

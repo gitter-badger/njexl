@@ -1706,12 +1706,6 @@ public class NogaExtendedTest extends JexlTestCase {
         Object o = e.execute(jc);
         assertEquals(42,o);
 
-        s = "def s(){ int(__args__[0]) + 1 ; } ; def p(){  int(__args__[0]) - 1 ; } ; h = s*p ; h(0) ";
-        e = JEXL.createScript(s);
-        o = e.execute(jc);
-        // axiomatically composition of predecessor and successor is 0
-        assertEquals(0, o);
-
         s = "def f(){  'This is like reality!' } ;  h = f**0 ; h(0); ";
         e = JEXL.createScript(s);
         o = e.execute(jc);

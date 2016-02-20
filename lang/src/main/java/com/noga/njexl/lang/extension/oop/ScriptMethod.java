@@ -41,9 +41,11 @@ public class ScriptMethod implements Serializable {
 
     public static final String IDENTITY = "def(){ __args__ ; }" ;
 
-    public static final String COMPOSE = "def(){ _L_ = def() %s ; _R_ = def() %s ;  _L_(_R_(__args__) ) ; }" ;
+    public static final String COMPOSE = "def(){ _L_ = def() %s ; _R_ = def() %s ; _a_ = __args__ ; " +
+            " r = _R_( __args__ = _a_ ) ;  _L_( __args__ = array(r) ) ; }" ;
 
-    public static final String POW = "def(){ _ME_ = def() %s ; _a_ = __args__ ; for( i : [0:%d] ){ _a_ = _ME_( __args__ = _a_ ) } ; _a_ }" ;
+    public static final String POW = "def(){ _ME_ = def() %s ; _a_ = __args__ ; for( i : [0:%d] ) " +
+            " { _a_ = _ME_( __args__ = _a_ ) } ; _a_ }" ;
 
     public final transient String name;
 

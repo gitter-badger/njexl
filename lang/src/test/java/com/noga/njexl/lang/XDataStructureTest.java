@@ -524,6 +524,8 @@ public class XDataStructureTest extends JexlTestCase {
         assertTrue((Boolean)o);
     }
 
+    /*
+    Commented out because it is not needed now
     @Test
     public void testLoadLibrary() throws Exception{
         Script s = JEXL.createScript("load('./target/lib')" );
@@ -531,4 +533,6 @@ public class XDataStructureTest extends JexlTestCase {
         Object o = s.execute(jc);
         assertTrue((Boolean)o);
     }
+    */
+
 }

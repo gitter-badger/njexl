@@ -55,6 +55,7 @@ public class ReflectionUtility {
                     return false;
                 }
                 File[] files = f.listFiles();
+                if ( files == null ) return false ;
                 for (File file : files) {
                     name = file.getName();
                     if (file.isFile() && name.endsWith(".jar")) {

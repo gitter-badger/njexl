@@ -1,0 +1,10 @@
+def a(){
+    int ( __args__[0] )
+}
+def b(){
+    int ( __args__[0] )
+}
+h = a * b
+x = h(42)
+write ( x )
+x
