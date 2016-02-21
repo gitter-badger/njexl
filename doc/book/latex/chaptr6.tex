@@ -6,7 +6,7 @@ many useful stuff. In this chapter we shall talk about these types and how to co
 one to another.
 
 The general form for type casting can be written :
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = type_function(value, optional_default_value = null )
 \end{lstlisting}
 
@@ -30,13 +30,13 @@ We have :
 
 \begin{subsection}{Boolean}\index{bool()}
 The syntax is :
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = bool(value, optional_default_value = null )
 val = bool(value, optional_matching_values[2])
 \end{lstlisting}
 Observe both in action :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = bool("hello") // val is null
 val = bool("hello",false) // val is false
 val = bool('hi', ['hi' , 'bye' ] ) // val is true 
@@ -49,13 +49,13 @@ val = bool('bye', ['hi' , 'bye' ] ) // val is false
 This is almost never required, and is there for backward compatibility with Java data types.
 The syntax is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = short(value, optional_default_value = null )
 \end{lstlisting}
 
 Usage is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = short("hello") // val is null
 val = short("hello",0) // val is 0
 val = short('42') // val is 42 
@@ -70,13 +70,13 @@ interpreted by a code page.
 
 The syntax is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = char(value, optional_default_value = null )
 \end{lstlisting}
 
 Usage is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = char("hello") // val is "h"
 val = char(121231231,0) // val is 0
 val = char('4') // val is '4' 
@@ -91,13 +91,13 @@ for finding a character.
 \begin{subsection}{Integer}\index{int()}
 This is very useful and the syntax is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = int(value, optional_default_value = null )
 \end{lstlisting}
 
 Usage is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = int("hello") // val is null
 val = int("hello",0) // val is 0
 val = int('42') // val is 42 
@@ -112,13 +112,13 @@ val = int ( 10.9 ) // val is 10
 \begin{subsection}{Long}\index{long()}
 This is rarely required, and the syntax is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = long(value, optional_default_value = null )
 \end{lstlisting}
 
 Usage is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = long("hello") // val is null
 val = long("hello",0) // val is 0
 val = long('42') // val is 42 
@@ -132,13 +132,13 @@ val = long( 10.9 ) // val is 10
 \begin{subsection}{BigInteger}\index{INT()}
 This is sometimes required, and the syntax is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = INT(value, base=10, default_value = null )
 \end{lstlisting}
 
 Usage is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = INT("hello") // val is null
 val = INT('hi',10,42 )// val is 42
 val = INT('42') // val is 42 
@@ -161,13 +161,13 @@ We have :
 \begin{subsection}{Float}\index{float()}
 This is not very useful and the syntax is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = float(value, optional_default_value = null )
 \end{lstlisting}
 
 Usage is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = float("hello") // val is null
 val = float("hello",0) // val is 0.0
 val = float('42') // val is 42.0 
@@ -182,13 +182,13 @@ val = float ( 10.9 ) // val is 10.9
 \begin{subsection}{Double}\index{double()}
 This is generally required, and the syntax is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = double(value, optional_default_value = null )
 \end{lstlisting}
 
 Usage is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = double("hello") // val is null
 val = double("hello",0) // val is 0.0
 val = double('42') // val is 42.0 
@@ -202,13 +202,13 @@ val = double( 10.9 ) // val is 10.9
 \begin{subsection}{BigDecimal}\index{DEC()}
 This is sometimes required, and the syntax is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = DEC(value,default_value = null )
 \end{lstlisting}
 
 Usage is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = DEC("hello") // val is null
 val = DEC('hi',10,42 )// val is 42.0
 val = DEC('42') // val is 42.0 
@@ -234,18 +234,18 @@ We have three basic types to handle date/time:
 
 \begin{subsection}{Date}\index{date()}
 This is how you create a date:
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = date([ value, date_format ] )
 \end{lstlisting}
 
 With no arguments, it gives the current date time:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 today = date()
 \end{lstlisting}
 
 The default date format is $yyyyMMdd$, so :
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 dt = date('20160218') // Thu Feb 18 00:00:00 IST 2016
 \end{lstlisting}
 
@@ -254,7 +254,7 @@ see \href{https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.h
 
 Take for example :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 dt = date('2016/02/18', 'yyyy/MM/dd' ) // Thu Feb 18 00:00:00 IST 2016
 dt = date('2016-02-18', 'yyyy-MM-dd' ) // Thu Feb 18 00:00:00 IST 2016
 \end{lstlisting}
@@ -265,18 +265,18 @@ dt = date('2016-02-18', 'yyyy-MM-dd' ) // Thu Feb 18 00:00:00 IST 2016
 \begin{subsection}{Time}\index{time()}
 
 This is how you create a joda \href{http://joda-time.sourceforge.net/apidocs/org/joda/time/DateTime.html}{DateTime}:
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 val = time([ value, date_format , time_zone] )
 \end{lstlisting}
 
 With no arguments, it gives the current date time:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 today = time()
 \end{lstlisting}
 
 The default date format is $yyyyMMdd$, so :
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 dt = time('20160218') // 2016-02-18T00:00:00.000+05:30
 \end{lstlisting}
 
@@ -285,7 +285,7 @@ see \href{http://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFor
 
 Take for example :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 dt = time('2016/02/18', 'yyyy/MM/dd' ) // 2016-02-18T00:00:00.000+05:30
 dt = time('2016-02-18', 'yyyy-MM-dd' ) // 2016-02-18T00:00:00.000+05:30
 \end{lstlisting}
@@ -293,7 +293,7 @@ dt = time('2016-02-18', 'yyyy-MM-dd' ) // 2016-02-18T00:00:00.000+05:30
 If you want to convert one time to another timezone, you need to give the time, 
 and the \href{http://joda-time.sourceforge.net/timezones.html}{timezone}:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 dt = time()
 dt_honolulu = time(dt , 'Pacific/Honolulu' ) // 2016-02-17T17:23:02.754-10:00 
 dt_ny = time( dt, 'America/New_York' ) // 2016-02-17T22:23:02.754-05:00
@@ -306,7 +306,7 @@ dt_ny = time( dt, 'America/New_York' ) // 2016-02-17T22:23:02.754-05:00
 
 With no arguments, it gives the current instant time:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 today = instant()
 \end{lstlisting}
 
@@ -320,7 +320,7 @@ All these date time types are freely mixable,
 and all comparison operations are defined with them.
 Thus :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 d = date() // wait for some time 
 t = time() // wait for some time 
 i = instant()
@@ -333,7 +333,7 @@ Tow dates can be equal to one another, but not two instances,
 that is a very low probability event, almost never.
 Thus, equality makes sense when we know it is date, and not instant :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 d = date('19470815') // Indian Day of Independence  
 t = time('19470815') // Indian Day of Independence  
 // now compare 
@@ -352,7 +352,7 @@ see the manual of \href{http://joda-time.sourceforge.net/apidocs/org/joda/time/D
 
 To add time to a date, there is another nifty method :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 d = date('19470815') // Indian Day of Independence  
 time_delta_in_millis = 24 * 60 * 60 * 1000 // next day 
 nd = date( d.time + time_delta_in_millis ) // Sat Aug 16 00:00:00 IST 1947 
@@ -360,7 +360,7 @@ nd = date( d.time + time_delta_in_millis ) // Sat Aug 16 00:00:00 IST 1947
 
 Same can easily be achived by the $plusDays()$ function :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 d = time('19470815') // Indian Day of Independence  
 nd = nd.plusDays(1) // 1947-08-16T00:00:00.000+05:30 
 \end{lstlisting}
@@ -368,7 +368,7 @@ nd = nd.plusDays(1) // 1947-08-16T00:00:00.000+05:30
 And times can be subtracted :
 \index{chrono : subtraction}
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 d = time('19470815') // Indian Day of Independence  
 nd = d.plusDays(1) // 1947-08-16T00:00:00.000+05:30 
 diff = nd - d // 86400000 ## Long (millisec gap between two dates)
@@ -389,7 +389,7 @@ This is generally done in nJexl by the function $str()$.
 
 \begin{subsection}{Null}
 $str()$ never returns null, by design. Thus:
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 s = str(null)
 s == 'null' // true  
 \end{lstlisting}
@@ -400,7 +400,7 @@ s == 'null' // true
 \index{str : int,INT}
 For general integers family, $str()$ acts normally. However, it takes overload
 in case of $INT()$ or $BigInteger$ :
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 bi = INT(42)
 s = str(bi) // '42'
 s = str(bi,2) // base 2 representation : 101010
@@ -412,13 +412,13 @@ s = str(bi,2) // base 2 representation : 101010
 For general floating point family, $str()$ acts normally. 
 However, it takes overload, which is defined as :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 precise_string = str( float_value, num_of_digits_after_decimal )
 \end{lstlisting}
 
 To illustrate the point:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 d = 101.091891011
 str( d, 0 ) // 101 
 str(d,1) // 101.1  
@@ -439,13 +439,13 @@ These formats have been already discussed earlier, here they are again:
 
 The syntax is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 formatted_chrono = str( chrono_value , chrono_format )
 \end{lstlisting}
 
 Now, some examples :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 d = date()
 t = time()
 i = instant()
@@ -461,7 +461,7 @@ str( i , 'dd-MMM-yyyy' ) // 18-Feb-2016
 Collections are formatted by str by default using `,'.
 The idea is same for all of the collections, thus we would simply showcase some:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l = [1,2,3,4]
 s = str(l) // '1,2,3,4'
 s == '1,2,3,4' // true 
@@ -471,7 +471,7 @@ s == '1#2#3#4' // true
 
 So, in essence, for $str()$, serializing the collection, the syntax is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 s = str( collection [ ,  seperation_string ] )
 \end{lstlisting}
 
@@ -483,7 +483,7 @@ s = str( collection [ ,  seperation_string ] )
 This brings to the point that we can linearize a collection of collections using $str()$.
 Observe how:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l = [1,2,3,4]
 m = [ 'a' , 'b' , 'c' ] 
 j = l * m // now this is a list of lists, really 
@@ -496,7 +496,7 @@ s_form = str{  str($,'#')  }(j, '&') // lineraize
 Another way to handle the linerisation is that of dictionary like property buckets:
 \index{ str : linearize objects }
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 d = { 'a' : 10 , 'b' : 20  } 
 s_form = str{  [ $.a , $.b ]  }(d,'@' ) // lineraize, generates : 10@20
 \end{lstlisting}

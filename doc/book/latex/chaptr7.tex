@@ -17,7 +17,7 @@ Most of the languages choose to use a non linear, tree oriented import.
 nJexl focuses on minimising pain, so the import directive is linear.
 The syntax is simple enough :
 \index{import : java}
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 import 'import_path' as unique_import_identifer
 \end{lstlisting}
 
@@ -34,14 +34,14 @@ This \emph{unique\_import\_identifer} is known as the namespace.
 
 Observe, if you want to import the class $java.lang.Integer$ :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 import 'java.lang.Integer' as Int
 \end{lstlisting}
 
 This directive would import the class, and create an alias which is $Int$.
 To use this class further, now, we should be using :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 Int:parseInt('20') // int : 20
 Int:valueOf('20') // int : 20 
 \end{lstlisting}
@@ -49,7 +49,7 @@ Int:valueOf('20') // int : 20
 In the same way, one can import an nJexl script :
 \index{import : nJexl Script}
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 // w/o any extension it would find the script automatically 
 import 'from/some/folder/awesome' as KungFuPanda
 // call a function in the script 
@@ -68,7 +68,7 @@ The example of outer class, or rather a proper class
 has been furnished already. So, we would try to import a class
 which is not there in the $CLASS\_PATH$ at all.
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 // put all dependencies of xmlbeans.jar in there
 success = load('path/to/xmlbeans_jar_folder') // true/false 
 import 'org.apache.xmlbeans.GDate' as AGDate
@@ -78,7 +78,7 @@ Once we have this class now, we can choose to instantiate it,
 See the manual of this class \href{https://xmlbeans.apache.org/docs/2.1.0/reference/org/apache/xmlbeans/GDate.html}{here}:
 
 \index{new()}
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 //create the class instance : use new() 
 gd1 = new ( AGDate, date() )
 // 2016-02-18T21:13:19+05:30
@@ -92,7 +92,7 @@ This is how we call Java objects, in general from nJexl.
 
 Calling methods now is easy:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 cal = gd1.getCalendar() // calls a method 
 /* 2016-02-18T21:13:19+05:30 */
 \end{lstlisting}
@@ -100,20 +100,46 @@ cal = gd1.getCalendar() // calls a method
 Note that thanks to the way nJexl works, a method of the form $getXyz$
 is equivalent to a field call $xyz$ so :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 cal = gd1.calendar // calls the method but like a field! 
 /* 2016-02-18T21:13:19+05:30 */
 \end{lstlisting}
 
+\end{subsection}
+
+
+\begin{subsection}{Import Enum}
+\index{import : enum}\index{enum()}
+Enums can be imported just like classes.
+However, to use one, one should use the $enum()$ function:
+
+\begin{lstlisting}[style=JexlStyle]
+// creates a wrapper for the enum 
+e = enum('com.noga.njexl.lang.extension.SetOperations')
+// the enum value access using name 
+value = e.OVERLAP
+// using integer index 
+value = e[4] 
+\end{lstlisting}
+
+The same thing can be achieved by :
+
+\begin{lstlisting}[style=JexlStyle]
+// gets the value for the enum 
+v = enum('com.noga.njexl.lang.extension.SetOperations', 'OVERLAP' )
+v = enum('com.noga.njexl.lang.extension.SetOperations', 4 )
+\end{lstlisting}
 
 \end{subsection}
+
+
 
 \begin{subsection}{Import Static Field}
 \index{import : static field}
 
 Import lets you import static fields too. For example :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 // put all dependencies of xmlbeans.jar in there
 import 'java.lang.System.out' as OUT
 // now call println 
@@ -122,7 +148,7 @@ OUT.println("Hello,World") // prints it!
 
 However, another way of achieving the same is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 // put all dependencies of xmlbeans.jar in there
 import 'java.lang.System' as SYS
 // now call println 
@@ -140,7 +166,7 @@ For example, observe from the SDK code of
 \href{http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/8u40-b25/java/util/HashMap.java/}{HashMap},
 that there is this inner static class $EntrySet$. So to import that:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 // note that $ symbol for the inner class
 import 'java.util.HashMap$EntrySet' as ES
 \end{lstlisting}
@@ -157,7 +183,7 @@ so in this section we would discuss how to create a re-usable script.
 \begin{subsection}{Creating a Script}
 We start with a basic script, let's call it $hello.jxl$ :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 /* hello.jxl */
 def say_hello(arg){
    write('Hello, ' + str(arg) )
@@ -182,7 +208,7 @@ which shares the same folder as the ``hello.jxl''.
 Let's call this script $caller.jxl$. So, to import 
 ``hello.jxl'' in $caller.jxl$ we can do the following :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 import './hello.jxl' as Hello
 \end{lstlisting}
    
@@ -191,7 +217,7 @@ the relative path would with respect to the runtimes
 run directory. So, relative path, relative to the caller
 would become a mess. To solve this problem, relative import is invented.
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 import '_/hello.jxl' as Hello
 Hello:say_hello('Waseem!" ) 
 \end{lstlisting}
@@ -207,7 +233,7 @@ Thus, without any $PATH$ hacks, the nJexl system works perfectly fine.
 
 Functions can be called by using the namespace identifier, the syntax is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 import 'some/path/file' as NS
 NS:function(args,... ) 
 \end{lstlisting}
@@ -215,7 +241,7 @@ NS:function(args,... )
 If one needs to call the whole script, as a function, 
 that is also possible, and that is done using the $\_\_me\_\_$ directive:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 import 'some/path/file' as NS
 NS:__me__(args,... ) 
 \end{lstlisting}
@@ -223,7 +249,7 @@ We will get back passing arguments to a function in a later chapter.
 But in short, to call $hello.jxl$, as a function, the code would be :
 \index{import : script as function}
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 import '_/hello.jxl' as Hello
 Hello:__me__() 
 \end{lstlisting}

@@ -25,7 +25,7 @@ Start with hello curry, whose game is to distribute food to the client. Hence it
 
 Certain things in the implementations are invariant,  one needs a database to store the users and their settings, and the food items. The code to showcase what to display as items are also fixed in nature. The real business problem is the \emph{discounted} one . Under normal circumstances, one would write this code :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 for ( item : items ){
    if ( discounted(item) ){
       display_item_discounted(item)

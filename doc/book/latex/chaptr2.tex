@@ -100,7 +100,7 @@ However, nJexl has a set of features, which completely differs from Java. Some o
 }
 
 \item { Nested Functions : functions can be nested :
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 def parent_function( a ) {
     def child_function (b) {
         // child can use parents args: happily.
@@ -115,7 +115,7 @@ def parent_function( a ) {
 
 \item { Functions are objects, as the above example aptly shows, they can be returned, and assigned : 
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 fp = parent_function(10) 
 r = fp(32 ) // result will be 42.
 \end{lstlisting}

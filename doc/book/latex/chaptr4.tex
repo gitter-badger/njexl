@@ -37,7 +37,7 @@ And the precise formulation of what is a sorted array/list is done.
 To check, if some element is, in some sense exists inside a container ( list, set, dict, array, heap )
 one needs to use the $IN$ operator, which is $@$. \index{operator : \@}
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l = [1,2,3,4] // l is an array 
 in = 1 @ l // in is true 
 in = 10 @ l // in is false 
@@ -58,7 +58,7 @@ This was not simply put in the place simply because we dislike $x.contains(y)$, 
 We dislike the form of object orientation where there is no guarantee that $x$ would be null or not.
 Formally, then :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 // equivalent function 
 def in_function(x,y){
    if ( empty(x) ) return false 
@@ -72,7 +72,7 @@ y @ x // same result
 \begin{subsection}{Size of Containers : empty, size, cardinality}
 To check whether a container is empty or not, 
 use the $empty()$ \index{empty()} function, just mentioned above. Hence:
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 n = null
 e = empty(n) // true 
 n = []
@@ -88,7 +88,7 @@ e = empty(nn) // false
 For the actual size of it, there are two alternatives.
 One is the $size()$ \index{size()}  function :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 n = null
 e = size(n) // -1 
 n = []
@@ -105,7 +105,7 @@ Observe that it returns negative given input null.
 That is a very nice way of checking null.
 The other one is the $cardinal$ operator \index{operator : cardinality }:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 n = null
 e = #|n| // 0 
 n = []
@@ -132,7 +132,7 @@ We are already familiar with the usage of $index()$ function from chapter 2.
 But we would showcase some usage :
 \index{Predicate Logic : there exist : index() }
  
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l = [ 1, 2, 3, 4, 5, 6 ]
 // search an element such that double of it is 6
 i = index{ $ * 2 == 6 }(l) // i : 2 
@@ -150,7 +150,7 @@ which runs from right to left.
 
 \index{Predicate Logic : there exist : rindex() }
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l = [ 1, 2, 3, 4, 5, 6 ]
 // search an element such that it is greater than 3  
 i = index{ $ > 3 }(l) // i : 3
@@ -172,7 +172,7 @@ We need to solve the problem of \emph{for all}. This is done by $select()$ funct
 The way select function works is : executes the anonymous statement block, and if the condition is true, 
 then select and collect that particular element, and returns a list of collected elements.
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l = [ 1, 2, 3, 4, 5, 6 ]
 // select all even elements 
 evens = select{ $ % 2 == 0 }(l)
@@ -187,7 +187,7 @@ Given a $select()$, we are effectively partitioning the collection into two halv
 $select()$ selects the matching partition. In case we want both the partitions, then 
 we can use the $partition()$ function \index{partition()}.
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l = [ 1, 2, 3, 4, 5, 6 ]
 #(evens,odds) = partition{ $ % 2 == 0 }(l)
 write(evens) // prints 2, 4, 6 
@@ -204,7 +204,7 @@ The result would be the result of the condition, but the where clause body
 would be get executed. Thus, we can change the value we want to collect
 by replacing the $ITEM$ variable, that is $\$$.
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l = [ 1, 2, 3, 4, 5, 6 ]
 #(evens,odds) = partition{ where($ % 2 == 0){ $ = $**2  }  }(l)
 write(evens) // prints 4, 16, 36 
@@ -295,7 +295,7 @@ $$
 \index{Set Operations : Collection}
 
 For the sets, the operations are trivial.
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 s1 = set(1,2,3,4)
 s2 = set(3,4,5,6)
 u = s1 | s2 // union is or : u = { 1,2,3,4,5,6}
@@ -323,7 +323,7 @@ So, when we calculate the following :
 \end{enumerate}
 With this, we go on for lists:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l1 = list(1,2,3,3,4,4)
 l2 = list(3,4,5,6)
 u = l1 | l2 // union is or : u = { 1,2,3,3,4,4,5,6}
@@ -338,7 +338,7 @@ because there the dictionary can be treated as a list of key-value pairs.
 So, for one pair to be equal to another, both the key and the value must match.
 Thus:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 d1 = {'a' : 10, 'b' : 20 , 'c' : 30 }
 d2 = {'c' : 20 , 'd' : 40  }
 // union is or : u = { 'a' : 10, 'b' : 20, 'c' : [ 30,20] , 'd' : 40  }
@@ -353,7 +353,7 @@ delta = d1 ^ d2 // delta = {'a' : 10, 'b' : 20, 'd': 40}
 \begin{subsection}{Collection Cross Product and Power}
 The cross product, as defined, with the multiply operator:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l1 = [1,2,3]
 l2 = ['a','b' ]
 cp = l1 * l2 
@@ -374,7 +374,7 @@ $$
 For general collection power can not be negative.
 Here are some examples now:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 b = [0,1]
 gate_2 = b*b // [ [0,0],[0,1],[1,0],[1,1] ]
 another_gate_2 = b ** 2 // same as b*b 
@@ -385,7 +385,7 @@ gate_4 = b ** 4 // all truth values for 4 input gate
 String is also a collection, and all of these are applicable for string too.
 But it is a special collection, so only power operation is allowed.
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 s = "Hello"
 s2 = s**2 // "HelloHello"
 s_1 = s**-1 // "olleH"
@@ -410,7 +410,7 @@ it would return false to showcase that the relation fails.
 
 So, we go again with sets:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 s1 = set(1,2,3)
 s2 = set(1,3)
 sub = s2 < s1 // true  
@@ -425,7 +425,7 @@ s1 != s3 // true
 
 So, we go again with lists:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l1 = list(1,2,3,3,4)
 l2 = list(1,3,2)
 sub = l2 < l1 // true  
@@ -440,7 +440,7 @@ l1 != l3 // true
 
 And finally with dictionaries:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 d1 = {'a' : 10, 'b' : 20 , 'c' : 30 }
 d2 = {'c' : 30 , 'a' : 10  }
 sub = ( d2 < d1) // true 
@@ -452,7 +452,7 @@ sup = ( d1 > d2) // true
 One can choose to intermingle $set$ with $list$, that promotes the $set$ to $list$.
 Thus :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 s = set(1,2,3)
 l = list(1,3,3,2)
 sub = s < l  // true  
@@ -471,7 +471,7 @@ But what about we start thinking as \href{https://en.wikipedia.org/wiki/Tuple}{t
 Does a tuple contains in another tuple? That is we can find the items in order? 
 "@" operator solves that too :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l = [1,2]
 m = [1,2,3,4]
 in = l @ m // true 
@@ -479,7 +479,7 @@ in = l @ m // true
 
 The $index()$, and $rindex()$ generates the index of where the match occurred:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l = [1,2]
 m = [1,2,3,4,1,2]
 // read which : index is l in m?
@@ -491,7 +491,7 @@ Sometimes it is of importance to get the notion of $starts\_with$ and $ends\_wit
 There are two special operators :
 \index{Tuple Operation : Starts With, Ends With}
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 // read m starts_with l 
 sw = m #^ l // true 
 // read m ends with l 
@@ -501,7 +501,7 @@ ew = m #$ l // true
 Note that this is also true for strings, as they are collections of characters.
 So, these are legal:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 s = 'abracadabra'
 prefix = 'abra'
 suffix = prefix

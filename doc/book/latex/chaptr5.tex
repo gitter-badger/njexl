@@ -8,7 +8,7 @@ In this chapter we would see how different collections can be made from existing
 
 \begin{subsection}{Arrays and List}
 The general form for list and arrays can be written ( as from chapter 2 ):
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 def map(item) {/* does some magic */}
 def comprehension(function, items){
    c = collection()
@@ -24,7 +24,7 @@ c = collection{ function($) }(items)
 Obviously $list()$ generates $list$ and $array()$ generates $array$.
 \index{Comprehensions : array(), list() }
 Hence, these are valid :
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 an = array{ $ + 2 }([1,2,3,4]) // [ 3,4,5,6 ]
 ln = list{ $ ** 2 }([1,2,3,4]) // [1,4,9,16 ]
 \end{lstlisting}
@@ -40,7 +40,7 @@ and finally added to the final collection.
 Set also follows the same behavioural pattern just like $array()$ and $list()$, but one needs 
 to remember that the $set$ collection does not allow duplicates. Thus:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 s = set{ $ % 3 }( [1,2,3,4,5] ) // [0,1,2]
 \end{lstlisting}
 
@@ -57,7 +57,7 @@ Dictionaries are special kind of a collection with $(key,value)$ pair with uniqu
 Thus, creating a dictionary would mean uniquely specifying the key, value pair.
 That can be specified either in a dictionary tuple way, or simply a pair way: 
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 // range can be passed in for collection
 d = dict{ t = { $ : $**2 }  }([0:4])
 /* d = {0 : 0, 1 : 1, 2 : 4, 3:9 }  */
@@ -68,7 +68,7 @@ There is another way of creating a dictionary, that is,
 passing two collections of same size, and making first collection 
 as keys, mapping it to the corresponding second collection as values:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 k = ['a','b','c' ]
 v = [1,2,3]
 d = dict(k,v)
@@ -87,7 +87,7 @@ d = dict(k,v)
 In normal iterative languages, there are continue and break.
 
 The idea of continue would be as follows :
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 for ( i : items ){
     if ( condition(i) ){
       // execute some 
@@ -100,7 +100,7 @@ That is, when the condition is true, execute the code block,
 and then continue without going down further ( not going to do something else ). 
 
 The idea of the break is :
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 for ( i : items ){
     if ( condition(i) ){
       // execute some 
@@ -119,7 +119,7 @@ Evidently they change the flow of control of the iterations.
 As we can see, the $condition()$ is implicit in both $break$ and $continue$,
 in nJexl this has become explicit. Observe that:  
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 for ( i : items ){
     continue( condition(i) ){ /* continue after executing this */} 
     // do something else 
@@ -131,7 +131,7 @@ that is, given a list of integers, if $n$ is divisible by $3$ print $Fizz$,
 if something is divisible by $5$, print $Buzz$, and for anything else print the number $n$. 
 A solution is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 for ( n : integers ){
     continue( n % 15 ){ write('FizzBuzz') }
     continue( n % 3 ){ write('Fizz') }
@@ -150,7 +150,7 @@ earlier subsection.
 As mentioned in the previous subsection, 
 $break$ also has the same features as continue. 
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 for ( i : items ){
     break( condition(i) ){ /* break loop after executing this */} 
     // do something else 
@@ -165,7 +165,7 @@ $$
 \exists (a,b) \in A \times B \; ; \; s.t. \; a + b = c  
 $$
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 A = [ 1, 4, 10, 3, 8 ]
 B = [ 2, 11, 6 , 9 ]
 c = 10 
@@ -182,20 +182,20 @@ Obviously, the block of the break is optional.
 One can readily use the $break$ and $continue$ in larger scheme of comprehensions.
 Observe this :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l_e1 = select{ $ % 2 == 0 }([0:10])
 l_e2 = list{ continue($ % 2 != 0) ; $ }([0:10])
 \end{lstlisting}
 Both are the same list. Thus, a theoretical conversion rule is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 ls = select{ <condition> }(collection)
 lc = list{ continue( not ( <condition> ) ) ; $ }(collection)
 \end{lstlisting}
 now, the $ls == lc$, by definition.
 More precisely, for a generic $select$ with $where$ clause:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 ls = select{ where ( <condition> ){ <body> } }(collection)
 lc = list{ continue( not ( <condition> ) ) ; <body> }(collection)
 \end{lstlisting}
@@ -203,14 +203,14 @@ Obviously, the $list$ function can be replaced with any $collection$ type : $arr
 
 Similarly, $break$ can be used to simplify conditions :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l_e1 = select{ $ % 2 == 0 and $ < 5 }([0:10])
 l_e2 = list{ break( $ > 5 ) ;  continue($ % 2 != 0) ; $ }([0:10])
 \end{lstlisting}
 
 Note that Break body is inclusive:
   
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l = list{ break( $ > 3 ) { $ } ; $ }([0:10])
 /* l = [ 1,2,3, 4] */
 \end{lstlisting}
@@ -223,7 +223,7 @@ One can use the $PARTIAL$ for using one one function to substitute another,
 albeit loosing efficiency.
 Below, we use list to create $effectively$ a set:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 l = list{ continue( $ @ _$_ ) ; $ }( [1,1,2,3,1,3,4] )
 /* l = [ 1,2,3, 4] */
 \end{lstlisting}
@@ -233,7 +233,7 @@ What about finding the prime numbers using the \href{https://en.wikipedia.org/wi
 We all know the drill imperatively:
 \index{Sieve of Eratosthenes : imperativel}
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 def is_prime( n ){
     primes = set(2,3,5)
     for ( x : [6:n+1] ){
@@ -251,7 +251,7 @@ def is_prime( n ){
 \end{lstlisting}
 Now, a declarative style coding :
 \index{Sieve of Eratosthenes : declarative}
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 def is_prime( n ){
     primes = set{
     // store the current number
@@ -301,7 +301,7 @@ $$
 Observe this, to generate a cross product of collection $A,B$, we must
 go for nested loops like this:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 for ( a : A ){
    for ( b : B ) {
      write ( '(%s,%s)', a,b ) 
@@ -313,7 +313,7 @@ Hence, the idea behind generating a tuple is nested loop.
 
 Thus, the $join()$ operation with $condition()$ predicate essentially is :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 collect = collection()
 for ( a : A ){
    for ( b : B ) {
@@ -329,7 +329,7 @@ for ( a : A ){
 Observe that the free join, is really a full cross product, 
 and is available using the power operator :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 A = ['a','b']
 B = [ 0, 1 ]
 j1 = A * B // [ [a,0] , [a,1] ,[b,0], [b,1] ]
@@ -339,7 +339,7 @@ j2 = join( A , B ) // [ [a,0] , [a,1] ,[b,0], [b,1] ]
 But the power of $join()$ comes from the predicate expression one can pass in 
 the anonymous block. Observe now, if we need 2 permutations of a list of 3 : $^3P_2$ :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 A = ['a','b', 'c' ]
 // generate 2 permutations 
 p2 = join{  $.0 != $.1 } ( A , A ) 
@@ -354,7 +354,7 @@ In the last subsection we figured out how to find 2 permutation.
 The problem is when we move beyond 2, the condition can not be aptly specified as $\$.0 != \$.1 $.
 It has to move beyond. So, for $^3P_3$ we have :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 A = ['a','b', 'c' ]
 // generate 3 permutations 
 p2 = join{ #|set($)| == #|$|  } ( A , A,  A ) 
@@ -370,7 +370,7 @@ In the last section we were searching for a tuple $t$ from two collections $A,B$
 such that $c = t.0 + t.1$. We did that using power and break, now 
 we can do slightly better:
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 A = [ 1, 4, 10, 3, 8 ] 
 B = [ 2, 11, 6 , 9 ]
 c = 10
@@ -390,7 +390,7 @@ taken 2 at a time? We observe that every combination is still a permutation.
 So, once it qualified as a permutation, we need to check that if the pair
 is in strictly increasing order or not (sorted). Thus :
 
-\begin{lstlisting}[style=JexlStyle][float]
+\begin{lstlisting}[style=JexlStyle]
 A = [ 'a' ,'b', 'c' ] 
 c = join{ // check permutation , then 
        #|set($)| == #|$| and 
