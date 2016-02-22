@@ -917,13 +917,26 @@ lfold{ do_something($) }(items)
 \end{lstlisting}
 The idea can be found here in a more \href{https://en.wikipedia.org/wiki/Fold\_(higher-order\_function)}{elaborative} way.
 We must remember that the partial exists, and the general fold function is defined as :
-
+\index{lfold(),rfold()}
 \begin{lstlisting}[style=JexlStyle]
 // folds from left side of the collection 
 lfold{ /* body */ }(items[, seed_value ])
 // folds from right side of the collection 
 rfold{ /* body */ }(items[, seed_value ])
 \end{lstlisting}
+
+First we showcase what right to left means in case of $rfold()$ :
+
+\begin{lstlisting}[style=JexlStyle]
+items = [0,1,2,3,4]
+rfold{ write('%s ', $ ) }( items )
+\end{lstlisting}
+This prints :
+\begin{lstlisting}[style=all]
+4 3 2 1 0 
+\end{lstlisting}
+
+
 
 Let us showcase some functionalities using fold functions,
 we start with factorial : \index{fold : factorial}
@@ -938,19 +951,19 @@ We move onto find Fibonacci : \index{fold : Fibonacci}
 fib_n = lfold{ #(p,c) = _$_ ;  [ c , p + c]  }([0:n+1],[0,1])
 \end{lstlisting}
 
-We now sum the elements up:
+We now sum the elements up: \index{fold : sum}
 
 \begin{lstlisting}[style=JexlStyle]
 sum_n = rfold{ _$_ + $  }( [2:n+1] , 0 )
 \end{lstlisting}
 
-Generate a set from a list :
+Generate a set from a list : \index{fold : set}
 
 \begin{lstlisting}[style=JexlStyle]
 my_set = lfold{ _$_ += $ }( [1,2,1,2,3,4,5] , set() )
 \end{lstlisting}
 
-Finding min/max of a collection :
+Finding min/max of a collection : \index{fold : min,max}
 
 \begin{lstlisting}[style=JexlStyle]
 l = [1,8,1,2,3,4,5] 
@@ -962,21 +975,39 @@ l = [1,8,1,2,3,4,5]
 // (1,8)                    
 \end{lstlisting}
 
-Finding match index of a collection :
+Finding match index of a collection : \index{fold : index}
 
 \begin{lstlisting}[style=JexlStyle]
 inx = lfold{ break ( $  > 3 ){  _$_ = _ }  }( [1,2,1,2,3,4,5]  )
 \end{lstlisting}
 
 So, as we can see, the $fold$ functions are the basis of every other functions
-that we have seen. We finally end with replacing select function using fold:
-
+that we have seen. We show how to replace select function using fold: 
+\index{fold : select}
 \begin{lstlisting}[style=JexlStyle]
 // selects all elements less than than equal to 3
 selected = lfold{ 
                 continue ( $  > 3 )  
                 _$_ += $   
            }( [1,2,1,2,3,4,5] , list() )
+\end{lstlisting}
+
+To do an $index()$ function : \index{fold : index}
+
+\begin{lstlisting}[style=JexlStyle]
+// first find the element greater than 3
+selected = lfold{ 
+                break ( $  > 3 ) { _ }   
+           }( [1,2,1,2,3,4,5] )
+\end{lstlisting}
+
+And to do an $rindex()$ function : \index{fold : rindex}
+
+\begin{lstlisting}[style=JexlStyle]
+// first find the element less than 3
+selected = rfold{ 
+                break ( $  < 3 ) { _ }   
+           }( [1,2,1,2,3,4,5] )
 \end{lstlisting}
 
 \end{subsection}
