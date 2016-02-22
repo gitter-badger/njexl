@@ -915,7 +915,7 @@ for ( i : items ){
 // or use fold
 lfold{ do_something($) }(items)
 \end{lstlisting}
-The idea can be found here in a more \href{https://en.wikipedia.org/wiki/Fold_(higher-order_function)}{elaborative} way.
+The idea can be found here in a more \href{https://en.wikipedia.org/wiki/Fold\_(higher-order\_function)}{elaborative} way.
 We must remember that the partial exists, and the general fold function is defined as :
 
 \begin{lstlisting}[style=JexlStyle]
@@ -938,13 +938,46 @@ We move onto find Fibonacci : \index{fold : Fibonacci}
 fib_n = lfold{ #(p,c) = _$_ ;  [ c , p + c]  }([0:n+1],[0,1])
 \end{lstlisting}
 
-We end with by summing the elements up:
+We now sum the elements up:
 
 \begin{lstlisting}[style=JexlStyle]
 sum_n = rfold{ _$_ + $  }( [2:n+1] , 0 )
 \end{lstlisting}
 
+Generate a set from a list :
+
+\begin{lstlisting}[style=JexlStyle]
+my_set = lfold{ _$_ += $ }( [1,2,1,2,3,4,5] , set() )
+\end{lstlisting}
+
+Finding min/max of a collection :
+
+\begin{lstlisting}[style=JexlStyle]
+l = [1,8,1,2,3,4,5] 
+#(min,max) = lfold{ #(m,M)  = _$_ 
+                    continue( $ > M ){ _$_ = [ m, $] }   
+                    continue( $ < m ){ _$_ = [ $, M] } 
+                    _$_ // return it off, when nothing matches   
+                    }( l , [l.0, l.0] )
+// (1,8)                    
+\end{lstlisting}
+
+Finding match index of a collection :
+
+\begin{lstlisting}[style=JexlStyle]
+inx = lfold{ break ( $  > 3 ){  _$_ = _ }  }( [1,2,1,2,3,4,5]  )
+\end{lstlisting}
+
+So, as we can see, the $fold$ functions are the basis of every other functions
+that we have seen. We finally end with replacing select function using fold:
+
+\begin{lstlisting}[style=JexlStyle]
+// selects all elements less than than equal to 3
+selected = lfold{ 
+                continue ( $  > 3 )  
+                _$_ += $   
+           }( [1,2,1,2,3,4,5] , list() )
+\end{lstlisting}
 
 \end{subsection}
-
 \end{section}
