@@ -24,15 +24,12 @@ import com.noga.njexl.lang.extension.datastructures.Heap;
 import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.datastructures.Tuple;
 import com.noga.njexl.lang.extension.datastructures.XList;
-import com.noga.njexl.lang.extension.iterators.DateIterator;
-import com.noga.njexl.lang.extension.iterators.SymbolIterator;
-import com.noga.njexl.lang.extension.iterators.YieldedIterator;
+import com.noga.njexl.lang.extension.iterators.*;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
 import com.noga.njexl.lang.internal.Introspector;
 import com.noga.njexl.lang.parser.ASTReturnStatement;
 import com.noga.njexl.lang.parser.ASTStringLiteral;
 import com.noga.njexl.lang.parser.JexlNode;
-import com.noga.njexl.lang.extension.iterators.RangeIterator;
 import com.noga.njexl.lang.parser.Parser;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -947,7 +944,7 @@ public final class TypeUtility {
         return null;
     }
 
-    public static XList<String> readLines(Object... args) throws Exception {
+    public static Object readLines(Object... args) throws Exception {
         XList<String> lines = null;
         if (args.length == 0) {
             lines = new XList<>();
@@ -960,8 +957,11 @@ public final class TypeUtility {
             }
             return lines;
         }
-        lines = new XList<>(Files.readAllLines(new File(args[0].toString()).toPath()));
-        return lines;
+        if ( args.length != 1 ) {
+            lines = new XList<>(Files.readAllLines(new File(args[0].toString()).toPath()));
+            return lines;
+        }
+        return new FileIterator(String.valueOf(args[0]));
     }
 
     public static BigInteger castBigInteger(Object... args) {

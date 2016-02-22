@@ -354,9 +354,14 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertTrue(o instanceof BufferedReader);
 
-        s = JEXL.createScript("fp.close(); lines('foo.txt') ");
+        s = JEXL.createScript("fp.close(); lines('foo.txt',true) ");
         o = s.execute(jc);
         assertTrue(o instanceof List);
+
+        // implementing wc -l : LOL
+        s = JEXL.createScript("lfold{ _$_ + 1  }(lines('foo.txt') , 0 ) ");
+        o = s.execute(jc);
+        assertTrue(o instanceof Integer);
 
         s = JEXL.createScript("system('ls','foo.txt')");
         o = s.execute(jc);
