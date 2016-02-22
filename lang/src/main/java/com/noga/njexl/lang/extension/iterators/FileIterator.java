@@ -42,6 +42,8 @@ public class FileIterator extends YieldedIterator {
 
     public final String location ;
 
+    protected String line;
+
     protected final BufferedReader reader;
 
     public FileIterator(String location) throws Exception {
@@ -68,34 +70,40 @@ public class FileIterator extends YieldedIterator {
 
     @Override
     public void reset() {
-        index = -1;
+        index = -1 ;
     }
 
     @Override
-    public boolean hasNext() {
-        return index < lines.size() ;
+    public synchronized boolean hasNext() {
+        line();
+        return line != null ;
     }
 
-    @Override
-    public synchronized Object next() {
+    protected String line(){
         if ( eof ){
-            return lines.get(index++);
+            return lines.get(++index);
         }
         try{
-           String line = reader.readLine();
-           if ( line == null ){
-               eof = true ;
-               reader.close();
-           } else{
-               lines.add(line);
-               index++;
-           }
+            line = reader.readLine();
+            index++;
+            if ( line == null ){
+                eof = true ;
+                reader.close();
+                index = lines.size();
+                return line;
+            }
+            lines.add(line);
+            return line;
         }catch (Exception e) {
             eof = true ;
         }
         return null;
     }
 
+    @Override
+    public synchronized Object next() {
+        return line ;
+    }
 
     @Override
     public boolean equals(Object obj) {
