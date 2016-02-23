@@ -54,7 +54,7 @@ public class DirectoryDataSource extends DataSource {
 
         public TextDataFile(String file) throws Exception{
             data = new ArrayList<>();
-            List<String> lines = TypeUtility.readLines(file);
+            List<String> lines = (List)TypeUtility.readLines(file,false);
             for ( int i = 0 ; i < lines.size();i++ ){
                 String line =  lines.get(i);
                 String[] row = line.split(DELIMITER);
