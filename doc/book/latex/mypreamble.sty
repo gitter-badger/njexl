@@ -934,3 +934,14 @@
   morestring=[b]`, % defines that strings are enclosed in back quotes
 }
 
+\lstdefinelanguage{XML}
+{
+  morestring=[s]{"}{"},
+  morecomment=[s]{?}{?},
+  morecomment=[s]{!--}{--},
+  commentstyle=\color{darkgray},
+  moredelim=[s][\color{black}]{>}{<},
+  moredelim=[s][\color{red}]{\ }{=},
+  stringstyle=\color{darkgreen},
+  identifierstyle=\color{darkred}
+}
