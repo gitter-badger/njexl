@@ -1,0 +1,203 @@
+\chapter{Input and Output}\label{input-output}
+
+{\LARGE IO} is of very importance for software testing
+and business development. There are two parts to it, the generic IO, 
+which deals with how to read/write from disk, and to and from url.
+There is another part of the data stuff, that is structured data.
+nJexl let's you do both, and those are the topic of this chapter.
+
+\begin{section}{Reading}
+
+\begin{subsection}{read() function}
+Reading is done by this versatile $read()$ function.
+\index{read()}
+The general syntax is :
+\begin{lstlisting}[style=JexlStyle]
+value = read(source_to_read)
+\end{lstlisting}
+The source can actually be a file, an UNC path, an url.
+Note that given it is a file, $read()$ reads the whole 
+of it at a single go, so, be careful with the file size. 
+
+\begin{lstlisting}[style=JexlStyle]
+value = read('my_file.txt')
+/* value contains all the text in my_file.txt */
+\end{lstlisting}
+\end{subsection}
+
+\begin{subsection}{Reading from url : HTTP GET}
+\index{read() : http get}
+Read can be used to read from an url.
+Simply :
+
+\begin{lstlisting}[style=JexlStyle]
+value = read('http://www.google.co.in')
+/* value contains all the data in the google home page */
+\end{lstlisting}
+
+To handle the timeouts, it comes with overloads:
+\index{read() : url timeout }
+\begin{lstlisting}[style=JexlStyle]
+// url, connection timeout, read timeout, all in millisec
+value = read('http://www.google.co.in', 10000, 10000 )
+/* value contains all the data in the google home page */
+\end{lstlisting}
+
+\index{read() : http get : url generation }
+To generate the url to $get$, the fold function comes handy:
+\begin{lstlisting}[style=JexlStyle]
+_url_ = 'https://httpbin.org/get'
+params = { 'foo' : 'bar' , 'complexity' : 'sucks'  }
+// str: is the namespace alias for 'java.lang.String'
+data = str{  
+          str:format( "%s=%s" , $.key, $.value )  
+      }( params.entrySet() , '&' )
+response = read( str:format("%s?%s", _url_ , data ) )
+\end{lstlisting}
+\index{restful api : get}
+And that is how you do a restful api call, using $get$.
+\end{subsection}
+
+\begin{subsection}{Reading All Lines}
+\index{ lines() }
+The function $lines()$ reads all the lines, 
+and puts them into different strings, so that it returns 
+a list of strings, each string a line.
+With no other arguments, it defers the reading of next line, 
+so it does not read the whole bunch together.
+
+\begin{lstlisting}[style=JexlStyle]
+for ( line : lines('my_file.txt') ){
+   write(line) // proverbial cat program 
+}
+\end{lstlisting}
+In short, the $lines()$ method yields an iterator.
+But with this, it reads the whole file together :
+
+\begin{lstlisting}[style=JexlStyle]
+ll = lines ( 'my_file.txt' , true )
+\end{lstlisting}
+
+This is again a synchronous call, and thus, it would 
+be advisable to take care.
+
+\end{subsection}
+
+\end{section}
+
+\begin{section}{Writing}
+
+\begin{subsection}{write() function}
+
+We are already familiar with the write function.
+\index{write()}
+With a single argument, it writes the data back to the standard output:
+
+\begin{lstlisting}[style=JexlStyle]
+write('Hello,World!')
+\end{lstlisting}
+
+Given that the first argument does not contain a "\%" symbol,
+the write functionality also writes the whole string to a file
+with the name :
+\index{write() : file }
+\begin{lstlisting}[style=JexlStyle]
+// creates my_file.txt, writes the string to it 
+write('my_file.txt', 'Hello,World!')
+\end{lstlisting}
+
+Given there is formatting arguments with "\%" symbols, 
+works as if it is a $printf()$ call :
+\index{write() : formatting}
+\begin{lstlisting}[style=JexlStyle]
+//  writes the string to it 
+write('%s\n', 'Hello,World!')
+\end{lstlisting}
+The formatting guide can be found 
+\href{https://sharkysoft.com/archive/printf/docs/javadocs/lava/clib/stdio/doc-files/specification.htm}{here}. 
+\end{subsection}
+
+\begin{subsection}{Writing to url : HTTP POST}
+Write can be used to send POST call to urls, observe the following:
+\index{write() : url : post}
+\begin{lstlisting}[style=JexlStyle]
+_url_ = 'https://httpbin.org/post'
+params = { 'foo' : 'bar' , 'complexity' : 'sucks'  }
+response = write(  _url_ , params )
+\end{lstlisting}
+\end{subsection}
+
+\begin{subsection}{Sending to url : send() function}
+\index{send()}
+To write back to url, or rather for sending anything to a server,
+there is a specialised send() function.
+
+
+\end{subsection}
+
+\end{section}
+
+\begin{section}{File Processing}
+
+\begin{subsection}{fopen() function}
+\end{subsection}
+
+\begin{subsection}{Reading}
+\end{subsection}
+
+\begin{subsection}{Writing}
+\end{subsection}
+
+\end{section}
+
+\begin{section}{Working with JSON}
+
+\begin{subsection}{json() function}
+\end{subsection}
+
+\begin{subsection}{Accessing Fields}
+\end{subsection}
+
+\end{section}
+
+\begin{section}{Working with XML}
+
+\begin{subsection}{xml() function}
+\end{subsection}
+
+\begin{subsection}{Accessing Elements}
+\end{subsection}
+
+\begin{subsection}{XPATH Formulation}
+\end{subsection}
+
+\begin{subsection}{Xml to JSON}
+\end{subsection}
+
+\end{section}
+
+\begin{section}{DataMatrix}
+
+\begin{subsection}{matrix() function}
+\end{subsection}
+
+\begin{subsection}{Accessing Rows}
+\end{subsection}
+
+\begin{subsection}{Tuple Formulation}
+\end{subsection}
+
+\begin{subsection}{Select and Project}
+\end{subsection}
+
+\begin{subsection}{Keys and Aggregation}
+\end{subsection}
+
+\begin{subsection}{Diff Functions}
+\end{subsection}
+
+
+\end{section}
+
+\begin{section}{Database Connectivity}
+\end{section}
