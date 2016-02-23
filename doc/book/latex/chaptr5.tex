@@ -133,9 +133,9 @@ A solution is :
 
 \begin{lstlisting}[style=JexlStyle]
 for ( n : integers ){
-    continue( n % 15 ){ write('FizzBuzz') }
-    continue( n % 3 ){ write('Fizz') }
-    continue( n % 5 ){ write('Buzz') }
+    continue( n % 15 == 0 ){ write('FizzBuzz') }
+    continue( n % 3 == 0 ){ write('Fizz') }
+    continue( n % 5 == 0 ){ write('Buzz') }
     write(n) 
 }
 \end{lstlisting}
@@ -289,7 +289,7 @@ Now, we want to generate this collection of tuples
 $$
 e = <e_1,e_2,...,e_n> \; \in S_1 \times S_2 \times ... \times S_n
 $$ 
-such that the condition ( {https://en.wikipedia.org/wiki/Predicate\_(mathematical\_logic)}{predicate} ) $P(e) = true $.
+such that the condition ( \href{https://en.wikipedia.org/wiki/Predicate\_(mathematical\_logic)}{predicate} ) $P(e) = true $. \index{predicate}
 This is what join really means. Formally, then :
 $$
 \{  e \in S_1 \times S_2 \times ... \times S_n \; | \; P(e) \} 
