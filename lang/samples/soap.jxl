@@ -1,0 +1,10 @@
+template_pay_load = read('samples/soap_body.xml')
+pay_load = str:format ( template_pay_load , 'Hyderabad', 'India' )
+headers = { "SOAPAction" : "http://www.webserviceX.NET/GetWeather" , 
+             "Content-Type" : "text/xml; charset=utf-8" }
+__url__ = "http://www.webservicex.net/globalweather.asmx"
+resp = send( __url__ , "POST" , pay_load , headers ) 
+x = xml(resp)
+sr = x.element("//GetWeatherResult")
+write(sr.text)
+not empty ( sr.text )

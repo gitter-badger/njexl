@@ -36,6 +36,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -60,8 +61,11 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import com.noga.njexl.lang.Interpreter.AnonymousParam;
+
 import static com.noga.njexl.lang.Interpreter.NULL;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -202,29 +206,29 @@ public final class TypeUtility {
 
     public static Object atomic(Object... args) throws Exception {
         if (args.length == 0) return null;
-        if ( args[0] instanceof Boolean ){
-            return new AtomicBoolean((Boolean)args[0]);
+        if (args[0] instanceof Boolean) {
+            return new AtomicBoolean((Boolean) args[0]);
         }
-        if ( args[0] instanceof Integer ){
+        if (args[0] instanceof Integer) {
             return new AtomicInteger((Integer) args[0]);
         }
-        if ( args[0] instanceof Long ){
+        if (args[0] instanceof Long) {
             return new AtomicLong((Long) args[0]);
         }
-        if ( args[0] instanceof Map ){
-            return  Collections.synchronizedMap((Map)args[0]);
+        if (args[0] instanceof Map) {
+            return Collections.synchronizedMap((Map) args[0]);
         }
-        if ( args[0] instanceof List ){
-            return  Collections.synchronizedList((List)args[0]);
+        if (args[0] instanceof List) {
+            return Collections.synchronizedList((List) args[0]);
         }
-        if ( args[0] instanceof Set ){
-            return  Collections.synchronizedSet((Set)args[0]);
+        if (args[0] instanceof Set) {
+            return Collections.synchronizedSet((Set) args[0]);
         }
-        if ( args[0] instanceof Collection ){
-            return  Collections.synchronizedCollection((Collection)args[0]);
+        if (args[0] instanceof Collection) {
+            return Collections.synchronizedCollection((Collection) args[0]);
         }
-        if ( args[0] != null ){
-            if ( args.getClass().isArray() ){
+        if (args[0] != null) {
+            if (args.getClass().isArray()) {
                 return new Tuple(args[0]);
             }
             return new AtomicReference<>(args[0]);
@@ -243,16 +247,16 @@ public final class TypeUtility {
         }
 
         Map map = new HashMap<>();
-        map.put("t", z.getName() );
+        map.put("t", z.getName());
         List fi = new XList<>();
         List fs = new XList<>();
         String[] fields = introspector.getFieldNames(z);
         for (String f : fields) {
-            Field field = introspector.getField(z,f);
-            XList.Pair pair = new XList.Pair(f,field.getType() );
-            if ( java.lang.reflect.Modifier.isStatic(field.getModifiers() )){
+            Field field = introspector.getField(z, f);
+            XList.Pair pair = new XList.Pair(f, field.getType());
+            if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
                 fs.add(pair);
-            }else{
+            } else {
                 fi.add(pair);
             }
         }
@@ -279,6 +283,7 @@ public final class TypeUtility {
 
     /**
      * Opens a file for read/write
+     *
      * @param args arguments, 2nd one is the mode "r/w/a"
      * @return PrintStream or BufferedReader
      * @throws Exception in case of any error
@@ -313,6 +318,7 @@ public final class TypeUtility {
 
     /**
      * Tokenizes a string
+     *
      * @param args first is the string, next the regex, then true|false for the case matching
      * @return a matcher if there is no anonymous arg, else a list of result of all matches
      */
@@ -367,8 +373,9 @@ public final class TypeUtility {
     /**
      * Folds as in functional programming
      * https://en.wikipedia.org/wiki/Fold_(higher-order_function)
+     *
      * @param right : if true, does a right fold
-     * @param args the arguments to the fold
+     * @param args  the arguments to the fold
      * @return the result of the fold
      */
     public static Object fold(boolean right, Object... args) {
@@ -424,9 +431,9 @@ public final class TypeUtility {
 
         int size = l.size();
         if (anon == null) {
-            if ( size == 0 ) return "" ;
-            String sep = SetOperations.SEP ;
-            if ( args.length> 1 ){
+            if (size == 0) return "";
+            String sep = SetOperations.SEP;
+            if (args.length > 1) {
                 sep = String.valueOf(args[1]);
             }
             if (right) {
@@ -468,6 +475,7 @@ public final class TypeUtility {
 
     /**
      * http://en.wikipedia.org/wiki/Fisher–Yates_shuffle#The_modern_algorithm
+     *
      * @param args the argument
      * @return true if did shuffle, false if could not
      */
@@ -511,6 +519,7 @@ public final class TypeUtility {
      * If input is precisely 0, or 0,0 it returns nextGaussian
      * If input it integer and non zero, that is random(x) and random(x,y)
      * Then returns nextInt(x) and ranges it off
+     *
      * @param args arguments
      * @return see the doc
      */
@@ -524,7 +533,7 @@ public final class TypeUtility {
         } else if (args[0] instanceof Iterator) {
             args[0] = YieldedIterator.list((Iterator) args[0]);
         }
-        if (args[0] instanceof Boolean ) {
+        if (args[0] instanceof Boolean) {
             return random.nextBoolean();
         }
 
@@ -539,12 +548,12 @@ public final class TypeUtility {
                 return random.nextFloat();
             }
             if (args[0] instanceof BigInteger) {
-                int size = ((BigInteger)args[0]).toString(2).length();
+                int size = ((BigInteger) args[0]).toString(2).length();
                 StringBuffer buf = new StringBuffer();
-                if ( random.nextBoolean() ){
+                if (random.nextBoolean()) {
                     buf.append("-");
                 }
-                for ( int i = 0 ; i < size; i++ ){
+                for (int i = 0; i < size; i++) {
                     long l = Math.abs(random.nextLong());
                     buf.append(l);
                 }
@@ -552,13 +561,13 @@ public final class TypeUtility {
             }
 
             if (args[0] instanceof BigDecimal) {
-                int size = ((BigDecimal)args[0]).precision() + 1 ;
+                int size = ((BigDecimal) args[0]).precision() + 1;
                 StringBuffer buf = new StringBuffer();
-                if ( random.nextBoolean() ){
+                if (random.nextBoolean()) {
                     buf.append("-");
                 }
                 buf.append("0.");
-                for ( int i = 0 ; i < size; i++ ){
+                for (int i = 0; i < size; i++) {
                     long l = Math.abs(random.nextLong());
                     buf.append(l);
                 }
@@ -627,8 +636,8 @@ public final class TypeUtility {
             }
             return Array.get(args[0], index);
         }
-        if (args[0] instanceof Class && ((Class)args[0]).isEnum() ) {
-            Object[] values = ((Class)args[0]).getEnumConstants();
+        if (args[0] instanceof Class && ((Class) args[0]).isEnum()) {
+            Object[] values = ((Class) args[0]).getEnumConstants();
             int index = random.nextInt(values.length);
             if (args.length > 1) {
                 // how many stuff we need?
@@ -659,7 +668,7 @@ public final class TypeUtility {
                 return r;
             }
             // return the tuple
-            return new XList.Pair( l.get(index), m.get(l.get(index))) ;
+            return new XList.Pair(l.get(index), m.get(l.get(index)));
         }
         return random;
     }
@@ -685,13 +694,13 @@ public final class TypeUtility {
         String text = String.valueOf(args[0]);
         if (args.length > 1) {
             algorithm = text;
-            text = String.valueOf( args[1] ) ;
+            text = String.valueOf(args[1]);
         }
-        if ( "e64".equalsIgnoreCase(algorithm)){
-           // do base 64 encoding
-           return Base64.getEncoder().encodeToString(text.getBytes(StandardCharsets.UTF_8));
+        if ("e64".equalsIgnoreCase(algorithm)) {
+            // do base 64 encoding
+            return Base64.getEncoder().encodeToString(text.getBytes(StandardCharsets.UTF_8));
         }
-        if ( "d64".equalsIgnoreCase(algorithm)){
+        if ("d64".equalsIgnoreCase(algorithm)) {
             // do base 64 decoding
             byte[] barr = Base64.getDecoder().decode(text.getBytes(StandardCharsets.UTF_8));
             return new String(barr);
@@ -826,29 +835,66 @@ public final class TypeUtility {
     public static final Pattern URL =
             Pattern.compile("^http(s)?://.+", Pattern.CASE_INSENSITIVE);
 
+    public static String send(Object... args) throws Exception {
+        if (args.length == 0) return "";
+        String u = String.valueOf(args[0]);
+        String method = "GET";
+        Object params = Collections.EMPTY_MAP;
+        Map headers = Collections.EMPTY_MAP;
+        int connectionTimeOut = 0;
+        int readTimeOut = 0;
 
-    public static String send(String u, String method, Map<String, String> params) throws Exception {
+        if (args.length > 1) {
+            method = String.valueOf(args[1]);
+            if (args.length > 2) {
+                params = args[2];
+                if (args.length > 3) {
+                    headers = (Map) args[3];
+                    if (args.length > 4) {
+                        connectionTimeOut = castInteger(args[4], 0);
+                        if (args.length > 5) {
+                            readTimeOut = castInteger(args[5], 0);
+                        }
+                    }
+                }
+            }
+        }
+        return sendUrl(u, method, params, headers, connectionTimeOut, readTimeOut);
+    }
+
+    public static String sendUrl(String u, String method,
+                                 Object body,
+                                 Map<String, String> headers,
+                                 int connectionTimeOut, int readTimeOut)
+            throws Exception {
 
         boolean get = false;
 
         if ("GET".equalsIgnoreCase(method)) {
             get = true;
         }
-        StringBuffer buf = new StringBuffer();
-        Iterator<String> iterator = params.keySet().iterator();
-        if (iterator.hasNext()) {
-            String k = iterator.next();
-            String v = params.get(k);
-            buf.append(k).append("=").append(v);
-            while (iterator.hasNext()) {
-                buf.append("&");
-                k = iterator.next();
-                v = params.get(k);
+        Map<String, String> params;
+        String urlParameters;
+        StringBuffer buf;
+        if (body instanceof Map) {
+            params = (Map) body;
+            buf = new StringBuffer();
+            Iterator<String> iterator = params.keySet().iterator();
+            if (iterator.hasNext()) {
+                String k = iterator.next();
+                String v = params.get(k);
                 buf.append(k).append("=").append(v);
+                while (iterator.hasNext()) {
+                    buf.append("&");
+                    k = iterator.next();
+                    v = params.get(k);
+                    buf.append(k).append("=").append(v);
+                }
             }
+            urlParameters = buf.toString();
+        } else {
+            urlParameters = String.valueOf(body);
         }
-        String urlParameters = buf.toString();
-
         if (get) {
             URL url = new URL(u + "?" + urlParameters);
             return readUrl(url);
@@ -860,8 +906,14 @@ public final class TypeUtility {
         ((HttpURLConnection) conn).setRequestMethod(method);
         String type = "application/x-www-form-urlencoded";
         conn.setRequestProperty("Content-Type", type);
-        conn.setRequestProperty("Content-Length", String.valueOf(urlParameters.length()));
 
+        for (String key : headers.keySet()) {
+            conn.setRequestProperty(key, headers.get(key));
+        }
+
+        conn.setRequestProperty("Content-Length", String.valueOf(urlParameters.length()));
+        conn.setConnectTimeout(connectionTimeOut);
+        conn.setReadTimeout(readTimeOut);
         OutputStream writer = conn.getOutputStream();
         writer.write(urlParameters.getBytes());
         writer.flush();
@@ -957,7 +1009,7 @@ public final class TypeUtility {
             }
             return lines;
         }
-        if ( args.length != 1 ) {
+        if (args.length != 1) {
             lines = new XList<>(Files.readAllLines(new File(args[0].toString()).toPath()));
             return lines;
         }
@@ -972,14 +1024,14 @@ public final class TypeUtility {
         BigInteger fallBack = null;
         if (args.length > 1) {
             base = castInteger(args[1]);
-            if ( args.length > 2 ){
-                fallBack = castBigInteger( args[2]);
+            if (args.length > 2) {
+                fallBack = castBigInteger(args[2]);
             }
         }
         String val = String.valueOf(args[0]).trim();
         try {
             return new BigInteger(val, base);
-        }catch (Throwable t){
+        } catch (Throwable t) {
             return fallBack;
         }
     }
@@ -990,12 +1042,12 @@ public final class TypeUtility {
         }
         BigDecimal fallBack = null;
         if (args.length > 1) {
-            fallBack = castBigDecimal( args[1]);
+            fallBack = castBigDecimal(args[1]);
         }
         String val = String.valueOf(args[0]).trim();
         try {
-            return new BigDecimal(val, MathContext.UNLIMITED );
-        }catch (Throwable t){
+            return new BigDecimal(val, MathContext.UNLIMITED);
+        } catch (Throwable t) {
             return fallBack;
         }
     }
@@ -1047,7 +1099,7 @@ public final class TypeUtility {
             return 0;
         }
         if (args[0] instanceof Character) {
-            return (Character)args[0];
+            return (Character) args[0];
         }
         if (args[0] instanceof String) {
             String s = ((String) args[0]);
@@ -1099,16 +1151,15 @@ public final class TypeUtility {
         }
         if (args[0] instanceof Date || args[0] instanceof DateTime) {
             dt = new DateTime(args[0]);
+        } else if (args[0] instanceof Instant) {
+            dt = new DateTime(Date.from((Instant) args[0]));
         }
-        else if (args[0] instanceof Instant ) {
-            dt = new DateTime(Date.from ((Instant)args[0] ));
+        if (args[0] instanceof Number) {
+            dt = new DateTime(((Number) args[0]).longValue());
         }
-        if (args[0] instanceof Number ) {
-            dt = new DateTime( ((Number)args[0]).longValue() );
-        }
-        if ( dt != null ){
-            if ( args.length > 1 ){
-                DateTimeZone zone = DateTimeZone.forID( String.valueOf(args[1]));
+        if (dt != null) {
+            if (args.length > 1) {
+                DateTimeZone zone = DateTimeZone.forID(String.valueOf(args[1]));
                 return dt.withZone(zone);
             }
             return dt;
@@ -1119,9 +1170,9 @@ public final class TypeUtility {
             if (args.length > 1) {
                 dateTimeFormatter = DateTimeFormat.forPattern(args[1].toString());
             }
-            dt =  DateTime.parse(args[0].toString(), dateTimeFormatter);
-            if ( args.length > 2 ){
-                DateTimeZone zone = DateTimeZone.forID( String.valueOf(args[2]));
+            dt = DateTime.parse(args[0].toString(), dateTimeFormatter);
+            if (args.length > 2) {
+                DateTimeZone zone = DateTimeZone.forID(String.valueOf(args[2]));
                 return dt.withZone(zone);
             }
             return dt;
@@ -1133,7 +1184,7 @@ public final class TypeUtility {
 
     public static Instant castInstant(Object... args) {
         DateTime dt = castTime(args);
-        return dt.toDate().toInstant() ;
+        return dt.toDate().toInstant();
     }
 
     public static Date castDate(Object... args) {
@@ -1148,11 +1199,11 @@ public final class TypeUtility {
         }
 
         if (args[0] instanceof Instant) {
-            return Date.from( ((Instant) args[0]) );
+            return Date.from(((Instant) args[0]));
         }
 
         if (args[0] instanceof Number) {
-            return new Date( ((Number)args[0]).longValue() );
+            return new Date(((Number) args[0]).longValue());
         }
 
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyyMMdd");
@@ -1290,16 +1341,16 @@ public final class TypeUtility {
         Class c = args[0].getClass();
         if (List.class.isAssignableFrom(c) || c.isArray()) {
             List l = from(args[0]);
-            if ( l.isEmpty() ) return "" ;
+            if (l.isEmpty()) return "";
             StringBuffer buf = new StringBuffer();
             String sep = ",";
             if (args.length > 1 && args[1] != null) {
                 sep = args[1].toString();
             }
-            Iterator itr = l.iterator() ;
+            Iterator itr = l.iterator();
             Object o = itr.next();
             buf.append(o);
-            while ( itr.hasNext() ) {
+            while (itr.hasNext()) {
                 o = itr.next();
                 buf.append(sep).append(o);
             }
@@ -1402,9 +1453,9 @@ public final class TypeUtility {
         }
         for (int i = 0; i < args.length; i++) {
             List l = from(args[i]);
-            if ( l != null ) {
+            if (l != null) {
                 list.addAll(l);
-            }else{
+            } else {
                 list.add(l);
             }
         }
@@ -1456,7 +1507,7 @@ public final class TypeUtility {
                 anon.setIterationContextWithPartial(list, o, i, l);
                 Object ret = anon.execute();
                 if (ret instanceof JexlException.Continue) {
-                    JexlException.Continue c = (JexlException.Continue)ret;
+                    JexlException.Continue c = (JexlException.Continue) ret;
                     //continue exclusive, unless you pass along a value
                     if (c.hasValue) {
                         //should add _ITEM_ 's value, if anyone modified it
@@ -1598,7 +1649,7 @@ public final class TypeUtility {
                     if (args[1] instanceof Collection) {
                         return ((Collection) args[1]).size() - 1;
                     }
-                    return Array.getLength(args[1]) -1 ;
+                    return Array.getLength(args[1]) - 1;
                 }
                 int inx = r.lastIndexOf(l);
                 // how many seps are there?
@@ -1678,7 +1729,7 @@ public final class TypeUtility {
                 // a different iterator ...
                 Character et = castChar(args[0]);
                 if (args.length > 1) {
-                    if (args[1] instanceof String || args[1] instanceof Character ) {
+                    if (args[1] instanceof String || args[1] instanceof Character) {
                         Character st = castChar(args[1]);
                         if (args.length > 2) {
                             String d = args[2].toString();
@@ -1732,9 +1783,9 @@ public final class TypeUtility {
             Object max = min;
             for (int i = 1; i < l.size(); i++) {
                 Object item = l.get(i);
-                AnonymousComparator cmp = new AnonymousComparator(anon,l,false);
-                int cmpResult = cmp.compare(item, min );
-                if (cmpResult < 0 ) {
+                AnonymousComparator cmp = new AnonymousComparator(anon, l, false);
+                int cmpResult = cmp.compare(item, min);
+                if (cmpResult < 0) {
                     // i.e. item < min, hence change min
                     min = item;
                     continue;
@@ -1765,29 +1816,29 @@ public final class TypeUtility {
         return container;
     }
 
-    public static Map obj2dict(Object o) throws Exception{
-        Map fm = (Map)inspect(o);
-        List<XList.Pair> iFields = (List)fm.get("f");
+    public static Map obj2dict(Object o) throws Exception {
+        Map fm = (Map) inspect(o);
+        List<XList.Pair> iFields = (List) fm.get("f");
         Map omap = new HashMap<>();
         omap.put("@t", o.getClass().getName());
-        for (XList.Pair f : iFields ){
-            String n = String.valueOf(f.getKey()) ;
-            Field field = introspector.getField(o.getClass(),n);
+        for (XList.Pair f : iFields) {
+            String n = String.valueOf(f.getKey());
+            Field field = introspector.getField(o.getClass(), n);
             Object value = field.get(o);
-            omap.put(n,value );
+            omap.put(n, value);
         }
         return Collections.unmodifiableMap(omap);
     }
 
     public static Heap makeHeap(Object... args) throws Exception {
-        if ( args.length == 0 ) return null;
-        if ( args.length == 1 ) return new Heap(castInteger(args[0]));
-        if ( args[0] instanceof AnonymousParam ){
-            AnonymousComparator comparator = new AnonymousComparator((AnonymousParam)args[0],null,false);
+        if (args.length == 0) return null;
+        if (args.length == 1) return new Heap(castInteger(args[0]));
+        if (args[0] instanceof AnonymousParam) {
+            AnonymousComparator comparator = new AnonymousComparator((AnonymousParam) args[0], null, false);
             int s = castInteger(args[1]);
             return new Heap(s, comparator);
         }
-        if ( args[1] instanceof Boolean ) {
+        if (args[1] instanceof Boolean) {
             return new Heap(castInteger(args[0]), (Boolean) args[1]);
         }
         return new Heap(castInteger(args[0]), (Comparator) args[1]);
@@ -1946,8 +1997,8 @@ public final class TypeUtility {
             return false;
         }
         Object args0 = args[0];
-        if ( args0 instanceof String ){
-            throw new Error( String.valueOf(args0) );
+        if (args0 instanceof String) {
+            throw new Error(String.valueOf(args0));
         }
         boolean ret;
         args = shiftArrayLeft(args, 1);
@@ -1963,16 +2014,16 @@ public final class TypeUtility {
             ret = castBoolean(args0, false);
         }
         if (ret) {
-            if ( args.length > 0  ){
-                if ( args[0] instanceof Error ){
-                    throw  (Error)args[0] ;
+            if (args.length > 0) {
+                if (args[0] instanceof Error) {
+                    throw (Error) args[0];
                 }
-                if ( args[0] instanceof Throwable ){
-                    throw new Error( (Throwable)args[0] );
+                if (args[0] instanceof Throwable) {
+                    throw new Error((Throwable) args[0]);
                 }
-                throw new Error( castString( args[0] ) );
+                throw new Error(castString(args[0]));
             }
-            throw new Error( "Caused by *error* " );
+            throw new Error("Caused by *error* ");
         }
         // log it - later problem - not now
         return false;
@@ -2004,8 +2055,8 @@ public final class TypeUtility {
             Object[] pair = new Object[]{o1, o2};
             anon.setIterationContext(collection, pair, -1);
             Object ret = anon.execute();
-            if ( ret instanceof Number ){
-                int i = ((Comparable)ret).compareTo(0);
+            if (ret instanceof Number) {
+                int i = ((Comparable) ret).compareTo(0);
                 return i;
             }
             boolean smaller = castBoolean(ret, false);
@@ -2135,8 +2186,8 @@ public final class TypeUtility {
             ret[1] = anon.execute();
         } catch (Throwable throwable) {
             ret[1] = throwable.getCause();
-            if ( ret[1] == null ){
-                ret[1] = throwable ;
+            if (ret[1] == null) {
+                ret[1] = throwable;
             }
 
         } finally {
@@ -2222,7 +2273,7 @@ public final class TypeUtility {
                 return castChar(argv);
             case SHORT:
                 return castShort(argv);
-            case ENUM :
+            case ENUM:
                 return castEnum(argv);
             case INT:
                 return castInteger(argv);
@@ -2289,8 +2340,7 @@ public final class TypeUtility {
             case WRITE:
                 return writeFile(argv);
             case SEND:
-                return send(String.valueOf(argv[0]),
-                        String.valueOf(argv[1]), makeDict(argv[2]));
+                return send(argv);
             case BYE:
                 bye(argv);
                 break;
@@ -2356,14 +2406,15 @@ public final class TypeUtility {
     }
 
     private static Object castEnum(Object... argv) {
-        if ( argv.length == 0 ) return null;
-        try{
+        if (argv.length == 0) return null;
+        try {
             EnumWrapper w = EnumWrapper.enumWrapper(argv[0]);
-            if ( argv.length > 1 ){
+            if (argv.length > 1) {
                 return w.get(argv[1]);
             }
             return w;
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
         return null;
     }
 
@@ -2371,10 +2422,10 @@ public final class TypeUtility {
         if (args.length == 0) {
             return null;
         }
-        boolean charSequence = false ;
-        if ( args[0] instanceof CharSequence ){
+        boolean charSequence = false;
+        if (args[0] instanceof CharSequence) {
             args[0] = String.valueOf(args[0]).toCharArray();
-            charSequence = true ;
+            charSequence = true;
         }
         List l = from(args[0]);
         int start = 0;
@@ -2384,41 +2435,40 @@ public final class TypeUtility {
             if (args.length > 2) {
                 end = castInteger(args[2], end);
             }
-            if ( start < 0 && end < 0 ){
-                end = l.size() - 1 + end ;
-                start = l.size() - 1 + start ;
-            }else if ( end < 0 ){
-                end = l.size() - 1 + end ;
-            } else if ( start < 0 ){
-                end = l.size() - 1 + start ;
-                start = 0 ;
+            if (start < 0 && end < 0) {
+                end = l.size() - 1 + end;
+                start = l.size() - 1 + start;
+            } else if (end < 0) {
+                end = l.size() - 1 + end;
+            } else if (start < 0) {
+                end = l.size() - 1 + start;
+                start = 0;
             }
         }
         XList r = new XList();
         for (int i = start; i <= end; i++) {
             r.add(l.get(i));
         }
-        if ( args[0].getClass().isArray() ){
-            if ( charSequence ) return  castString(r,"");
+        if (args[0].getClass().isArray()) {
+            if (charSequence) return castString(r, "");
             return r.toArray();
         }
         return r;
     }
 
     public static Object system(Object... args) throws Exception {
-        if ( args.length == 0 ) return Runtime.getRuntime() ;
+        if (args.length == 0) return Runtime.getRuntime();
         Process p = null;
         if (args.length == 1) {
             p = Runtime.getRuntime().exec(args[0].toString());
-        }
-        else{
+        } else {
             String[] params = new String[args.length];
-            for ( int i = 0 ; i < params.length; i++ ){
+            for (int i = 0; i < params.length; i++) {
                 params[i] = String.valueOf(args[i]);
             }
             p = Runtime.getRuntime().exec(params);
         }
-        if ( p == null ) return 255 ;
+        if (p == null) return 255;
         p.waitFor();
         // terrible nomenclature in Java
         BufferedReader or = new BufferedReader(new InputStreamReader(p.getInputStream()));

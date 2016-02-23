@@ -568,10 +568,10 @@ public class ExtendedScriptTest extends JexlTestCase {
     public void testDataMatrixComparison() throws Exception{
         DataMatrix m1 = DataMatrix.loc2matrix("samples/test.tsv");
         System.out.println(m1);
-        m1 = m1.sub(0,3);
+        m1 = m1.matrix(0,3);
         assertTrue(m1 != null);
         DataMatrix m2 = DataMatrix.loc2matrix("samples/test.tsv");
-        m2 = m2.sub(0,3);
+        m2 = m2.matrix(0,3);
         assertTrue(m2 != null );
         m1.keys(0);
         m1 = m1.aggregate("Points");
@@ -590,7 +590,7 @@ public class ExtendedScriptTest extends JexlTestCase {
         DataMatrix m3 = DataMatrix.loc2matrix("samples/test_header_only.tsv");
         System.out.println(m3);
 
-        m3 = m3.sub(0,3);
+        m3 = m3.matrix(0,3);
         m3.keys(0);
         m3 = m3.aggregate("Points");
         diff  = DataMatrix.diff(m1, m3);
@@ -708,5 +708,11 @@ public class ExtendedScriptTest extends JexlTestCase {
     public void testFunctionTakingDefaultFunctionAsArg() throws Exception{
         Object o = runScript(JEXL, "samples/function_arg");
         assertEquals(0,o);
+    }
+
+    @Test
+    public void testSoapCall() throws Exception{
+        Object o = runScript(JEXL, "samples/soap.jxl");
+        assertTrue((Boolean) o);
     }
 }

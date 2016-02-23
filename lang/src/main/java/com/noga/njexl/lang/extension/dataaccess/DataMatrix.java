@@ -342,7 +342,7 @@ public class DataMatrix implements Arithmetic {
      * @return a data matrix
      * @throws Exception in error
      */
-    public DataMatrix sub(Object...args) throws Exception {
+    public DataMatrix matrix(Object...args) throws Exception {
 
         if ( args.length ==  0 ){
             return this; // risky? May be. I don't know
