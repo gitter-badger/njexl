@@ -26,6 +26,8 @@ import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.extension.datastructures.XList;
 import com.noga.njexl.lang.extension.iterators.RangeIterator;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Arithmetic;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.*;
@@ -112,28 +114,35 @@ public class DataMatrix implements Arithmetic {
                     header = TypeUtility.castBoolean(args[1], false);
                 }
             }
-            List<String> lines = Files.readAllLines(new File(location).toPath());
+            BufferedReader reader = (BufferedReader)TypeUtility.fopen(new File(location).getPath() );
             ListSet cols = null;
+            String line;
             if ( header ){
-                String[] words =  lines.get(0).split(sep);
+                line = reader.readLine();
+                String[] words =  line.split(sep);
                 cols = new ListSet(Arrays.asList(words));
                 if ( words.length != cols.size() ){
                     String message = "Some column names are not unique !! Repeated columns :\n %s \n, Use with header-less mode" ;
                     Object diff = SetOperations.list_d(words,cols );
                     throw new Exception(String.format(message, diff )) ;
                 }
-                lines.remove(0);
             }
             ArrayList rows = new ArrayList();
-            for ( String line : lines ){
-                String[] words =  line.split(sep,-1);
-                if ( header && words.length != cols.size() ){
+            int colSize = (cols != null)? cols.size() : 0 ;
+            while ( true ){
+                line = reader.readLine();
+                if ( line == null ){ break; }
+                String[] words = line.split( sep,-1);
+                if ( header && words.length != colSize ){
                     String message = "Invalid no of columns in data row! Expected :%d, Actual %d" ;
                     throw new Exception(String.format(message, cols.size(), words.length )) ;
                 }
-                ArrayList row = new ArrayList(Arrays.asList(words));
+                List row = Arrays.asList(words);
                 rows.add(row);
             }
+            reader.close();
+            System.gc();
+            System.runFinalization();
             if ( header ){
                 return new DataMatrix(rows,cols);
             }
