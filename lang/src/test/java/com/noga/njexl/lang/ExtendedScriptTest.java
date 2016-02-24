@@ -29,10 +29,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -125,10 +122,10 @@ public class ExtendedScriptTest extends JexlTestCase {
     @Test
     public void testTupleIndexing()throws Exception {
         JexlContext jc = new MapContext();
-        ArrayList<String> cnames = new ArrayList<>();
-        cnames.add("a");
-        cnames.add("b");
-        cnames.add("c");
+        Map<String,Integer> cnames = new HashMap<>();
+        cnames.put("a",0);
+        cnames.put("b",1);
+        cnames.put("c",2);
         ArrayList<String> values = new ArrayList<>();
         values.add("A");
         values.add("B");
@@ -555,7 +552,7 @@ public class ExtendedScriptTest extends JexlTestCase {
         e = JEXL.createScript("m.t(0)");
         o = e.execute(jc);
         assertTrue(o instanceof Tuple );
-        assertEquals(5, ((Tuple)o).t.length );
+        assertEquals(5, ((Tuple)o).t.size() );
 
         e = JEXL.createScript("m.c(0)");
         o = e.execute(jc);

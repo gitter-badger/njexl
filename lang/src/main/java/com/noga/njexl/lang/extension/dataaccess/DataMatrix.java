@@ -164,6 +164,12 @@ public class DataMatrix implements Arithmetic {
      */
     public List<List<String>> rows;
 
+
+    /**
+     * Names mapping for tuple creation
+     */
+    public Map<String,Integer> names;
+
     /**
      * For comparison, one needs to generate the row key.
      * If confused, see the @link{http://en.wikipedia.org/wiki/Candidate_key}
@@ -200,6 +206,10 @@ public class DataMatrix implements Arithmetic {
     public DataMatrix(List<List<String>> rows,ListSet<String> cols){
         this.rows = rows;
         this.columns = cols;
+        this.names = new HashMap<>();
+        for ( int i = 0 ; i < this.columns.size(); i++ ){
+            this.names.put( this.columns.get(i),i);
+        }
     }
 
     /**
@@ -209,8 +219,11 @@ public class DataMatrix implements Arithmetic {
     public DataMatrix(List<List<String>> rows){
         this.rows = rows;
         this.columns = new ListSet<>();
-        for ( Integer i = 0 ; i < rows.get(0).size(); i++ ){
-            this.columns.add(i.toString());
+        this.names = new HashMap<>();
+        for ( int i = 0 ; i < rows.get(0).size(); i++ ){
+            String si = String.valueOf(i) ;
+            this.columns.add(si);
+            this.names.put(si,i);
         }
     }
 
@@ -224,7 +237,7 @@ public class DataMatrix implements Arithmetic {
         if ( r >= rows.size() ){
             return null;
         }
-        Tuple t = new Tuple(columns, rows.get(r));
+        Tuple t = new Tuple(names, rows.get(r));
         return t;
     }
 

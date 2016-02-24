@@ -20,10 +20,7 @@ import com.noga.njexl.lang.extension.SetOperations;
 import com.noga.njexl.lang.extension.TypeUtility;
 import com.noga.njexl.lang.Main;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * An implementation of tuple.
@@ -35,34 +32,21 @@ public class Tuple  {
     /**
      * The names of the data values
      */
-    public final HashMap<String,Integer> names;
-
-    /**
-     * The caches value of mapping
-     */
-    private final String mapping ;
+    public final Map<String,Integer> names;
 
     /**
      * The objects are actually stored in fixed size array
      */
-    public final Object[] t;
+    public final List t;
 
     /**
      * Creates a tuple from
-     * @param n names
-     * @param f a list/array of objects
+     * @param n names to index mapping
+     * @param f a list of objects
      */
-    public Tuple( List<String> n, Object f){
-        t = TypeUtility.array(f);
-        StringBuffer buf = new StringBuffer( "[" ) ;
-        names = new HashMap<>() ;
-        for ( int i = 0 ; i < t.length ; i++ ){
-            String c = n.get(i);
-            names.put(c, i);
-            buf.append(String.format("'%s'->%d ", c,i));
-        }
-        buf.append("]");
-        mapping = buf.toString();
+    public Tuple( Map<String,Integer> n, List f){
+        t = f;
+        names = n  ;
     }
 
     /**
@@ -70,16 +54,12 @@ public class Tuple  {
      * @param f a list/array of objects
      */
     public Tuple( Object f){
-        t = TypeUtility.array(f);
-        StringBuffer buf = new StringBuffer( "[" ) ;
+        t = TypeUtility.from(f);
         names = new HashMap<>() ;
-        for ( int i = 0 ; i < t.length ; i++ ){
+        for ( int i = 0 ; i < t.size() ; i++ ){
             String c = String.valueOf(i);
             names.put(c, i);
-            buf.append(String.format("'%s'->%d ", c,i));
         }
-        buf.append("]");
-        mapping = buf.toString();
     }
 
     /**
@@ -88,7 +68,7 @@ public class Tuple  {
      * @return the object at that index
      */
     public Object get(int index){
-        return t[index];
+        return t.get(index);
     }
 
     /**
@@ -98,7 +78,7 @@ public class Tuple  {
      * @return the object at that index now after setting
      */
     public synchronized Object set(int index,Object object){
-        return ( t[index] = object ) ;
+        return ( t.set(index, object ) ) ;
     }
 
     /**
@@ -107,7 +87,7 @@ public class Tuple  {
      * @return the object with name
      */
     public Object get(String name){
-        return t[ names.get(name) ] ;
+        return t.get (  names.get(name) ) ;
     }
 
     /**
@@ -117,12 +97,12 @@ public class Tuple  {
      * @return the object after setting
      */
     public synchronized Object set(String name, Object object){
-        return ( t[names.get(name)] = object ) ;
+        return ( t.set(names.get(name),  object ) ) ;
     }
 
     @Override
     public String toString(){
-        return String.format( "<%s,%s>", mapping, Main.strArr(t) );
+        return String.format( "<%s,%s>", names, t );
     }
 
     @Override
@@ -134,7 +114,7 @@ public class Tuple  {
         for ( String name : names.keySet() ){
             int inxThis = names.get(name);
             int inxThat = tuple.names.get(name);
-            if ( !Objects.equals( t[inxThis], tuple.t[inxThat] ) ){
+            if ( !Objects.equals( t.get(inxThis), tuple.t.get(inxThat ) ) ){
                 return false ;
             }
         }
@@ -144,8 +124,7 @@ public class Tuple  {
     @Override
     public int hashCode() {
         int result = names != null ? names.hashCode() : 0;
-        result = 31 * result + (mapping != null ? mapping.hashCode() : 0);
-        result = 31 * result + Arrays.hashCode(t);
+        result = 31 * result + t.hashCode();
         return result;
     }
 }
