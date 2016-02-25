@@ -50,40 +50,40 @@ public class XmlMap {
         return textContent.toString();
     }
 
-    public static String jsonDict(Map map){
-        String tmp = "" ;
-        for ( Object k : map.keySet() ) {
-            String prop = k.toString() ;
-            String value = map.get(k).toString() ;
+    public static String jsonDict(Map map) {
+        String tmp = "";
+        for (Object k : map.keySet()) {
+            String prop = k.toString();
+            String value = map.get(k).toString();
             value = value.replaceAll("\n", "\\\\n");
             value = value.replaceAll("\r", "\\\\r");
             String pair = String.format("\"%s\" : \"%s\"", prop, value);
-            tmp = tmp + pair + "," ;
+            tmp = tmp + pair + ",";
         }
-        if ( !tmp.isEmpty() ) {
+        if (!tmp.isEmpty()) {
             int l = tmp.length();
             tmp = tmp.substring(0, l - 1);
         }
-        tmp = "{" + tmp + "}" ;
+        tmp = "{" + tmp + "}";
         return tmp;
     }
 
-    public static String jsonProp(String prop, String value){
+    public static String jsonProp(String prop, String value) {
         value = value.replaceAll("\n", "\\\\n");
         value = value.replaceAll("\r", "\\\\r");
-        String pair = String.format("\"%s\" : \"%s\"", prop,value);
-        return pair ;
+        String pair = String.format("\"%s\" : \"%s\"", prop, value);
+        return pair;
     }
 
     public static class XmlElement {
 
-        public static final XPath X_PATH =  XPathFactory.newInstance().newXPath();
+        public static final XPath X_PATH = XPathFactory.newInstance().newXPath();
 
         // the dom root
         public XmlMap root;
 
         // the attributes
-        public HashMap<String,String> attr;
+        public HashMap<String, String> attr;
         // the name
         public String name;
         // the namespace
@@ -100,53 +100,53 @@ public class XmlMap {
         // this is actually me
         public Node node;
 
-        public XmlElement(Node n, XmlElement p){
-            node = n ;
-            parent = p ;
+        public XmlElement(Node n, XmlElement p) {
+            node = n;
+            parent = p;
             name = n.getNodeName();
             ns = "";
-            if ( n.getNamespaceURI()!= null ){
+            if (n.getNamespaceURI() != null) {
                 ns = n.getNamespaceURI();
             }
-            prefix = "" ;
-            if ( n.getPrefix() != null ){
+            prefix = "";
+            if (n.getPrefix() != null) {
                 prefix = n.getPrefix();
             }
 
             attr = new HashMap<>();
-            if ( n.hasAttributes() ){
-                NamedNodeMap map =  n.getAttributes();
+            if (n.hasAttributes()) {
+                NamedNodeMap map = n.getAttributes();
                 int len = map.getLength();
-                for ( int i = 0 ; i < len; i++){
+                for (int i = 0; i < len; i++) {
                     Node a = map.item(i);
                     String name = a.getNodeName();
                     String value = a.getTextContent();
-                    attr.put(name,value);
+                    attr.put(name, value);
                 }
             }
             text = getFirstLevelTextContent(node);
             children = new ArrayList<>();
         }
 
-        protected void populate(XmlMap root){
-            if ( parent !=null ) {
+        protected void populate(XmlMap root) {
+            if (parent != null) {
                 parent.children.add(this);
             }
-            this.root = root ;
-            this.root.nodes.put(node,this);
+            this.root = root;
+            this.root.nodes.put(node, this);
             NodeList nodeList = node.getChildNodes();
             int count = nodeList.getLength();
-            for ( int i = 0 ; i < count; i++) {
+            for (int i = 0; i < count; i++) {
                 Node c = nodeList.item(i);
-                if ( c.getNodeType() == Node.ELEMENT_NODE) {
-                    XmlElement child = new XmlElement(c,this);
+                if (c.getNodeType() == Node.ELEMENT_NODE) {
+                    XmlElement child = new XmlElement(c, this);
                     child.populate(root);
                 }
             }
         }
 
         @Override
-        public String toString(){
+        public String toString() {
             return json();
         }
 
@@ -160,7 +160,7 @@ public class XmlMap {
             NodeList nodeList = nodes(expression);
             ArrayList<XmlElement> elements = new ArrayList<>();
             int size = nodeList.getLength();
-            for ( int i = 0 ; i < size; i++ ){
+            for (int i = 0; i < size; i++) {
                 Node node = nodeList.item(i);
                 XmlElement e = root.nodes.get(node);
                 elements.add(e);
@@ -179,13 +179,14 @@ public class XmlMap {
         }
 
 
-        public String xpath(String expression) throws Exception{
+        public String xpath(String expression) throws Exception {
             String val = (String) X_PATH.compile(expression).evaluate(this.node, XPathConstants.STRING);
             return val;
         }
 
         /**
          * Converts this to JSON String
+         *
          * @return json string for this element
          */
         public String json() {
@@ -205,19 +206,19 @@ public class XmlMap {
             builder.append("\"attr\" : ").append(attrStrings).append(", ");
             // now the children
             builder.append("\"children\" : [ ");
-            if ( !children.isEmpty() ){
-                int i = 0 ;
+            if (!children.isEmpty()) {
+                int i = 0;
                 String ej = children.get(i).json();
                 builder.append(ej);
                 i++;
-                for ( ; i < children.size(); i++ ){
+                for (; i < children.size(); i++) {
                     builder.append(",\n");
                     ej = children.get(i).json();
                     builder.append(ej);
                 }
             }
             builder.append(" ]");
-            builder.append( " }" );
+            builder.append(" }");
             return builder.toString();
         }
     }
@@ -226,28 +227,37 @@ public class XmlMap {
 
     public final Document doc;
 
-    public final HashMap<Node,XmlElement> nodes;
+    public final HashMap<Node, XmlElement> nodes;
 
-    public static XmlMap file2xml(String file) throws Exception{
-        byte[] arr = Files.readAllBytes(new File(file).toPath());
+    public static XmlMap file2xml(String... args) throws Exception {
+        if ( args.length == 0 ) return null;
+        byte[] arr = Files.readAllBytes(new File(args[0]).toPath());
         String text = new String(arr);
-        return string2xml(text);
+        String encoding = "UTF-8" ;
+        if ( args.length > 1 ){
+            encoding = args[1];
+        }
+        return string2xml(text, encoding);
     }
 
-    public static XmlMap string2xml(String text) throws Exception{
+    public static XmlMap string2xml(String... args) throws Exception {
+        if ( args.length == 0 ) return null;
         // this is funny ...
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.parse(new ByteArrayInputStream(text.getBytes("UTF-8")));
+        String encoding = "UTF-8" ;
+        if ( args.length > 1 ){
+            encoding = args[1];
+        }
+        Document doc = db.parse(new ByteArrayInputStream(args[0].getBytes(encoding)));
         doc.getDocumentElement().normalize();
         return new XmlMap(doc);
     }
 
 
-
-    public XmlMap(Document doc){
-        this.doc = doc ;
-        root = new XmlElement(doc.getDocumentElement(),null);
+    public XmlMap(Document doc) {
+        this.doc = doc;
+        root = new XmlElement(doc.getDocumentElement(), null);
         nodes = new HashMap<>();
         root.populate(this);
     }
@@ -263,17 +273,18 @@ public class XmlMap {
     public String xpath(String expression) throws Exception {
         return root.xpath(expression);
     }
-    
+
     /**
      * Converts this to JSON String
+     *
      * @return json string for this xml
      */
-    public String json(){
-       return root.json();
+    public String json() {
+        return root.json();
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return json();
     }
 }

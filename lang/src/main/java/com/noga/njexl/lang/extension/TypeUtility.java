@@ -777,11 +777,16 @@ public final class TypeUtility {
 
         String text = args[0].toString();
         File file = new File(text);
+        String encoding = "UTF-8" ;
+        if ( args.length > 1 ){
+            encoding = String.valueOf(args[1]);
+        }
+
         if (file.exists()) {
             // this is the file name
-            return XmlMap.file2xml(file.getAbsolutePath());
+            return XmlMap.file2xml(file.getAbsolutePath(), encoding );
         }
-        return XmlMap.string2xml(text);
+        return XmlMap.string2xml(text, encoding);
     }
 
     public static String readStream(InputStream inputStream) throws Exception {
