@@ -577,12 +577,11 @@ public class ExtendedScriptTest extends JexlTestCase {
         m2 = m2.aggregate("Points");
         assertTrue(m2.columns.size() == 1 );
 
-        DataMatrix.MatrixDiff diff  = DataMatrix.diff(m1, m2);
+        DataMatrix.MatrixDiff diff  = DataMatrix.diff2(m1, m2);
         assertFalse( diff.diff()  );
         assertTrue(diff.id.isEmpty());
         assertTrue(diff.lr.isEmpty());
         assertTrue(diff.rl.isEmpty());
-
 
         DataMatrix m3 = DataMatrix.loc2matrix("samples/test_header_only.tsv");
         System.out.println(m3);
@@ -590,14 +589,14 @@ public class ExtendedScriptTest extends JexlTestCase {
         m3 = m3.matrix(0,3);
         m3.keys(0);
         m3 = m3.aggregate("Points");
-        diff  = DataMatrix.diff(m1, m3);
+        diff  = DataMatrix.diff2(m1, m3);
         assertTrue( diff.diff()  );
         assertTrue(diff.rl.isEmpty());
         assertFalse(diff.lr.isEmpty());
 
         System.out.println(diff);
 
-        diff  = DataMatrix.diff(m3, m1);
+        diff  = DataMatrix.diff2(m3, m1);
         assertTrue( diff.diff()  );
 
         assertTrue(diff.lr.isEmpty());
@@ -621,11 +620,11 @@ public class ExtendedScriptTest extends JexlTestCase {
         assertFalse((Boolean)o);
 
         // test the subtraction - diff must be false here
-        e = JEXL.createScript("d = m1 - m1 ; d.diff()");
+        e = JEXL.createScript("d = m1.diff(m1) ; d.diff()");
         o = e.execute(jc);
         assertFalse((Boolean)o);
         // another subtraction test - must be true now
-        e = JEXL.createScript("d = m1 - m3 ; d.diff()");
+        e = JEXL.createScript("d = m1.diff(m3) ; d.diff()");
         o = e.execute(jc);
         assertTrue((Boolean)o);
 

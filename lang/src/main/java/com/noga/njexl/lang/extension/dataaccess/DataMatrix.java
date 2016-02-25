@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  * A generic Data Matrix class to manipulate on data
  * Created by noga on 03/04/15.
  */
-public class DataMatrix implements Arithmetic {
+public class DataMatrix {
 
     /**
      * A Generic diff structure for any sort of matrices
@@ -166,18 +166,17 @@ public class DataMatrix implements Arithmetic {
     /**
      * The columns of the data matrix
      */
-    public ListSet<String> columns;
+    public final ListSet<String> columns;
 
     /**
      * The actual data rows, they are not including the column
      */
-    public List<List<String>> rows;
-
+    public final List<List> rows;
 
     /**
      * Names mapping for tuple creation
      */
-    public Map<String,Integer> names;
+    public final Map<String,Integer> names;
 
     /**
      * For comparison, one needs to generate the row key.
@@ -212,7 +211,7 @@ public class DataMatrix implements Arithmetic {
      * @param rows the rows of data
      * @param cols the column headers
      */
-    public DataMatrix(List<List<String>> rows,ListSet<String> cols){
+    public DataMatrix(List<List> rows,ListSet<String> cols){
         this.rows = rows;
         this.columns = cols;
         this.names = new HashMap<>();
@@ -225,7 +224,7 @@ public class DataMatrix implements Arithmetic {
      * This would be created column header free
      * @param rows only rows of data
      */
-    public DataMatrix(List<List<String>> rows){
+    public DataMatrix(List<List> rows){
         this.rows = rows;
         this.columns = new ListSet<>();
         this.names = new HashMap<>();
@@ -283,7 +282,7 @@ public class DataMatrix implements Arithmetic {
         for ( int r = 0; r < rows.size() ; r++ ){
             if ( agg == null ||
                     agg!= null && ((List)agg).contains( r )){
-                String value = rows.get(r).get(c);
+                Object value = rows.get(r).get(c);
                 l.add(value);
             }
         }
@@ -444,7 +443,7 @@ public class DataMatrix implements Arithmetic {
 
         // now do the stuff
         for ( int i = 0 ; i < rows.size();i++  ){
-            String key = "";
+            String key ;
             if ( setup.anon != null ){
                 //process this ...
                 setup.anon.setIterationContext(this, tuple(i),i);
@@ -453,11 +452,13 @@ public class DataMatrix implements Arithmetic {
             }
             else{
                 String sep = "Ø";
+                StringBuffer buf = new StringBuffer();
                 for ( int j = 0 ; j < columns.size(); j++ ){
                     if ( setup.colIndexes.contains(j) ){
-                        key += rows.get(i).get(j) + sep ;
+                        buf.append( rows.get(i).get(j) ).append(sep) ;
                     }
                 }
+                key = buf.toString();
             }
             if ( !keys.containsKey(key)){
                 keys.put(key, new ArrayList<>());
@@ -542,8 +543,13 @@ public class DataMatrix implements Arithmetic {
         }
         Set[] retVal = new Set[2];
         retVal[0] = SetOperations.set_d(d1.keys.keySet(), d2.keys.keySet());
-        retVal[1] = SetOperations.set_d( d2.keys.keySet(), d1.keys.keySet() );
+        retVal[1] = SetOperations.set_d(d2.keys.keySet(), d1.keys.keySet() );
         return retVal ;
+    }
+
+    @Override
+    public String toString() {
+        return String.format( "DataMatrix<Cols:%d , Rows:%d>", columns.size(), rows.size() );
     }
 
     /**
@@ -552,7 +558,7 @@ public class DataMatrix implements Arithmetic {
      * @return a matrix diff
      * @throws Exception in error
      */
-    public static MatrixDiff diff (Object... args) throws Exception {
+    public static MatrixDiff diff2(Object... args) throws Exception {
         Interpreter.AnonymousParam anon = null;
         if ( args.length == 0 ){
             return null;
@@ -624,43 +630,17 @@ public class DataMatrix implements Arithmetic {
         return matrixDiff;
     }
 
-    @Override
-    public String toString(){
-        return "< " + columns + " , " + rows + " >" ;
-    }
-
-    @Override
-    public Object add(Object o) {
-        throw new UnsupportedOperationException("Not yer implemented '+' ");
-    }
-
-    @Override
-    public Object neg() {
-        throw new UnsupportedOperationException("Not yer implemented '-' ");
-    }
-
-    @Override
-    public Object sub(Object o) {
-        try {
-            Object d =  DataMatrix.diff(this, o);
-            return d;
-        }catch (Exception e){
-            throw new Error(e);
+    /**
+     * Matrix diff, generates a MatrixDiff structure
+     * @param args (anonymous param , matrix2), or ( matrix2 )
+     * @return a matrix diff
+     * @throws Exception in error
+     */
+    public MatrixDiff diff(Object... args) throws Exception {
+        if ( args.length == 0 ) return null;
+        if (args.length == 1 && args[0] instanceof DataMatrix ){
+            return diff2(this, args[0]);
         }
-    }
-
-    @Override
-    public Object mul(Object o) {
-        throw new UnsupportedOperationException("Not yer implemented '*' ");
-    }
-
-    @Override
-    public Object div(Object o) {
-        throw new UnsupportedOperationException("Not yer implemented '/' ");
-    }
-
-    @Override
-    public Object exp(Object o) {
-        throw new UnsupportedOperationException("Not yer implemented '**' ");
+        return diff2(args[0],this,args[1]);
     }
 }
