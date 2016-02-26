@@ -774,7 +774,10 @@ public final class TypeUtility {
             }
             return list;
         }
-
+        if ( !( args[0] instanceof String ) ){
+           return XmlMap.xml(args[0]);
+        }
+        // fall back on string now ...
         String text = args[0].toString();
         File file = new File(text);
         String encoding = "UTF-8" ;

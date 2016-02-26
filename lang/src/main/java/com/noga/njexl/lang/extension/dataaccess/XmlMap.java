@@ -16,6 +16,8 @@
 
 package com.noga.njexl.lang.extension.dataaccess;
 
+import com.noga.njexl.lang.JexlArithmetic;
+import com.noga.njexl.lang.extension.TypeUtility;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -28,11 +30,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by noga on 02/04/15.
@@ -240,6 +240,60 @@ public class XmlMap {
         return string2xml(text, encoding);
     }
 
+    public static String dict2xml(Map m){
+        StringBuffer buf = new StringBuffer();
+        for ( Object key : m.keySet() ){
+            String elemName = String.valueOf(key) ;
+            buf.append("<").append(elemName).append(">");
+            String val = obj2xml( m.get(key) );
+            buf.append(val);
+            buf.append("</").append(elemName).append(">");
+        }
+        return buf.toString();
+    }
+
+    public static String array2xml(Object array){
+        int len = Array.getLength(array);
+        StringBuffer buf = new StringBuffer();
+        for ( int i = 0 ; i < len; i++ ){
+            Object o = Array.get(array,i);
+            buf.append("<i>") ; // item
+            String s = obj2xml(o);
+            buf.append(s);
+            buf.append("</i>") ; // item
+        }
+        return buf.toString();
+    }
+
+    public static String obj2xml(Object o)  {
+        if ( o == null ) return "" ;
+
+        if ( o instanceof Map ){
+            return dict2xml((Map)o);
+        }else if ( o.getClass().isArray() ){
+            return array2xml(o) ;
+        }else if ( o instanceof String ){
+            return (String)o;
+        }
+        else if ( o instanceof Number ){
+            return String.valueOf(o);
+        }
+        else if (JexlArithmetic.isTimeLike(o)){
+            return String.valueOf(o);
+        }
+        try {
+            o = TypeUtility.makeDict(o);
+            return dict2xml((Map)o);
+        }catch (Exception e){
+            return String.valueOf(o);
+        }
+    }
+
+    public static String xml(Object o){
+        String val = obj2xml(o);
+        return "<root>" + val + "</root>" ;
+    }
+
     public static XmlMap string2xml(String... args) throws Exception {
         if ( args.length == 0 ) return null;
         // this is funny ...
@@ -253,7 +307,6 @@ public class XmlMap {
         doc.getDocumentElement().normalize();
         return new XmlMap(doc);
     }
-
 
     public XmlMap(Document doc) {
         this.doc = doc;

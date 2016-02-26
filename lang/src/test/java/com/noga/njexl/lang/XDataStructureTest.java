@@ -529,6 +529,19 @@ public class XDataStructureTest extends JexlTestCase {
         assertTrue((Boolean)o);
     }
 
+    @Test
+    public void testObj2Xml() throws Exception{
+        Script s = JEXL.createScript("o = json('samples/demo.json') ; x = xml(o);" );
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue(o instanceof String );
+
+        s = JEXL.createScript("y = xml(x)" );
+        o = s.execute(jc);
+        assertTrue(o instanceof XmlMap );
+
+    }
+
     /*
     Commented out because it is not needed now
     @Test
