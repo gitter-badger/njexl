@@ -291,13 +291,13 @@ public class DataMatrix {
 
     private static class SelectSetup{
         private Interpreter.AnonymousParam anon;
-        private HashSet<Integer> colIndexes;
+        private ListSet<Integer> colIndexes;
     }
 
     private SelectSetup setup(Object... args) throws Exception{
 
         SelectSetup selectSetup = new SelectSetup();
-        selectSetup.colIndexes = new HashSet<>();
+        selectSetup.colIndexes = new ListSet<>();
 
         // no point going further here... always will be empty
         if ( rows.isEmpty() ){ return selectSetup ; }
@@ -383,7 +383,7 @@ public class DataMatrix {
         return new DataMatrix(rs,nColumns);
     }
 
-    private List  _select_op_(Interpreter.AnonymousParam anon, Set<Integer> colIndexes ) throws Exception{
+    private List  _select_op_(Interpreter.AnonymousParam anon, ListSet<Integer> colIndexes ) throws Exception{
         // now do the stuff
         XList rs = new XList();
         HashMap<Integer,Tuple> selectedRows = new HashMap<>();
@@ -412,16 +412,14 @@ public class DataMatrix {
             }
             ArrayList cs = new ArrayList();
             List<String> dataRow = rows.get(i);
-            for ( int j = 0 ;j < columns.size();j++ ) {
-                if (colIndexes.contains(j)) {
-                    Object val = dataRow.get(j) ;
-                    if ( anon == null ){
-                        cs.add(val);
-                    }else {
-                        Object var = selectedRows.get(i).get(j);
-                        // avoid stupidity, add Tuple value always
-                        cs.add(var);
-                    }
+            for ( int c : colIndexes ){
+                Object val = dataRow.get(c) ;
+                if ( anon == null ){
+                    cs.add(val);
+                }else {
+                    Object var = selectedRows.get(i).get(c);
+                    // avoid stupidity, add Tuple value always
+                    cs.add(var);
                 }
             }
             rs.add(cs);

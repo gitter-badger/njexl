@@ -159,6 +159,11 @@ public class ListSet<T> extends HashSet<T> implements List<T> {
     }
 
     @Override
+    public Iterator<T> iterator() {
+        return listIterator();
+    }
+
+    @Override
     public ListIterator<T> listIterator() {
         return behind.listIterator();
     }

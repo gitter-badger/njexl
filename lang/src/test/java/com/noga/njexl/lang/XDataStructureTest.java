@@ -542,6 +542,19 @@ public class XDataStructureTest extends JexlTestCase {
 
     }
 
+    @Test
+    public void testMatrixSelectOrder() throws Exception{
+        Script s = JEXL.createScript("m = matrix('samples/test.tsv') ; l = m.select(2,0) ; " );
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue(o instanceof List );
+
+        s = JEXL.createScript("index{ $.1 !~ '[0-9]+'  }(l) < 0 " );
+        o = s.execute(jc);
+        assertTrue(o instanceof Boolean );
+        assertTrue((Boolean)o);
+    }
+
     /*
     Commented out because it is not needed now
     @Test
