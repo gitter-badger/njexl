@@ -132,63 +132,590 @@ response = write(  _url_ , params )
 To write back to url, or rather for sending anything to a server,
 there is a specialised send() function.
 
+\begin{lstlisting}[style=JexlStyle]
+_url_ = 'https://httpbin.org/post'
+params = { 'foo' : 'bar' , 'complexity' : 'sucks'  }
+// url,  protocol     ,  body, headers, connection timeout, read timeout  
+response = send(  _url_ , "GET"  , params , {:} , 1000, 1000 )
+\end{lstlisting}
 
+The SOAP XML stuff can be easily done with $send$.
+See the example soap body we  will send to :
+
+\begin{lstlisting}[style=xmlStyle]
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Body>
+        <GetWeather xmlns="http://www.webserviceX.NET">
+            <CityName>%s</CityName>
+            <CountryName>%s</CountryName>
+        </GetWeather>
+    </soap:Body>
+</soap:Envelope>
+\end{lstlisting}
+
+And this is how we $send$ the SOAP: \index{SOAP}
+
+\begin{lstlisting}[style=JexlStyle]
+template_pay_load = read('samples/soap_body.xml')
+pay_load = str:format ( template_pay_load , 'Hyderabad', 'India' )
+headers = { "SOAPAction" : "http://www.webserviceX.NET/GetWeather" , 
+             "Content-Type" : "text/xml; charset=utf-8" }
+__url__ = "http://www.webservicex.net/globalweather.asmx"
+resp = send( __url__ , "POST" , pay_load , headers ) 
+x = xml(resp)
+sr = x.element("//GetWeatherResult")
+write(sr.text)
+\end{lstlisting}
 \end{subsection}
 
 \end{section}
 
 \begin{section}{File Processing}
+We talked about a bit of file processing in $read$ and $write$.
+But if we want to read a file line by line, then we have to use something else.
+
+\begin{subsection}{lines() function}
+\index{lines()} 
+lines() function generates an iterator, which can be used to read the file.
+It caches the previous reads, so after you ended reading, resetting the iterator 
+you can read it again. Observe we are replicating the Unix program wc: \index{wc : word count}
+
+\begin{lstlisting}[style=JexlStyle]
+fi = lines('my_file.txt' )
+// count no of lines 
+lc = lfold{ _$_ += 1 }(fi,0)
+// resets the iterator
+fi.reset()
+// character count 
+cc = lfold{ _$_ += size($) + 1  }(fi,0)
+// resets the iterator
+fi.reset()
+// word count?
+wc = lfold{ _$_ += size($.split(" \t") ) }(fi,0)
+// reset again 
+fi.reset()
+// or in a single go, using a tuple value 
+#(l,w,c) = lfold{ 
+               // do a tuple assignment 
+               #(lc,cc,wc) = _$_ 
+               lc+=1 ; cc += size($) + 1  
+               wc += size($.split(" \t") )
+              _$_ = [ lc, cc, wc ] 
+      }(fi,[0,0,0] )
+\end{lstlisting}
+\end{subsection}
 
 \begin{subsection}{fopen() function}
+\index{fopen()}
+In some rare scenarios, to write optimal code, 
+one may choose to read, write, append on files.
+The idea is then, using $fopen()$ function.
+The syntax is :
+
+\begin{lstlisting}[style=JexlStyle]
+fp = fopen( path [, mode_string ] )
+\end{lstlisting}
+
+The mode strings are defined as such:
+\index{fopen() : open modes}
+There are 3 modes :
+\begin{enumerate}
+\item{ Read : the default mode : specified by "r" }
+\item{ Write : the write mode : specified by "w"  }
+\item{ Append : the append mode : specified by "a" }
+\end{enumerate}
+
 \end{subsection}
 
 \begin{subsection}{Reading}
+\index{fopen() : reading}
+To read, one must open the file in read mode.
+This returns a java \href{https://docs.oracle.com/javase/8/docs/api/java/io/BufferedReader.html}{BufferedReader} object.
+Now, something like \href{https://docs.oracle.com/javase/8/docs/api/java/io/BufferedReader.html#readLine--}{readLine}
+can be called to read the file line by line, in a traditional way to implement the $cat$ command : \index{cat}
+
+\begin{lstlisting}[style=JexlStyle]
+// open in read mode : get a reader
+fp = fopen( path ,"r" )
+while ( true ){
+   // call the standard java functions
+   line = fp.readLine()
+   break( null == line )
+   write(line)
+}
+// close the reader
+fp.close()
+\end{lstlisting}
+
 \end{subsection}
 
 \begin{subsection}{Writing}
+\index{fopen() : writing}
+
+To write, one must open the file in write or append mode.
+This returns a java \href{https://docs.oracle.com/javase/8/docs/api/java/io/PrintStream.html}{PrintStream} object.
+Now, something like \href{https://docs.oracle.com/javase/8/docs/api/java/io/PrintStream.html#println-java.lang.Object-}{println()}
+can be called to write to the file :
+
+\begin{lstlisting}[style=JexlStyle]
+// open in read mode : get a reader
+fp = fopen( "hi.txt" ,"w" )
+// call the standard java functions
+fp.println("Hi")
+// close the Stream
+fp.close()
+\end{lstlisting}
+
 \end{subsection}
 
 \end{section}
 
 \begin{section}{Working with JSON}
 
+\begin{subsection}{What is JSON?}
+\index{json}
+JSON is being defined formally in \href{http://www.json.org}{here}.
+The idea behind JSON stems from : \emph{JavaScript Object Notation}.
+There are many ways to define an object, one of them is very practical :
+\begin{center}
+\emph{Objects are property buckets.}
+\end{center}
+
+That definition ensures that the ordering layout of the properties does not matter at all.
+Clearly :
+$$
+\{  ``x'' : 10 , ``y'' : 42 \} == \{  ``y'' : 42 , ``x'' : 10 \}
+$$
+Thus, we reach the evident conclusion, JSON are nothing but Dictionaries.
+Hence in nJexl they are always casted back to a dictionary.
+
+\end{subsection}
+
 \begin{subsection}{json() function}
+Suppose the json string is there in a file:
+
+\begin{lstlisting}[style=JexlStyle]
+/* sample.json file  */
+{
+  "noga": {
+    "dbName": "noga",
+    "url": "jdbc:postgresql://localhost:5432/noga",
+    "driverClass" : "org.postgresql.Driver",
+    "user": "noga",
+    "pass": ""
+  },
+  "some2": {
+    "dbName": "dummy",
+    "url": "dummy",
+    "driverClass" : "class",
+    "user": "u",
+    "pass": "p"
+  },
+}
+\end{lstlisting}
+To read the file ( or the text which has json) :
+\begin{lstlisting}[style=JexlStyle]
+jo = json('sample.json')
+\end{lstlisting}
+The $json()$ function can read also from the string argument.
+The return result object is either a Dictionary object, 
+or an array object, based on what sort of json structure was passed.
 \end{subsection}
 
 \begin{subsection}{Accessing Fields}
+Now, to access any field:
+\begin{lstlisting}[style=JexlStyle]
+jo.noga.dbName // "noga"
+jo.some2.driverClass // "class" 
+\end{lstlisting}
+In effect, one can imagine this is nothing but a big property bucket.
+For some, there is this thing called \href{http://goessner.net/articles/JsonPath/}{JSONPath}, \index{JSONPath}
+which is clearly not implemented in nJexl, because that is not a standard.
+In any case, given json is a string, to check whether a text exists or not is a regular string search.
+Given whether a particular value is in the hierarchy of the things or not, 
+that is where the stuff gets interesting. 
+
+For parameterised access, Currying is a better choice:
+
+\begin{lstlisting}[style=JexlStyle]
+prop_value = 'noga.dbName'  
+value = `jo.#{prop_value}` // same thing, "noga"
+\end{lstlisting}
+In this way, one can remove the hard coding of accessing JSON objects.
 \end{subsection}
 
 \end{section}
 
 \begin{section}{Working with XML}
+\index{xml}
+
+Please, do not work with xml. 
+There are many reasons why xml is a \href{http://harmful.cat-v.org/software/xml}{terrible idea}.
+The best of course is :
+\begin{center}
+\emph{
+XML combines the efficiency of text files with the readability of binary files
+ -- unknown
+ }
+\end{center}
+
+But thanks to many big enterprise companies - it became a norm to be abused human intellect - the last are obviously Java EE usage in Hibernate, Springs and Struts. Notwithstanding the complexity and loss of precise network bandwidth - it is a very popular format. 
+Thus - against my better judgment I could not avoid XML.
 
 \begin{subsection}{xml() function}
+\index{xml()}
+
+Suppose, we have an xml in a file sample.xml :
+\begin{lstlisting}[style=xmlStyle]
+<slideshow 
+title="Sample Slide Show"
+date="Date of publication"
+author="Yours Truly" >
+<!-- TITLE SLIDE -->
+<slide type="all">
+  <title>Wake up to WonderWidgets!</title>
+</slide>
+<!-- OVERVIEW -->
+<slide type="all">
+    <title>Overview</title>
+    <item>Why <em>WonderWidgets</em> are great</item>
+    <item/>
+    <item>Who <em>buys</em> WonderWidgets</item>
+</slide>
+</slideshow>
+\end{lstlisting}
+Call $xml()$ To load the xml file ( or a string ) into an 
+\href{https://github.com/nmondal/njexl/blob/master/lang/src/main/java/com/noga/njexl/lang/extension/dataaccess/XmlMap.java}{XmlMap} object :
+\begin{lstlisting}[style=JexlStyle]
+x = xml('sample.xml', 'UTF-8' ) // x is an XmlMap object
+\end{lstlisting}
+The encoding string ( UTF-8 ) is optional. 
+Default is UTF-8. \index{xml : encoding}
+
+The function xml() can also convert a proper Java Object into string, 
+in other words, it does \href{https://msdn.microsoft.com/en-us/library/182eeyhh(v=vs.110).aspx}{Xml Serialisation}. 
+Suppose we have the JSON object : \index{xml: serialisation}
+
+\begin{lstlisting}[style=JexlStyle]
+/* demo.json file  */
+{
+    "glossary": {
+        "title": "example glossary",
+        "GlossDiv": {
+            "title": "S",
+            "GlossList": {
+                "GlossEntry": {
+                    "ID": "SGML",
+                    "SortAs": "SGML",
+                    "GlossTerm": "Standard Generalized Markup Language",
+                    "Acronym": "SGML",
+                    "Abbrev": "ISO 8879:1986",
+                    "GlossDef": {
+                        "para": "A meta-markup language, used to create markup languages such as DocBook.",
+                        "GlossSeeAlso": ["GML", "XML"]
+                    },
+                    "GlossSee": "markup"
+                }
+            }
+        }
+    }
+}
+\end{lstlisting}
+This is how we can generate an XML out of it :
+\begin{lstlisting}[style=JexlStyle]
+// load json 
+jo = json('db.json')
+// convert to xml string 
+x = xml(jo)
+\end{lstlisting}
+After formatting the xml string is :
+\begin{lstlisting}[style=xmlStyle]
+<root>
+   <glossary>
+      <title>example glossary</title>
+      <GlossDiv>
+         <GlossList>
+            <GlossEntry>
+               <GlossTerm>Standard Generalized Markup Language</GlossTerm>
+               <GlossSee>markup</GlossSee>
+               <SortAs>SGML</SortAs>
+               <GlossDef>
+                  <para>A meta-markup language, used to create markup languages such as DocBook.</para>
+                  <GlossSeeAlso>
+                     <i>GML</i>
+                     <i>XML</i>
+                  </GlossSeeAlso>
+               </GlossDef>
+               <ID>SGML</ID>
+               <Acronym>SGML</Acronym>
+               <Abbrev>ISO 8879:1986</Abbrev>
+            </GlossEntry>
+         </GlossList>
+         <title>S</title>
+      </GlossDiv>
+   </glossary>
+</root>
+\end{lstlisting}
 \end{subsection}
 
 \begin{subsection}{Accessing Elements}
+Given I have the XmlMap object, I should be able to find elements in it.
+The elements can be accessed in two different ways.
+\index{xml : pojo}
+The first is, using the xml as a tree with $root$ and $children$.
+That is easy, for example, for the previous json to xml generated :
+
+\begin{lstlisting}[style=JexlStyle]
+// XmlMap of the x 
+y = xml(x)
+y.root.children[0].name //glossary
+y.root.children[0].children[0].text // example glossary 
+\end{lstlisting}
+
+For the slideshow xml: \index{xml : attribute}
+
+\begin{lstlisting}[style=JexlStyle]
+// XmlMap of the x 
+x = xml('sample.xml') // slideshow xml 
+x.root.name //slideshow
+// access attributes 
+x.root.children[0].attr.type // "all"
+x.root.children[0].attr['type'] // "all"
+\end{lstlisting}
+
+The other way of accessing elements, 
+is to use the $element()$ function, 
+which uses \href{https://en.wikipedia.org/wiki/XPath}{XPATH} :
+\index{xml : element()}
+\begin{lstlisting}[style=JexlStyle]
+// XmlMap of the x 
+x = xml('sample.xml') // slideshow xml 
+// get one element  
+e = x.element("//slide/title")// first title element 
+e.text // "Wake up to WonderWidgets!"
+e = x.element("//slide[2]/title" ) // second element 
+e.text // "Overview"
+\end{lstlisting}
+
+In the same way, for selecting multiple elements, $elements()$
+function is used : \index{xml : elements()}
+
+\begin{lstlisting}[style=JexlStyle]
+// XmlMap of the x 
+x = xml('sample.xml') // slideshow xml 
+// get all the elements called titles  
+es = x.elements("//slide/title" ) // a list of elements 
+// print all titles ?
+lfold{  write( $.text ) }(es)
+\end{lstlisting}
+
 \end{subsection}
 
 \begin{subsection}{XPATH Formulation}
+\index{xml : xpath()}
+For evaluation of xpath directly, there is $xpath()$ function 
+defined. For example, to find the text of any element, 
+one can use the following :
+
+\begin{lstlisting}[style=JexlStyle]
+// XmlMap of the x 
+x = xml('sample.xml') // slideshow xml
+// text of the title element 
+s = x.xpath("//slide/title/text()" )  
+\end{lstlisting}
+
+For a list of all xpath functions see the specification in 
+\href{https://www.w3.org/TR/xpath-functions-3}{w3c}.
+
 \end{subsection}
 
 \begin{subsection}{Xml to JSON}
+\index{ xml : json() }
+The xml can be converted to a suitable JSON equivalent, by invoking the $json()$ function.
+This function is available on the XmlMap object, also the standard $json()$ function 
+would convert any XmlMap object.
+
+\begin{lstlisting}[style=JexlStyle]
+// XmlMap of the x 
+x = xml('sample.xml') // slideshow xml
+// json form of the xml 
+jo = x.json() 
+jo = json(x)  // same as above
+\end{lstlisting}
+ 
 \end{subsection}
 
 \end{section}
 
 \begin{section}{DataMatrix}
+\index{DataMatrix}
+
+A DataMatrix is an abstraction for a table with tuples of data as rows.
+Formally, then a data matrix $M = (C,R) $ where $C$ a tuple of columns,
+and $R$ a list of rows, such that  $\forall r_i \in R$ , $r_i$ is a tuple
+of size $|r_i| = |C|$. In specificity, $r_i[C_j] \to r_{ij}$ , that is, 
+the $i$'th rows $j$'th cell contains value which is under column $C_j$.
+
+In software such abstraction is natural for taking data out of data base tables, 
+or from spreadsheets, or comma or tab separated values file.   
 
 \begin{subsection}{matrix() function}
+\index{ matrix() }
+To read a data matrix from a location one needs to use the $matrix()$ function :
+
+\begin{lstlisting}[style=JexlStyle]
+m = matrix(data_file_path  [, column_separator_string = '\t' 
+               [, header_is_there_boolean = true ]] )
+\end{lstlisting}
+
+For example, suppose we have a tab delimited file ``test.tsv''  like this:
+
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c| } 
+ \hline
+ Number	& First Name & Last Name & Points & Extra \\ 
+ \hline 
+   1    & Eve	     & Jackson	& 94      & \\
+   2    & John       &  Doe	    & 80      &  x \\ 
+   3    & Adam       & Johnson	& 67      &  \\	
+   4    & Jill       & Smith	& 50      & xx \\  
+ \hline
+\end{tabular}
+\end{center}
+
+To load this table, we should :
+\index{DataMatrix : columns} \index{DataMatrix : rows}
+
+\begin{lstlisting}[style=JexlStyle]
+m = matrix("test.tsv", '\t', true ) // loads the matrix 
+m.coloumns // the set of columns 
+m.rows // the list of data values
+\end{lstlisting}
+
+The field $columns$ is a Set of string values, depicting the columns.
+$rows$, however are the list of data values. 
+ 
 \end{subsection}
 
-\begin{subsection}{Accessing Rows}
+\begin{subsection}{Accessing Data}
+
+A data matrix can be accessed by rows or by columns.
+For example :
+
+\index{DataMatrix : data access by row }
+\begin{lstlisting}[style=JexlStyle]
+x = m.rows[0][1] // x is "Eve"
+x = m.rows[1][2] // x is "Doe" 
+\end{lstlisting}
+
+Now, using column function $c()$ \index{DataMatrix : c() }
+
+\index{DataMatrix : data access by column }
+\begin{lstlisting}[style=JexlStyle]
+y = (m.c(1))[1] // y is "Eve"
+y = (m.c(2))[1] // y is "Doe" 
+\end{lstlisting}
+
 \end{subsection}
 
 \begin{subsection}{Tuple Formulation}
+\index{DataMatrix : tuple() }
+Every row in a data matrix is actually a tuple.
+This tuple can be accessed using the $tuple()$ function which returns a specific 
+data structure called a Tuple:
+
+\begin{lstlisting}[style=JexlStyle]
+t = m.tuple(1) // 2nd row as a Tuple 
+t.0 // 2
+t["First Name"] // John
+t.Points // 80 
+\end{lstlisting}
+
+This  tuple object is the one which gets returned as implicit row, 
+when select operations on matrices are performed.
+
 \end{subsection}
 
-\begin{subsection}{Select and Project}
+\begin{subsection}{Project and Select}
+\index{DataMatrix : project, c() }
+The project operation is defined \href{https://en.wikipedia.org/wiki/Projection\_(relational\_algebra)}{here}.
+In essence it can be used to slice the matrix using the columns function $c()$.
+The column function $c()$ takes an integer, the column index of slicing, and can take aggregated 
+rows, which are a list of objects, which individually can be :
+
+\begin{enumerate}
+\item{ An integer, the row index }
+\item{ A range: $[a:b]$ , the row indices are between $a$ to $b$. }
+\end{enumerate}
+
+Thus :
+
+\begin{lstlisting}[style=JexlStyle]
+m.c(0,1) // selects first column, and a cell of 3rd row 
+m.c(0, [0:2]) // selects first column, and two cells : 1st and 2nd row 
+\end{lstlisting}
+
+\index{DataMatrix : select, select() }
+But that is not all we want. We want to run SQL like select query, where
+we can specify the columns to pass and appear. That is done using $select()$ function.
+It takes the anonymous parameter as an argument. 
+The other normal arguments are objects which individually can be :
+
+\begin{enumerate}
+\item{ An integer, the column index to project }
+\item{ A String, the column name to project }
+\item{ A range: $[a:b]$ , the column indices to project, between $a$ to $b$. }
+\end{enumerate}
+
+Thus :
+
+\begin{lstlisting}[style=JexlStyle]
+x = m.select(0,2)
+// x  := [[1, Jackson], [2, Doe], [3, Johnson], [4, Smith]] 
+\end{lstlisting}
+
+Same thing can be accomplished by :
+
+\begin{lstlisting}[style=JexlStyle]
+x = m.select('Number' , 'Last Name' )
+// x  := [[1, Jackson], [2, Doe], [3, Johnson], [4, Smith]] 
+\end{lstlisting}
+
+Changing the order of the columns results in a different Tuple, 
+as it should :
+
+\begin{lstlisting}[style=JexlStyle]
+x = m.select(2 , 0 )
+// x :=  [[Jackson, 1], [Doe, 2], [Johnson, 3], [Smith, 4]]
+\end{lstlisting}
+
+\index{DataMatrix : select condition }
+As always, $select()$ works with condition, so :
+
+\begin{lstlisting}[style=JexlStyle]
+x = m.select{  $.Number > 2  }(2 , 0 )
+// x :=  [[Johnson, 3], [Smith, 4]]
+\end{lstlisting}
+which demonstrates the conditional aspect of the $select()$ function.
+
+\index{DataMatrix : select transform }
+The tuples generated can be transformed, while being selected.
+For example, we can change the Last Name to be lowercased :
+
+\begin{lstlisting}[style=JexlStyle]
+x = m.select{  
+        where ( $.Number > 2 ){ 
+            $[2] = $[2].toLowerCase() 
+           }  
+       }(2 , 0 ) // x :=  [[johnson, 3], [smith, 4]]
+\end{lstlisting}
+
 \end{subsection}
+
+
 
 \begin{subsection}{Keys and Aggregation}
 \end{subsection}
