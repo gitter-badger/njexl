@@ -259,7 +259,7 @@ public class DataMatrix {
      * @param c the column index
      * @return the whole column row by row
      */
-    public List<String> c(int c){
+    public List c(int c){
         return c(c,null);
     }
 
@@ -269,7 +269,7 @@ public class DataMatrix {
      * @param agg these rows will be selected
      * @return list of selected row values for the column
      */
-    public List<String> c(int c, Object agg ){
+    public List c(int c, Object agg ){
         if ( agg != null ){
             agg = TypeUtility.from(agg);
             for ( int i = 0 ; i < ((List)agg).size() ; i++ ){
@@ -489,21 +489,19 @@ public class DataMatrix {
         for ( String key : keys.keySet() ){
             XList rowData = new XList();
             List<Integer> agg = keys.get(key);
-            for ( int c = 0 ; c < columns.size() ; c++  ){
-                if ( colIndices.contains(c)){
-                    List<String> data = c(c,agg);
-                    Object value ;
-                    if ( anon != null ){
-                        anon.setIterationContext(this,data,c);
-                        Object ret = anon.execute();
-                        value = ret ;
-                    }else{
-                        Object[] a = TypeUtility.sqlmath(data);
-                        value = a[2] ;
-                    }
-                    //create a row with aggregated rows for the column
-                    rowData.add(value);
+            for ( int c  : colIndices ){
+                List data = c(c,agg);
+                Object value ;
+                if ( anon != null ){
+                    anon.setIterationContext(this,data,c);
+                    Object ret = anon.execute();
+                    value = ret ;
+                }else{
+                    Object[] a = TypeUtility.sqlmath(data);
+                    value = a[2] ;
                 }
+                //create a row with aggregated rows for the column
+                rowData.add(value);
             }
             ArrayList r = new ArrayList();
             r.add(rowNum);
