@@ -368,18 +368,12 @@ public class DataMatrix {
         if ( args.length ==  0 ){
             return this; // risky? May be. I don't know
         }
-
         SelectSetup setup = setup(args);
-
         ListSet nColumns = new ListSet();
-
-        for ( int j = 0 ;j < columns.size();j++ ) {
-            if (setup.colIndexes.contains(j)) {
-                nColumns.add(columns.get(j));
-            }
+        for ( int c : setup.colIndexes ){
+            nColumns.add( columns.get(c) );
         }
         List rs = _select_op_(setup.anon,setup.colIndexes);
-
         return new DataMatrix(rs,nColumns);
     }
 

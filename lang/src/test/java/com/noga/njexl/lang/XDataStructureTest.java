@@ -16,6 +16,7 @@
 
 package com.noga.njexl.lang;
 
+import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.lang.extension.dataaccess.XmlMap;
 import com.noga.njexl.lang.extension.iterators.DateIterator;
 import com.noga.njexl.lang.extension.iterators.RangeIterator;
@@ -553,6 +554,21 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertTrue(o instanceof Boolean );
         assertTrue((Boolean)o);
+
+        s = JEXL.createScript("m2 = m.matrix(2,0) " );
+        o = s.execute(jc);
+        assertTrue(o instanceof DataMatrix);
+
+        s = JEXL.createScript("index{ $.1 !~ '[0-9]+'  }( m2.rows ) < 0 " );
+        o = s.execute(jc);
+        assertTrue(o instanceof Boolean );
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("str(m2.columns) #^ 'Number'" );
+        o = s.execute(jc);
+        assertTrue(o instanceof Boolean );
+        assertFalse((Boolean)o);
+
     }
 
     /*
