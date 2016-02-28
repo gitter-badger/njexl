@@ -1,0 +1,681 @@
+\chapter{Interacting with Environment}\label{interaction}
+
+{\LARGE E}nvironment is needed to run any system.
+In this chapter we discuss about that environment, which is aptly called the Operating System.
+We would discuss about how to make calls to the operating system, how to create threads, 
+and how to operate in linear ways in case of error happened, and how to have random shuffling generated.  
+
+\begin{section}{Process and Threads}
+
+\begin{subsection}{system() function}
+\index{system()}
+To run any operating system command from nJexl, use the $system()$ function.
+It comes in two varieties, one where the whole command is given as single string, 
+and in another the commands are separated as words :
+\begin{lstlisting}[style=JexlStyle]
+status = system(command_to_os)
+status = system(word1, word2,...)
+\end{lstlisting}
+The return status is the exit status of the command.
+It returns 0 for success and non zero for failure.
+For example, here is the sample :
+
+\begin{lstlisting}[style=JexlStyle]
+status = system("whoami") // system prints "noga"
+/* status code is 0 */
+\end{lstlisting}
+
+In case of unknown command, it would throw an error:
+
+\begin{lstlisting}[style=JexlStyle]
+status = system("unknown command") 
+/* error will be thrown */
+\end{lstlisting}
+
+In case of command is found, but command execution 
+reported an error, it status would  be non zero:
+
+\begin{lstlisting}[style=JexlStyle]
+status = system("ls -l thisDoesNotExist") 
+/* os reprots 
+ls: thisDoesNotExist: No such file or directory
+status := 1
+*/
+\end{lstlisting}
+
+In the same way, multiple words can be put into system,
+which is of some usefulness when one needs to pass quoted arguments :
+
+\begin{lstlisting}[style=JexlStyle]
+status = system("ls" , "-al" , "." ) // system prints result of "ls -al ."
+/* status code is 0 */
+\end{lstlisting}
+
+There is no way to create a process, and have a process handle
+as of now, one can use the \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Process.html}{Process} class
+to create process if required.
+
+\end{subsection}
+
+\begin{subsection}{thread() function}
+\index{thread()}
+$thread()$ function, creates a thread.
+The syntax is simple :
+\begin{lstlisting}[style=JexlStyle]
+t = thread{  /* thread function body  */  }( args_to_be_passed )
+\end{lstlisting}
+
+Thus, simply, use $thread()$ to create a thread:
+
+\begin{lstlisting}[style=JexlStyle]
+t = thread{  
+   write('My Id is %d\n', _ )
+   write('My args are: %s\n', str($$,'\n' ) )
+   write('I am %s\n', $ )
+  }( "Hello", "world" )
+/* java isAlive() maps to alive */
+while ( t.alive ){
+   cur_thread = thread() // returns current thread 
+   cur_thread.sleep(1000)
+}     
+\end{lstlisting}
+This would produce some kind of output as below:
+
+\begin{lstlisting}[style=all]
+My Id is 10
+My args are Hello
+world
+I am Thread[Thread-1,5,main]
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{until() function}
+\index{until()}
+Observe the last example where we used a while to wait for a condition to be true.
+That would generate an infinite loop if the condition was not true.
+So, many times we need to write this custom waiter, where the idea is to wait till a condition is satisfied. 
+Of course we need to have a timeout, and of course we need a polling interval. 
+To make this work easy, we have $until()$. 
+
+The syntax is :
+
+\begin{lstlisting}[style=JexlStyle]
+until [ { condition-body-of-function } ]
+       ( [ timeout-in-ms = 3000, [ polling-interval-in-ms = 100] ]) 
+\end{lstlisting}       
+
+So these are explanations :
+
+\begin{lstlisting}[style=JexlStyle]
+until() // this is ok : simple default wait  
+until (4000) // ok too !
+until (4000, 300 ) // not cool : 300 is rejected , no condition!
+\end{lstlisting}       
+
+A very mundane example would be :
+
+\begin{lstlisting}[style=JexlStyle]
+i = 3 
+until { i-= 1 ; i == 0 }( 1000, 200 ) // induce a bit of wait 
+// this returns true : the operation did not timeout 
+i = 100 
+until { i-= 1 ; i == 0 }( 1000, 200 ) // induce a bit of wait 
+// this returns false : timeout happened  
+\end{lstlisting}       
+
+and, finally, we replace the while statement 
+of the thread example using $until()$ :
+
+\begin{lstlisting}[style=JexlStyle]
+t = thread{  
+   /* do anything one needs */
+  }(  )
+/* java isAlive() maps to alive */
+until{ ! t.alive }( 10000, 300 )
+\end{lstlisting}
+\end{subsection}
+
+\begin{subsection}{Atomic Operations}
+\index{atomic}
+Given there are threads, being atomic is of importance.
+The definition of being atomic is :
+\begin{center}\emph{Either the block gets totally executed, or it does not at all. }\end{center}
+Observe the problem here :
+
+\begin{lstlisting}[style=JexlStyle]
+count = 0 
+// create a list of threads to do something?
+l = list{ thread{ count+= 1 }() }( [0:10] ) // increase count...
+until{ running = select{ $.isAlive }(l) ; empty(running)  }( 10000, 50 )
+write(count) // what is the value here?
+\end{lstlisting}
+
+You would expect it to be 10, but it would be any number $x \le 10$,
+because of the threading and non-atomic issue. To resolve it, 
+put it inside an atomic block (\#atomic\{\} ) : \index{ atomic : block }
+
+\begin{lstlisting}[style=JexlStyle]
+count = 0 
+// create a list of threads to do something?
+l = list{ thread{ #atomic{ count+= 1 } }() }( [0:10] ) // increase count...
+until{ running = select{ $.isAlive }(l) ; empty(running)  }( 10000, 50 )
+write(count) // the value is 10
+\end{lstlisting}
+and now, the count is always 10.
+
+Atomic can be used to revert back any changes in the variables :
+\index{ atomic : block : reverting states }
+\begin{lstlisting}[style=JexlStyle]
+x = 0 
+#atomic{
+   x = 2 + 2    
+}
+#atomic{
+   x = 10
+   write(x) // prints 10 
+/* error, no variable as "p', x should revert back to 4 */   
+   t = p
+}
+write(x) // x is 4 
+\end{lstlisting}
+
+There is this function $atomic()$ which takes primitive data types,
+and converts them into their atomic equivalent.
+See the \href{https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/package-summary.html}{Concurrency} package.
+Thus, \index{atomic : atomic() }
+
+\begin{lstlisting}[style=JexlStyle]
+ai = atomic(o) // atomic integer : valued at 0  
+al = atomic(ol) // atomic long : valued at 0l  
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{clock() function}
+\index{clock()}
+Timing is of essence. If one does not grab hold of time, that is the biggest failure one can be.
+So, to measure how much time a block of code is taking, there is $clock()$ function.
+The syntax is simple :
+
+\begin{lstlisting}[style=JexlStyle]
+// times the body
+#(time_taken_in_nano_sec, result ) = clock{ /* body  */} ()   
+\end{lstlisting}
+
+Thus this is how you tune a long running code:
+
+\begin{lstlisting}[style=JexlStyle]
+m1 = 0 
+x = clock{
+   // load a large matrix, 0.2 million rows 
+   m1 = matrix('test.csv', ',' , false)
+   0 // return 0 
+}()
+write(x.0) // writes the timing in nano seconds 
+write(x.1) // writes the result 
+\end{lstlisting}
+
+\end{subsection}
+
+\end{section}
+
+\begin{section}{Handling of Errors}
+
+I toyed with the idea of try-catch, and then found that : 
+\href{http://stackoverflow.com/questions/1736146/why-is-exception-handling-bad}{Why Exception Handling is Bad?} ; 
+\href{https://gobyexample.com/errors}{GO} does not have exception handling. 
+And I believe it is OK not to have exceptions.
+Code for everything, never ever eat up error like situations. 
+In particular - the multi part arguments and the return story - should ensure that there is really no exceptional thing that happens. 
+After all, trying to build a fool-proof solution is never full-proof.
+
+\begin{subsection}{error() function}
+\index{error()}
+But we need errors to be raised. This is done by the $error()$ function.
+
+\begin{lstlisting}[style=JexlStyle]
+error[ { /* body which when evaluates to true raise error */} ]( args... )   
+\end{lstlisting}
+The function $error()$ can have multiple modes, 
+for example this is how one raise an error with a message :
+\begin{lstlisting}[style=JexlStyle]
+error( "error message")   
+\end{lstlisting}
+This is how one raise an error on condition :
+\begin{lstlisting}[style=JexlStyle]
+error( condition , "error message")   
+\end{lstlisting}
+when $condition$ would be true, error would raised.
+If the condition is false, $error()$ returns $false$.
+In case we want to execute complex logic, and guards it against failure:
+
+\begin{lstlisting}[style=JexlStyle]
+error{ /* error condition */ }("error message")   
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{try() function}
+\index{try()}
+In case the system can raise an error, that needs to be caught, 
+$try()$ function is used. The syntax is :
+
+\begin{lstlisting}[style=JexlStyle]
+try{ /* guard block */ }( return_value_if_error_occured = null )   
+\end{lstlisting}
+Thus, in case of no error, $try()$ returns the value of the block, but in case 
+of error it returns the value passed in the argument, default for that is $null$.
+Observe :
+
+\begin{lstlisting}[style=JexlStyle]
+import 'java.lang.Integer' as INT 
+n = try{ INT:parseInt('42') }()   // n := 42 int 
+// error will be raised and caught 
+n = try{ INT:parseInt('xx42') }()   // n := null
+// error and 0 value would be assigned 
+n = try{ INT:parseInt('xx42') }(0)   // n := 0
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{Multiple Assignment}
+\index{multiple assignment}
+GoLang supports multiple assignments. This feature is picked from GoLang.
+Observe the following :
+
+\begin{lstlisting}[style=JexlStyle]
+#(a,b) = [ 0 , 1 , 2 ] // a = 0, b = 1 
+#(:a,b) = [ 0 , 1 , 2 ] // a = 1, b = 2 
+\end{lstlisting}
+
+The idea is that one can assign a collection 
+directly mapped to a tuple with proper variable names, 
+either from left or from right. 
+\index{multiple assignment : splicing left, right}
+
+Note the quirky ``:'' before $a$
+in the 2nd assignment, it tells you that the splicing of the array
+should happen from right, not from left.
+
+\end{subsection}
+
+\begin{subsection}{Error Assignment}
+\index{multiple return : error}
+A variant of multiple assignment is error assignment.
+The idea is to make the code look as much linear as possible.
+The issue with the $try()$ function is that, there is no way to know
+that error was raised, actually. It lets one go ahead with the default value.
+To solve this issue, there is multiple return, on error.
+
+\begin{lstlisting}[style=JexlStyle]
+import 'java.lang.Integer' as INT 
+#(n,:e)  =  INT:parseInt('42') // n := 42 int, e := null 
+// error will be raised and caught 
+#(n, :e) = INT:parseInt('xx42')  // n := null, e:= NumberFormatException 
+\end{lstlisting}
+
+Observe the ``:'' before the last argument $e$, to tag it as the error container.
+Thus, the system knows that the error needs to be filled into that specific variable.
+Thus, one can write almost linear code like this:
+
+\begin{lstlisting}[style=JexlStyle]
+import 'java.lang.Integer' as INT 
+#(n,:e)  =  INT:parseInt(str_val)
+empty(e) or bye('failure in parsing ', str_val )  
+\end{lstlisting}
+\index{bye()}
+The $bye()$ function, when called, returns from the current calling function or script,
+with the same array of argument it was passed with. 
+
+\end{subsection}
+\end{section}
+
+\begin{section}{Order and Randomness}
+
+\begin{subsection}{Lexical matching : tokens()}
+
+In some scenarios, one needs to read from a stream of characters (String) and then do something about it.
+One such typical problem is to take CSV data, and process it. Suppose one needs to parse CSV into a list of integers. e.g.
+
+\begin{lstlisting}[style=JexlStyle]
+s = '11,12,31,34,78,90' // CSV integers 
+l = select{ where ( ($ = int($) ) !=null ){ $ } }(s.split(','))
+// l := [11, 12, 31, 34, 78, 90] // above works
+\end{lstlisting}  
+But then, the issue here is : the code iterates over the string once to generate the split array, 
+and then again over that array to generate the list of integers, selecting only when it is applicable.
+Clearly then, a better approach would be to do it in a single pass, so :
+
+\begin{lstlisting}[style=JexlStyle]
+s = '11,12,31,34,78,90'
+tmp = ''
+l = list()
+for ( c : s ){
+    if ( c == ',' ){
+        l += int(tmp) ; tmp = '' ; continue 
+    }
+    tmp += c
+}
+l += int(tmp) 
+write(l)
+\end{lstlisting}  
+ 
+However, this is a problem, because we are using too much coding. 
+Fear not, we can still reduce it :
+
+\begin{lstlisting}[style=JexlStyle]
+tmp = ''
+l = select{ 
+    if ( $ == ',' ){  $ = int(tmp) ; tmp = '' ; return true } 
+    tmp += $ ; false  }(s.toCharArray() )
+l += int(tmp) 
+\end{lstlisting}  
+  
+Ok, goodish, but still too much code. Real developers abhor extra coding. 
+The idea is to generate a state machine model based on lexer, in which case, 
+the best idea is to use the $tokens()$ function :  \index{tokens()}
+
+\begin{lstlisting}[style=JexlStyle]
+tokens( <string> , <regex> , match-case = [true|false] ) 
+ // returns a matcher object 
+ tokens{ anon-block }( <string> , <regex> , match-case = [true|false] ) 
+ // calls the anon-block for every  matching group  
+\end{lstlisting}  
+  
+Thus, using this, we can have:  
+  
+\begin{lstlisting}[style=JexlStyle]
+// what to do : string : regex 
+l = tokens{ int($) }(s, '\d+')
+\end{lstlisting}  
+
+and we are done. That is precisely how code is meant to be written.  
+  
+\end{subsection}
+
+\begin{subsection}{hash() function}
+\index{hash()}
+Sometimes it is important to generate hash from a string. To do so :
+
+\begin{lstlisting}[style=JexlStyle]
+h = hash('abc')
+// h  := 900150983cd24fb0d6963f7d28e17f72
+\end{lstlisting}  
+
+It defaults to "MD5", so :
+
+\begin{lstlisting}[style=JexlStyle]
+hash( 'MD5' ,'abc')
+// h := 900150983cd24fb0d6963f7d28e17f72
+\end{lstlisting}  
+
+They are the same. One can obviously change the algorithm used :
+
+\begin{lstlisting}[style=JexlStyle]
+hash([algo-string , ] <string> )
+\end{lstlisting}  
+
+There are these two specific algorithms that one can use to convert to and from base 64 encoding. 
+They are ``e64'' to encode and ``d64'' to decode. Thus, to encode a string in the base 64 :
+\index{hash : base 64}
+
+\begin{lstlisting}[style=JexlStyle]
+h = hash('e64', 'hello, world')
+//h := aGVsbG8sIHdvcmxk
+//And to decode it back :
+s = hash('d64', 'aGVsbG8sIHdvcmxk' )
+// s:= "hello, world"
+\end{lstlisting}  
+
+\end{subsection}
+
+\begin{subsection}{Anonymous Comparators}
+\index{ anonymous comparator }
+Ordering requires to compare two elements. 
+The standard style of Java comparator is to code something like this :
+
+\begin{lstlisting}[style=JexlStyle]
+def compare( a, b ) {
+    if ( a < b ) return -1 
+    if ( a > b ) return  1
+    return 0 
+}
+\end{lstlisting}  
+Obviously, one needs to define the relation operator accordingly.
+For example, suppose we have  student objects :
+
+\begin{lstlisting}[style=JexlStyle]
+student1 = { 'name' : 'Noga' , 'id' : 42  }
+student2 = { 'name' : 'Waseem' , 'id' : 24  }
+\end{lstlisting}  
+
+And we need to compare these two.
+We can choose a particular field, say ``id'' to compare these :
+
+\begin{lstlisting}[style=JexlStyle]
+def compare( a, b ) {
+    if ( a.id < b.id ) return -1 
+    if ( a.id > b.id ) return  1
+    return 0 
+}
+\end{lstlisting}  
+
+Or, there is another way to represent the same thing :
+ 
+\begin{lstlisting}[style=JexlStyle]
+def compare( a, b ) {
+    ( a.id < b.id )
+}
+\end{lstlisting}  
+
+In nJexl compare functions can be of both the types.
+Either one choose to generate a triplet of $( -1, 0, 1 )$,
+or one can simply return $true$ when $left < right$ and false
+otherwise. The triplet is not precisely defined, 
+that is, when the comparator returns an integer :
+
+\begin{enumerate}
+\item{ The $ result < 0  \implies left < right $  }
+\item{ The $ result = 0  \implies left = right $  }
+\item{ The $ result > 0  \implies left > right $  }
+\end{enumerate}
+
+when it returns a boolean however, the code is :
+
+\begin{lstlisting}[style=JexlStyle]
+cmp = comparator(a,b)
+if ( cmp ) {
+  write( 'a<b' )
+}else{
+  write( 'a >= b' )
+}
+\end{lstlisting}  
+
+In the subsequent section anonymous comparators would be used heavily.
+The basic syntax of these functions are :
+
+\begin{lstlisting}[style=JexlStyle]
+order_function{ /* anonymous comparator block */ }(args... )
+\end{lstlisting}  
+
+As always $\$.0$ is the left argument $(a)$ and $\$.1$ is the right argument $(b)$.
+Thus, one can define the suitable comparator function to be used in order.
+\end{subsection}
+
+
+\begin{subsection}{Sort Functions}
+\index{sorting}
+
+Sorting is trivial:
+\index{sorta()}\index{sortd()}
+\begin{lstlisting}[style=JexlStyle]
+cards = ['B','C','A','D' ]
+sa = sorta(cards) // ascending 
+// sa := [A, B, C, D]
+sd = sortd(cards) //descending 
+// sd := [D, C, B, A]
+\end{lstlisting}  
+
+
+Now, sorting is anonymous block ( function ) ready, 
+hence we can sort on specific attributes. 
+Suppose we want to sort a list of complex objects, like a Student with Name and Ids.
+And now we are to sort based on "name" attribute: \index{sorting : custom comparator }
+
+\begin{lstlisting}[style=JexlStyle]
+students = [ {'roll' : 1, 'name' : 'X' } , 
+             {'roll' : 3, 'name' : 'C' } , 
+             {'roll' : 2, 'name' : 'Z' } ]
+sa = sorta{ $[0].name < $[1].name }(students)
+/*
+sa := [{roll=3, name=C}, 
+        {roll=1, name=X}, 
+        {roll=2, name=Z}]
+*/
+\end{lstlisting}  
+
+Obviously we can do it using the roll too:
+
+\begin{lstlisting}[style=JexlStyle]
+sa = sorta{ $[0].roll < $[1].roll }(students)
+// sa := [{roll=1, name=X}, {roll=2, name=Z}, {roll=3, name=C}]
+\end{lstlisting}  
+\end{subsection}
+
+\begin{subsection}{sqlmath() function}
+\index{sqlmath()}
+Sometimes it is of importance to generate $\#(min,max,sum)$
+of a collection. That is precisely what $sqlmath()$ achieves :
+
+\begin{lstlisting}[style=JexlStyle]
+l = [0,-1,-3,3,4,10 ]
+#(m,M,s) = sqlmath(l)
+/*  m := -3 ; M := 10 ;sum := 9  */
+\end{lstlisting}  
+
+Obviously, the function takes anonymous function as argument,
+thus, given we have :
+
+\begin{lstlisting}[style=JexlStyle]
+x = [ 2,3,1,0,1,4,9,13]
+#(m,M,s) = sqlmath{$*$}(x)
+/* [0, 169, 281] */
+\end{lstlisting}  
+ 
+Thus, it would be very easy to define on what we need to sum over or min or max. 
+Essentially the anonymous function must define a scalar to transfer the object into: 
+
+\begin{lstlisting}[style=JexlStyle]
+#(m,M,s) = sqlmath{ $.value }( { 1:2, 3:4, 5:6 })
+// [2, 6, 12]
+\end{lstlisting}  
+
+\end{subsection}
+
+\begin{subsection}{minmax() function}
+\index{minmax()}
+
+It is sometimes important to find min and max of items which can not be cast into numbers directly. 
+For example one may need to find if an item is within some range or not, and then finding min and max becomes important. 
+Thus, we can have :
+
+\begin{lstlisting}[style=JexlStyle]
+x = [ 2,3,1,0,1,4,9,13]
+#(m,M) = minmax(x)
+// [0, 13]
+\end{lstlisting}  
+
+This also supports anonymous functions,thus :
+
+\begin{lstlisting}[style=JexlStyle]
+students = [ {'roll' : 1, 'name' : 'X' } , 
+             {'roll' : 3, 'name' : 'C' } , 
+             {'roll' : 2, 'name' : 'Z' } ]
+#(m,M) =  minmax{ $[0].name < $[1].name }(students)
+// [{roll=3, name=C}, {roll=2, name=Z}]
+\end{lstlisting}  
+
+\end{subsection}
+
+
+\begin{subsection}{shuffle() function}
+\index{shuffle()}
+In general, testing requires shuffling of data values. 
+Thus, the function comes handy:
+
+\begin{lstlisting}[style=JexlStyle]
+cards = [ 'A', 'B' , 'C' , 'D' ] 
+// inline shuffling 
+happened = shuffle(cards)
+// happened := true , returns true/false stating if shuffled
+cards
+// order changed : [D, A, C, B]
+\end{lstlisting}  
+
+\end{subsection}
+
+\begin{subsection}{The random() function}
+The $random()$ function is multi-utility function.
+With no arguments it returns a 
+\href{https://docs.oracle.com/javase/8/docs/api/java/security/SecureRandom.html}{SecureRandom} :
+
+\begin{lstlisting}[style=JexlStyle]
+sr = random() // A SecureRandom
+\end{lstlisting}  
+
+$random()$ function can be used in selecting a single value at random from a collection :
+\index{random() : select one}
+\begin{lstlisting}[style=JexlStyle]
+l = [0,1,2,3,4]
+rs = random(l) // rs is a randomly selected element 
+\end{lstlisting}  
+
+It can also be used to select a random sub collection from a collection,
+we just need to pass the number of elements we want from collection :
+\index{random() : select many}
+
+\begin{lstlisting}[style=JexlStyle]
+a = [0,1,2,3,4]
+rs = random(a,3) // pick 3 items at random without replacement 
+// works on strings too....
+rs = random("abcdefghijklmpon",10) 
+\end{lstlisting}  
+
+Given a seed data type, it generates the next random value from 
+the same data type. Behold : \index{random() : random value with types }
+
+\begin{lstlisting}[style=JexlStyle]
+// passing 0 generates a gaussian 
+gaussian = random(0)
+// pass a long value to get next long value 
+r_long = random(1l)
+// pass a double value to get next double value 
+r_double = random(1.0d)
+// pass a float value to get next float value 
+r_float = random(0.1f)
+// pass a big decimal value to get next big decimal value (-1,1) 
+r_bd = random(0.1b)
+// pass a boolean value to get a random boolean value 
+r_b = random(true)
+/*  Passing a BigInteger value in random generates 
+a next random BigInteger
+at least 4 times the decimal digit size 
+of the input big integer in binary */
+r_bi = random(2h)
+\end{lstlisting}  
+
+The last behaviour can be used to generate random strings :
+\index{random() : strings }
+
+\begin{lstlisting}[style=JexlStyle]
+// generate a large random big integer 
+s = random(10h)
+// convert it into string with a suitable base 
+rs = str(s,36)
+\end{lstlisting}
+
+
+\end{subsection}
+
+\end{section}

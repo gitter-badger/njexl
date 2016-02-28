@@ -401,7 +401,33 @@ c = join{ // check permutation , then
 This is how we can solve the problem with the aid of a declarative form. 
 \end{subsection}
 
+\begin{subsection}{Projection on Combinations}
+\index{project}
+
+Sometimes it is needed to create a sub-collection from the collection. 
+This, is known as projection ( choosing specific columns of a row vector ).
+The idea is simple :
+
+\begin{lstlisting}[style=JexlStyle]
+a = [0,1,2,3,4]
+sub(a,2) // [2, 3, 4]
+sub(a,2,3) // [2, 3]
+sub(a,-1) // [0, 1, 2, 3]
+sub(a,0,-1) // [0, 1, 2, 3]
+sub(a,1,-1) // [1, 2, 3]
+\end{lstlisting}
+If you do not like the name $sub()$ , the same function is aliased under $project$.
+
+While project works on a range $(from,to)$ , the generic idea can be expanded. 
+What if I want to create a newer collection from a collection using a $range$ type? 
+Clearly I can : \index{collection : slicing }
+
+\begin{lstlisting}[style=JexlStyle]
+a =[0, 1, 2, 3, 4]
+a[[0:3:2]] // @[0, 2]
+\end{lstlisting}
+
+\end{subsection}
+
 \end{section}
-
-
 
