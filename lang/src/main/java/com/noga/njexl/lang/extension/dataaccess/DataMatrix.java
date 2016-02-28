@@ -492,14 +492,14 @@ public class DataMatrix {
             for ( int c = 0 ; c < columns.size() ; c++  ){
                 if ( colIndices.contains(c)){
                     List<String> data = c(c,agg);
-                    String value ;
+                    Object value ;
                     if ( anon != null ){
                         anon.setIterationContext(this,data,c);
                         Object ret = anon.execute();
-                        value = String.format("%s", ret);
+                        value = ret ;
                     }else{
                         Object[] a = TypeUtility.sqlmath(data);
-                        value = String.format("%s", a[2]);
+                        value = a[2] ;
                     }
                     //create a row with aggregated rows for the column
                     rowData.add(value);
