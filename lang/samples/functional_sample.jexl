@@ -3,16 +3,20 @@
 */
 import 'java.lang.System.out' as out // why?
 import '_/dummy.jexl' as dummy
-
+var count = 0
 // This does not take any param, so, a call to this 
 def my_max_function(){
+    // store args
+    my_args = __args__
     // Use a function that use functional : e.g. list 
-    o = sqlmath(__args__)
+    o = sqlmath(__args__ =  my_args )
+    count += 1
     return o[1]
 }
 def func_taking_other_function( func ){
    y = func( 10, 1, 2 )
    write(y)
+   count += 1
 }
 // in here would result in var args
 write(str(__args__))
@@ -24,3 +28,6 @@ func_taking_other_function( my_max_function )
 // other script
 func_taking_other_function( dummy.some_func )
 write(str(__args__))
+write( count )
+// return count
+count

@@ -472,16 +472,14 @@ public class DataMatrix {
             keys();
         }
         SelectSetup setup = setup(args);
-        HashSet<Integer> colIndexes = setup.colIndexes;
+        HashSet<Integer> colIndices = setup.colIndexes;
         Interpreter.AnonymousParam anon = setup.anon;
 
         ListSet  aColumns = new ListSet();
 
-        for ( int c = 0 ; c < columns.size() ; c++  ) {
-            if (colIndexes.contains(c)) {
-                // add this column
-                aColumns.add(columns.get(c));
-            }
+        for ( int c : colIndices  ) {
+            // add this column
+            aColumns.add(columns.get(c));
         }
 
         HashMap<String,List<Integer>> aKey = new HashMap<>();
@@ -492,7 +490,7 @@ public class DataMatrix {
             XList rowData = new XList();
             List<Integer> agg = keys.get(key);
             for ( int c = 0 ; c < columns.size() ; c++  ){
-                if ( colIndexes.contains(c)){
+                if ( colIndices.contains(c)){
                     List<String> data = c(c,agg);
                     String value ;
                     if ( anon != null ){

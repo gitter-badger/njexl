@@ -102,7 +102,8 @@ public class ExtendedScriptTest extends JexlTestCase {
 
     @Test
     public void testFunctionalInNormalFunction()throws Exception {
-        runScript(JEXL,"samples/functional_sample.jexl");
+        Object o = runScript(JEXL,"samples/functional_sample.jexl");
+        assertEquals(4,o);
     }
 
     @Test
