@@ -573,7 +573,7 @@ m = matrix(data_file_path  [, column_separator_string = '\t'
 
 For example, suppose we have a tab delimited file ``test.tsv''  like this:
 
-\begin{center}
+\begin{center}\label{matrix}
 \begin{tabular}{ |c|c|c|c|c| } 
  \hline
  Number	& First Name & Last Name & Points & Extra \\ 
@@ -715,12 +715,275 @@ x = m.select{
 
 \end{subsection}
 
+\begin{subsection}{The matrix() function}
+\index{ DataMatrix : matrix()}
+One can create a matrix out of an existing one.
+Observe that, using project and select generates only the list of data values, 
+not a new matrix itself. If one wants to create a matrix out of an existing one :
 
+\begin{lstlisting}[style=JexlStyle]
+m2 = m.matrix{  
+        where ( $.Number > 2 ){ 
+            $[2] = $[2].toLowerCase() 
+           }  
+       }(2 , 0 ) 
+\end{lstlisting}
+This generates a new matrix named $m2$, with columns starting from ``Last Name'' and ``Number''.
+The rows values are exactly the same as the select query done.
 
-\begin{subsection}{Keys and Aggregation}
 \end{subsection}
 
+
+\begin{subsection}{Keys}
+Given we have 2 matrices $(m1,m2)$ , we can try to figure out if they differ or not.
+A Classic case is comparing two database tables from two different databases.
+A very naive code can be written as such :
+\index{ table comparison }
+\begin{lstlisting}[style=JexlStyle]
+def match_all_rows(m1,m2){
+   count = 0 
+   for ( r1 : m1.rows ){
+     // linearise the left tuple
+     st1 = str(r1,'#')
+     for ( r2 : m2.rows ){
+         // linearise the right tuple
+         st2 = str(r2,'#')
+         // they match 
+         if ( r1 == r2 ){ count += 1 } 
+     }
+   }
+   return ( count == size(r1.rows) and  count == size(r2.rows) )
+}
+\end{lstlisting}
+
+The \href{https://en.wikipedia.org/wiki/Computational\_complexity\_theory}{complexity} of this algorithm, 
+with respect to the size of the rows of the matrices is : $\Theta(n^2)$, given $n$ is the rows size of the matrices. 
+Given both the matrices have $m$ columns, the complexity would become $\Theta(n^2m^2)$, a huge amount considering
+a typical $(n,m) := ( 10000, 10 ) $. 
+
+We can obviously improve this setting: \index{ table comparison : O(n) }
+
+\begin{lstlisting}[style=JexlStyle]
+def match_all_rows(m1,m2){
+   // exactly m * n 
+   l1 = list{ str($,'#') }(m1.rows )
+   // exactly m * n
+   l2 = list{ str($,'#') }(m2.rows )
+   // exactly n
+   diff = l1 ^ l2
+   return empty(diff)  
+}
+\end{lstlisting}
+
+The new complexity comes to $\Theta(nm)$.
+The thing we are implicitly using is known as \href{https://en.wikipedia.org/wiki/Unique\_key}{key}.
+We are not really using the key, but, stating that key uniquely represents a row. The criterion 
+for a set of attributes to be qualified as key can be described as : \index{ table comparison : key }
+
+\begin{lstlisting}[style=JexlStyle]
+// a set of attribute indices 
+key_attrs = [ index_1 , index_2 , ...  ]
+def is_key( m, key_attrs){
+   s = set{  
+         r = $ // store the row
+         // generate a list by projecting the attributes 
+         l = lfold{ r[$] }(key_attrs)
+         // linearise the tuple 
+         str(l,'#')   
+      }(m.rows)
+   return  size(s) == size(m.rows)
+}
+\end{lstlisting}
+
+What happens when the keys are non unique? That boils down to the list, 
+but then we should be able to remember, which rows have the same keys,
+or rather what all rows are marked by the same key.
+So, we may have a keys function, assuming keys are not unique : \index{ table comparison : key : non unique }
+
+\begin{lstlisting}[style=JexlStyle]
+// a set of attribute indices 
+key_attrs = [ index_1 , index_2 , ...  ]
+def key( m, key_attrs, sep){
+   keys = lfold{  
+         r = $ // store the row
+         // generate a list by projecting the attributes 
+         l = lfold{ r[$] }(key_attrs)
+         // linearise the tuple 
+         k = str(l,sep)
+         if ( k @ _$_ ){ // the key already exists 
+            _$_[k] += _ // append the current row index to the rows
+          }else{
+             // key does not exist, create one and then append 
+             _$_[k] = list(_) 
+           }
+         _$_    
+      }(m.rows, dict() )
+   return keys
+}
+\end{lstlisting}
+
+This idea is already in-built in the DataMatrix, and is known as the $keys()$ function :
+\index{ DataMatrix : key() }
+
+\begin{lstlisting}[style=JexlStyle]
+m.keys{  /* how to generate one */ }( args... )
+m.keys( columns_for_keys )
+\end{lstlisting}
+
+So, to simply put, $keys()$ generate a key dict for the matrix, as shown below, 
+using the  matrix in (\ref{matrix}) :  
+
+\begin{lstlisting}[style=JexlStyle]
+// the key is the column Number
+m.keys( 'Number' )
+// see what the keys are ?
+m.keys /* {4?=[3], 3?=[2], 2?=[1], 1?=[0]}  */
+\end{lstlisting}
+
+We can generate a non unique key too, just to show the practical application :
+
+\begin{lstlisting}[style=JexlStyle]
+// the key is the column Number modulo 2: [0,1]
+m.keys{  $.Number % 2  }( )
+// see what the keys are ?
+m.keys /* {0=[1, 3], 1=[0, 2]}  */
+\end{lstlisting}
+
+\end{subsection}
+
+\begin{subsection}{Aggregate}
+\index{DataMatrix : aggregate() }
+Once we establish that the keys function did not generate unique keys, one may want to 
+consolidate the rows to ensure that the key points to unique rows.
+This is done by the $aggregate()$ function. This function can be surmised to
+generate a new matrix from the old matrix, where the same keys pointing to different rows
+must be aggregated based on columns.
+
+\begin{lstlisting}[style=JexlStyle]
+def aggregate(m,columns , aggregate_function ){
+  agg_rows = list()
+  for ( key : m.keys ){
+      row = list()
+      rows_list = m.keys[key]  
+      for ( c : columns ){
+          // aggregate the rows on a single column
+          col_data = m.c( c, rows_list ) 
+          agg_data = aggregate_function( col_data )
+          row += agg_data // add a replacement for all the rows   
+      }
+      // add to the newer row
+      agg_rows += row 
+  }
+  // now we have the new matrix data rows
+}
+\end{lstlisting}
+
+The syntax for the function is :
+
+\begin{lstlisting}[style=JexlStyle]
+ma = m.aggregate( col_name_or_index_list )
+ma = m.aggregate( col_name_or_index1, col_name_or_index2, ... )
+ma = m.aggregate{ 
+                  /*  pass the function to aggregate */  
+                 }( col_name_or_index1, col_name_or_index2, ... )
+\end{lstlisting}
+
+As an example, say we take the key example:
+
+\begin{lstlisting}[style=JexlStyle]
+ma = m.aggregate{ str($,'&') } ( 'First Name' , 'Last Name'  )
+ma.rows 
+/* 
+[ 
+  [John&Jill, Doe&Smith], 
+  [Eve&Adam, Jackson&Johnson]
+] 
+*/
+\end{lstlisting}
+\end{subsection}
+
+
 \begin{subsection}{Diff Functions}
+\index{DataMatrix : diff()}
+
+Sometimes it is necessary to difference out two matrices.
+
+Suppose we have two matrices :
+
+\begin{center}\label{matrix-diff}
+
+\begin{tabular}{ |c|c|c|c|c| } 
+ \hline
+ Number	& First Name & Last Name & Points & Extra \\ 
+ \hline 
+   1    & Eve	     & Jackson	& 94      & \\
+   2    & John       &  Doe	    & 80      &  x \\ 
+   3    & Adam       & Johnson	& 67      &  \\	
+   4    & Jill       & Smith	& 50      & xx \\  
+ \hline  
+\end{tabular}
+
+\emph{ Table 1 }
+
+
+\begin{tabular}{ |c|c|c|c|c| } 
+ \hline
+ Number	& First Name & Last Name & Points & Extra \\ 
+ \hline 
+   1    & eve	     & jackson	& 92      & \\
+   2    & john       & doe	    & 83      &  x \\ 
+   3    & adam       & johnson	& 68      &  \\	
+   4    & jill       & smith	& 49      & xx \\  
+ \hline
+\end{tabular}
+
+\emph{ Table 2 }
+
+\end{center}
+
+Now, we want to diff these two. There is a very simple way to diff :
+
+\begin{lstlisting}[style=JexlStyle]
+m1 = matrix('table1.tsv')
+m2 = matrix('table2.tsv')
+// do is the diff object storing : m1-m2, m1 & m2, m2-m1 
+do = m1.diff(m2)
+/* do does not contain any common stuff at all */
+\end{lstlisting}
+
+The diff object has the following fields :
+\begin{enumerate}
+\item{Left - Right : $lr$ : keys not matching }
+\item{Common : $id$ : keys match, but the values do not}
+\item{Right - Left : $rl$ : keys not matching }
+\end{enumerate}
+It also has a method $diff()$ telling that if they differ or not. 
+To demonstrate :
+
+\begin{lstlisting}[style=JexlStyle]
+m1 = matrix('table1.tsv')
+m2 = matrix('table2.tsv')
+m1.keys('Number')
+m2.keys('Number')
+// do is the diff object storing : only m1 & m2 : keys match! 
+do = m1.diff(m2)
+\end{lstlisting}
+
+This poses a problem. We need to specify, how to differentiate two tuples, 
+when the key matches. In effect, we want to define equality over two tuples.
+That can be done with :
+
+\begin{lstlisting}[style=JexlStyle]
+// do is the diff object storing : everything matches 
+do = m1.diff{    
+ $[0]['First Name'].toLowerCase() == $[1]['First Name'].toLowerCase() and 
+ $[0]['Last Name'].toLowerCase() == $[1]['Last Name'].toLowerCase() and 
+ #| $[0]['Points'] - $[1]['Points'] | < 10   
+}(m2)
+\end{lstlisting}
+and now, the two matrices will match, with no diff.
+
+
 \end{subsection}
 
 
