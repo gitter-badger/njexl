@@ -122,8 +122,9 @@ so cardinality of $null$ is also 0.
 \end{subsection}
 
 \begin{subsection}{There Exist element with Condition : index, rindex }
-This pose a delicate problem. Given we have can say if \emph{``y in container x''} or not,
+Given we have if \emph{``y in container x''} or not,
 what if when asked a question like : \emph{ ``is there a y in x such that f(y) is true''} ?
+This pose a delicate problem. 
 
 Notice this is the same problem we asked about sorting. Is there an element (y) in x, 
 such that the sorting order is violated? If not, the collection is sorted.
@@ -229,12 +230,12 @@ Set algebra, in essence runs with the notions of the following ideas :
 \begin{enumerate}{
      \item{Set Union is defined as : \index{Set Algebra : Union}
 $$
-U_{AB} = A \cup B \; :=  \{ x \in A \; or \; x \in B \} 
+U_{AB} = A \cup B \; :=  \{ x \in A \; or \; x \in B \} := U_{BA}
 $$ 
 }
     \item{Set Intersection is defined as : \index{Set Algebra : Intersection}
 $$
-I_{AB} = A \cap B \; :=  \{ x \in A \; and \; x \in B \} 
+I_{AB} = A \cap B \; :=  \{ x \in A \; and \; x \in B \} := I_{BA}
 $$
 }
 \item{Set Minus is defined as : \index{Set Algebra : Minus}
@@ -244,7 +245,7 @@ $$
 }
 \item{Set Symmetric Difference is defined as : \index{Set Algebra : Symmetric Difference} 
 $$
-\Delta_{AB} := ( A \setminus B ) \cup ( B  \setminus A ) 
+\Delta_{AB} := ( A \setminus B ) \cup ( B  \setminus A ) := \Delta_{BA}
 $$
 }
 \item{Set Cross Product is defined as : 

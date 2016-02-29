@@ -321,7 +321,7 @@ write(a) // global a, prints 42
 write(x) // local x, prints 0 still
 \end{lstlisting}
 The result would be :
-\begin{lstlisting}
+\begin{lstlisting}[style=all]
 42
 0
 42
@@ -385,7 +385,7 @@ list{ $*$ }([0:n])
 The curious block construct after the list function is called anonymous (function) parameter, 
 which takes over the map function. The loop stays implicit, and the result is equivalent 
 from the other 3 examples. The explanation is as follows.
-For an anonymous function parameters, there are 3 implicit guaranteed arguments :
+For an anonymous function parameter, there are 3 implicit guaranteed arguments :
 
 \begin{enumerate}
 \item{ \$ --> Signifies the item of the collection , we call it the $ITEM$ }
@@ -400,7 +400,7 @@ For an anonymous function parameters, there are 3 implicit guaranteed arguments 
 \begin{subsection}{Some Use Cases}
 The data structure section would showcase some use cases. 
 But we would use a utility function to showcase the use of this anonymous function.
-Suppose there is this function $minmax$ which takes a collection and returns the (min,max) tuple.
+Suppose there is this function $minmax()$ \index{minmax()} which takes a collection and returns the (min,max) tuple.
 In short :
 
 \begin{lstlisting}[style=JexlStyle]
