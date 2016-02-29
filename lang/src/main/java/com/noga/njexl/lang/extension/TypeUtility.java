@@ -1912,8 +1912,8 @@ public final class TypeUtility {
             }
             return map;
         }
-
-        if (args.length == 1) {
+        // in case the sizes do not match at all...
+        if (args.length % 2 == 1) {
             // return a map representing a complex object
             return obj2dict(args[0]);
         }

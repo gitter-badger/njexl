@@ -469,7 +469,7 @@ s = str(l,'#') // '1#2#3#4'
 s == '1#2#3#4' // true 
 \end{lstlisting}
 
-So, in essence, for $str()$, serializing the collection, the syntax is :
+So, in essence, for $str()$, serialising the collection, the syntax is :
 
 \begin{lstlisting}[style=JexlStyle]
 s = str( collection [ ,  seperation_string ] )
@@ -477,10 +477,10 @@ s = str( collection [ ,  seperation_string ] )
 
 \end{subsection}
 
-\begin{subsection}{Generalized $toString()$ }
+\begin{subsection}{Generalised $toString()$ }
 \index{ str : replacing toString() }
 
-This brings to the point that we can linearize a collection of collections using $str()$.
+This brings to the point that we can linearise a collection of collections using $str()$.
 Observe how:
 
 \begin{lstlisting}[style=JexlStyle]
@@ -493,8 +493,8 @@ s_form = str{  str($,'#')  }(j, '&') // lineraize
 */
 \end{lstlisting}
 
-Another way to handle the linerisation is that of dictionary like property buckets:
-\index{ str : linearize objects }
+Another way to handle the linearisation is that of dictionary like property buckets:
+\index{ str : linearise objects }
 
 \begin{lstlisting}[style=JexlStyle]
 d = { 'a' : 10 , 'b' : 20  } 
@@ -502,3 +502,207 @@ s_form = str{  [ $.a , $.b ]  }(d,'@' ) // lineraize, generates : 10@20
 \end{lstlisting}
 \end{subsection}
 \end{section}
+
+\begin{section}{Playing with Types : Reflection}
+It is essential for a dynamic language to dynamically 
+inspect types, if at all. Doing so, is termed as 
+\href{https://en.wikipedia.org/wiki/Reflection\_(computer\_programming)}{reflection}.
+In this section, we would discuss different constructs that lets one move along the types.
+
+
+\begin{subsection}{type() function} 
+\index{type()}
+The function $type()$ gets the type of an object.
+In essence it gets the $getClass()$ of any 
+\href{https://en.wikipedia.org/wiki/Plain\_Old\_Java\_Object}{POJO}.
+Notice that the class object is loaded only once under a class loader,
+so equality can be done by simply ``==''.
+Thus, the following constructs are of importance:
+
+\begin{lstlisting}[style=JexlStyle]
+d = { : }
+c1 = type(d) // c1 := java.util.HashMap
+i = 42
+c2 = type(i) // c2 := java.lang.Integer
+c3 = type(20) // c3 := java.lang.Integer
+c3 == c2 // true 
+c1 == c2 // false 
+\end{lstlisting}
+\end{subsection}
+
+\begin{subsection}{The $===$ Operator}
+\index{operator : === }
+From the earlier section, suppose someone wants to 
+equal something with another thing, under the condition
+that both the objects are of the same type.
+Under the tenet of nJexl which reads : \emph{ ``find a type at runtime, kill the type'' },
+we are pretty open into the type business :
+
+\begin{lstlisting}[style=JexlStyle]
+a = [1,2,3] 
+ca = type(a) // Integer Array 
+b = list(1,3,2)
+cb = type(b) // XList type 
+a == b // true 
+ca == cb // false 
+// type equals would be :
+ca == cb  and a == b // false  
+\end{lstlisting}
+
+But that is a long haul. One should be succinct,
+so there is this \href{http://www.w3schools.com/js/js\_operators.asp}{borrowed operator from JavaScript},
+known as ``==='' which let's its job in a single go :
+
+\begin{lstlisting}[style=JexlStyle]
+a = [1,2,3] 
+b = list(1,3,2)
+a === b // false 
+c = [3,1,2]
+c === a // true 
+\end{lstlisting}
+\end{subsection}
+
+\begin{subsection}{The $isa$ operator}
+\index{operator : isa }
+Arguably, finding a type and matching a type is a tough job.
+Given that we need to care about who got derived from whatsoever.
+That is an issue a language should take care of, and for that reason, 
+we do have $isa$ operator.
+
+\begin{lstlisting}[style=JexlStyle]
+a = [1,2,3] 
+a isa [] // false : a is a type of object array?
+a isa [0] // true : a is a type of Integer array?
+b = list(1,3,2)
+b isa list() // true : b is a type of list ? 
+\end{lstlisting}
+This also showcase the issues of completely overhauling the type 
+structure found in a JVM. The first two lines are significantly quirky.
+
+\end{subsection}
+
+\begin{subsection}{inspect() function}
+\index{inspect()}
+A proper reflection requires to \emph{inspect} a particular object type.
+The $inspect()$ function comes to foray. The objective of this function 
+is to return an \href{https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html#unmodifiableMap-java.util.Map-}{UnmodifiableMap} 
+representing the structure of the object. In short, the map returned has these key ingredients :
+
+\begin{enumerate}
+\item{The type property : designated as ``$t$''.  Holds the type of the object or class. }
+\item{The static fields property : designated as ``$F$''.  
+        Holds the static fields of the object or class, with their type. It is a list.}
+\item{The instance fields property : designated as ``$f$''.  
+        Holds the instance fields of the object or class, with their type. It is a list.}
+\item{The instance methods property : designated as ``$m$''.  
+        Holds the methods of the object or class, with their name. It is a list.}
+\end{enumerate}
+
+This suitably demonstrates the usage:
+
+\begin{lstlisting}[style=JexlStyle]
+d = {'a' : 42 }
+id = inspect(d)
+/*
+{t=java.util.HashMap, 
+F=[(UNTREEIFY_THRESHOLD,int), (TREEIFY_THRESHOLD,int), 
+(DEFAULT_LOAD_FACTOR,float), 
+(DEFAULT_INITIAL_CAPACITY,int), (serialVersionUID,long), 
+(MAXIMUM_CAPACITY,int), (MIN_TREEIFY_CAPACITY,int)], 
+
+f=[(entrySet,interface java.util.Set), (threshold,int), 
+(modCount,int), (size,int), (loadFactor,float), 
+(table,class [Ljava.util.HashMap$Node;)], 
+
+m=[getClass, getOrDefault, newTreeNode, replace, putMapEntries, put, 
+containsValue, compute, merge, entrySet, writeObject, containsKey, 
+access$000, eq, comparableClassFor, readObject, afterNodeAccess, 
+size, loadFactor, newNode, replacementTreeNode, hash, reinitialize, 
+internalWriteEntries, wait, values, computeIfAbsent, notifyAll,
+ registerNatives, replaceAll, remove, notify, capacity, replacementNode,
+  hashCode, get, putAll, putVal, keySet, removeNode, forEach, treeifyBin, 
+  clear, isEmpty, tableSizeFor, afterNodeRemoval, computeIfPresent, 
+  compareComparables, equals, clone, resize, toString, 
+  finalize, getNode, putIfAbsent, afterNodeInsertion]}
+
+*/
+\end{lstlisting}
+\end{subsection}
+
+\begin{subsection}{Serialisation using dict() function}
+\index{ dict() : serialisation }
+Sometimes it is of importance to inspect an instance as 
+what the instance is supposed to be, as a property bucket.
+That is where the $dict()$ function comes in.
+
+\begin{lstlisting}[style=JexlStyle]
+d = dict()
+pd = dict(d,null,null)
+/* 
+pd := {modCount=1, @t=java.util.HashMap, size=1, 
+ loadFactor=0.75, entrySet=[a=42], threshold=12, 
+ table=[Ljava.util.HashMap$Node;@7e32c033} 
+*/
+\end{lstlisting}
+Note the quirky way to inspect what is there for the object when the object is dictionary.
+For objects which are not a dictionary, inspecting them is easier :
+
+\begin{lstlisting}[style=JexlStyle]
+d = date()
+pd = dict(d)
+/* 
+pd :=  { cdate=2016-02-29T20:10:06.627+0530, 
+         @t=java.util.Date, 
+         fastTime=1456756806627 } 
+*/
+\end{lstlisting}
+\end{subsection}
+
+\begin{subsection}{Field Access}
+\index{reflection : field access}
+Once we have found the fields to access upon, 
+there should be some way to get to the field, other than this :
+
+\begin{lstlisting}[style=JexlStyle]
+d = date()
+d.fastTime  // some value 
+\end{lstlisting}
+
+There is obvious way to access properties
+as if the object is a dictionary, or rather than a property bucket:
+\index{reflection : property bucket}
+\begin{lstlisting}[style=JexlStyle]
+d = date()
+d['fastTime'] == d.fastTime  // true 
+\end{lstlisting}
+This opens up countless possibilities of all what one can do with this.
+Observe however, monsters like spring and hibernate is not required 
+given the property injection is this simple. 
+\end{subsection}
+
+
+
+\end{section}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

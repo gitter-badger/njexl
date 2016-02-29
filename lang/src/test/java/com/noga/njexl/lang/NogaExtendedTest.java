@@ -903,11 +903,9 @@ public class NogaExtendedTest extends JexlTestCase {
         assertTrue(o instanceof Boolean);
         assertTrue((Boolean)o);
 
-        e = JEXL.createScript("x = [1,2,3] ; y = dict([],[],[]); y == {:}");
+        e = JEXL.createScript("y = dict([],[],[]);");
         o = e.execute(jc);
-        assertTrue(o instanceof Boolean);
-        assertTrue((Boolean)o);
-
+        assertTrue(o instanceof Map);
     }
 
     @Test
