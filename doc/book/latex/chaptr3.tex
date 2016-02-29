@@ -10,7 +10,25 @@
 nJexl is case-sensitive, which means identifier Hello and hello would have different meaning.
 All nJexl components require names. Names used for objects, classes, variables and methods are called identifiers. 
 A keyword cannot be used as an identifier and identifiers are case-sensitive. 
-See here for a list of keywords. 
+\begin{enumerate} \index{reserved words}
+\item{ Fully Reserved : you can not use this as variables. 
+    \begin{center}
+    if, else, for, while, where, size, empty, def, isa , null,
+    lt, eq, le, ge, gt, and, or, not, xor.
+    \end{center}
+}
+\item{ Partially Reserved : you should not use these as variables. 
+    \begin{center}
+    atomic, xml, thread, system, lines, list, dict, array , 
+    type , write, read, send, random, hash , until , me, my . 
+    \end{center}  
+}
+\item{ Specially Reserved : you should not use these as variables. 
+    \begin{center}
+    @,\$, anything with `\_\_'.
+    \end{center}   
+}
+\end{enumerate}
 
 \end{subsection}
 

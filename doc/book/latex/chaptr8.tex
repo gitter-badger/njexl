@@ -444,9 +444,50 @@ fibonacci_n = f**n
 r = fibonacci_n(0,1)
 write ( r[1] ) // prints 8 
 \end{lstlisting}
+\end{subsection}
 
+\begin{subsection}{Eventing}
+\index{function : eventing }
+All nJexl functions are Eventing ready.
+What are events? For all practical purposes, 
+an event is nothing but a hook before or after a method call.
+This can easily be achieved by the default handlers for nJexl functions.
+See the object  
+\href{https://github.com/nmondal/njexl/blob/master/lang/src/main/java/com/noga/njexl/lang/extension/oop/ScriptClassBehaviour.java}{Event}.
+
+Here is a sample demonstration of the eventing:
+\index{function : eventing : before}\index{function : eventing : after}
+\begin{lstlisting}[style=JexlStyle]
+def my_func(){
+   write('My function got called with args: [ %s ] \n', str(__args__))
+}
+def event_hook(event){  
+    // eventing takes only one parameter  
+    method_name = event.method.name 
+    event_type = event.pattern
+    method_args = event.args 
+    write( '%s happened with method "%s" \n' , event_type , method_name )
+    write( 'Arguments passed are [ %s ]\n' , str(method_args, '#') )
+}
+// add the before hook 
+my_func.before.add( event_hook )
+// add the after hook 
+my_func.after.add( event_hook )
+// now call the function 
+my_func('Hello, world!')
+\end{lstlisting}
+When one runs it, this is what we will get :
+
+\begin{lstlisting}[style=all]
+__before__ happened with method "my_func" 
+Arguments passed are [ Hello, world! ]
+My function got called with args: [ Hello, world! ] 
+__after__ happened with method "my_func" 
+Arguments passed are [ Hello, world! ]
+\end{lstlisting}
 
 \end{subsection}
+
 
 \end{section}
 
