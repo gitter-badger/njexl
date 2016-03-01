@@ -199,7 +199,7 @@ More precisely, for a generic $select$ with $where$ clause:
 
 \begin{lstlisting}[style=JexlStyle]
 ls = select{ where ( <condition> ){ <body> } }(collection)
-lc = list{ continue( not ( <condition> ) ) ; <body> }(collection)
+lc = list{ continue( not (<condition>) ) ; <body> }(collection)
 \end{lstlisting}
 Obviously, the $list$ function can be replaced with any $collection$ type : $array, set, dict$.
 
@@ -207,7 +207,8 @@ Similarly, $break$ can be used to simplify conditions :
 
 \begin{lstlisting}[style=JexlStyle]
 l_e1 = select{ $ % 2 == 0 and $ < 5 }([0:10])
-l_e2 = list{ break( $ > 5 ) ;  continue($ % 2 != 0) ; $ }([0:10])
+l_e2 = list{ break( $ > 5 ) ; 
+       continue($ % 2 != 0) ; $ }([0:10])
 \end{lstlisting}
 
 Note that Break body is inclusive:

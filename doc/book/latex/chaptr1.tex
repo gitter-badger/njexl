@@ -117,25 +117,18 @@ Purist will argue that how the ``find\_appropriate\_transform'' would be impleme
 Oh, under functional paradigm, that becomes as simple as a hash or a dictionary :
 
 \begin{lstlisting}[style=JexlStyle]
-
 def find_appropriate_transform(item){
    return __transformation_functions__[item.transformation_function_name]
 }
-
 \end{lstlisting}
-
-
 And all is good. Now comes the more interesting part, where we use \emph{hocus focus} called a \emph{fold function}  
-from functional magic  to replace the for loop :
-
+from functional magic  to replace the for loop (see chapter \ref{functional-style}) :
 \begin{lstlisting}[style=JexlStyle]
-
 lfold{
    transform_function = find_appropriate_transform($)
    transform_function($)
 }(items)
 \end{lstlisting}
-
 
 And we have practically nothing there to write. This sort of description of the problem induces what is known as 
 \href{https://en.wikipedia.org/wiki/Minimum_description_length}{Minimum Description Length}\index{Minimum Description Length}. 
@@ -143,7 +136,7 @@ This is closely linked with \href{https://en.wikipedia.org/wiki/Kolmogorov_compl
 \index{Chaitin Solomonoff Kolmogorov complexity}\index{CSK complexity} 
 But one thing is certain - no more volumes of coding with hundreds of developers. And thus if one really wants productivity, and sincere not to measure productivity by activity, but rather impact, this is for you and your business. Hard coding of code constructs itself wanes away in this style.
 
-This brings a bigger question, are not we hard coding the number of functions which we can call inside that for loop? Yes we are, and even that can also be taken away.  A generic series of computation can be achieved using something called multiplication of functions, under which function chaining and composition, which would be discussed later. 
+This brings a bigger question, are not we hard coding the number of functions which we can call inside that for loop? Yes we are, and even that can also be taken away.  A generic series of computation can be achieved using something called multiplication of functions, under which function chaining and composition, which would be discussed later (see chapter \ref{functional-style}). 
 
 \end{subsection}
 \end{section}

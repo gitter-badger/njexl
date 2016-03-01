@@ -256,10 +256,11 @@ see \href{https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.h
 Take for example :
 
 \begin{lstlisting}[style=JexlStyle]
-dt = date('2016/02/18', 'yyyy/MM/dd' ) // Thu Feb 18 00:00:00 IST 2016
-dt = date('2016-02-18', 'yyyy-MM-dd' ) // Thu Feb 18 00:00:00 IST 2016
+dt = date('2016/02/18', 'yyyy/MM/dd' ) 
+// dt := Thu Feb 18 00:00:00 IST 2016
+dt = date('2016-02-18', 'yyyy-MM-dd' ) 
+// dt := Thu Feb 18 00:00:00 IST 2016
 \end{lstlisting}
-
 
 \end{subsection}
 
@@ -287,8 +288,10 @@ see \href{http://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFor
 Take for example :
 
 \begin{lstlisting}[style=JexlStyle]
-dt = time('2016/02/18', 'yyyy/MM/dd' ) // 2016-02-18T00:00:00.000+05:30
-dt = time('2016-02-18', 'yyyy-MM-dd' ) // 2016-02-18T00:00:00.000+05:30
+dt = time('2016/02/18', 'yyyy/MM/dd' ) 
+// dt := 2016-02-18T00:00:00.000+05:30
+dt = time('2016-02-18', 'yyyy-MM-dd' ) 
+// dt := 2016-02-18T00:00:00.000+05:30
 \end{lstlisting}
 
 If you want to convert one time to another timezone, you need to give the time, 
@@ -296,8 +299,10 @@ and the \href{http://joda-time.sourceforge.net/timezones.html}{timezone}:
 
 \begin{lstlisting}[style=JexlStyle]
 dt = time()
-dt_honolulu = time(dt , 'Pacific/Honolulu' ) // 2016-02-17T17:23:02.754-10:00 
-dt_ny = time( dt, 'America/New_York' ) // 2016-02-17T22:23:02.754-05:00
+dt_honolulu = time(dt , 'Pacific/Honolulu' ) 
+// dt_honolulu := 2016-02-17T17:23:02.754-10:00 
+dt_ny = time( dt, 'America/New_York' ) 
+// dt_ny := 2016-02-17T22:23:02.754-05:00
 \end{lstlisting}
 
 \end{subsection}
@@ -356,7 +361,8 @@ To add time to a date, there is another nifty method :
 \begin{lstlisting}[style=JexlStyle]
 d = date('19470815') // Indian Day of Independence  
 time_delta_in_millis = 24 * 60 * 60 * 1000 // next day 
-nd = date( d.time + time_delta_in_millis ) // Sat Aug 16 00:00:00 IST 1947 
+nd = date( d.time + time_delta_in_millis ) 
+// nd := Sat Aug 16 00:00:00 IST 1947 
 \end{lstlisting}
 
 Same can easily be achived by the $plusDays()$ function :
@@ -372,7 +378,8 @@ And times can be subtracted :
 \begin{lstlisting}[style=JexlStyle]
 d = time('19470815') // Indian Day of Independence  
 nd = d.plusDays(1) // 1947-08-16T00:00:00.000+05:30 
-diff = nd - d // 86400000 ## Long (millisec gap between two dates)
+diff = nd - d 
+//diff := 86400000 ## Long (millisec gap between two dates)
 \end{lstlisting}
 
 So we can see it generates milliseccond gap between two chrono instances.
@@ -499,7 +506,8 @@ Another way to handle the linearisation is that of dictionary like property buck
 
 \begin{lstlisting}[style=JexlStyle]
 d = { 'a' : 10 , 'b' : 20  } 
-s_form = str{  [ $.a , $.b ]  }(d,'@' ) // lineraize, generates : 10@20
+s_form = str{  [ $.a , $.b ]  }(d,'@' ) 
+// lineraize, generates : 10@20
 \end{lstlisting}
 \end{subsection}
 \end{section}

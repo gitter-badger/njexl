@@ -113,6 +113,7 @@ cal = gd1.calendar // calls the method but like a field!
 Enums can be imported just like classes.
 However, to use one, one should use the $enum()$ function:
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 // creates a wrapper for the enum 
 e = enum('com.noga.njexl.lang.extension.SetOperations')
@@ -121,12 +122,14 @@ value = e.OVERLAP
 // using integer index 
 value = e[4] 
 \end{lstlisting}
+\end{minipage}\end{center}
 
 The same thing can be achieved by :
 
 \begin{lstlisting}[style=JexlStyle]
 // gets the value for the enum 
-v = enum('com.noga.njexl.lang.extension.SetOperations', 'OVERLAP' )
+v = enum('com.noga.njexl.lang.extension.SetOperations', 
+          'OVERLAP' )
 v = enum('com.noga.njexl.lang.extension.SetOperations', 4 )
 \end{lstlisting}
 

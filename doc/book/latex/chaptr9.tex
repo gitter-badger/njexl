@@ -37,11 +37,13 @@ value = read('http://www.google.co.in')
 
 To handle the timeouts, it comes with overloads:
 \index{read() : url timeout }
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 // url, connection timeout, read timeout, all in millisec
 value = read('http://www.google.co.in', 10000, 10000 )
 /* value contains all the data in the google home page */
 \end{lstlisting}
+\end{minipage}\end{center}
 
 \index{read() : http get : url generation }
 To generate the url to $get$, the fold function comes handy:

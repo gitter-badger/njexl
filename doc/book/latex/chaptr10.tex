@@ -155,13 +155,17 @@ You would expect it to be 10, but it would be any number $x \le 10$,
 because of the threading and non-atomic issue. To resolve it, 
 put it inside an atomic block (\#atomic\{\} ) : \index{ atomic : block }
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 count = 0 
 // create a list of threads to do something?
-l = list{ thread{ #atomic{ count+= 1 } }() }( [0:10] ) // increase count...
+l = list{ thread{ #atomic{ count+= 1 } }() }( [0:10] ) 
+// above tries to increase count...
 until{ running = select{ $.isAlive }(l) ; empty(running)  }( 10000, 50 )
 write(count) // the value is 10
 \end{lstlisting}
+\end{minipage}\end{center}
+
 and now, the count is always 10.
 
 Atomic can be used to revert back any changes in the variables :
@@ -203,6 +207,7 @@ The syntax is simple :
 #(time_taken_in_nano_sec, result ) = #clock{ /* body  */}
 \end{lstlisting}
 Thus this is how you tune a long running code:
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 m1 = 0 
 #(t,r) = #clock{
@@ -213,6 +218,7 @@ m1 = 0
 write(t) // writes the timing in nano seconds 
 write(r) // writes the result : 0  
 \end{lstlisting}
+\end{minipage}\end{center}
 
 The clock block never throws an error.
 That is, if any error gets raised in the block inside,
@@ -329,12 +335,14 @@ import 'java.lang.Integer' as INT
 Observe the ``:'' before the last argument $e$, to tag it as the error container.
 Thus, the system knows that the error needs to be filled into that specific variable.
 Thus, one can write almost linear code like this:
-
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 import 'java.lang.Integer' as INT 
 #(n,:e)  =  INT:parseInt(str_val)
 empty(e) or bye('failure in parsing ', str_val )  
 \end{lstlisting}
+\end{minipage}\end{center}
+
 \index{bye()}
 The $bye()$ function, when called, returns from the current calling function or script,
 with the same array of argument it was passed with. 
@@ -388,10 +396,11 @@ The idea is to generate a state machine model based on lexer, in which case,
 the best idea is to use the $tokens()$ function :  \index{tokens()}
 
 \begin{lstlisting}[style=JexlStyle]
-tokens( <string> , <regex> , match-case = [true|false] ) 
- // returns a matcher object 
- tokens{ anon-block }( <string> , <regex> , match-case = [true|false] ) 
- // calls the anon-block for every  matching group  
+tokens( <string> , <regex> , 
+match-case = [true|false] ) 
+// returns a matcher object 
+tokens{ anon-block }( <string> , <regex> , match-case = [true|false] ) 
+// calls the anon-block for every  matching group  
 \end{lstlisting}  
   
 Thus, using this, we can have:  

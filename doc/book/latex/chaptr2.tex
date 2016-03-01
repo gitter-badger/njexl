@@ -2,13 +2,16 @@
 
 {\LARGE A} philosophy is needed to guide the design of any system. nJexl is not much different.
 Here we discuss the rationale behind the language, and showcase how it is distinct from its first cousin Java.
-While it is reasonably close to Scala is not a surprise, that is an example of convergent evolution.
+While it is reasonably close to \href{https://en.wikipedia.org/wiki/Scala\_(programming\_language)}{Scala} 
+should not come as a surprise, that is an example of convergent evolution. \index{scala}
+But just as every modern animal is highly evolved, and there is really no general purpose animal,
+I believe there is no real general purpose language. All are special purpose, some special purposes
+are very generic in nature. $nJexl$ however preaches a different philosophy than $scala$.  
 
 \begin{section}{nJexl Philosophy}
 \index{njexl : philosophy}
 
-
-My experience in Industry is aptly summarized by \href{https://en.wikipedia.org/wiki/Node.js}{Ryan Dahl}
+To begin with, my own experience in Industry is aptly summarised by \href{https://en.wikipedia.org/wiki/Node.js}{Ryan Dahl}
 in \href{http://harmful.cat-v.org/software/node.js}{here} , the creator of Node.js :
 
 \begin{center}
@@ -26,10 +29,10 @@ Thus, nJexl comes with it's tenets, which are :
 \item{ Reduce the number of lines in the code; }
 \item{ If possible, in every line, reduce the number of characters; }
 \item{ To boldly go where no developer has gone before - attaining Nirvana in terms of coding;
-    - get out of the cycle of bugs and fixes by writing scientific code 
+     that is ; get out of the cycle of bugs and fixes by writing scientific and provable code 
     ( see  \href{http://en.wikipedia.org/wiki/Minimum_description_length}{Minimum Description length} ).
-\item{Good code is, once written, forever forgotten, i.e. : limiting to 0 maintenance. }    
-}
+\item{The final statement is : Good code is only once written, and then forever forgotten, i.e. : limiting to 0 maintenance. }    
+} \index{tenet : good code}
 \end{enumerate}
 
 Thus I made nJexl so that a language exists with it's full focus on \emph{Business Process Automation and Software Testing \& Validation},
@@ -263,7 +266,21 @@ If everything is fine, you can now open jexl scripts in vim!
 \label{fig_2_1}
 \end{figure}
 
+\end{subsection} 
 
+\begin{subsection}{The Proverbial ``Hello, World''}
+In any editor of your choice, save this line in a file `hello.jxl' :
+\index{Hello, World}
+\begin{lstlisting}[style=JexlStyle]
+write('Hello, World!')
+\end{lstlisting}
+and go to the command prompt, and run :
+\begin{lstlisting}[style=all]
+$ njexl hello.jxl
+Hello, World
+$
+\end{lstlisting}
+and that would be the proverbial starting code.
 \end{subsection} 
 
 \end{section}

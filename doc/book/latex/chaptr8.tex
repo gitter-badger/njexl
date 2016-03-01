@@ -194,7 +194,7 @@ perm_2_from_4 = join{ #|set($)| == #|$| }(__args__ = [l,l] )
 Thus, to collect and permutate $r$ elements from a list $l$ is :
  
 \begin{lstlisting}[style=JexlStyle]
-perm_r = join{ #|set($)| == #|$| }(__args__ = array{ l }([0:r])  )
+perm_r = join{ #|set($)| == #|$| }(__args__ = array{ l }([0:r]))
 \end{lstlisting}
 
 and we are done. This is as declarative as one can get.
@@ -437,7 +437,10 @@ there is a very nice way to do recursion.
 Suppose we want to define factorial :
 
 \begin{lstlisting}[style=JexlStyle]
-def f(){ n = __args__[0] + 1 ; r = n * int ( __args__[1] ) ; [ n, r ] }
+def f(){ 
+   n = __args__[0] + 1 ;  r = n * int ( __args__[1] )  
+   [ n, r ] 
+}
 n = 5 // factorial 5 ?
 factorial_n = f**n 
 r = factorial_n(0,1)
@@ -830,19 +833,21 @@ The answer lies in the dictionary and currying :
 
 \begin{lstlisting}[style=JexlStyle]
 op  = { 'ascending' : '>' , 'descending' : '<'  }
-sorted = index{  _ > 0 and `$$[_ - 1 ] #{op} $` 
-         }(collection) < 0 
+sorted = index{ 
+    _ > 0 and `$$[_ - 1 ] #{op} $` }(collection) < 0 
 \end{lstlisting} 
 
 In this form, the code written is absolutely generic and devoid of any explicit conditions.
 Dictionaries can be used to store functions, thus, another valid solution would be :
 
 \begin{lstlisting}[style=JexlStyle]
-sort_a = def(collection) { index{  _ > 0 and $$[_ - 1 ] > $ 
-                         }(collection) < 0 }
-sort_d = def(collection) { index{  _ > 0 and $$[_ - 1 ] < $ 
-                         }(collection) < 0 }
+sort_a = def(collection) { 
+          index{  _ > 0 and $$[_ - 1 ] > $ }(collection) < 0 }
+sort_d = def(collection) { 
+          index{  _ > 0 and $$[_ - 1 ] < $ }(collection) < 0 }
 verifiers  = { 'ascending' : sort_a , 'descending' : sort_d  }
+verify_func = verifiers[sort_type] 
+verified = verify_func(collection)
 \end{lstlisting} 
 \end{subsection}
 
@@ -883,8 +888,8 @@ def fbD(range){
        12 : 'Fizz' }
   for ( x : range ){
        r = x % 15  
-       continue ( r @ d ){ /* write ( d[r]) */ }
-       /* write(x) */ 
+       continue ( r @ d ){ write( d[r] ) }
+       write(x)  
   }
 }
 \end{lstlisting}
