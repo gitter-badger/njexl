@@ -99,6 +99,7 @@ PARSER_END(Parser)
     | < GOTO : "goto" >
     | < AS : "as" >
     | < ATOMIC : "#atomic" > /* To ensure that the code block stays atomic */
+    | < CLOCK : "#clock" > /* To benchmark a block */
 }
 
 
@@ -238,6 +239,7 @@ void Statement() #void : {}
     | GoToStatement()
     | LabelledStatement()
     | AtomicStatement()
+    | ClockStatement()
 }
 
 void GoToStatement() : {}
@@ -256,6 +258,11 @@ void LabelledStatement() : {}
 void AtomicStatement() : {}
 {
     <ATOMIC> Block()
+}
+
+void ClockStatement() : {}
+{
+    <CLOCK> Block()
 }
 
 void BreakStatement() #BreakStatement : {}

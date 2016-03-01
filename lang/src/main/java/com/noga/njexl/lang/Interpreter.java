@@ -2878,6 +2878,28 @@ public class Interpreter implements ParserVisitor {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Object visit(ASTClockStatement node, Object data) {
+        JexlNode n = node.jjtGetChild(0);
+        Object ret = null;
+        long start = System.nanoTime() ;
+        long end ;
+        try {
+            ret = n.jjtAccept(this, data);
+            end = System.nanoTime() ;
+        }catch (Throwable t){
+            ret = t.getCause() ;
+            if ( ret == null ){
+                ret = t ;
+            }
+            end = System.nanoTime() ;
+        }
+        Object[] results = new Object[]{ end - start, ret } ;
+        return results ;
+    }
+
 
     /**
      * Unused, satisfy ParserVisitor interface.

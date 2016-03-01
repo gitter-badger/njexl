@@ -372,14 +372,14 @@ public class XDataStructureTest extends JexlTestCase {
 
     @Test
     public void testREST() throws Exception{
-        Script s = JEXL.createScript("data = read('http://www.thomas-bayer.com/sqlrest/CUSTOMER/', 10000 ,10000 ) ");
+        Script s = JEXL.createScript("data = read('http://httpbin.org/ip', 10000 ,10000 ) ");
         JexlContext jc = new MapContext();
         Object o = s.execute(jc);
         assertTrue(o instanceof String );
 
-        s = JEXL.createScript("xml = xml(data) ; ");
+        s = JEXL.createScript("jo = json(data) ; ");
         o = s.execute(jc);
-        assertTrue(o instanceof XmlMap);
+        assertTrue(o instanceof Map);
 
         // test encode and decode data
         String data = "hello, World" ;
