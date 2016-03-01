@@ -528,11 +528,8 @@ students = [ {'roll' : 1, 'name' : 'X' } ,
              {'roll' : 3, 'name' : 'C' } , 
              {'roll' : 2, 'name' : 'Z' } ]
 sa = sorta{ $[0].name < $[1].name }(students)
-/*
-sa := [{roll=3, name=C}, 
-        {roll=1, name=X}, 
-        {roll=2, name=Z}]
-*/
+/* sa := [{roll=3, name=C}, {roll=1, name=X}, 
+        {roll=2, name=Z}] */
 \end{lstlisting}  
 
 Obviously we can do it using the roll too:
@@ -643,8 +640,9 @@ rs = random("abcdefghijklmpon",10)
 \end{lstlisting}  
 
 Given a seed data type, it generates the next random value from 
-the same data type. Behold : \index{random() : random value with types }
+the same data type. Behold the behaviour: \index{random() : random value with types }
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 // passing 0 generates a gaussian 
 gaussian = random(0)
@@ -664,6 +662,8 @@ at least 4 times the decimal digit size
 of the input big integer in binary */
 r_bi = random(2h)
 \end{lstlisting}  
+\end{minipage}\end{center}
+
 
 The last behaviour can be used to generate random strings :
 \index{random() : strings }

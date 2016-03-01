@@ -166,6 +166,8 @@ if ( #def __args__ ) {
 How to generate permutations from a list of object with 
 $ ^nP_r$ ? Given a list $l$ of size $3$ We did $ ^3P_3$ :
 \index{permutation}
+
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 l = ['a','b','c' ]
 perm_3_from_3 = join{ #|set($)| == #|$| }(l,l,l)
@@ -173,6 +175,8 @@ l = ['a','b','c' ,'d' ]
 perm_4_from_4 = join{ #|set($)| == #|$| }(l,l,l,l)
 perm_2_from_4 = join{ #|set($)| == #|$| }(l,l)
 \end{lstlisting}
+\end{minipage}\end{center}
+
 Thus, how to generate the general permutation?
 As we can see, the arguments to the permutation 
 is always varying. To fix this problem, 
@@ -226,6 +230,7 @@ Observe that the addition function does not even have any addition symbol anywhe
 
 Now we test the functions:
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 write(s(0)) // prints 1 
 write(s(1)) // prints 2
@@ -234,6 +239,7 @@ write(add(1,0)) // prints 1
 write(add(1,5)) // prints 6
 write(s(5,1)) // prints 6
 \end{lstlisting}
+\end{minipage}\end{center}
 
 Now, obviously we can do factorial :
 \index{factorial}
@@ -398,6 +404,7 @@ Functions support two operators :
 \end{enumerate}
 Let's have a demonstration :
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 // predecessor function 
 def p(){ int( __args__[0] ) - 1 }
@@ -413,6 +420,8 @@ add_ten = s**10
 write( add_ten(0))
 write( add_ten(10))
 \end{lstlisting}
+\end{minipage}\end{center}
+
 The result is :
 \begin{lstlisting}[style=all]
 [1, 2, 3]
@@ -821,15 +830,18 @@ The answer lies in the dictionary and currying :
 
 \begin{lstlisting}[style=JexlStyle]
 op  = { 'ascending' : '>' , 'descending' : '<'  }
-sorted = index{  _ > 0 and `$$[_ - 1 ] #{op} $` }(collection) < 0 
+sorted = index{  _ > 0 and `$$[_ - 1 ] #{op} $` 
+         }(collection) < 0 
 \end{lstlisting} 
 
 In this form, the code written is absolutely generic and devoid of any explicit conditions.
 Dictionaries can be used to store functions, thus, another valid solution would be :
 
 \begin{lstlisting}[style=JexlStyle]
-sort_a = def(collection) { index{  _ > 0 and $$[_ - 1 ] > $ }(collection) < 0 }
-sort_d = def(collection) { index{  _ > 0 and $$[_ - 1 ] < $ }(collection) < 0 }
+sort_a = def(collection) { index{  _ > 0 and $$[_ - 1 ] > $ 
+                         }(collection) < 0 }
+sort_d = def(collection) { index{  _ > 0 and $$[_ - 1 ] < $ 
+                         }(collection) < 0 }
 verifiers  = { 'ascending' : sort_a , 'descending' : sort_d  }
 \end{lstlisting} 
 \end{subsection}
@@ -950,6 +962,7 @@ Upto this point we have discussed about the $select$ , $index$ functions
 which are not associated with any objects. But every collection object 
 have those in build. For example, observe :
 \index{collections: set() , indexOf(), lastIndexOf(), select(), list() }
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 l = list(1,2,3,4,1,2,3)
 s = l.set() // [1,2,3,4]
@@ -957,6 +970,8 @@ l1 = l.select{ $ >= 2 }() //[2, 3, 4, 2, 3]
 exists = l.indexOf{ $ > 2  }() // 1
 exists = l.lastIndexOf{ $ > 2  }() // 6
 \end{lstlisting}
+\end{minipage}\end{center}
+
 \end{subsection}
 
 \begin{subsection}{The Fold Functions}

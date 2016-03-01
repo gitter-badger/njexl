@@ -98,17 +98,19 @@ for ( i : items ){
 \end{lstlisting}
 That is, when the condition is true, execute the code block, 
 and then continue without going down further ( not going to do something else ). 
-
 The idea of the break is :
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 for ( i : items ){
-    if ( condition(i) ){
-      // execute some 
-      break 
+    if ( condition(i) ){ 
+    /* execute some code */  
+    break 
     }
-    // do something else 
+    // do something else here
 }
 \end{lstlisting}
+\end{minipage}\end{center}
+
 That is, when the condition is true, execute the code block, 
 and then break without proceeding with the loop further. 
 Evidently they change the flow of control of the iterations.

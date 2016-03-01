@@ -36,6 +36,8 @@ A keyword cannot be used as an identifier and identifiers are case-sensitive.
 \begin{subsection}{Assignments}
 \index{assignment}
 Most basic syntax of nJexl is, like any other language : assignment.
+\begin{center}
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
  a = 1 //  assigns local variable a to Integer 1
  b = 1.0 //assigns local variable a to b float 1.0
@@ -45,8 +47,9 @@ Most basic syntax of nJexl is, like any other language : assignment.
  assigns the *then* value of a to e, 
  subsequent change in a wont reflect in e 
  */
- e = a \end{lstlisting}
-
+ e = a 
+\end{lstlisting}
+\end{minipage}\end{center}
 \end{subsection}
 
 \begin{subsection}{Comments}
@@ -141,11 +144,11 @@ t = ( 10 eq 10 ) // true, equal to
 f = ( 10 != 10 ) // false, not equal to 
 f = ( 10 ne 10 ) // false, not equal to 
 \end{lstlisting}
-
 \end{subsection}
 
 \begin{subsection}{Ternary}
 \index{operators : Ternary}
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 // basic ternary 
 min = a < b ? a : b // general form (expression)?option1:option2 
@@ -158,7 +161,8 @@ defined = #def(a) ? a : b
 //same as above 
 defined = a ?? b
 \end{lstlisting}
-
+\end{minipage}
+\end{center}
 \end{subsection}
 
 
@@ -199,6 +203,8 @@ write(x) // writes back x to standard output : 100
 \begin{subsection}{Else If}
 \index{Conditionals : else if}
 
+\begin{center}
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 x = 100 
 if ( x < 10 ){
@@ -210,6 +216,9 @@ if ( x < 10 ){
 }
 write(x) // writes back x to standard output : 10
 \end{lstlisting}
+\end{minipage}
+\end{center}
+
 \end{subsection}
 
 \begin{subsection}{GoTo}

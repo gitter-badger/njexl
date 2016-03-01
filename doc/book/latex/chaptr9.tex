@@ -158,6 +158,7 @@ See the example soap body we  will send to :
 
 And this is how we $send$ the SOAP: \index{SOAP}
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 template_pay_load = read('samples/soap_body.xml')
 pay_load = str:format ( template_pay_load , 'Hyderabad', 'India' )
@@ -169,6 +170,8 @@ x = xml(resp)
 sr = x.element("//GetWeatherResult")
 write(sr.text)
 \end{lstlisting}
+\end{minipage}\end{center}
+
 \end{subsection}
 
 \end{section}
@@ -399,6 +402,7 @@ The function xml() can also convert a proper Java Object into string,
 in other words, it does \href{https://msdn.microsoft.com/en-us/library/182eeyhh(v=vs.110).aspx}{Xml Serialisation}. 
 Suppose we have the JSON object : \index{xml: serialisation}
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 /* demo.json file  */
 {
@@ -414,8 +418,8 @@ Suppose we have the JSON object : \index{xml: serialisation}
                     "Acronym": "SGML",
                     "Abbrev": "ISO 8879:1986",
                     "GlossDef": {
-                        "para": "A meta-markup language, used to create markup languages such as DocBook.",
-                        "GlossSeeAlso": ["GML", "XML"]
+          "para": "A meta-markup language, used to create markup languages such as DocBook.",
+          "GlossSeeAlso": ["GML", "XML"]
                     },
                     "GlossSee": "markup"
                 }
@@ -424,7 +428,11 @@ Suppose we have the JSON object : \index{xml: serialisation}
     }
 }
 \end{lstlisting}
+\end{minipage}\end{center}
+
 This is how we can generate an XML out of it :
+
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 // load json 
 jo = json('db.json')
@@ -434,31 +442,35 @@ x = xml(jo)
 After formatting the xml string is :
 \begin{lstlisting}[style=xmlStyle]
 <root>
-   <glossary>
-      <title>example glossary</title>
-      <GlossDiv>
-         <GlossList>
-            <GlossEntry>
-               <GlossTerm>Standard Generalized Markup Language</GlossTerm>
-               <GlossSee>markup</GlossSee>
-               <SortAs>SGML</SortAs>
-               <GlossDef>
-                  <para>A meta-markup language, used to create markup languages such as DocBook.</para>
-                  <GlossSeeAlso>
-                     <i>GML</i>
-                     <i>XML</i>
-                  </GlossSeeAlso>
-               </GlossDef>
-               <ID>SGML</ID>
-               <Acronym>SGML</Acronym>
-               <Abbrev>ISO 8879:1986</Abbrev>
-            </GlossEntry>
-         </GlossList>
-         <title>S</title>
-      </GlossDiv>
-   </glossary>
+  <glossary>
+    <title>example glossary</title>
+    <GlossDiv>
+      <GlossList>
+        <GlossEntry>
+          <GlossTerm>Standard Generalized Markup Language</GlossTerm>
+          <GlossSee>markup</GlossSee>
+          <SortAs>SGML</SortAs>
+          <GlossDef>
+                 <para>A meta-markup language, used to 
+                 create markup languages such as DocBook.
+                 </para>
+            <GlossSeeAlso>
+              <i>GML</i>
+              <i>XML</i>
+            </GlossSeeAlso>
+          </GlossDef>
+          <ID>SGML</ID>
+          <Acronym>SGML</Acronym>
+          <Abbrev>ISO 8879:1986</Abbrev>
+        </GlossEntry>
+      </GlossList>
+      <title>S</title>
+    </GlossDiv>
+  </glossary>
 </root>
 \end{lstlisting}
+\end{minipage}\end{center}
+
 \end{subsection}
 
 \begin{subsection}{Accessing Elements}
@@ -477,6 +489,7 @@ y.root.children[0].children[0].text // example glossary
 
 For the slideshow xml: \index{xml : attribute}
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 // XmlMap of the x 
 x = xml('sample.xml') // slideshow xml 
@@ -485,6 +498,7 @@ x.root.name //slideshow
 x.root.children[0].attr.type // "all"
 x.root.children[0].attr['type'] // "all"
 \end{lstlisting}
+\end{minipage}\end{center}
 
 The other way of accessing elements, 
 is to use the $element()$ function, 
@@ -538,6 +552,7 @@ The xml can be converted to a suitable JSON equivalent, by invoking the $json()$
 This function is available on the XmlMap object, also the standard $json()$ function 
 would convert any XmlMap object.
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 // XmlMap of the x 
 x = xml('sample.xml') // slideshow xml
@@ -545,6 +560,7 @@ x = xml('sample.xml') // slideshow xml
 jo = x.json() 
 jo = json(x)  // same as above
 \end{lstlisting}
+\end{minipage}\end{center}
  
 \end{subsection}
 
@@ -739,6 +755,8 @@ Given we have 2 matrices $(m1,m2)$ , we can try to figure out if they differ or 
 A Classic case is comparing two database tables from two different databases.
 A very naive code can be written as such :
 \index{ table comparison }
+
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 def match_all_rows(m1,m2){
    count = 0 
@@ -755,6 +773,8 @@ def match_all_rows(m1,m2){
    return ( count == size(r1.rows) and  count == size(r2.rows) )
 }
 \end{lstlisting}
+\end{minipage}\end{center}
+
 
 The \href{https://en.wikipedia.org/wiki/Computational\_complexity\_theory}{complexity} of this algorithm, 
 with respect to the size of the rows of the matrices is : $\Theta(n^2)$, given $n$ is the rows size of the matrices. 

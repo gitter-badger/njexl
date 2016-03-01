@@ -35,13 +35,14 @@ val = bool(value, optional_default_value = null )
 val = bool(value, optional_matching_values[2])
 \end{lstlisting}
 Observe both in action :
-
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 val = bool("hello") // val is null
 val = bool("hello",false) // val is false
 val = bool('hi', ['hi' , 'bye' ] ) // val is true 
 val = bool('bye', ['hi' , 'bye' ] ) // val is false 
 \end{lstlisting}
+\end{minipage}\end{center}
 
 \end{subsection}
 
@@ -599,7 +600,7 @@ representing the structure of the object. In short, the map returned has these k
 \end{enumerate}
 
 This suitably demonstrates the usage:
-
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 d = {'a' : 42 }
 id = inspect(d)
@@ -627,6 +628,8 @@ internalWriteEntries, wait, values, computeIfAbsent, notifyAll,
 
 */
 \end{lstlisting}
+\end{minipage}\end{center}
+
 \end{subsection}
 
 \begin{subsection}{Serialisation using dict() function}

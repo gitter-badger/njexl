@@ -37,6 +37,7 @@ And the precise formulation of what is a sorted array/list is done.
 To check, if some element is, in some sense exists inside a container ( list, set, dict, array, heap )
 one needs to use the $IN$ operator, which is $@$. \index{operator : \@}
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 l = [1,2,3,4] // l is an array 
 in = 1 @ l // in is true 
@@ -53,6 +54,7 @@ m = [2,3]
 in = m @ l // true 
 in = l @ l // true  
 \end{lstlisting}
+\end{minipage}\end{center}
 
 This was not simply put in the place simply because we dislike $x.contains(y)$, in fact we do.
 We dislike the form of object orientation where there is no guarantee that $x$ would be null or not.
@@ -88,6 +90,7 @@ e = empty(nn) // false
 For the actual size of it, there are two alternatives.
 One is the $size()$ \index{size()}  function :
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 n = null
 e = size(n) // -1 
@@ -100,6 +103,7 @@ e = size(d) // 0
 nn = [ null ]
 e = size(nn) // 1 
 \end{lstlisting}
+\end{minipage}\end{center}
 
 Observe that it returns negative given input null. 
 That is a very nice way of checking null.
@@ -358,9 +362,7 @@ The cross product, as defined, with the multiply operator:
 l1 = [1,2,3]
 l2 = ['a','b' ]
 cp = l1 * l2 
-/*
-[[1, a], [1, b], [2, a], [2, b], [3, a], [3, b]] := cp 
-*/
+/* [[1, a], [1, b], [2, a], [2, b], [3, a], [3, b]] := cp */
 \end{lstlisting}
 Obviously we can think of power operation or exponentiation 
 on a collection itself. That would be easy :
