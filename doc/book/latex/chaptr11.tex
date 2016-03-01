@@ -1,0 +1,282 @@
+\chapter{Java Connectivity}\label{java-connectivity}
+
+{\LARGE J}VM is the powering force behind nJexl.
+This chapter illustrates various usage scenarios where nJexl can be
+embedded inside a plain Java Program.
+
+\begin{section}{How to Embed}
+
+\begin{subsection}{Dependencies}
+\index{maven}
+In the dependency section (latest release is 0.2 ) : 
+\begin{lstlisting}[style=XmlStyle]
+<dependency>
+  <groupId>com.github.nmondal</groupId>
+  <artifactId>njexl.lang</artifactId>
+  <version>0.2</version> <!-- or 0.3-SNAPSHOT -->
+</dependency>
+\end{lstlisting}
+That should immediately make your project a nJexl supported one. 
+\end{subsection}
+
+\begin{subsection}{Programming Model}
+\index{ java connectivity : programming model }
+nJexl has a random access memory model.
+The script iterpreter is generally single threaded,
+but each thread is given its own engine to avoid
+the interpreter problem of \href{https://en.wikipedia.org/wiki/Global\_interpreter\_lock}{GIL}.
+
+The memory comes in two varieties, default registers, which are used for global variables.
+There is also this purely abstract 
+\href{https://github.com/nmondal/njexl/blob/master/lang/src/main/java/com/noga/njexl/lang/JexlContext.java}{JexlContext} type, 
+which abstracts how local storage gets used. This design makes nJexl remarkably memory heavy,
+but at the same time pretty neat to integrate with any other JVM language, specifically Java. 
+Any time a new scope is created, the $copy()$ mechanism ensures that the parent context is suitably passed along.
+This is what really makes nJexl memory heavy, but fast in terms of access time of variables.
+
+The nJexl \href{https://github.com/nmondal/njexl/blob/master/lang/src/main/java/com/noga/njexl/lang/JexlEngine.java}{JexlEngine} 
+creates an \href{https://github.com/nmondal/njexl/blob/master/lang/src/main/java/com/noga/njexl/lang/Expression.java}{Expression} 
+or a \href{https://github.com/nmondal/njexl/blob/master/lang/src/main/java/com/noga/njexl/lang/Script.java}{Script} 
+from a string or a file. 
+
+An interpreter is created when one either $evaluate()$ the Expression or $execute()$ the script.
+To use variables, one must pass a $JexlContext$ in the evaluate or execute function.   
+
+The result of these calls will always be an object. In case somehow the call does not return 
+any value, it would return a $null$ value. 
+
+\end{subsection}
+
+\begin{subsection}{Example Embedding}
+One sample embedding is furnished here :
+\index{ java connectivity : sample embedding }
+
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=myJavaStyle]
+import com.noga.njexl.lang.JexlContext;
+import com.noga.njexl.lang.JexlEngine;
+import com.noga.njexl.lang.JexlException;
+import com.noga.njexl.lang.Script;
+import java.util.*;
+
+public class Main {
+   public static void main(String[] args){
+        // get an already nicely prepared JexlContext
+        JexlContext jc = com.noga.njexl.lang.Main.getContext();
+        // get a list of functions which would become 
+        // already imported namespaces
+        Map<String, Object> functions 
+            = com.noga.njexl.lang.Main.getFunction(jc);
+        // create an Engine 
+        JexlEngine JEXL = com.noga.njexl.lang.Main.getJexl(jc);
+        // set the functions 
+        JEXL.setFunctions(functions);
+        // whatever the arguments are, add to the variables 
+        jc.set(Script.ARGS, args);
+        try {
+            // import the script -- always use this new one 
+            Script sc = JEXL.importScript(args[0]);
+            // execute the script 
+            Object o = sc.execute(jc);
+            int e = 0;
+            if (o instanceof Integer) {
+                e = (int) o;
+            }
+            System.exit(e);
+        } catch (Throwable e) {
+            System.exit(1);
+        }
+   }
+}
+\end{lstlisting}  
+\end{minipage}\end{center}
+\end{subsection}
+
+\begin{subsection}{Default Namespaces}
+The standard nJexl core comes with the default namespaces :
+\index{ java connectivity : adding to namespaces }
+
+\begin{enumerate}
+\item{ sys : 'java.lang.System' }
+\item{ set :  
+  \href{https://github.com/nmondal/njexl/blob/master/lang/src/main/java/com/noga/njexl/lang/extension/SetOperations.java}{SetOperations} 
+}
+\item{ str : 'java.lang.String' }
+\item{ math : 'java.lang.Math' }
+\end{enumerate}
+
+These are set using the $setFunctions()$ call :
+
+\begin{lstlisting}[style=myJavaStyle]
+JEXL.setFunctions(functions);
+\end{lstlisting} 
+
+\end{subsection}
+
+\begin{subsection}{Default Imports}
+\index{ java connectivity : default imports }
+
+To ensure that the import happens, we need to 
+fix two things :
+\begin{enumerate}
+\item{Add a namespace that is same as the import id. }
+\item{Add a variable that is same as the import id. }
+\end{enumerate}
+
+Doing only the first one will only add the namespace,
+while doing only the second one would only add a local 
+variable with the name of the import id.
+
+\begin{lstlisting}[style=myJavaStyle]
+Map f = JEXL.getFunctions();
+// add the namespace 
+f.set('my_id' , my_obj);
+// add the variable to the context 
+jc.set('my_id' , my_obj);
+// set the functions map back 
+JEXL.setFunctions(f);
+// import happened now 
+\end{lstlisting} 
+
+
+\end{subsection}
+
+\end{section}
+
+\begin{section}{Programming nJexl}
+
+\begin{subsection}{Script Object Model}
+\index{ java connectivity : Script Object Model }
+
+
+A script object holds the classes defined in it, 
+as well as the \href{https://github.com/nmondal/njexl/blob/master/lang/src/main/java/com/noga/njexl/lang/extension/oop/ScriptMethod.java}{ScriptMethod} objects. So, after creating a script, one can access the ScriptMethods by simply calling $methods()$
+function on the Script :
+
+\begin{lstlisting}[style=myJavaStyle]
+Script sc = JEXL.importScript("script.jxl");
+Map<String,ScriptMethod> methods =  sc.methods();
+\end{lstlisting} 
+
+\end{subsection}
+
+\begin{subsection}{Function Model}
+\index{ java connectivity : Function Model }
+
+Once we have the functions map now, we can get a function by name :
+
+\begin{lstlisting}[style=myJavaStyle]
+Script sc = JEXL.importScript("script.jxl");
+ScriptMethod m = methods.get("my_function") ;
+\end{lstlisting} 
+
+However, to call this method one needs to pass an 
+\href{https://github.com/nmondal/njexl/blob/master/lang/src/main/java/com/noga/njexl/lang/Interpreter.java}{Interpreter} :
+
+\begin{lstlisting}[style=myJavaStyle]
+Interpreter i = new Interpreter(
+      JEXL, jc, strictFlag, silentFlag) ;
+Object result = m.invoke(null,i,
+                   new Object[]{ "This" , "are", "args" } );
+\end{lstlisting} 
+
+And thus, you can execute any nJexl methods from Java.
+\end{subsection}
+
+\end{section}
+
+\begin{section}{Extending nJexl}
+
+There are two extension points for Java developers
+who are going to make their classes and functions nJexl ready.
+ 
+\begin{subsection}{Overloading Operators}
+\index{ java connectivity : operator overloading }
+
+First of them is the overloading of operators.
+The operators are defined in 
+\href{https://github.com/nmondal/njexl/blob/master/lang/src/main/java/com/noga/njexl/lang/extension/oop/ScriptClassBehaviour.java}{ScriptClassBehaviour}. The specific operators are to be found under : $Arithmetic$ and $Logic$.
+
+Any class implementing these interfaces would be used by the nJexl engine as if the operators are
+overloaded for them. Thus, one can create Java objects which mixes up with objects of nJexl.
+Most of the time it won't be necessary, but if it is, there is a way to achieve it.
+
+For example, one can create a complex number class, which would implement Arithmetic.
+\end{subsection}
+
+\begin{subsection}{Implementing Named Arguments}
+\index{ java connectivity : functions : named argument}
+
+If one wants to implement a method which would mix properly with nJexl named arguments,
+then one must expect a specific object $NamedArgs$ found in the Interpreter.java.
+
+\begin{lstlisting}[style=myJavaStyle]
+/* name of the argument */
+public final String name;
+/* the value that was passed */
+public final Object value;
+\end{lstlisting}
+
+Thus, once we know that the argument is $NamedArgs$, we can extract the value, 
+and do the due diligence. 
+
+\end{subsection}
+
+
+\begin{subsection}{Using Anonymous Arguments}
+\index{ java connectivity : function : anonymous argument }
+
+If one wants to implement the anonymous blocks like almost all the nJexl functions do, 
+one needs to expect the first argument to be an $AnonymousParam$ which is also found in the Interpreter.java.
+The standard way to process the argument can be said as :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=myJavaStyle]
+/* ensure that the functions are always multiple args - nJexl default */
+public static Obejct some_awesome_function(Object... args){
+  AnonymousParam anon = null;
+  if ( args.length == 0 ) { /* due diligence */  return null;  }
+  if (args[0] instanceof AnonymousParam) {
+            anon = (AnonymousParam) args[0];
+            args = TypeUtility.shiftArrayLeft(args, 1);
+  }
+  // now in here, we may or may not have the anon set:
+  if ( anon == null ){
+     // try on with the normal way 
+     return someThing; 
+  }
+  // in here I have anonymous param :
+  Object context;
+  Object item;
+  Object id;
+  Collection partial;
+  anon.setIterationContextWithPartial(context, item, id , partial);
+  Object o;
+   try {
+       o = anon.execute();
+       if (o instanceof JexlException.Continue) {
+            if (((JexlException.Continue) o).hasValue) {
+                partial.add(((JexlException.Continue) o).value);
+              }
+               continue;
+        }
+        if (o instanceof JexlException.Break) {
+             if (((JexlException.Break) o).hasValue) {
+                  partial.add(((JexlException.Break) o).value);
+               }
+                    break;
+         }
+         // in here, use o :
+         doSomethingWith(o);
+        } catch (Exception e) {
+                o = null;
+     }
+}
+\end{lstlisting}
+\end{minipage}\end{center}
+
+\end{subsection}
+
+
+\end{section}

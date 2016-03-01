@@ -50,7 +50,7 @@
 
 \lstdefinestyle{numbers} {numbers=left, stepnumber=1, numberstyle=\tiny, numbersep=10pt}
 \lstdefinestyle{MyFrame}{frame=shadowbox}
-\lstdefinestyle{MyJavaStyle} {language=Java,style=numbers,style=MyFrame,frame=lines , basicstyle=\footnotesize\ttfamily}
+
 \lstdefinestyle{XmlStyle}{
   language=XML,
   style=MyFrame,
@@ -78,6 +78,24 @@
   xleftmargin=13pt,
   xrightmargin=13pt
 }
+
+\lstdefinestyle{myJavaStyle}{
+  language=java,
+  basicstyle=\fontfamily{pcr}\bfseries\selectfont\color{darkblue}, % Global Code Style : Inconsolata
+  commentstyle=\itshape\color{darkgray}, % style of comments
+  keywordstyle=\color{darkred}, % style of keywords
+  stringstyle=\color{darkgreen}, % style of strings
+  extendedchars=true, % Allows 256 instead of 128 ASCII characters
+  tabsize=2, % number of spaces indented when discovering a tab 
+  showstringspaces=false, % lets spaces in strings appear as real spaces
+  breaklines=true, % wrap lines if they don't fit
+  frame=lines, % draw a frame at the top, right, left and bottom of the listing
+  framesep=13pt, % some space within the frame 
+  xleftmargin=13pt,
+  xrightmargin=13pt
+}
+
+
 % Fix the red color for TOC  
 \usepackage{hyperref} 
 \hypersetup{%
@@ -109,6 +127,7 @@
 \include{chaptr8} %complete
 \include{chaptr9} %complete
 \include{chaptr10} %complete
+\include{chaptr11} %complete
 
 
 \backmatter 
