@@ -25,6 +25,7 @@ Start with hello curry, whose game is to distribute food to the client. Hence it
 
 Certain things in the implementations are invariant,  one needs a database to store the users and their settings, and the food items. The code to showcase what to display as items are also fixed in nature. The real business problem is the \emph{discounted} one . Under normal circumstances, one would write this code :
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 for ( item : items ){
    if ( discounted(item) ){
@@ -34,6 +35,7 @@ for ( item : items ){
    }
 }
 \end{lstlisting}
+\end{minipage}\end{center}
 
 This sophomore level code is indeed correct when looked at in a very naive way.
 But the whole new complexity of the business starts with this, and is a one way ticket to the land of more and more complexity and unmanageable code. To showcase, observe now, how one would have added 2 different discounted category? Of course, one needs to add \emph{necessary} code to the snippet :
