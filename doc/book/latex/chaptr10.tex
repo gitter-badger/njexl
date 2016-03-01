@@ -192,29 +192,40 @@ al = atomic(ol) // atomic long : valued at 0l
 
 \end{subsection}
 
-\begin{subsection}{clock() function}
-\index{clock()}
+\begin{subsection}{The clock Block}
+\index{clock}
 Timing is of essence. If one does not grab hold of time, that is the biggest failure one can be.
 So, to measure how much time a block of code is taking, there is $clock()$ function.
 The syntax is simple :
 
 \begin{lstlisting}[style=JexlStyle]
 // times the body
-#(time_taken_in_nano_sec, result ) = clock{ /* body  */} ()   
+#(time_taken_in_nano_sec, result ) = #clock{ /* body  */}
 \end{lstlisting}
-
 Thus this is how you tune a long running code:
-
 \begin{lstlisting}[style=JexlStyle]
 m1 = 0 
-x = clock{
+#(t,r) = #clock{
    // load a large matrix, 0.2 million rows 
    m1 = matrix('test.csv', ',' , false)
    0 // return 0 
-}()
-write(x.0) // writes the timing in nano seconds 
-write(x.1) // writes the result 
+}
+write(t) // writes the timing in nano seconds 
+write(r) // writes the result : 0  
 \end{lstlisting}
+
+The clock block never throws an error.
+That is, if any error gets raised in the block inside,
+the error gets assigned to the result variable.
+\index{ clock : error }
+\begin{lstlisting}[style=JexlStyle]
+#(t,r) = #clock{  x = foobar_not_defined_var }
+// r would be Jexl variable exception
+\end{lstlisting}
+
+Note that the timing would always be there, 
+no matter what. Even in the case of an error, 
+the timing variable would be populated.
 
 \end{subsection}
 
