@@ -1,7 +1,7 @@
 \chapter{On Software and Business Development}\label{intro}
 
 {\LARGE S}oftware is needed to do most of the business, and it is software development, that becomes sometime the bottleneck 
-of the business development. Here, we discuss the goal of nJexl, that is the very problems it seeks to eradicate.
+of the business development. Here, we discuss the goal of nJexl, that is, what is the very problems that it seeks to eradicate.
 
 
 \begin{section}{Business Development}\label{buisness-development-defined}
@@ -16,14 +16,15 @@ Software augments business, there is no point making software the business. Ther
 
 \begin{subsection}{Needs of the Business}\label{business-need}\index{business needs}
 
-Start with hello curry, whose game is to distribute food to the client. Hence it has a database full of food items, which it would showcase in the portal. User would click whatever she wants to eat, and checks out. The items gets delivered in time. Users can see their orders in a page. Occasionally, some specific food items gets added as the discounted price. Together, these requirements is what drives business for hello curry.
+Start with hello curry, whose game is to distribute food to the client. Hence it has a database full of food items, which it would showcase in the portal. User would click whatever she wants to eat, and checks out. The items gets delivered in time. Users can see their orders in a page. Occasionally, some specific food items gets added as the discounted price. Together, these requirements are what drives business for hello curry.
 
 \end{subsection}
 
 \begin{subsection}{Imperative Implementation}\label{imperative-impl}
 \index{Imperative}
 
-Certain things in the implementations are invariant,  one needs a database to store the users and their settings, and the food items. The code to showcase what to display as items are also fixed in nature. The real business problem is the \emph{discounted} one . Under normal circumstances, one would write this code :
+Certain things in the implementations are invariant,  one needs a database to store the users and their settings, and the food items. The code to showcase what to display as items are also fixed in nature. The real business problem is 
+that of showing the \emph{discounted} one. Under normal circumstances, one would write this code :
 
 \begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
