@@ -471,15 +471,18 @@ Here is a sample demonstration of the eventing:
 \index{function : eventing : before}\index{function : eventing : after}
 \begin{lstlisting}[style=JexlStyle]
 def my_func(){
-   write('My function got called with args: [ %s ] \n', str(__args__))
+   write('My function got called with args: [ %s ] \n', 
+        str(__args__))
 }
 def event_hook(event){  
     // eventing takes only one parameter  
     method_name = event.method.name 
     event_type = event.pattern
     method_args = event.args 
-    write( '%s happened with method "%s" \n' , event_type , method_name )
-    write( 'Arguments passed are [ %s ]\n' , str(method_args, '#') )
+    write( '%s happened with method "%s" \n' , 
+              event_type , method_name )
+    write( 'Arguments passed are [ %s ]\n' , 
+            str(method_args, '#') )
 }
 // add the before hook 
 my_func.before.add( event_hook )

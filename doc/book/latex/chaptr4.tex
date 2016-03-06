@@ -127,10 +127,15 @@ so cardinality of $null$ is also 0.
 
 \begin{subsection}{There Exist element with Condition : index, rindex }
 Given we have if \emph{``y in container x''} or not,
-what if when asked a question like : \emph{ ``is there a y in x such that f(y) is true''} ?
+what if when asked a question like : \emph{ ``is there a x in Collection C such that predicate P(x) is true''} ?
+Formally, then, given a predicate $P(x)$, and a collection $C$, we ask :
+$$
+\exists x \in C \;s.t.\; P(x) = True
+$$
+
 This pose a delicate problem. 
 
-Notice this is the same problem we asked about sorting. Is there an element (y) in x, 
+Notice this is the same problem we asked about sorting. Is there an element `x' in $C$, 
 such that the sorting order is violated? If not, the collection is sorted.
 This brings back the $index$ function \index{index()}.
 We are already familiar with the usage of $index()$ function from chapter 2.
@@ -209,12 +214,14 @@ The result would be the result of the condition, but the where clause body
 would be get executed. Thus, we can change the value we want to collect
 by replacing the $ITEM$ variable, that is $\$$.
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 l = [ 1, 2, 3, 4, 5, 6 ]
 #(evens,odds) = partition{ where($ % 2 == 0){ $ = $**2  }  }(l)
 write(evens) // prints 4, 16, 36 
 write(odds) // prints 1, 3, 5
-\end{lstlisting}
+\end{lstlisting}\end{minipage}
+\end{center}
 
 This is also called \emph{item rewriting} \index{item rewriting}.
 \end{subsection}
@@ -246,6 +253,7 @@ $$
 $$
 M_{AB} := A \setminus B \; :=  \{ x \in A \; and \; x \not \in B \} 
 $$
+thus, $M_{AB} \ne M_{BA}$. 
 }
 \item{Set Symmetric Difference is defined as : \index{Set Algebra : Symmetric Difference} 
 $$
@@ -256,6 +264,7 @@ $$
 $$
 X_{AB} = \{ ( a, b ) \; | \; a \in A \; and \;  b \in B  \} 
 $$
+thus, $X_{AB} \ne X_{BA}$
 }
 }
 \end{enumerate}}
@@ -358,12 +367,15 @@ delta = d1 ^ d2 // delta = {'a' : 10, 'b' : 20, 'd': 40}
 \begin{subsection}{Collection Cross Product and Power}
 The cross product, as defined, with the multiply operator:
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 l1 = [1,2,3]
 l2 = ['a','b' ]
 cp = l1 * l2 
 /* [[1, a], [1, b], [2, a], [2, b], [3, a], [3, b]] := cp */
 \end{lstlisting}
+\end{minipage}\end{center}
+
 Obviously we can think of power operation or exponentiation 
 on a collection itself. That would be easy :
 
@@ -413,6 +425,7 @@ it would return false to showcase that the relation fails.
 
 So, we go again with sets:
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 s1 = set(1,2,3)
 s2 = set(1,3)
@@ -425,6 +438,7 @@ s1 < s3 // false
 s3 > s1 // false 
 s1 != s3 // true
 \end{lstlisting}
+\end{minipage}\end{center}
 
 So, we go again with lists:
 

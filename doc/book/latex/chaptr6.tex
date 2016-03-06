@@ -20,13 +20,16 @@ This neat design saves a tonnage of $try \; ... \; catch$ stuff.
 This section is dedicated to the natural numbers family.
 We have :
 \begin{enumerate}
-\item{bool}
-\item{short}
-\item{char}
-\item{int}
-\item{long}
-\item{INT : Java BigInteger}
+\item{bool : \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html}{Boolean} }
+\item{short : \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Short.html}{Short} }
+\item{char :  \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Characte.html}{Character} }
+\item{int : \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html}{Integer} }
+\item{long : \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html}{Long} }
+\item{INT : \href{https://docs.oracle.com/javase/8/docs/api/java/math/BigInteger.html}{BigInteger} }
 \end{enumerate}
+There are no \href{https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html}{primitive types}. 
+That was an absolutely disaster of a design that was made in Java land, which I fixed it here.
+Everything is, under the hood, an object here. 
 
 \begin{subsection}{Boolean}\index{bool()}
 The syntax is :
@@ -579,6 +582,7 @@ That is an issue a language should take care of, and for that reason,
 we do have $isa$ operator.
 
 \begin{lstlisting}[style=JexlStyle]
+null isa null // true 
 a = [1,2,3] 
 a isa [] // false : a is a type of object array?
 a isa [0] // true : a is a type of Integer array?
@@ -588,6 +592,24 @@ b isa list() // true : b is a type of list ?
 This also showcase the issues of completely overhauling the type 
 structure found in a JVM. The first two lines are significantly quirky.
 
+There is another distinctly better way of handling $isa$, by using $alias$ strings,
+strings that starts with $@$ and has a type information, e.g. $@map$ :
+\index{isa : arr}\index{isa : array} 
+\index{isa : map} \index{isa : list}\index{isa : set}\index{isa : Z}\index{isa : Q}\index{isa : num}
+\begin{lstlisting}[style=JexlStyle]
+a = [1,2,3] 
+a isa "@arr" // true : a is a type that is array?
+b = list(1,3,2)
+b isa "@list" // true : b is a type of list ?
+{:} isa "@dict" // true 
+{:} isa "@map" // true 
+0 isa "@Z" // Z : the natural numbers 
+0 isa "@num" // num : the numbers 
+4.2 isa "@Q" // Q : the rational numbers
+s = set(1,2,3)
+s isa "@set" // true  
+\end{lstlisting}
+The strings used are case insensitive.
 \end{subsection}
 
 \begin{subsection}{inspect() function}
