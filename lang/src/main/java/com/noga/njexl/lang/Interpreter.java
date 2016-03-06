@@ -1241,11 +1241,44 @@ public class Interpreter implements ParserVisitor {
         Object right = node.jjtGetChild(1).jjtAccept(this, data);
         try {
             if (left == null) {
-                return false;
+                return (right == null) ;
             }
             if (left instanceof ScriptClassInstance) {
                 return ((ScriptClassInstance) left).getNClass().isa(right);
             }
+            if ( right instanceof String ){
+                if ( ((String)right).startsWith("@") ){
+                    String interfaceType = ((String)right).substring(1);
+                    interfaceType = interfaceType.toLowerCase();
+                    switch ( interfaceType ){
+                        case "list" :
+                            return left instanceof List ;
+                        case "map" :
+                        case "dict" :
+                            return left instanceof Map ;
+                        case "set" :
+                            return  left instanceof Set ;
+                        case "num" :
+                            return left instanceof Number ;
+                        case "nan" :
+                            return (left instanceof Number) && Double.isNaN( ((Number)left).doubleValue() );
+                        case "chrono" :
+                            return JexlArithmetic.isTimeLike(left);
+                        case "z" :
+                            return JexlArithmetic.isZ(left);
+                        case "q" :
+                            return JexlArithmetic.isQ(left);
+                        case "enum" :
+                             return (left != null ) && ( left.getClass().isEnum() );
+                        case "array" :
+                        case "arr":
+                            return (left != null ) && ( left.getClass().isArray() );
+                        default:
+                            break;
+                    }
+                }
+            }
+
             Class r;
             if (right instanceof Class) {
                 r = (Class) right;

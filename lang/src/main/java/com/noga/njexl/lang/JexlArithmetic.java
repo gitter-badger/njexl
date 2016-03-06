@@ -251,7 +251,7 @@ public class JexlArithmetic {
      * @param o Object to be analyzed.
      * @return true if it is a Float or a Double.
      */
-    protected boolean isFloatingPoint(final Object o) {
+    protected static boolean isFloatingPoint(final Object o) {
         return o instanceof Float || o instanceof Double;
     }
 
@@ -261,12 +261,30 @@ public class JexlArithmetic {
      * @param o Object to be analyzed.
      * @return true if Integer, Long, Byte, Short or Character.
      */
-    protected boolean isNumberable(final Object o) {
+    protected static boolean isNumberable(final Object o) {
         return o instanceof Integer
                 || o instanceof Long
                 || o instanceof Byte
                 || o instanceof Short
                 || o instanceof Character;
+    }
+
+    /**
+     * Checks if it is in Z, natural numbers
+     * @param o the object
+     * @return true if o in Z, else false
+     */
+    public static boolean isZ(Object o){
+        return isNumberable(o) || o instanceof BigInteger ;
+    }
+
+    /**
+     * Checks if it is in Q, rational numbers
+     * @param o the object
+     * @return true if o in Q, else false
+     */
+    public static boolean isQ(Object o){
+        return isFloatingPoint(o) || o instanceof BigDecimal ;
     }
 
     /**

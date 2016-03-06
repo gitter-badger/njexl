@@ -544,6 +544,55 @@ public class XDataStructureTest extends JexlTestCase {
     }
 
     @Test
+    public void testXisA() throws Exception{
+        Script s = JEXL.createScript("10 isa '@num' " );
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = JEXL.createScript("10 isa '@Z'" );
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("10.1 isa '@Q'" );
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("10.1 isa '@num'" );
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("[] isa '@arr'" );
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("[2,3] isa '@array'" );
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("(l = list(2,3) ) isa '@list'" );
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("(s = set(2,3) ) isa '@set'" );
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("s isa '@list'" );
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("{:} isa '@map'" );
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("{:} isa '@dict'" );
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+    }
+
+    @Test
     public void testMatrixSelectOrder() throws Exception{
         Script s = JEXL.createScript("m = matrix('samples/test.tsv') ; l = m.select(2,0) ; " );
         JexlContext jc = new MapContext();
