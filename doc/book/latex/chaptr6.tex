@@ -22,7 +22,7 @@ We have :
 \begin{enumerate}
 \item{bool : \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html}{Boolean} }
 \item{short : \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Short.html}{Short} }
-\item{char :  \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Characte.html}{Character} }
+\item{char :  \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Character.html}{Character} }
 \item{int : \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html}{Integer} }
 \item{long : \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html}{Long} }
 \item{INT : \href{https://docs.oracle.com/javase/8/docs/api/java/math/BigInteger.html}{BigInteger} }
@@ -157,9 +157,9 @@ val = INT(54,13 ) // val is 42
 This section is dedicated to the floating point numbers family.
 We have :
 \begin{enumerate}
-\item{float}
-\item{double}
-\item{BigDecimal}
+\item{float : \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Float.html}{Float} }
+\item{double : \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Double.html}{Double}}
+\item{BigDecimal : \href{https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html}{BigDecimal} }
 \end{enumerate}
 
 \begin{subsection}{Float}\index{float()}
@@ -179,6 +179,13 @@ val = float(42) // val is 42.0
 val = float ( 10.1 ) // val is 10.1 
 val = float ( 10.9 ) // val is 10.9 
 \end{lstlisting}
+Note that, nJexl will automatically shrink floating point data into float, 
+given it can fit the precision in :
+
+\begin{lstlisting}[style=JexlStyle]
+val = 0.01 // val is a float type, automatic
+\end{lstlisting}
+
 
 \end{subsection}
 
@@ -211,14 +218,14 @@ val = DEC(value,default_value = null )
 \end{lstlisting}
 
 Usage is :
-
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 val = DEC("hello") // val is null
 val = DEC('hi',10,42 )// val is 42.0
 val = DEC('42') // val is 42.0 
 val = DEC(42.00001 ) // val is 42.00001
 \end{lstlisting}
-
+\end{minipage}\end{center}
 \end{subsection}
 
 \end{section}
@@ -230,9 +237,12 @@ Handling date and time has been a problem, that too with timezones.
 nJexl simplifies the stuff. 
 We have three basic types to handle date/time:
 \begin{enumerate}
-\item{date : $java.lang.Date$ : because of Java compatibility with SDKs. }
-\item{time : $org.joda.time.DateTime$ : that is the best one out there. }
-\item{instant : $java.time.Instant$ : for newer systems who wants to experiment. }
+\item{date : 
+\href{https://docs.oracle.com/javase/8/docs/api/java/util/Date.html}{java.util.Date} : because of Java compatibility with SDKs. }
+\item{time : 
+\href{http://www.joda.org/joda-time/apidocs/org/joda/time/DateTime.html}{org.joda.time.DateTime} : included because it is the best chrono library out there. }
+\item{instant : 
+\href{https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html}{java.time.Instant} : for newer systems who wants to experiment. }
 \end{enumerate}
 
 
@@ -342,12 +352,14 @@ Tow dates can be equal to one another, but not two instances,
 that is a very low probability event, almost never.
 Thus, equality makes sense when we know it is date, and not instant :
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 d = date('19470815') // Indian Day of Independence  
 t = time('19470815') // Indian Day of Independence  
 // now compare 
 c = ( d == t ) // true 
 \end{lstlisting}
+\end{minipage}\end{center}
 
 \end{subsection}
 
@@ -531,6 +543,7 @@ Notice that the class object is loaded only once under a class loader,
 so equality can be done by simply ``==''.
 Thus, the following constructs are of importance:
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 d = { : }
 c1 = type(d) // c1 := java.util.HashMap
@@ -540,6 +553,8 @@ c3 = type(20) // c3 := java.lang.Integer
 c3 == c2 // true 
 c1 == c2 // false 
 \end{lstlisting}
+\end{minipage}\end{center}
+
 \end{subsection}
 
 \begin{subsection}{The $===$ Operator}
@@ -599,6 +614,7 @@ strings that starts with $@$ and has a type information, e.g. $@map$ :
 \begin{lstlisting}[style=JexlStyle]
 a = [1,2,3] 
 a isa "@arr" // true : a is a type that is array?
+a isa "@array" // same, true, arr is same as array
 b = list(1,3,2)
 b isa "@list" // true : b is a type of list ?
 {:} isa "@dict" // true 
