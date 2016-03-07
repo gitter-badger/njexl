@@ -40,5 +40,16 @@ ehthumbs.db
 Thumbs.db
 
 # IDE generated files 
-.idea
+*.idea
 *.iml 
+# Latex generated files 
+*.run.*
+*.aux
+*.bcf
+*.glo 
+*.idx
+*.ind
+*.out 
+*.ilg
+*.ist
+*.toc
