@@ -546,6 +546,26 @@ s = x.xpath("//slide/title/text()" )
 For a list of all xpath functions see the specification in 
 \href{https://www.w3.org/TR/xpath-functions-3}{w3c}.
 
+To check if a condition exists or not, one can use the $exists()$ function.
+\index{xml : exists()}
+\begin{lstlisting}[style=JexlStyle]
+// XmlMap of the x 
+x = xml('sample.xml') // slideshow xml
+// text of the title element, exists? 
+b = x.exists("//slide/title/text()" ) // bool : true 
+b = x.exists("//slide/title" ) // bool : true 
+b = x.exists("//foobar" ) // bool : false 
+\end{lstlisting}
+
+Obviously, one can mix and match, that is, give a default to the $xpath()$ function :
+\index{xml : xpath() default } 
+\begin{lstlisting}[style=JexlStyle]
+// string : text comes
+t = x.xpath("//slide/title/text()" , 'NONE_EXISTS' )
+// string : 'NONE_EXISTS'  
+t = x.xpath("//foobar/text()",  'NONE_EXISTS' )  
+\end{lstlisting}
+
 \end{subsection}
 
 \begin{subsection}{Xml to JSON}
@@ -607,11 +627,13 @@ For example, suppose we have a tab delimited file ``test.tsv''  like this:
 To load this table, we should :
 \index{DataMatrix : columns} \index{DataMatrix : rows}
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 m = matrix("test.tsv", '\t', true ) // loads the matrix 
 m.coloumns // the set of columns 
 m.rows // the list of data values
 \end{lstlisting}
+\end{minipage}\end{center}
 
 The field $columns$ is a Set of string values, depicting the columns.
 $rows$, however are the list of data values. 
@@ -785,6 +807,7 @@ a typical $(n,m) := ( 10000, 10 ) $.
 
 We can obviously improve this setting: \index{ table comparison : O(n) }
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 def match_all_rows(m1,m2){
    // exactly m * n 
@@ -816,12 +839,15 @@ def is_key( m, key_attrs){
    return  size(s) == size(m.rows)
 }
 \end{lstlisting}
+\end{minipage}\end{center}
+
 
 What happens when the keys are non unique? That boils down to the list, 
 but then we should be able to remember, which rows have the same keys,
 or rather what all rows are marked by the same key.
 So, we may have a keys function, assuming keys are not unique : \index{ table comparison : key : non unique }
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 // a set of attribute indices 
 key_attrs = [ index_1 , index_2 , ...  ]
@@ -843,6 +869,8 @@ def key( m, key_attrs, sep){
    return keys
 }
 \end{lstlisting}
+\end{minipage}\end{center}
+
 
 This idea is already in-built in the DataMatrix, and is known as the $keys()$ function :
 \index{ DataMatrix : key() }
