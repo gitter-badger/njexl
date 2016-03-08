@@ -178,8 +178,19 @@ public class XmlMap {
             return root.nodes.get(node);
         }
 
+        public boolean exists(String expression) throws Exception {
+            boolean exists = (boolean)X_PATH.compile("boolean(" + expression + ")").evaluate(this.node,
+                    XPathConstants.BOOLEAN);
+            return exists ;
+        }
 
         public String xpath(String expression) throws Exception {
+            return xpath(expression,null);
+        }
+
+        public String xpath(String expression, String defaultValue) throws Exception {
+            boolean exists = exists(expression);
+            if ( ! exists ) return defaultValue ;
             String val = (String) X_PATH.compile(expression).evaluate(this.node, XPathConstants.STRING);
             return val;
         }
@@ -324,7 +335,15 @@ public class XmlMap {
     }
 
     public String xpath(String expression) throws Exception {
-        return root.xpath(expression);
+        return xpath(expression,null);
+    }
+
+    public String xpath(String expression, String defaultValue) throws Exception {
+        return root.xpath(expression,defaultValue);
+    }
+
+    public boolean exists(String expression) throws Exception {
+        return root.exists(expression);
     }
 
     /**

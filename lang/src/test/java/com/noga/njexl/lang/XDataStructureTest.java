@@ -541,6 +541,26 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertTrue(o instanceof XmlMap );
 
+        s = JEXL.createScript("x = xml('samples/sample.xml') ; x.exists('//item')" );
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript(" x.exists('//foobar')" );
+        o = s.execute(jc);
+        assertFalse((Boolean)o);
+
+        s = JEXL.createScript(" x.xpath('//item/text()')" );
+        o = s.execute(jc);
+        assertTrue(o instanceof String);
+        assertFalse(((String)o).isEmpty() );
+
+        s = JEXL.createScript(" x.xpath('//foobar/text()')" );
+        o = s.execute(jc);
+        assertEquals(null,o );
+
+        s = JEXL.createScript(" x.xpath('//foobar/text()', '__moron__' )" );
+        o = s.execute(jc);
+        assertEquals("__moron__" ,o);
     }
 
     @Test
