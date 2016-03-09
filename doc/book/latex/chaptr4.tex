@@ -28,14 +28,36 @@ $$
 $$ 
 
 And the precise formulation of what is a sorted array/list is done.
-
 \end{subsection}
+\begin{subsection}{Relation between $\exists$ and $\forall$ }
+\index{relation between exists and forall}
+There is a nice dual relationship between there exists $\exists$ and $\forall$.
+Given we have the negation operation defined, $\forall$ and $\exists$  are interchangable.
+Suppose we ask :  
+\begin{center}
+\emph{ Are every element in the collection C greater than 0? }
+$$
+\forall x \in C \; ; \; x > 0 \; ?
+$$
+\end{center}
+This can be reformulated as :
+\begin{center}
+\emph{ Does there exist any element in the collection C less than or equal to 0? }
+$$
+\exists x \in C \; ; \; x \le 0 \; ?
+$$
+\end{center}
+Hence, the transformation law is :
 
+$$
+\forall x \in C \; ; \; P(x) \; ? \Longleftrightarrow \exists x \in C \; ; \; \neg P(x) \; ?
+$$
+\end{subsection}
 
 \begin{subsection}{There Exist In Containers}
 \index{Predicate Logic : there exists}
 To check, if some element is, in some sense exists inside a container ( list, set, dict, array, heap )
-one needs to use the $IN$ operator, which is $@$. \index{operator : \@}
+one needs to use the $IN$ operator, which is $@$. \index{operator : at }
 
 \begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
@@ -69,11 +91,34 @@ def in_function(x,y){
 // or one can use simply 
 y @ x // same result
 \end{lstlisting}
+
+How about regular expressions? There are two operators related to regular expressions,
+the \emph{match} operator, and then \emph{not match} operator. \index{regular expressions}
+See the \href{http://www.regular-expressions.info/quickstart.html}{guide to regular expressions}.
+\index{ operator : regex : match }
+\index{ operator : regex : not match }
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+re = "^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$"
+s = "hello"
+match = ( s =~ re ) // false 
+match = ( s !~ re ) // true 
+f = "12.3456"
+match = ( s =~ re ) // true 
+match = ( s !~ re ) // false 
+\end{lstlisting}
+\end{minipage}\end{center}
+
+Thus, the operator ``=\textasciitilde'' is the \emph{match} operator, while  ``!\textasciitilde'' is the \emph{not match} operator.
+\index{ operator : \textasciitilde }
+
 \end{subsection}
 
 \begin{subsection}{Size of Containers : empty, size, cardinality}
 To check whether a container is empty or not, 
 use the $empty()$ \index{empty()} function, just mentioned above. Hence:
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 n = null
 e = empty(n) // true 
@@ -86,6 +131,7 @@ e = empty(d) // true
 nn = [ null ]
 e = empty(nn) // false 
 \end{lstlisting}
+\end{minipage}\end{center}
 
 For the actual size of it, there are two alternatives.
 One is the $size()$ \index{size()}  function :
@@ -109,6 +155,7 @@ Observe that it returns negative given input null.
 That is a very nice way of checking null.
 The other one is the $cardinal$ operator \index{operator : cardinality }:
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 n = null
 e = #|n| // 0 
@@ -121,6 +168,8 @@ e = #|d| // 0
 nn = [ null ]
 e = #|nn| // 1 
 \end{lstlisting}
+\end{minipage}\end{center}
+
 This operator in some sense gives a measure. It can not be negative, 
 so cardinality of $null$ is also 0. 
 \end{subsection}
@@ -197,12 +246,15 @@ Given a $select()$, we are effectively partitioning the collection into two halv
 $select()$ selects the matching partition. In case we want both the partitions, then 
 we can use the $partition()$ function \index{partition()}.
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 l = [ 1, 2, 3, 4, 5, 6 ]
 #(evens,odds) = partition{ $ % 2 == 0 }(l)
 write(evens) // prints 2, 4, 6 
 write(odds) // prints 1, 3, 5
-\end{lstlisting}
+\end{lstlisting}\end{minipage}
+\end{center}
+
 \end{subsection}
 
 \begin{subsection}{Collecting value on Condition : where }
@@ -226,15 +278,42 @@ write(odds) // prints 1, 3, 5
 This is also called \emph{item rewriting} \index{item rewriting}.
 \end{subsection}
 
-\end{section}
+\begin{subsection}{Inversion of Logic}
+As we have discussed there is a relation between $\exists$ and $\forall$, 
+we can use them for practical applications. We would be using them everywhere, 
+and as \href{http://psychology.about.com/od/psychologyquotes/a/lewinquotes.htm}{Kurt Lewin} said :
+\begin{center}
+\emph{There is nothing so practical as a good theory.}
+\end{center}
+So, we would start with all these examples in inverted logic.
+Observe that $select()$ mandates a guaranteed \href{https://en.wikipedia.org/wiki/Big_O_notation}{runtime} of $\Theta(n)$,
+while $index()$ has a probabilistic runtime of $\Theta(n/2)$. So, we should generally choose $index()$ over $select()$.
+For example, take the problem of \emph{are all numbers in a list larger than 0}, it can be solve in two ways:
 
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+l = [10,2,3,10, 2, 0 , 9 ]
+// forall method 1
+size(l) == size ( select{ $ > 0 }(l) )    
+// forall method 2 : note the inversion of logic 
+empty ( select{ $ <= 0 }(l) )    
+// there exists method : note the inversion of condition from 1
+( index{ $ <= 0 }(l) < 0 )
+\end{lstlisting}\end{minipage}
+\end{center}
+
+Please choose the 3rd one, that makes sense, takes less memory, and is optimal.    
+\end{subsection}
+
+\end{section}
 
 \begin{section}{Operators from Set Algebra}
 
 \begin{subsection}{Set Algebra}
 \index{Set Algebra}
 
-Set algebra, in essence runs with the notions of the following ideas :
+\href{https://en.wikipedia.org/wiki/Algebra_of_sets}{Set algebra}
+, in essence runs with the notions of the following ideas :
 \begin{enumerate}
 \item{There is an unique empty set.}
 \item { The following operations are defined :
@@ -309,6 +388,8 @@ $$
 \index{Set Operations : Collection}
 
 For the sets, the operations are trivial.
+
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 s1 = set(1,2,3,4)
 s2 = set(3,4,5,6)
@@ -318,6 +399,8 @@ m12 = s1 - s2 // m12 ={1,2}
 m21 = s2 - s1 // m12 ={5,6}
 delta = s1 ^ s2 // delta = { 1,2,5,6}
 \end{lstlisting}
+\end{minipage}\end{center}
+
 
 For the lists or arrays, where there can be multiple elements present, 
 this means a newer formal operation.
@@ -337,6 +420,7 @@ So, when we calculate the following :
 \end{enumerate}
 With this, we go on for lists:
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 l1 = list(1,2,3,3,4,4)
 l2 = list(3,4,5,6)
@@ -346,12 +430,14 @@ m12 = l1 - l2 // m12 ={1,2,3,4}
 m21 = l2 - l1 // m12 ={5,6}
 delta = l1 ^ l2 // delta = { 1,2,3,4,5,6}
 \end{lstlisting}
+\end{minipage}\end{center}
 
 Now, for dictionaries, the definition is same as lists, 
 because there the dictionary can be treated as a list of key-value pairs.
 So, for one pair to be equal to another, both the key and the value must match.
 Thus:
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 d1 = {'a' : 10, 'b' : 20 , 'c' : 30 }
 d2 = {'c' : 20 , 'd' : 40  }
@@ -362,6 +448,8 @@ m12 = d1 - d2 // m12 = d1
 m21 = d2 - d1 // m12 = d2
 delta = d1 ^ d2 // delta = {'a' : 10, 'b' : 20, 'd': 40}
 \end{lstlisting}
+\end{minipage}\end{center}
+
 \end{subsection}
 
 \begin{subsection}{Collection Cross Product and Power}
