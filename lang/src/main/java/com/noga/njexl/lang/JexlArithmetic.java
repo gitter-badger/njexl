@@ -531,6 +531,123 @@ public class JexlArithmetic {
         }
     }
 
+    public static Collection addToCollection(Collection left, Object array){
+        int length = Array.getLength(array);
+        for ( int i = 0 ; i < length; i++ ){
+            Object e = Array.get(array,i);
+            left.add(e);
+        }
+        return left;
+    }
+
+    public static Collection removeFromCollection(Collection left, Object array){
+        int length = Array.getLength(array);
+        for ( int i = 0 ; i < length; i++ ){
+            Object e = Array.get(array,i);
+            left.remove(e);
+        }
+        return left;
+    }
+
+    /**
+     * Add two values together, and assigns to left += .
+     * <p>
+     * If any numeric add fails on coercion to the appropriate type,
+     * treat as Strings and do concatenation.
+     * </p>
+     * @param left first value
+     * @param right second value
+     * @return left + right.
+     */
+    public Object addMutable(Object left, Object right) {
+        if (left == null && right == null) {
+            return controlNullNullOperands();
+        }
+
+        try {
+
+            // if either are bigdecimal use that type -- these are priority
+            if (left instanceof BigDecimal || right instanceof BigDecimal) {
+                BigDecimal l = toBigDecimal(left);
+                BigDecimal r = toBigDecimal(right);
+                BigDecimal result = l.add(r, getMathContext());
+                left = narrowBigDecimal(left, right, result);
+                return left ;
+            }
+
+            // if either are floating point (double or float) use double
+            if (isFloatingPointNumber(left) || isFloatingPointNumber(right)) {
+                double l = toDouble(left);
+                double r = toDouble(right);
+                l+= r ;
+                return l;
+            }
+            if ( left instanceof String ){
+                left = toString(left).concat(toString(right));
+                return left;
+            }
+            if ( left instanceof Character ){
+                if ( !( right instanceof Number) ){
+                    left = toString(left).concat(toString(right));
+                    return left;
+                }
+            }
+
+            // otherwise treat as integers
+            BigInteger l = toBigInteger(left);
+            BigInteger r = toBigInteger(right);
+            BigInteger result = l.add(r);
+            left = narrowBigInteger(left, right, result);
+            return left;
+
+        } catch (Exception e) {
+            if ( !(right instanceof String) &&
+                    left instanceof Arithmetic ){ // very important
+                left = ((Arithmetic)left).add(right);
+                return left;
+            }
+
+            if ( left instanceof Collection ) {
+                if ( right instanceof Collection ) {
+                    ((Collection)left).addAll((Collection) right) ;
+                }else if ( right != null && right.getClass().isArray() ){
+                    left = addToCollection((Collection)left,right);
+                }
+                else{
+                    ((Collection)left).add(right) ;
+                }
+                return left;
+            }
+            if ( left != null && left.getClass().isArray() ){
+                left = TypeUtility.array(left,right);
+                return left;
+            }
+            if ( left instanceof Map && right instanceof Map){
+                ((Map)left).putAll((Map)right);
+                return left;
+            }
+
+            if ( left instanceof DateTime ){
+                if ( right instanceof Integer ){
+                    left = ((DateTime) left).plus((long)right);
+                    return left;
+                }
+                if ( right instanceof Duration ){
+                    left = ((DateTime) left).plus((Duration)right);
+                    return left;
+                }
+                if ( right instanceof String ){
+                    left = ((DateTime) left).plus( DateIterator.parseDuration((String)right));
+                    return left ;
+                }
+            }
+            // Well, use strings!
+            left = toString(left).concat(toString(right));
+            return left;
+        }
+    }
+
+
     /**
      * Divide the left value by the right.
      * @param left first value
@@ -911,6 +1028,98 @@ public class JexlArithmetic {
             throw  e;
         }
     }
+
+
+    /**
+     * Subtract the right value from the left, mutably: -= .
+     * @param left first value
+     * @param right second value
+     * @return left - right.
+     */
+    public Object subtractMutable(Object left, Object right) {
+        try {
+            if (left == null && right == null) {
+                return controlNullNullOperands();
+            }
+
+            // if either are bigdecimal use that type --> highest precision
+            if (left instanceof BigDecimal || right instanceof BigDecimal) {
+                BigDecimal l = toBigDecimal(left);
+                BigDecimal r = toBigDecimal(right);
+                BigDecimal result = l.subtract(r, getMathContext());
+                left = narrowBigDecimal(left, right, result);
+                return left ;
+            }
+
+            // if either are floating point (double or float) use double
+            if (isFloatingPointNumber(left) || isFloatingPointNumber(right)) {
+                double l = toDouble(left);
+                double r = toDouble(right);
+                left = l - r ;
+                return left;
+            }
+
+            // otherwise treat as integers
+            BigInteger l = toBigInteger(left);
+            BigInteger r = toBigInteger(right);
+            BigInteger result = l.subtract(r);
+            left =  narrowBigInteger(left, right, result);
+            return left ;
+        }catch (Exception e){
+
+            if ( left instanceof Collection ) {
+                if ( right instanceof Collection ) {
+                    ((Collection)left).removeAll((Collection)right);
+                } else if ( right != null && right.getClass().isArray()){
+                    left = removeFromCollection((Collection)left, right );
+                }
+                else {
+                    ((Collection)left).remove(right);
+                }
+                return left;
+            }
+            if ( left instanceof Map ){
+                ((Map)left).remove(right);
+                return left;
+            }
+            if ( left != null && left.getClass().isArray() ){
+                if ( isListOrSetOrArray(right)){
+                    left = SetOperations.list_d(left, right );
+                }else{
+                    left = SetOperations.list_d(left, new Object[]{ right } );
+                }
+                left = TypeUtility.array(left);
+                return left;
+            }
+            if ( left instanceof Arithmetic){
+                left = ((Arithmetic) left).sub(right);
+                return left;
+            }
+            if ( isTimeLike(left) ){
+                left = TypeUtility.castTime(left);
+                if ( isTimeLike( right ) ){
+                    right = TypeUtility.castTime(right);
+                    left  = ((DateTime) left).getMillis() - ((DateTime) right).getMillis() ;
+                    return left ;
+                }
+                if ( right instanceof Number ){
+                    left = ((DateTime) left).minus(((Number)right).longValue() );
+                    return left;
+                }
+                if ( right instanceof Duration){
+                    left =  ((DateTime) left).minus((Duration) right);
+                    return left;
+                }
+                if ( right instanceof String ){
+                    left = ((DateTime) left).minus(DateIterator.parseDuration((String) right));
+                    return left;
+                }
+            }
+            throw  e;
+        }
+    }
+
+
 
     /**
      * Negates a value (unary minus for numbers).

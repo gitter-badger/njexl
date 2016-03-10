@@ -659,13 +659,13 @@ public class Interpreter implements ParserVisitor {
                         continue;
                     }
                     if ("+=".equals(which)) {
-                        left = arithmetic.add(left, right);
+                        left = arithmetic.addMutable(left, right);
                         //assign
                         assignToNode(-1, node, leftNode, left);
                         continue;
                     }
                     if ("-=".equals(which)) {
-                        left = arithmetic.subtract(left, right);
+                        left = arithmetic.subtractMutable(left, right);
                         //assign
                         assignToNode(-1, node, leftNode, left);
                         continue;
