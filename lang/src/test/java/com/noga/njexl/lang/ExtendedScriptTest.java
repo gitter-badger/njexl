@@ -514,14 +514,14 @@ public class ExtendedScriptTest extends JexlTestCase {
         o = e.execute(jc);
         assertTrue(o instanceof IOException );
 
-        e = JEXL.createScript("#clock{ for ( i = 0 ; i < 1001; i+= 1){ i }  }");
+        e = JEXL.createScript("#(t,r) = #clock{ for ( i = 0 ; i < 1001; i+= 1){ i }  }");
         o = e.execute(jc);
         assertTrue(o instanceof Object[] );
         assertTrue(((Object[])o)[0] instanceof Long );
         assertEquals(1000, ((Object[])o)[1]);
 
 
-        e = JEXL.createScript("#clock{ system('foobar')  }");
+        e = JEXL.createScript("#(t,r) = #clock{ system('foobar')  }");
         o = e.execute(jc);
         assertTrue(o instanceof Object[] );
         assertTrue(((Object[])o)[1] instanceof IOException );

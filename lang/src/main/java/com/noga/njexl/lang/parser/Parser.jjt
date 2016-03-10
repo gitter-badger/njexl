@@ -355,6 +355,8 @@ void Expression() #void : {}
                         MethodDef()
                         |
                         Expression()
+                        |
+                        ClockStatement()
                       )
                      #Assignment(2) )?
 }
