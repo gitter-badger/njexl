@@ -488,7 +488,7 @@ public class XDataStructureTest extends JexlTestCase {
     @Test
     public void testAdditiveSameInstance() throws Exception{
         // list
-        Script s = JEXL.createScript("x = list(1,2,3)");
+        Script s = JEXL.createScript("x = list(1,2,3,4,5)");
         JexlContext jc = new MapContext();
         Object x = s.execute(jc);
         s = JEXL.createScript(" x+= 42");
@@ -499,9 +499,20 @@ public class XDataStructureTest extends JexlTestCase {
         x = s.execute(jc);
         assertTrue(x == y);
 
-        s = JEXL.createScript(" x -= 1");
+        s = JEXL.createScript(" x -= [ 3,4,5 ]");
         x = s.execute(jc);
         assertTrue(x == y);
+
+        // array
+        s = JEXL.createScript(" x = array(1,2,3)");
+        x = s.execute(jc);
+        s = JEXL.createScript(" x += 42");
+        y = s.execute(jc);
+        assertTrue(x.getClass() == y.getClass() );
+        s = JEXL.createScript(" x -= 2");
+        y = s.execute(jc);
+        assertTrue(x.getClass() == y.getClass());
+
 
         // set
         s = JEXL.createScript(" x = set(1,2,3)");
@@ -509,10 +520,22 @@ public class XDataStructureTest extends JexlTestCase {
         s = JEXL.createScript(" x += 42");
         y = s.execute(jc);
         assertTrue(x == y);
+        s = JEXL.createScript(" x -= 2");
+        y = s.execute(jc);
+        assertTrue(x == y);
+
+        s = JEXL.createScript(" x += [4,5,6] ");
+        y = s.execute(jc);
+        assertTrue(x == y);
+
         // dict
         s = JEXL.createScript(" x = {1:2 , 3: 4 }");
         x = s.execute(jc);
         s = JEXL.createScript(" x += {5:6}");
+        y = s.execute(jc);
+        assertTrue(x == y);
+
+        s = JEXL.createScript(" x -= {1:2}");
         y = s.execute(jc);
         assertTrue(x == y);
 
