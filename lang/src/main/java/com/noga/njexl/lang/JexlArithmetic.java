@@ -549,6 +549,38 @@ public class JexlArithmetic {
         return left;
     }
 
+    public static Map removeFromMap(Map left, Object array){
+        int length = Array.getLength(array);
+        for ( int i = 0 ; i < length; i++ ){
+            Object e = Array.get(array,i);
+            left.remove(e);
+        }
+        return left;
+    }
+
+    public static Map removeFromMap(Map left, Collection right){
+        for (Object k : right ){
+            if ( left.containsKey(k) ){
+                    left.remove(k);
+            }
+        }
+        return left;
+    }
+
+    public static Map removeFromMap(Map left, Map right){
+        for (Object k : right.keySet() ){
+            if ( left.containsKey(k) ){
+                Object ol = left.get(k);
+                Object or = right.get(k);
+                // awesomely bad idea -- but... let it pass
+                if ( SetOperations.arithmatic.equals(ol,or) ){
+                    left.remove(k);
+                }
+            }
+        }
+        return left;
+    }
+
     /**
      * Add two values together, and assigns to left += .
      * <p>
@@ -1079,7 +1111,15 @@ public class JexlArithmetic {
                 return left;
             }
             if ( left instanceof Map ){
-                ((Map)left).remove(right);
+                if ( right instanceof Map ){
+                    left = removeFromMap((Map)left,(Map)right);
+                }else if ( right instanceof Collection ){
+                    left = removeFromMap((Map)left,(Collection)right);
+                }else if ( right != null && right.getClass().isArray() ){
+                    left = removeFromMap((Map)left, right);
+                }else{
+                    ((Map)left).remove(right);
+                }
                 return left;
             }
             if ( left != null && left.getClass().isArray() ){

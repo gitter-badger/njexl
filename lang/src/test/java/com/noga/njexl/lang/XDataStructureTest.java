@@ -529,7 +529,7 @@ public class XDataStructureTest extends JexlTestCase {
         assertTrue(x == y);
 
         // dict
-        s = JEXL.createScript(" x = {1:2 , 3: 4 }");
+        s = JEXL.createScript(" x = {1:2 , 3: 4 , 42:42 , 96:69 }");
         x = s.execute(jc);
         s = JEXL.createScript(" x += {5:6}");
         y = s.execute(jc);
@@ -538,6 +538,19 @@ public class XDataStructureTest extends JexlTestCase {
         s = JEXL.createScript(" x -= {1:2}");
         y = s.execute(jc);
         assertTrue(x == y);
+        assertEquals(4, ((Map)x).size());
+
+        s = JEXL.createScript(" x -= list(42,96)");
+        y = s.execute(jc);
+        assertTrue(x == y);
+        assertEquals(2, ((Map)x).size());
+
+
+        s = JEXL.createScript(" x -= [3,5]");
+        y = s.execute(jc);
+        assertTrue(x == y);
+        assertTrue(((Map)x).isEmpty());
+
 
     }
 
