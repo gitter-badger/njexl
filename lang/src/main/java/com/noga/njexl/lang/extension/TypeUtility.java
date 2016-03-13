@@ -1604,26 +1604,25 @@ public final class TypeUtility {
             return list.indexOf(item);
         }
 
-        int i = 0;
+        int i = -1;
 
         boolean found = false;
         for (Object o : list) {
+            ++i;
             anon.setIterationContext(list, o, i);
             Object ret = anon.execute();
             if (ret instanceof JexlException.Continue) {
+                if ( ((JexlException.Continue) ret).hasValue ){
+                    found = castBoolean(((JexlException.Continue) ret).value, false);
+                    if ( found ){ return i ;}
+                }
                 continue;
             }
             found = castBoolean(ret, false);
             if (found) {
-                break;
+                return i;
             }
-            i++;
         }
-
-        if (found) {
-            return i;
-        }
-
         return -1;
     }
 
@@ -1688,15 +1687,16 @@ public final class TypeUtility {
             anon.setIterationContext(list, list.get(i), i);
             Object ret = anon.execute();
             if (ret instanceof JexlException.Continue) {
+                if ( ((JexlException.Continue) ret).hasValue ){
+                    found = castBoolean(((JexlException.Continue) ret).value, false);
+                    if ( found ){ return i ; }
+                }
                 continue;
             }
             found = castBoolean(ret, false);
             if (found) {
-                break;
+                return i ;
             }
-        }
-        if (found) {
-            return i;
         }
 
         return -1;

@@ -593,6 +593,27 @@ public class XDataStructureTest extends JexlTestCase {
     }
 
     @Test
+    public void testContinueInIndex() throws Exception{
+        Script s = JEXL.createScript("l = [1,2,3,4] ; index{ continue( $%3 == 0 ){true} }(l)" );
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertEquals(2,o);
+
+        s = JEXL.createScript("l = [1,2,3,4,5] ; rindex{ continue( $%3 == 2 ){true} }(l)" );
+        o = s.execute(jc);
+        assertEquals(4,o);
+
+        s = JEXL.createScript("l = [1,2,3,4,5,6,9] ; rindex{ continue( $%3 == 0 ) ; $ > 2 }(l)" );
+        o = s.execute(jc);
+        assertEquals(4,o);
+
+        s = JEXL.createScript("l = [1,2,3,4,5,6,9] ; index{ continue( $%3 == 0 ) ; $ > 2 }(l)" );
+        o = s.execute(jc);
+        assertEquals(3,o);
+
+    }
+
+    @Test
     public void testAnonComparator() throws Exception{
         Script s = JEXL.createScript("#(m,M) = minmax{ size($.0) - size($.1) }( 'bbbbb' , 'a' ) ; m == 'a' and M == 'bbbbb' " );
         JexlContext jc = new MapContext();

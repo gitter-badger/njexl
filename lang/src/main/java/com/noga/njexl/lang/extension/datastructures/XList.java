@@ -115,6 +115,10 @@ public class XList<T> extends ArrayList<T> {
             anon.setIterationContext( this, item ,i);
             Object ret = anon.execute();
             if ( ret instanceof JexlException.Continue ){
+                if ( ((JexlException.Continue) ret).hasValue ){
+                    boolean found = TypeUtility.castBoolean(((JexlException.Continue) ret).value, false);
+                    if ( found ){ return i ; }
+                }
                 continue;
             }
 
@@ -138,9 +142,10 @@ public class XList<T> extends ArrayList<T> {
             anon.setIterationContext( this, item ,i);
             Object ret = anon.execute();
             if ( ret instanceof JexlException.Continue ){
+                boolean found = TypeUtility.castBoolean(((JexlException.Continue) ret).value, false);
+                if ( found ){ return i ; }
                 continue;
             }
-
             if (TypeUtility.castBoolean(ret,false)){
                 return i;
             }
