@@ -534,6 +534,39 @@ x = d1['a'] // x is 1
 x = d1.a // x is 1 
 d1.a = 10 // now d1['a'] --> 10 
 \end{lstlisting}
+\end{subsection}
+
+\begin{subsection}{Mutability}
+\index{mutability}
+
+Data structures are not generally mutable in nJexl.
+What does that mean?
+\begin{lstlisting}[style=JexlStyle]
+x = [1,2,3]
+x + 10 // add some 
+write(x) // @[1,2,3] : x did not change
+\end{lstlisting}
+Thus, a variables value never gets changed, unless someone assigns
+back something to it. The only way a variable state can get 
+change is through assignment. This is known as \href{https://en.wikipedia.org/wiki/Immutable_object}{Immutability}.
+See more of a discussion \href{http://programmers.stackexchange.com/questions/151733/if-immutable-objects-are-good-why-do-people-keep-creating-mutable-objects}{here}.
+
+The mutable additive operators : ``$+=$'' and ``$-=$'' are the ones which do not follow it, because
+they are also assignment operators. If the object is part of collection types, they would modify the left hand object itself, 
+instead of creating a new instance of the object. Thus :
+
+\begin{lstlisting}[style=JexlStyle]
+a = [1,2,3]
+a + 10 // creates a new array object  
+s = set(1,2,3)
+s+= 42 // simply : s.add(42)
+s-= 1 // s.remove(1)
+s += [2,3,4] // s.addAll( list(2,3,4) )
+s-= [3,4] // s.removeAll( list(3,4) )
+m = {1:2, 3:4}
+m += {5:6} // m.putAll( {5:6} )
+m -= 3 // m.remove(3)
+\end{lstlisting}
 
 \end{subsection}
 

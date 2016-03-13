@@ -27,12 +27,16 @@ $$
   i \in S ; \forall \; i  \neg \; ( \exists \; a[i] \; s.t. \; a[i] < a[i-1]    ) 
 $$ 
 
-And the precise formulation of what is a sorted array/list is done.
+And the precise formulation of what is a sorted array/list is done in the 
+\href{https://en.wikipedia.org/wiki/Second-order_logic}{second order logic}.
+The problem of programming and validation generally is expressive in terms of 
+\href{https://en.wikipedia.org/wiki/Higher-order_logic}{higher order logic}.
+\index{logic : 2nd order}\index{logic : higher order}
 \end{subsection}
-\begin{subsection}{Relation between $\exists$ and $\forall$ }
+\begin{subsection}{Relation between ``there exists'' $\exists$ and ``for all'' $\forall$ }
 \index{relation between exists and forall}
 There is a nice dual relationship between there exists $\exists$ and $\forall$.
-Given we have the negation operation defined, $\forall$ and $\exists$  are interchangable.
+Given we have the negation operation defined, $\forall$ and $\exists$  are interchangeable.
 Suppose we ask :  
 \begin{center}
 \emph{ Are every element in the collection C greater than 0? }
@@ -40,7 +44,7 @@ $$
 \forall x \in C \; ; \; x > 0 \; ?
 $$
 \end{center}
-This can be reformulated as :
+This can be reformulated as the negation of:
 \begin{center}
 \emph{ Does there exist any element in the collection C less than or equal to 0? }
 $$
@@ -50,7 +54,7 @@ $$
 Hence, the transformation law is :
 
 $$
-\forall x \in C \; ; \; P(x) \; ? \Longleftrightarrow \exists x \in C \; ; \; \neg P(x) \; ?
+\forall x \in C \; ; \; P(x) \; ? \Longleftrightarrow \neg ( \exists x \in C \; ; \; \neg P(x) \; ) ?
 $$
 \end{subsection}
 

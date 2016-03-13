@@ -611,6 +611,7 @@ There is another distinctly better way of handling $isa$, by using $alias$ strin
 strings that starts with $@$ and has a type information, e.g. $@map$ :
 \index{isa : arr}\index{isa : array} 
 \index{isa : map} \index{isa : list}\index{isa : set}\index{isa : Z}\index{isa : Q}\index{isa : num}
+\index{isa : chrono}
 \begin{lstlisting}[style=JexlStyle]
 a = [1,2,3] 
 a isa "@arr" // true : a is a type that is array?
@@ -624,6 +625,8 @@ b isa "@list" // true : b is a type of list ?
 4.2 isa "@Q" // Q : the rational numbers
 s = set(1,2,3)
 s isa "@set" // true  
+t = time() 
+t is a "@chrono" // true : for date/time/instant
 \end{lstlisting}
 The strings used are case insensitive.
 \end{subsection}

@@ -1,0 +1,271 @@
+\chapter{Examples with Interview Questions}\label{examples}
+
+{\LARGE E}xamples should be abundant, and this chapter is massively inspired from \href{http://www.amazon.com/Programming-Pearls-2nd-Edition-Bentley/dp/0201657880}{Programming Pearls}. The idea behind this chapter is many examples that happens practically, 
+and how to solve the problems in least possible code, in the best possible way.
+Although the whole book is pretty abundant in examples - this chapter has its own advantages.
+Some are simply what I explicitly call \href{http://www.urbandictionary.com/define.php?term=intellectual+masturbation}{IM}, 
+but that sales in the interviews for the kids. 
+I have heavily against many of these as practical interview questions. 
+But never the less :
+
+\begin{center}
+\emph{If it is ones lot to be cast among fools, one must learn foolishness. }\\
+   --Alexandre Dumas, The Count of Monte Cristo
+\end{center}
+
+\begin{section}{Assorted Impractical Examples}
+This section has almost everything that qualifies as IM. It is good we start with them first,
+because IM, for many many Software people is a very pleasurable activity.
+
+\begin{subsection}{A Game of Scramble}
+\index{ examples : scramble }
+I am sure you guys have know the game of jumbled up words. For example, someone gives you ``Bonrw'' and you need to say : ``Brown'' ! 
+Suppose I tell you to write a program to do it.
+The simplest solution is this :
+
+\begin{center}
+\emph{if we sort the all the words in a dictionary letter by letter and then use that sorted word as a key? Then we can easily solve the problem by sorting on the letters of the word given and then checking if that as key exist in the dictionary, then, find all possible matches !}
+\end{center}
+\index{ examples : Scramble }
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+fi = lines('words.txt')
+word_dict = lfold{ 
+               // generate char array
+               ca = $.toCharArray()  
+               // generate a key by sorting and concatenating 
+               key = str(sorta(ca),'') 
+               // add the word to the { key : list of words } 
+               if ( not ( key @ _$_ ) ) {  _$_[key] = list()  }
+               _$_[key] += $ 
+               _$_ // return the partial 
+             }(fi, dict() )
+// now a jumbled up word exists ?
+key = str( sorta( jumbled_word.toCharArray() ), '')
+matches = word_dict[key]
+write(matches)
+\end{lstlisting}  
+\end{minipage}\end{center}
+\end{subsection}
+
+\begin{subsection}{Find Anagrams of a String}
+\index{ examples : anagrams }
+The problem is, suppose someone gave you a string : ``waseem'' say. The idea is to list all possible words
+with the letters in it. The letters may or may not have meaning, but that is ok. How to solve this problem?
+
+The easy method is to generate permutation of all the letters, and check if it occurred before.
+Thus, given $word$ is the string :
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+// create a set of words 
+words = set()
+// get the sorted version in an array 
+letters = sorta ( word.toCharArray() )
+// generate the args for permutations 
+args = array{ letters }( [0 : #|letters|] )
+perms = join{ continue ( $ != letters )
+              v = str($,'') ; continue( v @ words )
+              // add the permutation to the words
+              words += v ; false // no need to store anything
+       }(__args__ = args )
+// now words has all the anagrams 
+\end{lstlisting}  
+\end{minipage}\end{center}
+and this solves the problem. Notice that many advanced concepts are being used in the solution.
+\end{subsection}
+
+\begin{subsection}{Sublist Sum Problem}
+\index{ examples : sublist sum problem }
+Given a list of integers, and a value sum, determine if there is a sublist of the given list with sum equal to given sum.
+There is a dynamic programming solution - which is left for the reader to figure out. 
+Our solution would be minimalist. Observe that the solution is finding all possible combinations of the list, 
+and check where the sum comes up. So, we notice that the previous anagram problem is the building block of this problem too!
+So, suppose the list of integers are stored in $li$ :
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+// create a set for solutions 
+solutions = set()
+// get the sorted version of the list 
+li = sorta ( li )
+// generate the args for permutations 
+args = array{ li }( [0 : #|li|] )
+perms = join{ continue ( $ != li )
+              // we need the sum 
+              sm = sqlmath($)
+              // sm[2] holds the sum 
+              continue( sm[2] != sum ) 
+              $ = sorta($) // we need combinations 
+              v = str($) ; continue( v @ solutions )
+              // add the combination to the solutions
+              solutions += v ; false // store nothing
+       }(__args__ = args )
+// now solutions has all the solutions to the problem 
+\end{lstlisting}  
+\end{minipage}\end{center}
+\end{subsection}
+
+\begin{subsection}{Sublist Predicate Problem}
+\index{ examples : sublist predicate problem }
+Observe that, the most generic way to represent all of the above problems is by introducing 
+a predicate $P(\$)$ , and stating the problem as such :
+\begin{center}\emph{
+Given a list , and a predicate $P(\$)$, determine if there is a sublist of the given list where $P(\$)$ is True.
+}
+\end{center}
+Thus, the generic solution becomes :
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+// create a set for solutions 
+solutions = set()
+// get the sorted version of the list 
+li = sorta ( li )
+// generate the args for permutations 
+args = array{ li }( [0 : #|li|] )
+perms = join{ continue ( $ != li )
+              continue( not P($) ) 
+              $ = sorta($) // we need combinations 
+              v = str($,'#') ; continue( v @ solutions )
+              // add the combination to the solutions
+              solutions += v ; false // store nothing
+       }(__args__ = args )
+// now solutions has all the solutions to the problem 
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+\end{subsection}
+
+\begin{subsection}{List Closeness Problem}
+\index{ examples : list closeness }
+Suppose there are points in a \href{https://en.wikipedia.org/wiki/Metric\_space}{metric space},
+collected in a list. There are two such lists, and we need to check if these lists are sufficiently close to 
+one another or not. Formally, given the \href{https://en.wikipedia.org/wiki/Distance\#General\_metric}{distance function} $d(,)$,
+and two collections ( of same size $N$ ) $A,B$, they are close iff there exists permutations of $A,B$ defined as $\pi_m(A)$ and $\pi_n(B)$
+such that :
+$$
+\forall i \in \{ 0 , ... , N - 1 \} \; ; \; d( \pi_m(A[i]) , \pi_n(B[i]) ) < \epsilon  
+$$   
+where $m$ and $n$ represents the \href{http://mathworld.wolfram.com/PermutationIndex.html}{Permutation Index},
+and $\epsilon$ is the \href{https://en.wikipedia.org/wiki/Closeness\_(mathematics)}{closeness}.
+In simple english, given two list of numbers of the same size, and a closeness number $\epsilon$, this looks:
+  
+$$
+\forall i \in \{ 0 , ... , N - 1 \} \; ; \;  |\pi_m(A[i]) - \pi_n(B[i]) | < \epsilon  
+$$   
+
+This is not a hard problem, but is formulated as such. To solve it, observe that given the distance metric, 
+one can calculate the distance of all the points from a base point, in case of numbers, that would be 0. 
+That would let us create an \href{https://en.wikipedia.org/wiki/Total\_order}{order relation} over the numbers.
+Thus, we can order the numbers in the ascending order, and then $i$'th element of $A$ must be close to $i$'th element of $B$.
+That is, suppose $A_s,B_s$ are the sorted versions of $A,B$, then :
+
+$$
+\forall i \in \{ 0 , ... , N - 1 \} \; ; \;  | A_s[i] - B_s[i] | < \epsilon  
+$$   
+and thus, the nJexl solution is :
+ 
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+AS = sorta(A)
+BS = sorta(B)
+e = 0.01 // say?
+s = #|AS| // the size 
+close = ( index{ #|AS[$] - BS[$]| > e  }([0:s]) < 0 )
+\end{lstlisting}  
+\end{minipage}\end{center}
+\end{subsection}
+\end{section}
+
+\begin{section}{Assorted Practical Examples}
+This section contains examples which would probably never be asked in any interviews,
+if anyone asks the in an interview, please join that firm immediately.
+
+\begin{subsection}{Generic Result Comparison}
+\index{examples : generic result comparison}
+Most of the time, it is of importance that we compare results coming from an 
+older and a newer system. Both are to be somehow equivalent.
+Obviously these results are list of complex objects, which differs with the versions.
+Thus, the objects which comprise of the old list $ol$ would be slightly different 
+than that of the new list $nl$. 
+
+Thus, the only way to handle these sort of thing would be using the 
+\href{https://en.wikipedia.org/wiki/Projection\_(relational\_algebra)}{projection operator}.
+That is, isolate the set of fields which are equivalent , that would be a list of tuple :
+$C_i = ( _OC_i,_NC_i )$ where $_OC_i$ is the old field, while $_NC_i$ is the new field.
+That is really not the most generic way, but let's assume it is.
+Now, it boils down to doing the projection on these :
+$$
+t_o = \Pi_{ _OC }(O_o) 
+$$ 
+and
+$$
+t_n = \Pi_{ _NC }(O_n)
+$$ 
+and now, there are lists of it. Thus, now, these two list should be equal.
+Hence, in nJexl, here is the code one would write :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+// old tuple list , generated by projecting old columns 
+otl = list{ o = $ ; lfold{ _$_ + '#' + o[$]}(OC, '')}(ol)
+// new tuple list , generated by projecting new columns 
+ntl = list{ o = $ ; lfold{ _$_ + '#' + o[$]}(NC, '')}(nl)
+// now compare 2 list of strings!
+matches = ( otl == ntl )  
+\end{lstlisting}  
+\end{minipage}\end{center}
+\end{subsection}
+
+\begin{subsection}{Verifying Filter Results}
+\index{examples : verifying filter results}
+Sometimes people tend to write imperative code to apply filter on search results.
+That is, given the result is a list of objects, all the objects would be yielding true
+while applying predicate $P()$. Thus, formally, a filtered collection $F$ over a collection $C$ is :
+$$
+\forall x \in F \; ; \; P(x)  = True 
+$$
+and this $F \subseteq C$. The question is how to test for filtering?
+Given we already have a predicate $P()$ defined :
+ 
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+filtered = ( index{ not P($) }(F) < 0 ) and F <= C  
+\end{lstlisting}  
+\end{minipage}\end{center}
+But this has a problem. The solution loops over both $F$ and $C$. 
+Will there be a way to reduce the looping? Given $C$ is a set, it is easy :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+filtered = ( index{ not P($) and not $ @ C }(F) < 0 )
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+But what if, given $C$ is not a set, but a list? That can be solved by
+invocation of multi set, or $mset()$ \index{mset()} :
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+l = [1,2,2,3,4,4,4]
+ml = mset(l)
+/* ml := { 1 : [1] , 2:[2,2] , 3:[1], 4:[4,4,4] } */
+\end{lstlisting}  
+\end{minipage}\end{center}
+With this, the new verification declaration would be :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+m = mset(C)
+// replace with counts 
+mc = dict{ [ $.key, #|$.value| ] }(m)
+filtered = index{ 
+               continue( $ @ mc and P($) ){  
+                      mc[$]-=1 ; mc[$] < 0  }
+               // control came here, failed         
+               true    
+            }(F) < 0 
+\end{lstlisting}  
+\end{minipage}\end{center}
+ 
+\end{subsection}
+
+\end{section}
+
