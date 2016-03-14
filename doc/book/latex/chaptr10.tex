@@ -187,12 +187,16 @@ write(x) // x is 4
 There is this function $atomic()$ which takes primitive data types,
 and converts them into their atomic equivalent.
 See the \href{https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/package-summary.html}{Concurrency} package.
-Thus, \index{atomic : atomic() }
-
+Thus, \index{atomic : atomic() } \index{atomic : mutable increment }
+\index{atomic : mutable decrement }
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
-ai = atomic(o) // atomic integer : valued at 0  
-al = atomic(ol) // atomic long : valued at 0l  
+ai = atomic(o) // atomic integer : valued at 0  : int 
+al = atomic(ol) // atomic long : valued at 0l : long  
+ai += 42 // ai sets to 42, atomic operation  
+al += 42 // al sets to 42, atomic operation 
 \end{lstlisting}
+\end{minipage}\end{center}
 
 \end{subsection}
 

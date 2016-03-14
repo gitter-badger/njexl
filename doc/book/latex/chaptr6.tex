@@ -611,7 +611,7 @@ There is another distinctly better way of handling $isa$, by using $alias$ strin
 strings that starts with $@$ and has a type information, e.g. $@map$ :
 \index{isa : arr}\index{isa : array} 
 \index{isa : map} \index{isa : list}\index{isa : set}\index{isa : Z}\index{isa : Q}\index{isa : num}
-\index{isa : chrono}
+\index{isa : chrono}\index{isa : error}
 \begin{lstlisting}[style=JexlStyle]
 a = [1,2,3] 
 a isa "@arr" // true : a is a type that is array?
@@ -627,9 +627,24 @@ s = set(1,2,3)
 s isa "@set" // true  
 t = time() 
 t is a "@chrono" // true : for date/time/instant
+e = try{ 0/0 }()
+e isa '@error' // true 
 \end{lstlisting}
 The strings used are case insensitive.
+One can pass arbitrary class full name matcher too :
+\index{isa : regex matcher} 
+\begin{lstlisting}[style=JexlStyle]
+'abc' isa '@String' // true 
+'abc' isa '@java\.lang\.String' // true 
+'abc' isa '@str' // true 
+'abc' isa '@foo' // false 
+'abc' isa '@s' // false, must take 3 or more letters
+\end{lstlisting}
+This regex also is case insensitive, and matches from anywhere, 
+so be careful. 
 \end{subsection}
+
+
 
 \begin{subsection}{inspect() function}
 \index{inspect()}
