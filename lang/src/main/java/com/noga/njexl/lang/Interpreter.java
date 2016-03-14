@@ -1251,6 +1251,9 @@ public class Interpreter implements ParserVisitor {
                     String interfaceType = ((String)right).substring(1);
                     interfaceType = interfaceType.toLowerCase();
                     switch ( interfaceType ){
+                        case "err" :
+                        case "error" :
+                            return left instanceof Throwable;
                         case "list" :
                             return left instanceof List ;
                         case "map" :

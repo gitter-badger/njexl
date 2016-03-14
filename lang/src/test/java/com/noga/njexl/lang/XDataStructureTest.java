@@ -589,7 +589,6 @@ public class XDataStructureTest extends JexlTestCase {
         s = JEXL.createScript(" s != l ");
         o = s.execute(jc);
         assertTrue((Boolean)o);
-
     }
 
     @Test
@@ -608,9 +607,9 @@ public class XDataStructureTest extends JexlTestCase {
         assertEquals(4,o);
 
         s = JEXL.createScript("l = [1,2,3,4,5,6,9] ; index{ continue( $%3 == 0 ) ; $ > 2 }(l)" );
+        s = JEXL.createScript("l = [1,2,3,4,5,6,9] ; index{ continue( $%3 == 0 ) ; $ > 2 }(l)" );
         o = s.execute(jc);
         assertEquals(3,o);
-
     }
 
     @Test
@@ -700,6 +699,13 @@ public class XDataStructureTest extends JexlTestCase {
         s = JEXL.createScript("{:} isa '@dict'" );
         o = s.execute(jc);
         assertTrue((Boolean)o);
+
+        s = JEXL.createScript(" e = try{ foo = bar }()" );
+        o = s.execute(jc);
+        assertTrue(o instanceof Throwable );
+        s = JEXL.createScript(" e isa '@err' " );
+        o = s.execute(jc);
+        assertTrue((Boolean) o);
 
     }
 

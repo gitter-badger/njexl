@@ -2170,7 +2170,9 @@ public final class TypeUtility {
             return r;
         } catch (Throwable throwable) {
             if (args.length == 0) {
-                return throwable.getCause();
+                Throwable ret = throwable.getCause();
+                if ( ret != null ) { return ret ; }
+                return throwable ;
             }
             return args[0];
         }
