@@ -736,6 +736,24 @@ public class XDataStructureTest extends JexlTestCase {
         s = JEXL.createScript(" e isa '@error' " );
         o = s.execute(jc);
         assertTrue((Boolean) o);
+
+        s = JEXL.createScript("s = 'abc' ; s isa '@String' " );
+        o = s.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = JEXL.createScript(" s isa '@str' " );
+        o = s.execute(jc);
+        assertTrue((Boolean) o);
+
+        s = JEXL.createScript(" s isa '@s' " );
+        o = s.execute(jc);
+        assertFalse((Boolean) o);
+
+        s = JEXL.createScript(" s isa '@foo' " );
+        o = s.execute(jc);
+        assertFalse((Boolean) o);
+
+
     }
 
     @Test

@@ -1247,9 +1247,9 @@ public class Interpreter implements ParserVisitor {
                 return ((ScriptClassInstance) left).getNClass().isa(right);
             }
             if ( right instanceof String ){
-                if ( ((String)right).startsWith("@") ){
-                    String interfaceType = ((String)right).substring(1);
-                    interfaceType = interfaceType.toLowerCase();
+                if ( ((String)right).startsWith("@") && left != null ){
+                    String type = ((String)right).substring(1);
+                    String interfaceType = type.toLowerCase();
                     switch ( interfaceType ){
                         case "err" :
                         case "error" :
@@ -1272,12 +1272,18 @@ public class Interpreter implements ParserVisitor {
                         case "q" :
                             return JexlArithmetic.isQ(left);
                         case "enum" :
-                             return (left != null ) && ( left.getClass().isEnum() );
+                             return ( left.getClass().isEnum() );
                         case "array" :
                         case "arr":
-                            return (left != null ) && ( left.getClass().isArray() );
+                            return ( left.getClass().isArray() );
                         default:
-                            break;
+                            // DOS convention, should not pass less than 3 chars, ever
+                            if ( type.length() < 3 ) return false ;
+                            // try regex match really
+                            Pattern p = Pattern.compile(type, Pattern.CASE_INSENSITIVE);
+                            String name = left.getClass().getName();
+                            Matcher m = p.matcher(name);
+                            return m.find();
                     }
                 }
             }
