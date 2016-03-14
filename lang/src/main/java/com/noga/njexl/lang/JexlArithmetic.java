@@ -29,6 +29,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.noga.njexl.lang.extension.iterators.DateIterator;
 import com.noga.njexl.lang.extension.iterators.YieldedIterator;
@@ -110,6 +112,10 @@ public class JexlArithmetic {
                     || a instanceof Instant ;
         }
         return false;
+    }
+
+    public static boolean isAtomicNum(Object a){
+        return  ( a instanceof AtomicInteger || a instanceof AtomicLong );
     }
 
     public static boolean areTimeLike(Object l, Object r){
@@ -591,7 +597,7 @@ public class JexlArithmetic {
      * @param right second value
      * @return left + right.
      */
-    public Object addMutable(Object left, Object right) {
+    public synchronized Object addMutable(Object left, Object right) {
         if (left == null && right == null) {
             return controlNullNullOperands();
         }
@@ -624,14 +630,23 @@ public class JexlArithmetic {
                     return left;
                 }
             }
-
+            Object oldLeft = null ;
+            if ( isAtomicNum(left) ){
+                oldLeft = left ;
+            }
             // otherwise treat as integers
             BigInteger l = toBigInteger(left);
             BigInteger r = toBigInteger(right);
             BigInteger result = l.add(r);
             left = narrowBigInteger(left, right, result);
-            return left;
+            if ( oldLeft == null ) return  left ;
 
+            if (oldLeft instanceof AtomicInteger) {
+                ((AtomicInteger) oldLeft).set(((Number)left).intValue());
+            } else {
+                ((AtomicLong) oldLeft).set(((Number)left).longValue());
+            }
+            return oldLeft;
         } catch (Exception e) {
             if ( !(right instanceof String) &&
                     left instanceof Arithmetic ){ // very important
@@ -1068,7 +1083,7 @@ public class JexlArithmetic {
      * @param right second value
      * @return left - right.
      */
-    public Object subtractMutable(Object left, Object right) {
+    public synchronized Object subtractMutable(Object left, Object right) {
         try {
             if (left == null && right == null) {
                 return controlNullNullOperands();
@@ -1090,13 +1105,22 @@ public class JexlArithmetic {
                 left = l - r ;
                 return left;
             }
-
+            Object oldLeft = null;
+            if ( isAtomicNum(left)){
+                oldLeft = left ;
+            }
             // otherwise treat as integers
             BigInteger l = toBigInteger(left);
             BigInteger r = toBigInteger(right);
             BigInteger result = l.subtract(r);
             left =  narrowBigInteger(left, right, result);
-            return left ;
+            if ( oldLeft == null) return left ;
+            if (oldLeft instanceof AtomicInteger) {
+                ((AtomicInteger) oldLeft).set(((Number)left).intValue());
+            } else {
+                ((AtomicLong) oldLeft).set(((Number)left).longValue());
+            }
+            return oldLeft ;
         }catch (Exception e){
 
             if ( left instanceof Collection ) {

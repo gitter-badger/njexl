@@ -291,7 +291,9 @@ public class ExtendedScriptTest extends JexlTestCase {
 
         e = JEXL.createScript("ax += 42 ");
         o = e.execute(jc);
-        assertEquals(42,o);
+        assertTrue( o instanceof AtomicInteger );
+
+        assertEquals(42,((Number)o).intValue() );
 
         e = JEXL.createScript("x = true ; ax = atomic(x) ; ");
         o = e.execute(jc);

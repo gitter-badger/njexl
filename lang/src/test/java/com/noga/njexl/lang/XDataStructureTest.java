@@ -552,6 +552,30 @@ public class XDataStructureTest extends JexlTestCase {
         assertTrue(((Map)x).isEmpty());
 
 
+        s = JEXL.createScript(" x = atomic(0)");
+        x = s.execute(jc);
+        s = JEXL.createScript(" x += 42");
+        y = s.execute(jc);
+        assertTrue(x == y);
+
+        s = JEXL.createScript(" x = atomic(0l)");
+        x = s.execute(jc);
+        s = JEXL.createScript(" x += 42");
+        y = s.execute(jc);
+        assertTrue(x == y);
+
+        s = JEXL.createScript(" x = atomic(0)");
+        x = s.execute(jc);
+        s = JEXL.createScript(" x -= 42");
+        y = s.execute(jc);
+        assertTrue(x == y);
+
+        s = JEXL.createScript(" x = atomic(0l)");
+        x = s.execute(jc);
+        s = JEXL.createScript(" x -= 42");
+        y = s.execute(jc);
+        assertTrue(x == y);
+
     }
 
 
