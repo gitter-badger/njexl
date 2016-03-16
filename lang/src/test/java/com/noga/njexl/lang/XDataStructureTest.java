@@ -18,6 +18,7 @@ package com.noga.njexl.lang;
 
 import com.noga.njexl.lang.extension.dataaccess.DataMatrix;
 import com.noga.njexl.lang.extension.dataaccess.XmlMap;
+import com.noga.njexl.lang.extension.datastructures.ListSet;
 import com.noga.njexl.lang.extension.iterators.DateIterator;
 import com.noga.njexl.lang.extension.iterators.RangeIterator;
 import com.noga.njexl.lang.extension.iterators.SymbolIterator;
@@ -753,6 +754,25 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertFalse((Boolean) o);
 
+
+    }
+
+    @Test
+    public void testShuffleListSet() throws Exception{
+        Script s = JEXL.createScript("s = set(1,2,3) ; shuffle(s) ; s ;" );
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue(o instanceof List );
+        assertTrue(o instanceof Set );
+        ListSet ls = (ListSet)o;
+        ls.add(0,4);
+        ls.add(0,4);
+        ls.add(0,6);
+        assertEquals(5,ls.size());
+        ls.set(2,4);
+        ls.set(3,4);
+        ls.set(4,6);
+        assertEquals(5,ls.size());
 
     }
 

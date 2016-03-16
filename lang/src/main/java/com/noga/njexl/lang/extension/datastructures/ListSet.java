@@ -123,19 +123,17 @@ public class ListSet<T> extends HashSet<T> implements List<T> {
     @Override
     public T set(int index, T element) {
         if ( super.contains(element)){
-            behind.remove(index);
+            behind.remove(element);
+        }else {
+            super.add(element);
         }
-        super.add(element);
-        behind.set(index,element);
+        behind.add(index,element);
         return element;
     }
 
     @Override
     public void add(int index, T element) {
-        if ( super.contains(element)){
-            behind.remove(element);
-        }
-        behind.add(index,element);
+        set(index,element);
     }
 
     @Override
