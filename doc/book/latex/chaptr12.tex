@@ -173,7 +173,229 @@ close = ( index{ #|AS[$] - BS[$]| > e  }([0:s]) < 0 )
 \end{lstlisting}  
 \end{minipage}\end{center}
 \end{subsection}
+
+\begin{subsection}{Shuffling Problem}
+\index{ examples : ex seating problem }
+The problem statement is :
+
+\emph{Given a string e.g. ``ABCDAABCD''. Shuffle the string so that no two similar letters together. 
+E.g. AABC can be shuffled as ABAC.}
+
+So, how to solve this? As always, we formalise the problem. 
+First we find that how many same alphabets are present, and make a group.
+Then, we go round robin over all the groups and exhaust the groups.
+When there would be no solutions? Clearly using the \href{https://en.wikipedia.org/wiki/Pigeonhole\_principle}{Pigeonhole Principle} 
+one can say, when one group would have more characters than the rest of the characters plus 1.
+For example, there can not be any solution for the string ``AAA'' : trivial, and ``AAAB''.
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+word = 'ABCDAABCD'
+m = mset(word.toCharArray() )
+#(min,Max) = minmax{ size($[0].value) < size($[1].value) }(m)
+solvable = ( #|word| + 1 < 2 * #|Max.value| )
+not ( solvable ) or bye('sorry, no solution exists!')
+keys = list(m.keySet())
+shuffle(keys)
+len = #|keys|
+i = -1 
+result = lfold{ 
+      i+= 1 
+      key = keys[i % len]  
+     _$_ + m[key][0]           
+}([0:#|word|],'')
+write(result)
+\end{lstlisting}  
+\end{minipage}\end{center}
+Observe the use of the $bye()$ function. When it is called, it simply returns
+from the calling function, with the string as return value.
+\index{bye()}
+Wonder where it can be practically applied? I can think of one.
+Suppose we are going to go at a diner where girls and boys came. 
+Now, there would be ( if the soap operas are slightly true ) boys and girls who were
+involved with one another. Thus a relationship existed is defined by $_xEX_y$ 
+which means $x,y$ were emotionally attached. 
+Now, an extended relationship can be found, extending $R$, so that $_xEX_y$ and $_yEX_z$ 
+implies $_xEX_z$ where $N$ stands for do not talk. Clearly, $N$ is a set generate by $EX$.
+Clearly none in the same $N$ set wants to talk to one another, and thus
+do not want to seat side by side. That brings the problem, and 
+now you see, how emotional stuff can generate a nice computer algorithm, 
+that Microsoft asks in Interviews.
+
+\end{subsection}
+
+\begin{subsection}{Reverse Words in a Sentence}
+\index{examples : reverse words }
+Suppose a sentence reads : ``\emph{This is an utter waste of time}'', 
+we should reverse the order of the words. 
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+line = 'This is an utter waste of time'
+words = tokens{ $ }( line, '\S+')
+words = words ** -1
+result = str(words, ' ') 
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+We can reduce it further :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+line = 'This is an utter waste of time'
+result = ''
+tokens{ result += ' ' + $ ; continue }( line, '\S+')
+result = result.substring(1)
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+\end{subsection}
+
+\begin{subsection}{Recursive Range Sum}
+\index{examples : recursive range sum}
+Write a recursive function: \emph{ sum(x,max ) } 
+that calculates the sum of the numbers from x to max (inclusive). 
+For example, $sum(4,7)$ would compute $4 + 5 + 6 + 7$ and return the value $22$. 
+The function must be recursive so you are not allowed to use any conventional loop constructs.
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def sum(x,max){
+   dif = max - x
+   x*(diff + 1) + diff*(diff+1)/2  
+}
+\end{lstlisting}  
+\end{minipage}\end{center}
+This function uses integer arithmetic, and hence is recursive.
+Obviously people do not know that add and subtract are actually recursion.
+So, for ordinary people, lets solve it in ordinary way :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def sum(x,max){
+   if ( max == x ) return x
+   return ( max + sum(x, max - 1 ) )
+}
+x = int(__args__[1])
+max = int(__args__[2])
+write(sum(x,max))
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+\end{subsection}
+
+\begin{subsection}{String from Signed Integer}
+\index{examples : string from signed integer }
+With input as a integer, write an algorithm to convert that to string 
+without using any built in functions. It may be a signed number. 
+This is obviously by done by simply calling the \emph{str()}, 
+but people loves IM, so :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def to_str(i){
+   if ( i == 0 ) return "0"
+   sign = (i < 0 )?'-':''
+   i = ( i> 0 )?i:-i
+   s = '' 
+   for ( ; i > 0 ; i = i/10 ){
+     s =  str( i % 10) + s 
+   } 
+   sign + s    
+}
+write ( to_str( int(__args__[1] ) ))
+\end{lstlisting}  
+\end{minipage}\end{center}
+\end{subsection}
+
+\begin{subsection}{Permutation Graph}
+\index{examples : permutation graph}
+Given an integer "n" and pair of "I" swapping indices, 
+generate the largest number. Swapping indices can be reused any number times. 
+
+\begin{lstlisting}[style=all]
+String = "1243" 
+Indices: 
+(0,3) 
+(2,3) 
+Answer: 
+3421, 3214, 4213, 4231,...
+The result is 4231 which is the largest.
+\end{lstlisting}  
+
+The problem is that of \href{https://en.wikipedia.org/wiki/Permutation\_graph}{Permutation Graph}.
+Observe, then, the rules lets you generate nodes from the starting node.
+Also observe that the size of the graph generated by the rules is finite, 
+the graph generated is strictly a 
+\href{https://en.wikipedia.org/wiki/Glossary_of_graph_theory\#subgraph}{subgraph} 
+of the overall permutation graph, 
+which is finite by definition. A subset of a finite set is finite. 
+
+So, how to generate the graph? Obviously we need to apply the rules again and again.
+But there is a chance of a \href{https://en.wikipedia.org/wiki/Cycle\_(graph_theory)}{cycle}.
+
+The problem here, is a very well known problem: 
+\href{https://en.wikipedia.org/wiki/Graph\_traversal\#Graph\_exploration}{Graph Exploration}.
+Given this problem came from Facebook is quite apt. So, how do we solve it?
+
+\begin{enumerate}
+\item{Keep a dictionary of traversed nodes, or say integers : nodes := \{ node : traversed ? false \}  }
+\item{Initialise nodes to starting seed (1243). }
+\item{Pick one item from the node set, which is not traversed, and apply both the rules. }
+\item{If the results generates new nodes, not already in nodes, then add them to nodes }
+\item{If traversal yield old nodes, mark the node as traversed : true }
+\item{check if there is any nodes left to pick and traverse}
+\item{The exploration is done, now go over all the nodes and check which one is the largest. }
+\end{enumerate}
+
+And here is the nJexl code :
+\index{operator : division on dictionary }
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+nodes = { 1243 : false }
+rules = [ [0,3] ,[2,3] ] 
+/* generate the permutation */
+def get_node(cur,rule){
+   c_array = str(cur).toCharArray()
+   t = c_array[rule.0]
+   c_array[rule.0] = c_array[rule.1]
+   c_array[rule.1] = t 
+   int ( str(c_array,'')) 
+}
+/* Explore the Graph */
+while (true){
+   /* observe the division over a dictionary 
+      This generates a set of keys where 
+      value is the right operand */
+   not_traversed = nodes / false 
+   break(empty(not_traversed)) 
+   // mark as true 
+   nodes[ not_traversed[0] ] = true
+   // get the current node 
+   cur = not_traversed[0] 
+   lfold {
+          // generate the next node 
+          nn = get_node( cur, $ )
+          // in case it exists, continue 
+          continue(nn @ nodes )
+          // add to the dictionary for nodes 
+          nodes[nn] = false 
+    }(rules)
+}
+// generate the min, max 
+#(m,M) = minmax{ $[0].key <  $[1].key }(nodes)
+write(M)
+
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+
+\end{subsection}
+
 \end{section}
+
+
+
 
 \begin{section}{Assorted Practical Examples}
 This section contains examples which would probably never be asked in any interviews,

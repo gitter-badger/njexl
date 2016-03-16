@@ -62,7 +62,7 @@ $$
 \index{Predicate Logic : there exists}
 To check, if some element is, in some sense exists inside a container ( list, set, dict, array, heap )
 one needs to use the $IN$ operator, which is $@$. \index{operator : at }
-
+\index{ operator : division over dictionary }
 \begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 l = [1,2,3,4] // l is an array 
@@ -73,6 +73,9 @@ in = 'a' @ d // in is true
 in = 'c' @ d // in is false 
 in = 10 @ d // in is false 
 in = 10 @ d.values() // in is true 
+/* division over a dictionary gives the keyset 
+where the value of the key is the operand */
+in = size( d / 10 ) > 0  // in is true 
 s = "hello"
 in = "o" @ s // in is true 
 /* This works for linear collections even */
