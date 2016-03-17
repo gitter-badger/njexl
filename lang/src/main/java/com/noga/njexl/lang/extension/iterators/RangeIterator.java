@@ -98,8 +98,8 @@ public  class RangeIterator extends YieldedIterator {
 
     @Override
     public synchronized boolean hasNext() {
-        if ( decreasing ){ return  cur > e - s ;}
-        return cur < e - s ;
+        long r = cur - e + s ;
+        return ( !decreasing && r < 0 ) || ( decreasing && r > 0 );
     }
 
     @Override
