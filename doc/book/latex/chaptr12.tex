@@ -314,7 +314,7 @@ Given an integer "n" and pair of "I" swapping indices,
 generate the largest number. Swapping indices can be reused any number times. 
 
 \begin{lstlisting}[style=all]
-String = "1243" 
+n : 1243 
 Indices: 
 (0,3) 
 (2,3) 
@@ -385,16 +385,32 @@ while (true){
 // generate the min, max 
 #(m,M) = minmax{ $[0].key <  $[1].key }(nodes)
 write(M)
-
 \end{lstlisting}  
 \end{minipage}\end{center}
+\end{subsection}
 
-
+\begin{subsection}{Find Perfect Squares}
+\index{examples : find perfect squares}
+Find the list of perfect squares between two given numbers.
+So, how do we solve it? We go back to formalism : the perfect squares are:
+$$
+s = \{ x | \exists n \in \mathbb{N} \; s.t.\; x = n^2  \; and \;  b \le x \le e  \} 
+$$
+Thus, to solve it :
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+begin = Z( b ** 0.5 )
+end = Z( e ** 0.5 ) + 1 
+ps = select{ x = $*$ // generate the square 
+       where ( x >= b and x <= e ){
+           $ = x // store back the value    
+       } 
+    }( [begin : end ])
+\end{lstlisting}  
+\end{minipage}\end{center}
 \end{subsection}
 
 \end{section}
-
-
 
 
 \begin{section}{Assorted Practical Examples}

@@ -26,6 +26,7 @@ We have :
 \item{int : \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html}{Integer} }
 \item{long : \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html}{Long} }
 \item{INT : \href{https://docs.oracle.com/javase/8/docs/api/java/math/BigInteger.html}{BigInteger} }
+\item{Z : The natural Integer type, picks the smallest container from int,long, BigInteger}
 \end{enumerate}
 There are no \href{https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html}{primitive types}. 
 That was an absolutely disaster of a design that was made in Java land, which I fixed it here.
@@ -139,7 +140,6 @@ This is sometimes required, and the syntax is :
 \begin{lstlisting}[style=JexlStyle]
 val = INT(value, base=10, default_value = null )
 \end{lstlisting}
-
 Usage is :
 
 \begin{lstlisting}[style=JexlStyle]
@@ -148,8 +148,31 @@ val = INT('hi',10,42 )// val is 42
 val = INT('42') // val is 42 
 val = INT(54,13 ) // val is 42 
 \end{lstlisting}
+\end{subsection}
+
+\begin{subsection}{Z}\index{Z()}
+This is required, when you want to simply
+forget about everything and wants to typecast
+an object to integer family. 
+The syntax is :
+
+\begin{lstlisting}[style=JexlStyle]
+val = Z(value, base=10, default_value = null )
+\end{lstlisting}
+
+Usage is :
+
+\begin{lstlisting}[style=JexlStyle]
+val = Z("hello") // val is null
+val = Z('hi',10,42 )// val is 42 int
+val = Z('42121131231313') // val is long 
+val = Z(54,13 ) // val is 42 
+val = Z('4212113123131313131121323131') // val is BigInteger 
+\end{lstlisting}
 
 \end{subsection}
+
+
 \end{section}
 
 
@@ -160,6 +183,7 @@ We have :
 \item{float : \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Float.html}{Float} }
 \item{double : \href{https://docs.oracle.com/javase/8/docs/api/java/lang/Double.html}{Double}}
 \item{BigDecimal : \href{https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html}{BigDecimal} }
+\item{Q : Picks the smallest container between float, double, BigDecimal }
 \end{enumerate}
 
 \begin{subsection}{Float}\index{float()}
@@ -199,6 +223,7 @@ val = double(value, optional_default_value = null )
 
 Usage is :
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 val = double("hello") // val is null
 val = double("hello",0) // val is 0.0
@@ -207,6 +232,8 @@ val = double(42) // val is 42.0
 val = double( 10.1 ) // val is 10.1 
 val = double( 10.9 ) // val is 10.9 
 \end{lstlisting}
+\end{minipage}\end{center}
+
 
 \end{subsection}
 
@@ -221,14 +248,62 @@ Usage is :
 \begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 val = DEC("hello") // val is null
-val = DEC('hi',10,42 )// val is 42.0
+val = DEC('hi', 42 )// val is 42.0
 val = DEC('42') // val is 42.0 
 val = DEC(42.00001 ) // val is 42.00001
 \end{lstlisting}
 \end{minipage}\end{center}
 \end{subsection}
 
+\begin{subsection}{Q}\index{Q()}
+This is required, when you want to cast
+an object into a floating point rational number, 
+and the syntax is :
+
+\begin{lstlisting}[style=JexlStyle]
+val = Q(value,default_value = null )
+\end{lstlisting}
+
+Usage is :
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+val = Q("hello") // val is null
+val = Q('hi', 42 )// val is 42.0
+val = Q('42') // val is 42.0 
+val = Q(42.00001 ) // val is 42.00001 float 
+val = Q(42.000014201014 ) // val is double 
+val = Q(42.00001420101410801980981092101 ) // val is BigDecimal 
+\end{lstlisting}
+\end{minipage}\end{center}
+\end{subsection}
 \end{section}
+
+\begin{section}{Generic Numeric Conversion : NUM()}
+\index{NUM()}\index{generic numeric conversion}
+For generic numeric conversions, there is \emph{NUM()} function,
+whose job is to convert data types into proper numeric type, 
+with least storage. Thus :
+
+\begin{lstlisting}[style=JexlStyle]
+val = NUM(value,default_value)
+\end{lstlisting}
+
+Usage is :
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+val = NUM("hello") // val is null
+val = NUM('hi', 42 )// val is 42 int
+val = NUM('42.00') // val is 42 int 
+val = NUM(42.00001 ) // val is 42.00001 float 
+val = NUM(42.000014201014 ) // val is double 
+// val is BigDecimal
+val = NUM(42.00001420101410801980981092101 )  
+\end{lstlisting}
+\end{minipage}\end{center}
+
+
+\end{section}
+
 
 \begin{section}{The Chrono Family}
 \index{date}\index{time}\index{instant}\index{format : date and time}
