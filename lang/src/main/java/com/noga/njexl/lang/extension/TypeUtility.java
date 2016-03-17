@@ -27,10 +27,7 @@ import com.noga.njexl.lang.extension.datastructures.XList;
 import com.noga.njexl.lang.extension.iterators.*;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
 import com.noga.njexl.lang.internal.Introspector;
-import com.noga.njexl.lang.parser.ASTReturnStatement;
-import com.noga.njexl.lang.parser.ASTStringLiteral;
-import com.noga.njexl.lang.parser.JexlNode;
-import com.noga.njexl.lang.parser.Parser;
+import com.noga.njexl.lang.parser.*;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
@@ -102,6 +99,9 @@ public final class TypeUtility {
     public static final String BIGINT = "INT";
     public static final String BIGDECIMAL1 = "DEC";
     public static final String BIGDECIMAL2 = "NUM";
+    public static final String COUNTABLE = "Z";
+    public static final String RATIONAL = "Q";
+
 
     public static final String LOAD_PATH = "load";
 
@@ -201,6 +201,24 @@ public final class TypeUtility {
         if (args.length == 0) return new DBManager();
         String loc = String.valueOf(args[0]);
         return new DBManager(loc);
+    }
+
+    public static Number Z(Object...args){
+        Object n = castBigInteger(args);
+        if ( n == null ) return null;
+        String s = String.valueOf(n);
+        ASTNumberLiteral numberLiteral = new ASTNumberLiteral(Parser.JJTNUMBERLITERAL);
+        numberLiteral.setNatural(s);
+        return numberLiteral.getLiteral();
+    }
+
+    public static Number Q(Object...args){
+        Object d = castBigDecimal(args);
+        if ( d == null ) return null;
+        String s = String.valueOf(d);
+        ASTNumberLiteral numberLiteral = new ASTNumberLiteral(Parser.JJTNUMBERLITERAL);
+        numberLiteral.setReal(s);
+        return numberLiteral.getLiteral();
     }
 
     public static Object atomic(Object... args) throws Exception {
@@ -1039,6 +1057,12 @@ public final class TypeUtility {
         try {
             return new BigInteger(val, base);
         } catch (Throwable t) {
+            try {
+                BigDecimal d = new BigDecimal(val);
+                return d.toBigInteger();
+            }catch (Throwable t2){
+                // nothing...
+            }
             return fallBack;
         }
     }
@@ -2375,6 +2399,11 @@ public final class TypeUtility {
                 return inspect(argv);
             case ATOMIC:
                 return atomic(argv);
+            case COUNTABLE:
+                return Z(argv);
+            case RATIONAL:
+                return Q(argv);
+
             default:
                 if (success != null) {
                     success[0] = false;

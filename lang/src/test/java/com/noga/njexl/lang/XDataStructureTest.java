@@ -31,6 +31,8 @@ import org.junit.Test;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.PrintStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -754,6 +756,35 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertFalse((Boolean) o);
 
+
+    }
+
+    @Test
+    public void testOmniscientTypeCast() throws Exception{
+        Script s = JEXL.createScript("n = Z(2.0)" );
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertEquals(2,o);
+
+        s = JEXL.createScript("n = Z('222222222212222')" );
+        o = s.execute(jc);
+        assertEquals(222222222212222l,o);
+
+        s = JEXL.createScript("n = Z('2222222222122221211131311313131311')" );
+        o = s.execute(jc);
+        assertTrue(o instanceof BigInteger);
+
+        s = JEXL.createScript("q = Q('2')" );
+        o = s.execute(jc);
+        assertEquals(2.0f,o);
+
+        s = JEXL.createScript("q = Q('2.12111121211212')" );
+        o = s.execute(jc);
+        assertTrue(o instanceof Double);
+
+        s = JEXL.createScript("q = Q('2.121111212112121010010101019101101101918911')" );
+        o = s.execute(jc);
+        assertTrue(o instanceof BigDecimal);
 
     }
 
