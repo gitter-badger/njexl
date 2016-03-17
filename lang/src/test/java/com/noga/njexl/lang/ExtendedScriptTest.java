@@ -710,6 +710,13 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testPerformanceImprovementOfRangeIterator() throws Exception{
+        Object o = runScript(JEXL, "samples/perf_range");
+        System.out.printf("The 90%% for perf_range is : %d\n", o);
+        assertTrue( (long)o < 180000000l );
+    }
+
+    @Test
     public void testSoapCall() throws Exception{
         Object o = runScript(JEXL, "samples/soap.jxl");
         assertTrue((Boolean) o);

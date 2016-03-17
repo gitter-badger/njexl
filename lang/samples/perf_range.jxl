@@ -1,0 +1,10 @@
+l = list{
+    #(t,o) = #clock{
+        for ( i : [0:1000000] ){
+           x = i
+        }
+    }
+    t // store the stuff
+    }( [0:100] )
+l = sortd(l)
+ninety_p = l[9]

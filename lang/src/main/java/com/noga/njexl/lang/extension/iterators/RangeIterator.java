@@ -104,10 +104,9 @@ public  class RangeIterator extends YieldedIterator {
 
     @Override
     public synchronized Object next() {
-        long lv = (cur += s);
-        int iv = (int)lv;
-        if ( ((long)iv) == lv ) return iv;
-        return lv ;
+        cur += s;
+        if ( (int)cur == cur ) return (int)cur;
+        return cur ;
     }
 
 
