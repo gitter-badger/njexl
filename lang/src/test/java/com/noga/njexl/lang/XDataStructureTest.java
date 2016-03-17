@@ -770,9 +770,21 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertEquals(222222222212222l,o);
 
+        s = JEXL.createScript("n = NUM('222222222212222')" );
+        o = s.execute(jc);
+        assertEquals(222222222212222l,o);
+
         s = JEXL.createScript("n = Z('2222222222122221211131311313131311')" );
         o = s.execute(jc);
         assertTrue(o instanceof BigInteger);
+
+        s = JEXL.createScript("n = NUM('2222222222122221211131311313131311')" );
+        o = s.execute(jc);
+        assertTrue(o instanceof BigInteger);
+
+        s = JEXL.createScript("n = NUM('2')" );
+        o = s.execute(jc);
+        assertEquals(2,o);
 
         s = JEXL.createScript("q = Q('2')" );
         o = s.execute(jc);
@@ -782,9 +794,19 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertTrue(o instanceof Double);
 
+        s = JEXL.createScript("q = NUM('2.12111121211212')" );
+        o = s.execute(jc);
+        assertTrue(o instanceof Double);
+
+
         s = JEXL.createScript("q = Q('2.121111212112121010010101019101101101918911')" );
         o = s.execute(jc);
         assertTrue(o instanceof BigDecimal);
+
+        s = JEXL.createScript("q = NUM('2.121111212112121010010101019101101101918911')" );
+        o = s.execute(jc);
+        assertTrue(o instanceof BigDecimal);
+
 
     }
 

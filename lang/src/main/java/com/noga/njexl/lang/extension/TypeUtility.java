@@ -97,8 +97,8 @@ public final class TypeUtility {
     public static final String STRING = "str";
     public static final String BOOL = "bool";
     public static final String BIGINT = "INT";
-    public static final String BIGDECIMAL1 = "DEC";
-    public static final String BIGDECIMAL2 = "NUM";
+    public static final String BIGDECIMAL = "DEC";
+    public static final String NUMBER = "NUM";
     public static final String COUNTABLE = "Z";
     public static final String RATIONAL = "Q";
 
@@ -219,6 +219,23 @@ public final class TypeUtility {
         ASTNumberLiteral numberLiteral = new ASTNumberLiteral(Parser.JJTNUMBERLITERAL);
         numberLiteral.setReal(s);
         return numberLiteral.getLiteral();
+    }
+
+    public static Number NUM(Object...args){
+        Number z = Z(args);
+        Number q = Q(args);
+        if ( q instanceof BigDecimal ){
+            try{
+                ((BigDecimal) q).toBigIntegerExact();
+                return z;
+            }catch (ArithmeticException ae){
+                return q;
+            }
+        }
+        if ( q.doubleValue() == z.doubleValue() ){
+            return z;
+        }
+        return q;
     }
 
     public static Object atomic(Object... args) throws Exception {
@@ -1045,6 +1062,7 @@ public final class TypeUtility {
         if (args.length == 0) {
             return BigInteger.ZERO;
         }
+        if ( args[0] instanceof BigInteger ){ return (BigInteger)args[0]; }
         int base = 10;
         BigInteger fallBack = null;
         if (args.length > 1) {
@@ -1071,6 +1089,9 @@ public final class TypeUtility {
         if (args.length == 0) {
             return BigDecimal.ZERO;
         }
+        if ( args[0] instanceof BigDecimal ){ return (BigDecimal) args[0]; }
+        if ( args[0] instanceof BigInteger ){ return new BigDecimal( (BigInteger) args[0] ); }
+
         BigDecimal fallBack = null;
         if (args.length > 1) {
             fallBack = castBigDecimal(args[1]);
@@ -2288,8 +2309,7 @@ public final class TypeUtility {
                 return castFloat(argv);
             case DOUBLE:
                 return castDouble(argv);
-            case BIGDECIMAL1:
-            case BIGDECIMAL2:
+            case BIGDECIMAL:
                 return castBigDecimal(argv);
             case BIGINT:
                 return castBigInteger(argv);
@@ -2403,7 +2423,8 @@ public final class TypeUtility {
                 return Z(argv);
             case RATIONAL:
                 return Q(argv);
-
+            case NUMBER:
+                return NUM(argv);
             default:
                 if (success != null) {
                     success[0] = false;
