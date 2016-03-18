@@ -830,6 +830,14 @@ public class XDataStructureTest extends JexlTestCase {
     }
 
     @Test
+    public void testMap2JSON() throws Exception{
+        Script s = JEXL.createScript("x = json('samples/demo.json') ; s = str(x) ; write(s) ; json(s) " );
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue(o instanceof Map);
+    }
+
+    @Test
     public void testMatrixSelectOrder() throws Exception{
         Script s = JEXL.createScript("m = matrix('samples/test.tsv') ; l = m.select(2,0) ; " );
         JexlContext jc = new MapContext();

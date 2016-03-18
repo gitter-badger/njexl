@@ -1063,6 +1063,7 @@ public final class TypeUtility {
             return BigInteger.ZERO;
         }
         if ( args[0] instanceof BigInteger ){ return (BigInteger)args[0]; }
+        if ( JexlArithmetic.isTimeLike(args[0]) ){ return BigInteger.valueOf( castLong( args[0])); }
         int base = 10;
         BigInteger fallBack = null;
         if (args.length > 1) {
@@ -1189,6 +1190,17 @@ public final class TypeUtility {
     }
 
     public static Long castLong(Object... args) {
+        if ( args.length > 0 && JexlArithmetic.isTimeLike(args[0])){
+            if ( args[0] instanceof Date ){
+                return ((Date)args[0]).getTime();
+            }
+            if ( args[0] instanceof DateTime ){
+                return ((DateTime)args[0]).toDate().getTime();
+            }
+            if ( args[0] instanceof Instant ){
+                return ((Instant)args[0]).toEpochMilli();
+            }
+        }
         Double doubleValue = castDouble(args);
         if (doubleValue != null) {
             return Long.valueOf(doubleValue.longValue());
@@ -1417,7 +1429,8 @@ public final class TypeUtility {
             long l = ((Number) args[0]).longValue();
             return BigInteger.valueOf(l).toString(base);
         }
-        return args[0].toString();
+
+        return XmlMap.toJSON(args[0]);
     }
 
     public static XList makeLiteralList(Object... argv) {

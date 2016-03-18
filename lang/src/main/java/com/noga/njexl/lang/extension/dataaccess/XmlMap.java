@@ -17,6 +17,7 @@
 package com.noga.njexl.lang.extension.dataaccess;
 
 import com.noga.njexl.lang.JexlArithmetic;
+import com.noga.njexl.lang.ObjectContext;
 import com.noga.njexl.lang.extension.TypeUtility;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -38,6 +39,69 @@ import java.util.*;
  * Created by noga on 02/04/15.
  */
 public class XmlMap {
+
+    public static String toJSON(Object obj){
+        if ( obj == null ) return "" ;
+        if ( obj instanceof Map ){
+            StringBuffer sBuf = new StringBuffer( "{" );
+            Set set = ((Map) obj).entrySet() ;
+            if ( !set.isEmpty() ){
+                Iterator iterator = set.iterator() ;
+                Object entry = iterator.next() ;
+                String key = "\"" +  String.valueOf ( ((Map.Entry)entry).getKey() ) + "\"" ;
+                String value = toJSON( ((Map.Entry)entry).getValue() );
+                sBuf.append(key).append(" : ").append(value);
+                while ( iterator.hasNext() ){
+                    entry = iterator.next() ;
+                    key = "\"" +  String.valueOf ( ((Map.Entry)entry).getKey() ) + "\"" ;
+                    value = toJSON( ((Map.Entry)entry).getValue() );
+                    sBuf.append(",").append(key).append(" : ").append(value);
+                }
+            }
+            sBuf.append("}");
+            return sBuf.toString();
+        }
+        if ( obj instanceof List ){
+            StringBuffer sBuf = new StringBuffer( "[" );
+            List l = ((List) obj) ;
+            if ( !l.isEmpty() ){
+                Iterator iterator = l.iterator() ;
+                Object entry = iterator.next() ;
+                String value = toJSON( entry );
+                sBuf.append(value);
+                while ( iterator.hasNext() ){
+                    entry = iterator.next() ;
+                    value = toJSON( entry) ;
+                    sBuf.append(",").append(value);
+                }
+            }
+            sBuf.append("]");
+            return sBuf.toString();
+        }
+        if ( obj.getClass().isArray() ){
+            StringBuffer sBuf = new StringBuffer( "[" );
+            int size  = Array.getLength( obj ) ;
+            int i = 0 ;
+            if ( size != 0  ){
+                Object entry = Array.get(obj,i++) ;
+                String value = toJSON( entry );
+                sBuf.append(value);
+                while ( i < size ){
+                    entry = Array.get(obj,i++) ;
+                    value = toJSON( entry) ;
+                    sBuf.append(",").append(value);
+                }
+            }
+            sBuf.append("]");
+            return sBuf.toString();
+        }
+        if ( obj instanceof CharSequence ){
+            // TODO : must escape double quotes ...
+            return "\"" + String.valueOf(obj) + "\"" ;
+        }
+        return String.valueOf(obj);
+    }
+
 
     public static String getFirstLevelTextContent(Node node) {
         NodeList list = node.getChildNodes();
