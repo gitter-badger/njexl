@@ -1898,7 +1898,7 @@ public final class TypeUtility {
     }
 
     public static Heap makeHeap(Object... args) throws Exception {
-        if (args.length == 0) return null;
+        if (args.length == 0)  throw new Exception("Unspecified heap size!");
         if (args.length == 1) return new Heap(castInteger(args[0]));
         if (args[0] instanceof AnonymousParam) {
             AnonymousComparator comparator = new AnonymousComparator((AnonymousParam) args[0], null, false);
