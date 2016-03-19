@@ -838,6 +838,18 @@ public class XDataStructureTest extends JexlTestCase {
     }
 
     @Test
+    public void testInterestingPowers() throws Exception{
+        Script s = JEXL.createScript("x = '0' ** 3 " );
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertEquals("000", o );
+        s = JEXL.createScript("x = '1' ** 3 " );
+        o = s.execute(jc);
+        assertEquals("111", o );
+
+    }
+
+    @Test
     public void testMatrixSelectOrder() throws Exception{
         Script s = JEXL.createScript("m = matrix('samples/test.tsv') ; l = m.select(2,0) ; " );
         JexlContext jc = new MapContext();

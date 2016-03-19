@@ -943,6 +943,7 @@ public class JexlArithmetic {
                 }
                 return o;
             }
+            if  ( left instanceof String ) throw new Exception("");
         }catch (Exception e) {
             if (left instanceof String) {
                 if (right instanceof Integer) {
