@@ -170,6 +170,8 @@ public final class TypeUtility {
     public static final String READ = "read";
     public static final String READ_LINES = "lines";
     public static final String WRITE = "write";
+    public static final String PRINT = "print";
+
     public static final String SEND = "send";
 
     public static final String FOPEN = "fopen";
@@ -2376,6 +2378,7 @@ public final class TypeUtility {
             case READ_LINES:
                 return readLines(argv);
             case WRITE:
+            case PRINT:
                 return writeFile(argv);
             case SEND:
                 return send(argv);
