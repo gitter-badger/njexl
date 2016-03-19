@@ -1788,8 +1788,9 @@ public class Interpreter implements ParserVisitor {
 
             @Override
             public void set(String name, Object value) {
-                if ( outer.has(name ) ) {
+                if ( outer.has(name ) && ! map.containsKey(name) ) {
                     outer.set(name, value);
+                    return ;
                 }
                 map.put(name, value);
             }
