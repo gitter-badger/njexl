@@ -453,7 +453,9 @@ public class JexlArithmetic {
         }
 
         try {
-
+            if ( left instanceof String ){
+                return toString(left).concat(toString(right));
+            }
             // if either are bigdecimal use that type -- these are priority
             if (left instanceof BigDecimal || right instanceof BigDecimal) {
                 BigDecimal l = toBigDecimal(left);
@@ -468,9 +470,7 @@ public class JexlArithmetic {
                 double r = toDouble(right);
                 return new Double(l + r);
             }
-            if ( left instanceof String ){
-                return toString(left).concat(toString(right));
-            }
+
             if ( left instanceof Character ){
                  if ( !( right instanceof Number) ){
                      return toString(left).concat(toString(right));
@@ -612,7 +612,10 @@ public class JexlArithmetic {
                 left = narrowBigDecimal(left, right, result);
                 return left ;
             }
-
+            if ( left instanceof String ){
+                left = toString(left).concat(toString(right));
+                return left;
+            }
             // if either are floating point (double or float) use double
             if (isFloatingPointNumber(left) || isFloatingPointNumber(right)) {
                 double l = toDouble(left);
@@ -620,10 +623,7 @@ public class JexlArithmetic {
                 l+= r ;
                 return l;
             }
-            if ( left instanceof String ){
-                left = toString(left).concat(toString(right));
-                return left;
-            }
+
             if ( left instanceof Character ){
                 if ( !( right instanceof Number) ){
                     left = toString(left).concat(toString(right));

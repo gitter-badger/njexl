@@ -838,7 +838,7 @@ public class XDataStructureTest extends JexlTestCase {
     }
 
     @Test
-    public void testInterestingPowers() throws Exception{
+    public void testInterestingArithmetic() throws Exception{
         Script s = JEXL.createScript("x = '0' ** 3 " );
         JexlContext jc = new MapContext();
         Object o = s.execute(jc);
@@ -846,6 +846,10 @@ public class XDataStructureTest extends JexlTestCase {
         s = JEXL.createScript("x = '1' ** 3 " );
         o = s.execute(jc);
         assertEquals("111", o );
+
+        s = JEXL.createScript("x = '0.' + '3' " );
+        o = s.execute(jc);
+        assertEquals("0.3", o );
 
     }
 
