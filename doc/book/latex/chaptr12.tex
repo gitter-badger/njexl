@@ -999,8 +999,39 @@ def sumBinary(a,b){
 \end{lstlisting}  
 \end{minipage}\end{center}
 
+But we decided to un-cheat, and give a slightly less cheat :
 
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def to_int(a){
+   lfold{  
+      _$_ = 2 * _$_ + int($)  
+      }(a.toCharArray(), 0 )
+} 
+def to_bin_str(a){
+   r = a % 2
+   n = a / 2 
+   d = ( ( r == 1 )?'1' : '0' )
+   bin_rep = d 
+   while ( n > 0 ) {
+      r = n % 2 
+      n = n / 2 
+      d = ( ( r == 1 )?'1' : '0' )
+      bin_rep = d + bin_rep 
+   }
+   bin_rep 
+} 
+def sum_binary(a,b){
+   x = to_int(a)
+   y = to_int(b)
+   to_bin_str( x + y)
+}
+s = sum_binary(__args__[1] , __args__[2] )
+print(s)
+\end{lstlisting}  
+\end{minipage}\end{center}
 
+Which works out. 
 
 \end{subsection}
 
