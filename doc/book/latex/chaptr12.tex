@@ -697,8 +697,76 @@ s = 'Moron asked me this' // stands for what it is, precisely
 print ( s** 1000 ) // prints s a 1000 times 
 \end{lstlisting}  
 \end{minipage}\end{center} 
+\end{subsection}
+
+\begin{subsection}{Next Higher Permutation}
+\index{examples : next higher permutation}
+The epitome of IM, however belongs to this question. 
+Never, on any software firm, this was ever required, but of course,
+people would ask this to showcase how cool are they. 
+How do we generate next permutation? 
+By swapping two indices, and we have $^nC_2$ options. 
+So, one solution would be simply to iterate over and find the minimum
+of all next permutations which is higher than the current one:
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+num = int(__args__[1])
+num_arr = __args__[1].toCharArray() 
+r = [0: #|__args__[1]|]
+// pick the highest one 
+nhp = int ( str( sortd(num_arr) ,'') )
+nhp != num or bye('Dude, got to be kidding me!') 
+join{
+      i = $.0 ; j = $.1 
+      continue( i >= j )
+      num_arr = __args__[1].toCharArray() 
+      t = num_arr[i]
+      num_arr[i] = num_arr[j] 
+      num_arr[j] = t 
+      nn = int ( str(num_arr,''))
+      continue( nn < num )
+      if ( nn < nhp ){ nhp = nn }
+      false 
+   }(r,r)
+print(nhp)
+\end{lstlisting}  
+\end{minipage}\end{center} 
+Now, this works, so, question is, can we make it any faster?
+Turns out, we can. Given next higher permutation is possible, there
+has to be one discrepancy where $D_i < D_j $ with $ i < j $. 
+The objective would be to find minimum of such a span $|i-j|$ is minimum, with maximum value of $i$.
+So, we can start from the right, with $i=n-2$ and $j=n-1$, and then searching left 
+for a match.
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def next_higher_perm( num ){
+   digits = str(num).toCharArray() 
+   len = #|digits|
+   j = len - 1 
+   while ( j > 0 ){
+      i = j - 1 
+      while ( i >= 0 ){
+      if ( digits[i] < digits[j] ){
+         // swap and we are done 
+         t = digits[i]
+         digits[i] = digits[j]
+         digits[j] = t 
+         return str(digits,'') 
+      }
+      i -= 1 
+      }
+     j -= 1 
+   }
+   return num
+}
+print ( next_higher_perm( __args__[1] ) )
+\end{lstlisting}  
+\end{minipage}\end{center} 
 
 \end{subsection}
+
 
 \end{section}
 
@@ -1003,6 +1071,7 @@ But we decided to un-cheat, and give a slightly less cheat :
 
 \begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
+bits = { 0 : '0' , 1 : '1' } 
 def to_int(a){
    lfold{  
       _$_ = 2 * _$_ + int($)  
@@ -1011,13 +1080,11 @@ def to_int(a){
 def to_bin_str(a){
    r = a % 2
    n = a / 2 
-   d = ( ( r == 1 )?'1' : '0' )
-   bin_rep = d 
+   bin_rep = bits[r]
    while ( n > 0 ) {
       r = n % 2 
       n = n / 2 
-      d = ( ( r == 1 )?'1' : '0' )
-      bin_rep = d + bin_rep 
+      bin_rep = bits[r] + bin_rep 
    }
    bin_rep 
 } 
@@ -1032,9 +1099,70 @@ print(s)
 \end{minipage}\end{center}
 
 Which works out. 
-
 \end{subsection}
 
+\begin{subsection}{Generating System Response Curve}
+\index{examples : generating system response curve from logs}
+Most of the performance testing done are totally wrong, because 
+most of these rely on a single metric : average, and if someone is lucky, 
+then standard deviation. But that is wrong way to look at it.
+The right way is using system response curve, which is a 
+\href{https://en.wikipedia.org/wiki/Probability\_distribution\_function}{pdf}.
+Thus, the algorithm to generate such a curve from log files is this :
+
+\begin{enumerate}
+\item{Start with a bucket size of of a time slice $\Delta T$. }
+\item{A response time $t_r$ belongs to bucket $B_k$ iff $  k \Delta T \le  t_r < (k+1) \Delta T  $. }
+\item{Count all the response times within each bucket $B_k$, and divide it by total no of response, store it to each bucket }
+\item{Print all the buckets $B_k$ with the fraction frequency of each bucket. }
+\end{enumerate}
+
+This, when plotted, with a sufficient thin $\Delta T$ produces the nice distribution diagram
+of the systems response.
+The code for this is minimal in nJexl :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+data = lines('log_file.txt',true)
+data = list{ float($) }(data)
+#(m,M) = minmax(data)
+print('Min : %f , Max : %f\n', m, M )
+bucket_size = 0.001f
+stat = mset{ int ( ($ - m )/ bucket_size ) }(data)
+keys = list ( stat.keySet() )
+keys = sorta( keys )
+T = float(size(data)) 
+print('Bucket\tTiming')
+lfold{
+    print('%f\t%f\n' , m + ($ + 1) * bucket_size , 
+    size(stat[$]) * 100.0 / T )
+}(keys)
+\end{lstlisting}  
+\end{minipage}\end{center}
+\end{subsection}
+
+\begin{subsection}{Shuffling in a Media Player}
+\index{ examples : shuffling in media player }
+
+If I am designing a media player and I want to store songs and play them in random order, 
+how will select the next song to play in a way which prevents the same song being played in consecutive turn?
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+// you get the idea 
+songs = { 1 : 'Track1' , 2 : 'Track2' , 3 : 'Track3'  }
+// shuffles and plays songs 
+def play_songs_after_shuffle( songs ){
+   keys = list( songs.keySet())
+   // while at least one swap did not happen 
+   while  ( ! shuffle(keys) );
+   lfold{ print( songs[$] ) }(keys)
+}
+play_songs_after_shuffle( songs )
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+\end{subsection}
 
 \end{section}
 
