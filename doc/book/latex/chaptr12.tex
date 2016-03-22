@@ -991,6 +991,42 @@ print(result)
 \end{subsection}
 
 \begin{subsection}{Recognising String from Languages}
+\index{examples : parsing grammar }
+Suppose there is a nice \href{https://en.wikipedia.org/wiki/Formal\_grammar}{formal grammar} 
+from which we need to match strings. Such a formal grammar 
+(a \href{https://en.wikipedia.org/wiki/Context-free\_grammar}{context free} one ), see  
+\href{http://cs.stackexchange.com/questions/14994/why-does-anbn-fit-the-pumping-lemma-for-context-free-languages}{here}
+for more disucssion, (you should, because this was one of Google's question)
+can be easily made by using bitstream 
+\href{https://en.wikipedia.org/wiki/Formal\_language\#Words\_over\_an\_alphabet}{alphabet} :
+$$
+\Sigma = \{ 0 , 1 \}
+$$
+the definition of the language is :
+$$
+L = \{ w \; | \; w = 0^n 1^n \; ; \; n \in \mathbb{N}  \}
+$$
+Now, we need to write a function $f$ such that, it accepts a string from that language $L$,
+and rejects any other string.
+How do we envision such a thing? We know there must be abstraction 
+of a stack to solve it, because it is context free. The abstraction is easy :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+// stack based implementation 
+def in_lang(s){
+   c_1 = char('1') ; c_0 = char('0')
+   len = #|s| ; i = 0 
+   while ( i < len and s[i] == c_1  ){ i +=1 }
+   if ( i == len ){  return (len == 0 or false) }
+   count = i   
+   while ( i < len and s[i] == c_0  ){ i += 1 }
+   if ( i != len ) { return false }
+   return ( count* 2 == len )  
+}
+print( in_lang( __args__[1] ) )
+\end{lstlisting}  
+\end{minipage}\end{center}
 
 \end{subsection}
 
@@ -1198,6 +1234,41 @@ def play_songs_after_shuffle( songs ){
 play_songs_after_shuffle( songs )
 \end{lstlisting}  
 \end{minipage}\end{center}
+\end{subsection}
+
+\begin{subsection}{Ordering Thread Execution}
+\index{examples : ordering threads}
+Print series $010203040506...$ using multi-threading. 
+1st thread will print only 0 2nd thread will print only even numbers and 3rd thread print only odd numbers. 
+Here is how we do it:
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+// use global to lock over #atomic
+var state = 0 
+// do state management 
+def function(exec_str, cur_state , next_state ){
+   n = 1 
+   while(true){
+      // wait for the state to be mine
+      while( state != cur_state );
+      #atomic{
+         // crown jewel of nJexl is currying
+         print( `#{exec_str}` ) ; state = next_state ; n+= 1 
+      }
+   } 
+}
+// spawn these babies 
+t0 = thread{ function('0' , 0 , 1) }()
+t1 = thread{ function('2*n - 1' , 1 , 2) }()
+t2 = thread{ function('2*n' , 2 , 0) }()
+tc = thread()
+// a bit of wait to display results 
+tc.sleep(300)
+// do not care...
+\end{lstlisting}  
+\end{minipage}\end{center}
+
 
 \end{subsection}
 
