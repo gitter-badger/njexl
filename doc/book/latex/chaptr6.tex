@@ -575,7 +575,7 @@ s = str( collection [ ,  seperation_string ] )
 
 \end{subsection}
 
-\begin{subsection}{Generalised $toString()$ }
+\begin{subsection}{Generalised \emph{toString()} }
 \index{ str : replacing toString() }
 
 This brings to the point that we can linearise a collection of collections using $str()$.
@@ -600,6 +600,23 @@ s_form = str{  [ $.a , $.b ]  }(d,'@' )
 // lineraize, generates : 10@20
 \end{lstlisting}
 \end{subsection}
+
+\begin{subsection}{JSON}
+\index{ str() : json }\index{json : str() }
+Given we have a complex object comprise of primitive types and collection types, 
+the \emph{str()} function returns a JSON representation of the complex object.
+This way, it is very easy to inter-operate with JavaScript type of languages.
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+d = { 'a' : 10 , 'b' : 20  } 
+s = str(d)
+/*  { "a" : 10 , "b" : 20 }  */
+\end{lstlisting}
+\end{minipage}\end{center}
+
+\end{subsection}
+
 \end{section}
 
 \begin{section}{Playing with Types : Reflection}
@@ -632,7 +649,7 @@ c1 == c2 // false
 
 \end{subsection}
 
-\begin{subsection}{The $===$ Operator}
+\begin{subsection}{The \emph{===} Operator}
 \index{operator : === }
 From the earlier section, suppose someone wants to 
 equal something with another thing, under the condition
@@ -664,7 +681,7 @@ c === a // true
 \end{lstlisting}
 \end{subsection}
 
-\begin{subsection}{The $isa$ operator}
+\begin{subsection}{The \emph{isa} operator}
 \index{operator : isa }
 Arguably, finding a type and matching a type is a tough job.
 Given that we need to care about who got derived from whatsoever.

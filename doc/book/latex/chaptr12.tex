@@ -1097,8 +1097,45 @@ s = sum_binary(__args__[1] , __args__[2] )
 print(s)
 \end{lstlisting}  
 \end{minipage}\end{center}
+Which works out. However, purists would still argue that we cheated, 
+and did not actually sum it up bit by bit. So, to appease them, as Amazon ordered :
 
-Which works out. 
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+//                 ABC  :  RC
+bin_add_logic = { '000' : '00' ,
+                  '010' : '10' ,
+                  '100' : '10' ,
+                  '110' : '01' ,
+                  '001' : '10' ,
+                  '011' : '01' ,
+                  '101' : '01' ,
+                  '111' : '11' }
+// when carry is 0 append empty...else...1
+carry_string = { '0' :'' , '1' : '1' } 
+def bin_add(a,b){
+   size_a = #|a|
+   size_b = #|b|
+   #(m,M) = minmax(size_a,size_b)
+   // pad both of them up to max : M with 0
+   a = '0' ** (M - size_a) + a
+   b = '0' ** (M - size_b) + b
+   carry = '0'
+   sum = lfold{
+      key = a[$] + b[$] + carry
+      add_result = bin_add_logic[key]
+      carry = str(add_result[1])
+      _$_ = add_result[0] + _$_ 
+   }([M-1:-1] , '' )
+   sum = carry_string[carry] + sum 
+}
+a = __args__[1]
+b = __args__[2]
+print ( bin_add(a,b) )
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+
 \end{subsection}
 
 \begin{subsection}{Generating System Response Curve}
