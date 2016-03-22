@@ -1400,7 +1400,10 @@ public class JexlArithmetic {
                 } else {
                     return 0;
                 }
-            } else if (isNumberable(left) || isNumberable(right)) {
+            }else if ( left instanceof Character ){
+               return ((Character) left).compareTo( TypeUtility.castChar(right)) ;
+            }
+            else if (isNumberable(left) || isNumberable(right)) {
                 try {
                     long lhs = toLong(left);
                     long rhs = toLong(right);

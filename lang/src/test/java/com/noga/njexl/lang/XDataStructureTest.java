@@ -851,6 +851,10 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertEquals("0.3", o );
 
+        s = JEXL.createScript("x = '1234' ; x[0] == '1'" );
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
     }
 
     @Test
