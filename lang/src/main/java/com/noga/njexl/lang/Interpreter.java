@@ -235,6 +235,8 @@ public class Interpreter implements ParserVisitor {
         this.context = base.context;
         this.functors = base.functors;
         this.imports = base.imports;
+        // otherwise global variables won't be shared!
+        this.registers = base.registers;
     }
 
     /**
