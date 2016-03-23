@@ -838,6 +838,14 @@ public class XDataStructureTest extends JexlTestCase {
     }
 
     @Test
+    public void testEventAdd() throws Exception{
+        Script s = JEXL.createScript("f = def(){} ; def g(){} ;  f.after += g ; " );
+        JexlContext jc = new MapContext();
+        Object o = s.execute(jc);
+        assertTrue(o instanceof List);
+    }
+
+    @Test
     public void testInterestingArithmetic() throws Exception{
         Script s = JEXL.createScript("x = '0' ** 3 " );
         JexlContext jc = new MapContext();

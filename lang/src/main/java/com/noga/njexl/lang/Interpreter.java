@@ -2858,6 +2858,29 @@ public class Interpreter implements ParserVisitor {
                 }
                 xjexl = new JexlException(node, "set object property error", xany);
             }
+        }else{
+            Field field = ((UberspectImpl) uberspect).getField(object, attribute.toString(), null);
+            if (field != null) {
+                JexlPropertySet fs = new UberspectImpl.FieldPropertySet(field);
+                try {
+                    value = fs.invoke(object, value);
+                    if (node != null && cache && fs.isCacheable()) {
+                        node.jjtSetValue(fs);
+                    }
+                    return;
+                }catch (RuntimeException xrt) {
+                    if (node == null) {
+                        throw xrt;
+                    }
+                    xjexl = new JexlException(node, "set object property error", xrt);
+                }
+                catch (Exception xany){
+                    if (node == null) {
+                        throw new RuntimeException(xany);
+                    }
+                    xjexl = new JexlException(node, "set object property error", xany);
+                }
+            }
         }
         if (xjexl == null) {
             if (node == null) {
