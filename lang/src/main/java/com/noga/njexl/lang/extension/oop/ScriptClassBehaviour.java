@@ -136,6 +136,16 @@ public final class ScriptClassBehaviour {
             public final Object[] args;
 
             /**
+             * The return value
+             */
+            public final Object result;
+
+            /**
+             * The error if any
+             */
+            public final Throwable error;
+
+            /**
              * cached copy of the description
              */
             public final String description;
@@ -150,7 +160,26 @@ public final class ScriptClassBehaviour {
                 pattern = p;
                 method = m;
                 args = a;
+                result = null;
+                error = null;
                 description = String.format( "%s | %s | %s" , p,m, Main.strArr(a));
+            }
+
+            /**
+             * Creates an event object
+             * @param p what pattern was used
+             * @param m what method was called
+             * @param a what argument was passed
+             * @param r the return value
+             * @param e the error if any
+             */
+            public Event(String p, Object m, Object[] a, Object r, Throwable e){
+                pattern = p;
+                method = m;
+                args = a;
+                result = r;
+                error = e;
+                description = String.format( "%s | %s | %s | %s | %s" , p,m, Main.strArr(a), result, error );
             }
 
             @Override

@@ -157,8 +157,9 @@ public class ScriptMethod implements Serializable {
 
     public final transient List after;
 
-    private void dispatch(String p, Interpreter interpreter, Object[] args, List listeners){
-        Event event = new Event( p, this, args );
+    private void dispatch(String p, Interpreter interpreter,
+                          Object[] args, Object result, Throwable error, List listeners){
+        Event event = new Event( p, this, args, result, error );
         Object[] argv = new Object[]{ event } ;
         for ( Object l : listeners ){
 
@@ -244,7 +245,7 @@ public class ScriptMethod implements Serializable {
     }
 
     public Object invoke(Object me, Interpreter interpreter, Object[] args) throws Exception {
-        dispatch(Eventing.BEFORE, interpreter,args,before);
+        dispatch(Eventing.BEFORE, interpreter,args,null,null,before);
         JexlContext oldContext = interpreter.getContext();
         JexlContext toBeCopiedContext = oldContext ;
         if ( nested ){
@@ -264,18 +265,21 @@ public class ScriptMethod implements Serializable {
             throw new Exception("Instance Method called with null instance!");
         }
         addToContext(context, map);
+        Object ret = null;
+        Throwable error = null;
         try {
             interpreter.setContext(context);
-            Object ret = astBlock.jjtAccept(interpreter,null);
+            ret = astBlock.jjtAccept(interpreter,null);
             return ret;
         }catch (Exception e){
             if ( e instanceof JexlException.Return){
                 return ((JexlException.Return) e).getValue();
             }
+            error = e;
             e.printStackTrace(); // ensure that we have an issue which is to be noted down...
         }
         finally {
-            dispatch(Eventing.AFTER, interpreter,args,after);
+            dispatch(Eventing.AFTER, interpreter,args,ret, error , after);
             //finally remove
             interpreter.setContext(oldContext);
         }
