@@ -764,9 +764,27 @@ def next_higher_perm( num ){
 print ( next_higher_perm( __args__[1] ) )
 \end{lstlisting}  
 \end{minipage}\end{center} 
-
 \end{subsection}
 
+\begin{subsection}{Maximal Longest Substring Problem}
+\index{examples : maximal longest substring}
+
+Given a string $S$ , print the longest substring $P$ such that  
+\href{https://en.wikipedia.org/wiki/Lexicographical\_order}{lexicographically} : $P > S$. 
+One may assume that such substring exists.
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+S = "hello , world"
+def max_large_sub(s){
+   len = #|s|
+   j = index{ s[0] < s[$] }([1:len])
+   j > 0 ? sub(s,j+1) : ''  
+}
+print(max_large_sub(S))
+\end{lstlisting}  
+\end{minipage}\end{center} 
+\end{subsection}
 
 \end{section}
 
@@ -1303,8 +1321,65 @@ while( not done ){
 \end{lstlisting}  
 \end{minipage}\end{center}
 Note that we are using the eventing mechanism.
+\end{subsection}
+
+\begin{subsection}{Computation of Query}
+\index{examples : query computation}
+Suppose, the problem is that of generation of queries.
+As an example, take this query :
+
+\emph{
+Find all the customers who spent >2 minutes on Page "XYZ" 
+\& purchased  >2 items of coffee\_X \& gave a review of >3. 
+}
+
+The POJOs given are :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=myJavaStyle]
+class PageView { 
+private String URL; 
+private String customerID; 
+private Integer timeSpent;} 
+
+class Purchase { 
+private String productID; 
+private String customerID; 
+private Integer itemsPurchased;} 
+
+class Review { 
+private String productID; 
+private String customerID; 
+private Integer reviewPoints;}
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+How does one code it? Here is the query:
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+page_url = pages['XYZ']
+customer_ids_pv = set{ 
+       continue ( not ( $.URL == page_url and 
+          $.timeSpent > 2 ))
+          $ = $.customerID }(page_views)
+product_id = products['coffee_X']
+customer_ids_pur = set{ 
+       continue( not ( $.customerID @ customer_ids_pv and  
+           $.productID == product_id and 
+           $.itemsPurchased > 2 )) 
+           $ = $.customerID }(purchases)
+customers = set{ 
+       continue( not ( $.customerID @ customer_ids_pur and   
+           $.productID == product_id and 
+           $.reviewPoints > 3 )) 
+           $ = $.customerID  }(reviews)
+lfold{ print($)}(customers)
+\end{lstlisting}  
+\end{minipage}\end{center}
 
 \end{subsection}
+
 
 \end{section}
 
