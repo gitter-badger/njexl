@@ -1268,7 +1268,41 @@ tc.sleep(300)
 // do not care...
 \end{lstlisting}  
 \end{minipage}\end{center}
+\end{subsection}
 
+\begin{subsection}{Asynchronous Computation}
+\index{examples : asynchronous computation}
+Suppose, we are trying to call a web api, which returns large chunks of data, 
+and we can not call it synchronously. Therefore, we need to ensure that after
+the method was successfully executed, there is a callback method that should get called.
+This problem is trivial in nJexl and here is how to get it done :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+var done = false 
+def asynch_call(url){
+   read(url)
+}
+def call_back(event){
+   print('I am done reading')
+   if ( empty(event.error ) ){
+      print('Execution : OK, Result is \n %s \n', event.result )
+   }else{
+      print('Execution : FAILED, Error is \n %s \n', event.error )
+   }
+   done = true 
+}
+// register call back 
+asynch_call.after += call_back
+thread{ asynch_call('http://www.idlebrain.com') }()
+// current thread 
+tc = thread()
+while( not done ){
+   tc.sleep(1000)
+}
+\end{lstlisting}  
+\end{minipage}\end{center}
+Note that we are using the eventing mechanism.
 
 \end{subsection}
 

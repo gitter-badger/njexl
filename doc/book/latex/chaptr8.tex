@@ -469,6 +469,8 @@ See the object
 
 Here is a sample demonstration of the eventing:
 \index{function : eventing : before}\index{function : eventing : after}
+\index{event : args} \index{event : pattern}\index{event : result}\index{event : error}
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 def my_func(){
    write('My function got called with args: [ %s ] \n', 
@@ -479,6 +481,8 @@ def event_hook(event){
     method_name = event.method.name 
     event_type = event.pattern
     method_args = event.args 
+    return_value = event.result
+    execution_error = event.error 
     write( '%s happened with method "%s" \n' , 
               event_type , method_name )
     write( 'Arguments passed are [ %s ]\n' , 
@@ -491,6 +495,8 @@ my_func.after.add( event_hook )
 // now call the function 
 my_func('Hello, world!')
 \end{lstlisting}
+\end{minipage}\end{center}
+
 When one runs it, this is what we will get :
 
 \begin{lstlisting}[style=all]
