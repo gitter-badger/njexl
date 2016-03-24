@@ -136,12 +136,12 @@ public final class ScriptClassBehaviour {
             public final Object[] args;
 
             /**
-             * The return value
+             * The return value : will be null for before event
              */
             public final Object result;
 
             /**
-             * The error if any
+             * The error if any : will be null for before event
              */
             public final Throwable error;
 
@@ -151,22 +151,17 @@ public final class ScriptClassBehaviour {
             public final String description;
 
             /**
-             * Creates an event object
+             * Creates an event object for before call
              * @param p what pattern was used
              * @param m what method was called
              * @param a what argument was passed
              */
             public Event(String p, Object m, Object[] a){
-                pattern = p;
-                method = m;
-                args = a;
-                result = null;
-                error = null;
-                description = String.format( "%s | %s | %s" , p,m, Main.strArr(a));
+                this(p,m,a,null,null);
             }
 
             /**
-             * Creates an event object
+             * Creates an event object for after call
              * @param p what pattern was used
              * @param m what method was called
              * @param a what argument was passed
