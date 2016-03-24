@@ -45,9 +45,12 @@
 % Set nJexl Language Style
 \definecolor{darkgreen}{RGB}{0,102,0}
 \definecolor{darkblue}{RGB}{0,0,102}
-\definecolor{darkred}{RGB}{102,0,0}
 \definecolor{darkgray}{RGB}{96,96,96}
+\definecolor{teal}{RGB}{0,139,139}
+\definecolor{soothingred}{RGB}{255,0,107}
 
+\usepackage{sourcecodepro}
+\usepackage[T1]{fontenc}
 
 \lstdefinestyle{numbers} {numbers=left, stepnumber=1, numberstyle=\tiny, numbersep=10pt}
 \lstdefinestyle{MyFrame}{frame=shadowbox}
@@ -57,18 +60,18 @@
   style=MyFrame,
   frame=lines , 
   showstringspaces=false, 
-  basicstyle=\fontfamily{pcr}\bfseries\selectfont,
+  basicstyle=\ttfamily,
   commentstyle=\itshape\color{darkgray}
 }
 
-\lstdefinestyle{all} {style=MyFrame,frame=lines , basicstyle=\fontfamily{pcr}\bfseries\selectfont\color{darkgreen}}
+\lstdefinestyle{all} {style=MyFrame,frame=lines , basicstyle=\ttfamily\color{darkgreen}}
 
 \usepackage[T1]{fontenc}
 \lstdefinestyle{JexlStyle}{
   language=jxl,
-  basicstyle=\fontfamily{pcr}\bfseries\selectfont\color{darkblue}, % Global Code Style : Inconsolata
+  basicstyle=\ttfamily\color{teal}, % Global Code Style : Inconsolata  
   commentstyle=\itshape\color{darkgray}, % style of comments
-  keywordstyle=\color{darkred}, % style of keywords
+  keywordstyle=\color{soothingred}, % style of keywords
   stringstyle=\color{darkgreen}, % style of strings
   extendedchars=true, % Allows 256 instead of 128 ASCII characters
   tabsize=2, % number of spaces indented when discovering a tab 
@@ -82,9 +85,9 @@
 
 \lstdefinestyle{myJavaStyle}{
   language=java,
-  basicstyle=\fontfamily{pcr}\bfseries\selectfont\color{darkblue}, % Global Code Style : Inconsolata
+  basicstyle=\ttfamily\color{teal}, % Global Code Style : Inconsolata
   commentstyle=\itshape\color{darkgray}, % style of comments
-  keywordstyle=\color{darkred}, % style of keywords
+  keywordstyle=\color{soothingred}, % style of keywords
   stringstyle=\color{darkgreen}, % style of strings
   extendedchars=true, % Allows 256 instead of 128 ASCII characters
   tabsize=2, % number of spaces indented when discovering a tab 
