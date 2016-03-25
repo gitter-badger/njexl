@@ -37,8 +37,7 @@ A keyword cannot be used as an identifier and identifiers are case-sensitive.
 \begin{subsection}{Assignments}
 \index{assignment}
 Most basic syntax of nJexl is, like any other language : assignment.
-\begin{center}
-\begin{minipage}{\linewidth}
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
  a = 1 //  assigns local variable a to Integer 1
  b = 1.0 //assigns local variable a to b float 1.0
@@ -65,6 +64,7 @@ Along with the multiline comment "/*" with  "*/" :
 \begin{subsection}{Basic Types}
 
 Basic types are :
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
  a = 1 // Integer 
  b = 1.0 //  float 
@@ -76,6 +76,7 @@ Basic types are :
  tf = false // boolean 
  null_literal = null // special null type
 \end{lstlisting}
+\end{minipage}\end{center}
 
 \end{subsection}
 
@@ -98,6 +99,8 @@ nJexl supports multiple assignment. It has various usage:
 
 \begin{subsection}{Arithmetic}
 \index{operators : Arithmetic}
+
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 a = 1 + 1 // addition : a <- 2
 z = 1 - 1 // subtraction : z <- 0
@@ -110,6 +113,7 @@ r = 3 mod 2 // modulo, r <- 1
 a += 1 // increment and assign 
 z -= 1 // decrement and assign 
 \end{lstlisting}
+\end{minipage}\end{center}
 
 \end{subsection}
 

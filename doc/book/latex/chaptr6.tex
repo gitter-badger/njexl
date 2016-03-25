@@ -162,6 +162,7 @@ val = Z(value, base=10, default_value = null )
 
 Usage is :
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 val = Z("hello") // val is null
 val = Z('hi',10,42 )// val is 42 int
@@ -169,6 +170,7 @@ val = Z('42121131231313') // val is long
 val = Z(54,13 ) // val is 42 
 val = Z('4212113123131313131121323131') // val is BigInteger 
 \end{lstlisting}
+\end{minipage}\end{center}
 
 \end{subsection}
 
@@ -794,6 +796,7 @@ Sometimes it is of importance to inspect an instance as
 what the instance is supposed to be, as a property bucket.
 That is where the $dict()$ function comes in.
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 d = dict()
 pd = dict(d,null,null)
@@ -803,9 +806,12 @@ pd := {modCount=1, @t=java.util.HashMap, size=1,
  table=[Ljava.util.HashMap$Node;@7e32c033} 
 */
 \end{lstlisting}
+\end{minipage}\end{center}
+
 Note the quirky way to inspect what is there for the object when the object is dictionary.
 For objects which are not a dictionary, inspecting them is easier :
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 d = date()
 pd = dict(d)
@@ -815,6 +821,8 @@ pd :=  { cdate=2016-02-29T20:10:06.627+0530,
          fastTime=1456756806627 } 
 */
 \end{lstlisting}
+\end{minipage}\end{center}
+
 \end{subsection}
 
 \begin{subsection}{Field Access}

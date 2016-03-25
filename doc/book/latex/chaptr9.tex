@@ -163,7 +163,8 @@ And this is how we $send$ the SOAP: \index{SOAP}
 \begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 template_pay_load = read('samples/soap_body.xml')
-pay_load = str:format ( template_pay_load , 'Hyderabad', 'India' )
+pay_load = str:format ( template_pay_load , 
+                     'Hyderabad', 'India' )
 headers = { "SOAPAction" : "http://www.webserviceX.NET/GetWeather" , 
              "Content-Type" : "text/xml; charset=utf-8" }
 __url__ = "http://www.webservicex.net/globalweather.asmx"
@@ -188,6 +189,7 @@ lines() function generates an iterator, which can be used to read the file.
 It caches the previous reads, so after you ended reading, resetting the iterator 
 you can read it again. Observe we are replicating the Unix program wc: \index{wc : word count}
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 fi = lines('my_file.txt' )
 // count no of lines 
@@ -211,6 +213,8 @@ fi.reset()
               _$_ = [ lc, cc, wc ] 
       }(fi,[0,0,0] )
 \end{lstlisting}
+\end{minipage}\end{center}
+
 \end{subsection}
 
 \begin{subsection}{fopen() function}
@@ -242,6 +246,7 @@ This returns a java \href{https://docs.oracle.com/javase/8/docs/api/java/io/Buff
 Now, something like \href{https://docs.oracle.com/javase/8/docs/api/java/io/BufferedReader.html#readLine--}{readLine}
 can be called to read the file line by line, in a traditional way to implement the $cat$ command : \index{cat}
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 // open in read mode : get a reader
 fp = fopen( path ,"r" )
@@ -254,6 +259,7 @@ while ( true ){
 // close the reader
 fp.close()
 \end{lstlisting}
+\end{minipage}\end{center}
 
 \end{subsection}
 
@@ -909,6 +915,7 @@ This is done by the $aggregate()$ function. This function can be surmised to
 generate a new matrix from the old matrix, where the same keys pointing to different rows
 must be aggregated based on columns.
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 def aggregate(m,columns , aggregate_function ){
   agg_rows = list()
@@ -927,6 +934,7 @@ def aggregate(m,columns , aggregate_function ){
   // now we have the new matrix data rows
 }
 \end{lstlisting}
+\end{minipage}\end{center}
 
 The syntax for the function is :
 

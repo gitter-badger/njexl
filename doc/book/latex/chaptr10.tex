@@ -47,7 +47,8 @@ In the same way, multiple words can be put into system,
 which is of some usefulness when one needs to pass quoted arguments :
 
 \begin{lstlisting}[style=JexlStyle]
-status = system("ls" , "-al" , "." ) // system prints result of "ls -al ."
+// system prints result of "ls -al ."
+status = system("ls" , "-al" , "." ) 
 /* status code is 0 */
 \end{lstlisting}
 
@@ -147,7 +148,8 @@ Observe the problem here :
 count = 0 
 // create a list of threads to do something?
 l = list{ thread{ count+= 1 }() }( [0:10] ) // increase count...
-until{ running = select{ $.isAlive }(l) ; empty(running)  }( 10000, 50 )
+until{ 
+ running = select{ $.isAlive }(l) ; empty(running)  }( 10000, 50 )
 write(count) // what is the value here?
 \end{lstlisting}
 
@@ -161,7 +163,9 @@ count = 0
 // create a list of threads to do something?
 l = list{ thread{ #atomic{ count+= 1 } }() }( [0:10] ) 
 // above tries to increase count...
-until{ running = select{ $.isAlive }(l) ; empty(running)  }( 10000, 50 )
+until{ 
+  running = select{ $.isAlive }(l) ; empty(running)  
+  }( 10000, 50 )
 write(count) // the value is 10
 \end{lstlisting}
 \end{minipage}\end{center}
@@ -256,7 +260,7 @@ After all, trying to build a fool-proof solution is never full-proof.
 But we need errors to be raised. This is done by the $error()$ function.
 
 \begin{lstlisting}[style=JexlStyle]
-error[ { /* body which when evaluates to true raise error */} ]( args... )   
+error[ { /* body, when evaluates to true raise error */} ]( args... )   
 \end{lstlisting}
 The function $error()$ can have multiple modes, 
 for example this is how one raise an error with a message :

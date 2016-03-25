@@ -335,6 +335,7 @@ write ( to_str( int(__args__[1] ) ))
 Given an integer "n" and pair of "I" swapping indices, 
 generate the largest number. Swapping indices can be reused any number times. 
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=all]
 n : 1243 
 Indices: 
@@ -343,7 +344,18 @@ Indices:
 Answer: 
 3421, 3214, 4213, 4231,...
 The result is 4231 which is the largest.
-\end{lstlisting}  
+\end{lstlisting}
+\end{minipage}\end{center}
+  
+\begin{figure}
+\begin{center}
+\leavevmode
+\includegraphics[scale=0.5]{permutation-graph.png}
+\end{center}
+\caption{Permutation Graph}
+\label{fig_12_1}
+\end{figure}
+  
 
 The problem is that of \href{https://en.wikipedia.org/wiki/Permutation\_graph}{Permutation Graph}.
 Observe, then, the rules lets you generate nodes from the starting node.
