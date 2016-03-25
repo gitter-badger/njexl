@@ -863,6 +863,14 @@ public class XDataStructureTest extends JexlTestCase {
         o = s.execute(jc);
         assertTrue((Boolean)o);
 
+        s = JEXL.createScript("x = set(1,2,3) ; [1,2] @ x " );
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
+        s = JEXL.createScript("x = {1:2, 3:4, 5:6} ; [1,3] @ x " );
+        o = s.execute(jc);
+        assertTrue((Boolean)o);
+
     }
 
     @Test

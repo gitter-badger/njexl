@@ -782,6 +782,9 @@ public final class SetOperations {
             if (c1 instanceof Set) {
                 return is_set_relation((Set) c1, (Set) c2, "<=");
             }
+            if ( JexlArithmetic.isListOrArray(c1) ){
+                return arithmatic.lessThanOrEqual(c1,c2);
+            }
             return ((Set) c2).contains(c1);
         }
         if ( c2 instanceof Map ){
@@ -790,6 +793,9 @@ public final class SetOperations {
             }
             if ( c1 instanceof Map.Entry ){
                 return ((Map)c2).entrySet().contains(c1);
+            }
+            if ( JexlArithmetic.isListOrSetOrArray(c1) ){
+                return in(c1,((Map)c2).keySet() );
             }
             return ((Map) c2).containsKey(c1);
         }
