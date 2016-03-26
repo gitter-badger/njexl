@@ -575,7 +575,9 @@ public class JexlEngine {
     File tryFindFile(String from) throws Exception{
         File f = new File(from);
         String d = f.getParent();
-        if ( d == null ) throw new FileNotFoundException("No such file or directory to import from : " + from );
+        if ( d == null ) {
+            d = System.getProperty("user.dir");
+        }
         File dir = new File(d);
         File[] files = dir.listFiles();
         String sep = "/" ;
