@@ -798,6 +798,157 @@ print(max_large_sub(S))
 \end{minipage}\end{center} 
 \end{subsection}
 
+\begin{subsection}{Partitions which are Palindromes}
+\index{examples : partition of palindromes }
+Given a string, print all possible palindromic partitions.
+\index{ join() : reassignment of item }
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+s = __args__[1]
+r = [0 : #|s|]
+partitions = join{
+   i = $.0 ; j = $.1
+   // do not consider trivial one chars
+   continue( i >= j )
+   ss = sub(s,i,j)
+   // replace the join with reassignment of item 
+   where ( (ss ** -1) == ss ){ $ = ss }
+}(r,r)
+print(partitions)
+\end{lstlisting}  
+\end{minipage}\end{center} 
+\end{subsection}
+
+\begin{subsection}{Triple Sum}
+\index{examples : triple sum} 
+Count triplets in a collection with sum smaller than a given value.
+One must read the theory behind \href{https://en.wikipedia.org/wiki/3SUM}{here}.
+Without much ado, one can solve this problem by using the joins :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+items = tokens{ int($) }( __args__[1] , '\d+' )
+items = sorta(items)
+num = int( __args__[2], 0 )
+r = [ 0 : #|items| ]
+results = join{
+   // preserve order  
+   continue( $.0 >= $.1 or $.1 >= $.2 )
+   sum = items[$.0] + items[$.1] + items[$.2]
+   where( sum < num ){ 
+      $ = list( items[$.0] , items[$.1] , items[$.2] )
+   }
+}(r,r,r)
+print(results)
+\end{lstlisting}  
+\end{minipage}\end{center} 
+\end{subsection}
+
+\begin{subsection}{Pythagorean Triplet}
+\index{examples : pythagorean triplet} 
+
+Find if there exists Pythagorean Triplets in an array. That is, 
+given an array of integers, write a function that returns true 
+if there is a triplet $(a, b, c)$ that satisfies $a^2 + b^2 = c^2$.
+In another word, find all of them. This is what we find here.
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+items = tokens{ int($) }( __args__[1] , '\d+' )
+items_set = set(items)
+r = [ 0 : #|items| ]
+results = join{
+   // preserve order  
+   continue( $.0 >= $.1 )
+   sum = items[$.0] ** 2 + items[$.1] **2 
+   // note the use of NUM 
+   t = sum ** 0.5 ; t = NUM(t) 
+   where( t @ items_set ){ 
+      $ = list( items[$.0] , items[$.1] , t )
+   }
+}(r,r)
+print(results)
+\end{lstlisting}  
+\end{minipage}\end{center} 
+\end{subsection}
+
+\begin{subsection}{Group by Sign}
+\index{examples : group by sign}
+Give you have an array with $n$ integers, which has both positive and negative integers.
+Now you need sort this array in a special way.
+After that,the negative integers should in the front,and the positive integers should in the back.
+Also the relative position should not be changed. 
+eg. $[-1, 1, 3, -2, 2] $ ans: $[-1, -2, 1, 3, 2]$. 
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+arr = [-1, 1, 3, -2, 2] 
+#(n,p) = partition{ $ < 0 }(arr)
+arr = array(n,p)
+print(str(arr))
+\end{lstlisting}  
+\end{minipage}\end{center} 
+This in effect shows the power of declarative paradigm.
+\end{subsection}
+
+\begin{subsection}{Substring as Permutation}
+\index{ examples : substring as permutation }
+
+Given a string, find whether it has any permutation of another string. 
+For example, given ``abcdefg'' and ``ba'', it should return true, 
+because ``abcdefg'' has substring ``ab'', which is a permutation of ``ba''.
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def perm_exists(s1,s2){
+  small = s1 ; large = s2 
+  if ( #|s1| > #|s2| ){  small = s2 ; large = s1 }
+  small_arr =  small.toCharArray()
+  small_set =  set(small_arr)
+  large_len = #|large| ; small_len = #|small|
+  i = 0 
+  while( i <  large_len ){
+    if ( i + small_len > large_len ) { return false } 
+    continue( not ( large[i] @ small_set ) ){ i += 1 }
+    ss = sub(large, i, i + small_len - 1)
+    if ( ss.toCharArray() == small_arr ){ return true }
+    i += 1
+  }
+  return false 
+}
+\end{lstlisting}  
+\end{minipage}\end{center} 
+Note the usage of \emph{A == B } for the checking of \emph{collection A is a permutation of collection B}
+\end{subsection}
+
+\begin{subsection}{Pivot Partition}
+Given an unsorted array of integers, you need to return maximum possible $n$ 
+such that the array consists at least $n$ values greater than or equals to $n$. 
+Array can contain duplicate values. 
+Sample input : $[1, 2, 3, 4]$ , output : 2. 
+Sample input : $[900, 2, 901, 3, 1000]$ , output: 3.
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def pivot_partition(a){
+   ma = mset(a)
+   ma = dict{ [ $.key , size($.value)] }(ma)
+   keys = list( ma.keySet() )
+   keys = sortd(keys)
+   greater_eq = 0 
+   i = index{
+      greater_eq += ma[$]
+      greater_eq >= $  
+      }(keys)
+   if ( i > 0 ){ return keys[i] }
+   return 'None'
+}
+\end{lstlisting}  
+\end{minipage}\end{center} 
+
+
+\end{subsection}
+
 \end{section}
 
 
@@ -822,11 +973,11 @@ $C_i = ( _OC_i,_NC_i )$ where $_OC_i$ is the old field, while $_NC_i$ is the new
 That is really not the most generic way, but let's assume it is.
 Now, it boils down to doing the projection on these :
 $$
-t_o = \Pi_{ _OC }(O_o) 
+t_o = \pi_{ _OC }(O_o) 
 $$ 
 and
 $$
-t_n = \Pi_{ _NC }(O_n)
+t_n = \pi_{ _NC }(O_n)
 $$ 
 and now, there are lists of it. Thus, now, these two list should be equal.
 Hence, in nJexl, here is the code one would write :
@@ -1389,9 +1540,91 @@ customers = set{
 lfold{ print($)}(customers)
 \end{lstlisting}  
 \end{minipage}\end{center}
+\end{subsection}
+
+\begin{subsection}{Generating Strings}
+\index{examples : generating strings }
+Given a string (for example: ``a?bc?def?g''), write a program 
+to generate all the possible strings by replacing `?' with `0' and `1'. \\
+Example: Input : $a?b?c?$ \\  
+Output: a0b0c0, a0b0c1, a0b1c0, a0b1c1, a1b0c0, a1b0c1, a1b1c0, a1b1c1.\\
+Observe that, given there are are $n$ question marks (?),
+the problem is that of generating binary integers from 0 to $2^n - 1$,
+all should be padded up with `0's to make it $n$ digits. Then, 
+look at the occurrence of the bits in position for the question mark, 
+and replacing them. Thus, a solution is :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def generate_strings(template){
+   ta = template.toCharArray()
+   n = lfold{ continue( $ != '?' )
+             _$_ += 1  }(ta , 0)
+   p = 2**n 
+   lfold {
+      s = str($,2)
+      s = '0' ** ( n - #|s| ) + s 
+      count = 0 
+      r = lfold{ 
+         if ( $ == '?' ){
+            _$_ += s[count] ; count += 1  
+         }else{
+            _$_ += $
+         } _$_  }( ta, '')
+      print(r)     
+   }([0:p])      
+}
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+The use of such a program is obvious for anyone who wants to make
+a finite decision game.
+\end{subsection}
+
+\begin{subsection}{First Unique URL}
+\index{examples : first unique url}
+
+Given a very long list of URLs, find the first URL which is unique ( occurred exactly once ). 
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+urls = lines('urls.txt')
+existing = set()
+i = index{ $ @ existing  }(urls)
+print(urls[i] )
+\end{lstlisting}  
+\end{minipage}\end{center}
 
 \end{subsection}
 
+\begin{subsection}{Conditional Assignment : Casing }
+\index{examples : casing }
+You are given four integers `a', `b', `y' and `x', 
+where `x' can only be either zero or one. 
+Your task is as follows: 
+If `x' is zero assign value `a' to the variable 'y', if `x' is one assign value `b' to the variable 'y'. 
+You are not allowed to use any conditional operator (including ternary operator). 
+Follow up: Solve the problem without utilising arithmetic operators `+ - * /'.
+
+This is one of the founding stone of the declarative paradigm, therefore, it qualifies
+as a practical problem. The solution, of course can be done using what we explained in chapter 1:
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+conditionals = { 0 : a , 1 : b }
+y = conditionals[x]
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+But, observe that hash is complex structure, we can simplify the problem by :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+conditionals = [a, b ]
+y = conditionals[x]
+\end{lstlisting}  
+\end{minipage}\end{center}
+And that works perfectly well. 
+\end{subsection}
 
 \end{section}
 
