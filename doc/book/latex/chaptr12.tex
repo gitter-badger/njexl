@@ -945,7 +945,91 @@ def pivot_partition(a){
 }
 \end{lstlisting}  
 \end{minipage}\end{center} 
+\end{subsection}
 
+\begin{subsection}{Grouping zeros and non-zeros in an Array}
+\index{examples : group non zero and zeros}
+Given an Array With random $0$s and non $0$ numbers, shift all the $0$s to the beginning and non $0$s to the rear. 
+Eg: $[1,9,8,4,0,0,2,7,0,6,0] \to  [0,0,0,0,1,9,8,4,2,7,6]$ i.e order of numbers not to change. Do it in place.
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def group_by(arr){
+   non_zeros = select{ $ != 0 }(arr)
+   zeros = #|arr| - #|non_zeros|
+   lfold{ arr[$] = 0  }([0:zeros])
+   lfold{ arr[zeros + _] = $}(non_zeros)
+}
+arr = [1,9,8,4,0,0,2,7,0,6,0]
+group_by(arr)
+print(str(arr))
+\end{lstlisting}  
+\end{minipage}\end{center} 
+
+\end{subsection}
+
+\begin{subsection}{Multiply and Modify Rest of the Elements}
+\index{examples : transform array elements by multiplications}
+You are given an array, you have to replace each element of the array with product of the rest element. 
+Example: $[1,2,3] \to [6,3,2]$
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def do_nonsense(arr){
+   zeros = list() 
+   mult = lfold{
+      continue( $ == 0 ){ zeros += _ }
+      _$_ = _$_ * $  
+      }(arr,1)
+   if ( empty( zeros ) ){
+      // can be smart now :)
+     lfold{ arr[_] = mult / $ }(arr)
+   }else {
+      // 0 out everything :(
+      lfold{ arr[_] = 0 }(arr)
+      if ( size(zeros) == 1 ){
+         // only one entry would be non zero :D
+         arr[zeros[0]] = mult
+      }
+   }
+}
+arr = [1, 2, 3]
+do_nonsense(arr)
+print(str(arr))
+\end{lstlisting}  
+\end{minipage}\end{center} 
+\end{subsection}
+
+\begin{subsection}{Max Unduplicated SubString}
+\index{examples : max unduplicated substring}
+
+Given $s$ a string, find max size of a sub-string, 
+in which no duplicate chars are present.
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def find_max_non_dup_sub(s){
+   r = [0: #|s| ] 
+   max_sub_str = str(s[0]) ; max_size = 1  
+   join{
+      i = $.0 ; j = $.1 
+      // else it would be trivial 
+      continue( i >= j )
+      ss = sub(s,i,j)
+      len = j - i + 1
+      continue ( len <= max_size or 
+         len != #|set( ss.toCharArray() )| )
+      max_size = len  
+      max_sub_str = ss 
+      false 
+   }(r,r)
+   max_sub_str 
+}
+s = "aaabcdefghiiiik"
+ss = find_max_non_dup_sub( s )
+print(ss)
+\end{lstlisting}  
+\end{minipage}\end{center} 
 
 \end{subsection}
 
@@ -1589,7 +1673,9 @@ Given a very long list of URLs, find the first URL which is unique ( occurred ex
 \begin{lstlisting}[style=JexlStyle]
 urls = lines('urls.txt')
 existing = set()
-i = index{ $ @ existing  }(urls)
+i = index{ 
+           continue( not ($ @ existing) ){ 
+                  existing += $ } ; true }(urls)
 print(urls[i] )
 \end{lstlisting}  
 \end{minipage}\end{center}
@@ -1625,6 +1711,106 @@ y = conditionals[x]
 \end{minipage}\end{center}
 And that works perfectly well. 
 \end{subsection}
+
+\begin{subsection}{Parking Rearrangement Problem}
+\index{examples : parking rearrangement}
+
+Suppose there is a parking with slots named as $1,2,...,n$ with
+a free slot designated as $0$. How can one rearrange the cars from  
+a source configuration to a target configuration? The problem is that
+every swapping of the cars must be via the empty slot.
+For example, if src is $[ 1, 3, 0, 2, 4 ]$, then to move a car $1$ to 
+the position of $3$, one must go through the $0$'th slot : 
+
+$$
+[ 1, 3, 0, 2, 4 ] \to [ 1, 0, 3, 2, 4 ] \to [ 0, 1, 3, 2, 4 ]
+$$
+
+The code is as follows:
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def park(i,src,tgt, map_src,map_tgt){
+   pos_fut = map_tgt[i]
+   j = src[pos_fut]
+   if ( j == 0 ) return 0 
+   // move j out to 0 position 
+   pos_0 = map_src[0]
+   src[pos_fut] = 0 
+   src[pos_0] = j 
+   // store new address 
+   map_src[j] = pos_0 
+   print(str(src))
+   // now move i to that position
+   pos_i = map_src[i]
+   src[pos_i] = 0 
+   src[pos_fut] = i 
+   map_src[i] = pos_fut 
+   map_src[0] = pos_i 
+   print(str(src))
+   j
+}
+def transform(src,tgt){
+   print(str(src))
+   map_src = dict{ [$,_] }(src)
+   map_tgt = dict{ [$,_] }(tgt)
+   visited = set()
+   i = 1 
+   while( not (i @ visited ) ){
+      visited += i
+      i = park(i,src,tgt,map_src,map_tgt )
+   }
+   // out of here, swap the 0 and the last no now 
+   pos_0 = map_src[0]
+   next = tgt[pos_0]
+   next_pos = map_src[next]
+   src[next_pos] = 0 
+   src[pos_0] = next
+   print(str(src))
+   print(str(tgt))
+}
+src = [ 1, 3, 0, 2, 4 ]
+tgt = [ 3, 2, 4, 1, 0]
+transform(src,tgt)
+\end{lstlisting}  
+\end{minipage}\end{center}
+\end{subsection}
+
+\begin{subsection}{Interleaving of Strings}
+\index{example : interleaving of strings}
+Given two strings, print all the inter leavings of the two strings. 
+Interleaving means that the if B comes after A , it should also come after A in the interleaved string. 
+As an example, with $AB$ and $CD$ we have : $[ABCD , ACBD , ACDB, CABD, CADB, CDAB]$.
+This has application : DNA cross and sequencing.
+The solution is clearly non optimal - and must use grammar and language generators to generate 
+the specific strings in question, but the solution displays the awesomeness of nJexl, 
+so it is presented here.
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def in_order(s,arr){
+   len = #|s| ; j = 0 
+   lfold{
+      break( j == len )
+      continue( s[j] != $$[_])
+      j+=1 }(arr)
+   (j == len) 
+}
+s1 = "AB" ; s2 = "CD"
+tot = s1 + s2 
+arr = tot.toCharArray()
+arg = array{ arr }( [0 : #|arr| ] )
+results = join{
+    where ( in_order(s1,$) and in_order(s2,$) ){
+    $ = str($,'') 
+    }
+ }(__args__ = arg )
+print(results)
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+\end{subsection}
+
 
 \end{section}
 
