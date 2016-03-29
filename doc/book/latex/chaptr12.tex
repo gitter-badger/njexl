@@ -1809,8 +1809,110 @@ print(results)
 \end{lstlisting}  
 \end{minipage}\end{center}
 
-\end{subsection}
+A better strategy would be thinking about what interleaving would mean,
+and that brings to the newer problem of finding all possible \emph{partitions of a string}.
+\index{examples : partitions of string}
+What is a partition of a string? Given a string $S$, a partition of size $k$ is a k-tuple 
+of substrings $<s_1, s_2,...,s_k>$ such that  : $S = s_1s_2...s_k$, 
+and none of the $s_i$ is empty string. Thus, given a string $aba$, possible partitions would be :
+$[a,b,a], [ab,a], [a,ba] $. This is very close the \emph{Ramanujan Partition Problem}, and 
+the code to solve it shows why :
+ 
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def partition_string(s,bi){
+   len = #|s| 
+   start = 0 
+   l = lfold{
+      if ( bi[$-1]  == '1' ){
+         _$_ += sub(s,start,$-1) 
+         start = $ 
+      } _$_ }([1:len] , list() )
+   l += sub(s, start,len-1) 
+}
+def generate_partitions(s){
+   N = #|s|
+   n = 2 ** (N - 1)
+   p = lfold{
+      bi = str($,2)
+      bi = '0' ** ( N - #|bi|  - 1 ) + bi 
+      _$_.add( partition_string(s,bi) ) 
+      _$_  }([1:n] , list() )
+}
+\end{lstlisting}  
+\end{minipage}\end{center}
+The function \emph{generate\_partitions} generates partitions 
+for a string. Now, how this problem is related to interleaving problem?
+Start with a partition $p_1$ from a string $S_1$.
+This partition suppose has $n_1$ substrings. Thus, there are $n_1$ gaps 
+available to \emph{interleave} partitions from the second string $S_2$.
 
+Start with an example : given string $abc$ and partition $[a,b,c]$, 
+and any other string to interleave, we can choose to exploit the inner positions shown as $*$ as follows:
+$$
+* a * b * c * 
+$$   
+Thus, the interleaving partitions required can be of sizes $n_1, n_1+1, n_1 - 1$.
+Thus, interleaving between partition $p_1$ of size $n_1$ of string $S_1$, 
+and $p_2$ of size $n_2$ of string $S_2$ is only possible if the partition sizes 
+are not differing by more than 1, hence yielding the condition : 
+$$
+|n_1 - n_2 | < 2 
+$$
+and this, is the  join condition! After this, what we need to do?
+We know, if the lengths differ, then we need to pick the smaller, 
+and fit that into the larger partition. We will call this function \emph{insert(large,small)}.
+Now, if the sizes are the same, there are two different partitions from strings 
+``abc'' and ``ABC'' :
+$$
+A a B b C c  \; \text{ and } \; a A b B c C   
+$$   
+and we would call it a function \emph{place(left,right)}. 
+Thus, how these functions look?
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def insert(large, small){
+   lfold{ _$_ += small[ $ - 1 ] + large[$]
+         }([1:#|large|], large[0])
+}
+def place(left, right){
+   lfold{ _$_ += right[ $ - 1 ] + left[$]
+   }([1:#|right|] , left[0] ) + right[-1]
+}
+\end{lstlisting}  
+\end{minipage}\end{center}
+They should not really be  functions, but then it introduces the awesome notion 
+called \href{https://en.wikipedia.org/wiki/Computer\_programming\#Readability\_of\_source\_code}{readability}.
+That is not entirely fad, there are meaning to the madness. Observe now, 
+thanks to all these \href{https://en.wikipedia.org/wiki/Modular\_programming}{modularisation} of the source code,
+the final, interleaving code is now a piece of cake, or rather very close to what is one:
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def interleave(s1,s2){
+   partition_1 = generate_partitions(s1)
+   partition_2 = generate_partitions(s2)
+   join{ p1 = $.0 ; p2 = $.1 
+      len1 = #|p1| ; len2 = #|p2|
+      continue( #|len1 - len2 | > 1 )
+      if ( len1 < len2 ){
+          print ( insert(len2, len1 ) )
+      } else if ( len2 < len1 ){
+         print ( insert(len1, len2 ) )
+      }else {
+         print ( place(p1,p2 ) )
+         print ( place(p2,p1 ) ) 
+      }
+      false  // do not add them at all!
+   }(partition_1,partition_2)
+}
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+and thus, we end this section.
+
+\end{subsection}
 
 \end{section}
 
