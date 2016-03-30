@@ -190,7 +190,7 @@ public final class DBManager {
                 }
                 connectionMap.remove(dbConnectionId);
             }
-            conn = DriverManager.getConnection(d.url);
+            conn = DriverManager.getConnection(d.url, d.user, d.pass );
             connectionMap.put(dbConnectionId, conn);
 
         } catch (SQLException e) {
