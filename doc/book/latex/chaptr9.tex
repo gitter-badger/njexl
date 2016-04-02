@@ -1040,12 +1040,124 @@ do = m1.diff{
 }(m2)
 \end{lstlisting}
 and now, the two matrices will match, with no diff.
-
-
 \end{subsection}
-
 
 \end{section}
 
 \begin{section}{Database Connectivity}
+One of the primary use of the data matrix is that of using it with databases.
+
+\begin{subsection}{Connection Configuration}
+\index{ db : configuration }
+The db configuration should be stored in a json object like this:
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+{
+    "localhost_noga": {
+    "dbName": "njexl",
+    "url": "jdbc:mysql://localhost:3306/njexl?useSSL=false",
+    "driverClass" : "com.mysql.jdbc.Driver",
+    "user": "noga",
+    "pass": "noga"
+  }
+}
+\end{lstlisting}
+\end{minipage}\end{center}
+Every db connection must have an identifier, for example \emph{localhost\_noga},
+must have a name to the database, the url to connect to, with the proper protocol,
+the \href{https://en.wikipedia.org/wiki/JDBC\_driver}{jdbc driver} class name,
+and the user name and password to connect to the database.
+The example shows the 
+\href{http://www.java2s.com/Tutorial/Java/0340\_\_Database/AListofJDBCDriversconnectionstringdrivername.htm}{connection string} 
+for MySql server, with it's own driver.
+\end{subsection}
+
+\begin{subsection}{Connecting : db()}
+\index{ db : db() }
+Once you have a configuration file, the next step is to load the configuration file.
+This is done using the \emph{db()} method:
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+db_local = db('localhost.json')
+\end{lstlisting}
+\end{minipage}\end{center}
+This creates a database connection manager from the \emph{localhost.json} configuration file.
+But that is not all. The driver class must be on the \href{https://en.wikipedia.org/wiki/Classpath\_(Java)}{CLASSPATH}.
+That can be done before starting up the JVM, or rather in the smart and lazy way of nJexl by calling the 
+function \emph{load()}  \index{load()} to load the driver jar, and its any dependencies from a specified
+directory in runtime, like this :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+// load the driver jar
+load('/Codes/tools/')
+\end{lstlisting}
+\end{minipage}\end{center}
+this example assumes the driver jar and the dependencies are in the folder \emph{/Codes/tools/}.
+\end{subsection}
+
+\begin{subsection}{Querying : results()}
+\index{db : results()}
+Given now that the setup is ready, and one needs to fire some query to the db in question,
+to get the results, one may simply call \emph{results()} function.
+This returns a data matrix. But, first, take a look around the table which we would query upon.
+The table structure is :
+
+\centerline{
+  \includegraphics[width=130mm]{dbTableSchema.png}
+}
+
+The data in the table are:
+
+\centerline{
+  \includegraphics[width=60mm]{dbTable.png}
+}
+
+
+Now then, the results of the function is a data matrix:
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+// query the database
+m = db.results("localhost_noga", "select * from people")
+print(m.columns)
+print(m.rows) 
+\end{lstlisting}
+\end{minipage}\end{center}
+
+and thus, one can do subqueries after one gets the matrix object as described
+in the data matrix section.
+\end{subsection}
+
+\begin{subsection}{Executing : exec() }
+\index{ db : exec() }
+Not all the calls to the data base would be \emph{select} statements. For other statements,
+there is \emph{exec()}. This is how you generally call a database query.
+If the result of the exec can be represented in a 
+\href{https://docs.oracle.com/javase/8/docs/api/java/sql/ResultSet.html}{ResultSet}, exec   
+would be same as the results() function. If not, it returns the result of the query, 
+mostly it would be an integer describing how many rows affected. For example,
+to randomly add a row to the table, one should use :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+// insert into the database
+insert_str = "insert into people values ('Generally Moronic', 4, 100)"
+r = db.exec( "localhost_noga", insert_str )
+\end{lstlisting}
+\end{minipage}\end{center}
+
+\end{subsection}
+ 
 \end{section}
+
+
+
+
+
+
+
+
+
+
