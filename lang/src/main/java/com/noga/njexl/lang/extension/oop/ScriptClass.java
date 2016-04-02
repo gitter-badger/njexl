@@ -221,9 +221,15 @@ public class ScriptClass  implements TypeAware, Executable {
                 }
                 if ( !callAncestors ) {
                     if (superClass.clazz == null) {
-                        ScriptClassInstance superClassInstance = superClass.instance(interpreter, args);
-                        instance.addSuper(superClassInstance);
+                        // this is a nJexl super class
+                        //create only when we have no super of same type
+                        boolean exists = instance.supers.containsKey( superClass.name ) ;
+                        if ( !exists ) {
+                            ScriptClassInstance superClassInstance = superClass.instance(interpreter, args);
+                            instance.addSuper(superClassInstance);
+                        }
                     } else {
+                        // this is Java Super class
                         instance.addJSuper(superClass.name, superClass.clazz, args);
                     }
                 }
