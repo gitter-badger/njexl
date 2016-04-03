@@ -244,6 +244,15 @@ public class ScriptMethod implements Serializable {
         }
     }
 
+    protected boolean checkIfReflectiveCall(Object[] args){
+        try{
+            ScriptClassInstance instance = (ScriptClassInstance)args[0];
+            return instance.$.methods.containsKey(this.name);
+        }catch (Exception e){
+            return false ;
+        }
+    }
+
     public Object invoke(Object me, Interpreter interpreter, Object[] args) throws Exception {
         dispatch(Eventing.BEFORE, interpreter,args,null,null,before);
         JexlContext oldContext = interpreter.getContext();
@@ -262,7 +271,14 @@ public class ScriptMethod implements Serializable {
             map.put(ScriptClass.SELF, me);
         }
         else if(instance){
-            throw new Exception("Instance Method called with null instance!");
+            boolean reflective = checkIfReflectiveCall(args);
+            if ( reflective ){
+                me = args[0];
+                map.put(ScriptClass.SELF, me);
+                args = TypeUtility.shiftArrayLeft(args,1);
+            }else {
+                throw new Exception("Instance Method called with null instance!");
+            }
         }
         addToContext(context, map);
         Object ret = null;
