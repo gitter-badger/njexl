@@ -160,6 +160,7 @@ public class ScriptClass  implements TypeAware, Executable {
     protected void findMethods(JexlNode node) {
         if (node instanceof ASTMethodDef) {
             ScriptMethod methodDef = new ScriptMethod((ASTMethodDef) node);
+            methodDef.declaringObject = this;
             methods.put(methodDef.name, methodDef);
         } else {
             int numChild = node.jjtGetNumChildren();

@@ -27,6 +27,7 @@ import com.noga.njexl.lang.parser.ASTMethodDef;
 import com.noga.njexl.lang.parser.JexlNode;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Eventing.Event;
 import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Eventing;
+import com.noga.njexl.lang.extension.oop.ScriptClassBehaviour.Executable;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -62,6 +63,11 @@ public class ScriptMethod implements Serializable {
     public final transient JexlContext parentContext;
 
     public final String definitionText ;
+
+    /**
+     * In case this is defined inside a class
+     */
+    Executable declaringObject = null;
 
     public static boolean isNested(JexlNode current){
         while ( current != null ){
@@ -270,14 +276,19 @@ public class ScriptMethod implements Serializable {
         if ( me != null ){
             map.put(ScriptClass.SELF, me);
         }
-        else if(instance){
-            boolean reflective = checkIfReflectiveCall(args);
-            if ( reflective ){
-                me = args[0];
-                map.put(ScriptClass.SELF, me);
-                args = TypeUtility.shiftArrayLeft(args,1);
-            }else {
-                throw new Exception("Instance Method called with null instance!");
+        else if(declaringObject != null ){
+            if ( instance ) {
+                boolean reflective = checkIfReflectiveCall(args);
+                if (reflective) {
+                    me = args[0];
+                    map.put(ScriptClass.SELF, me);
+                    args = TypeUtility.shiftArrayLeft(args, 1);
+                } else {
+                    throw new Exception("Instance Method called with null instance!");
+                }
+            }else{
+                // static
+                map.put(ScriptClass.SELF, declaringObject );
             }
         }
         addToContext(context, map);
