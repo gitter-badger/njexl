@@ -20,8 +20,8 @@ A keyword cannot be used as an identifier and identifiers are case-sensitive.
 \item{ Partially Reserved : you should not use these as variables. 
     \begin{center}
     atomic, xml, thread, system, lines, list, dict, array , 
-    type , write, read, send, random, hash , until , me, my ,
-    int, float, double, INT, DEC, NUM, char, bool, byte, str.
+    type , write, read, send, random, hash , until , me, my , minmax, sqlmath,
+    int, float, double, INT, DEC, NUM, char, bool, byte, str, Z,Q, NUM.
     \end{center}  
 }
 \item{ Specially Reserved : you should not use these as variables. 
@@ -425,7 +425,26 @@ For an anonymous function parameter, there are 3 implicit guaranteed arguments :
 \item{ \_ --> The index of the item in the collection, we call it the $ID$ of iteration } 
 \item{ Another case to case parameter is :
      \_\$\_ --> Signifies the partial result of the processing , we call it $PARTIAL$ }
+     \index{partial :  \_\$\_  }
 \end{enumerate}
+
+The ideas can be simply put into examples by taking this particular case :
+
+\begin{lstlisting}[style=JexlStyle]
+l = list{  print('item : %s , index : %s , partial %s\n',$,_,_$_) 
+        $*$ }([0:4])
+\end{lstlisting}
+which produces this :
+
+\begin{lstlisting}[style=all]
+item : 0 , index : 0 , partial []
+item : 1 , index : 1 , partial [0]
+item : 2 , index : 2 , partial [0, 1]
+item : 3 , index : 3 , partial [0, 1, 4]
+\end{lstlisting}
+
+Observe that partial is the partial result of the iteration, 
+which would finally yield to the final result. 
 
 \end{subsection}
 
@@ -465,6 +484,7 @@ We already have seen this in action. "a" is inclusive while "b" is exclusive,
 this was designed the standard for loop in mind. There can also be an optional spacing parameter "s",
 thus the range type in general is $[a:b:s]$, as described below:
 
+\begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
 /* 
   when r = [a:b:s] 
@@ -477,6 +497,8 @@ r1 = [0:10] // a range from 0 to 9 with default spacing 1
 //a range from 1 to 9 with spacing 2
 r2 = [1:10:2] //1,3,5,7,9   
 \end{lstlisting}
+\end{minipage}\end{center}
+
 \end{subsection}
 
 \begin{subsection}{Array}
