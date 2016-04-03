@@ -1,0 +1,666 @@
+\chapter{Object Orientation}\label{object-orientation}
+
+{\LARGE O}bjects are not essential, programmatically.
+It can be argued that a map or a dictionary can work perfectly well
+instead of objects. The idea of hiding states is bad, because it assumes
+the incompetency of a programmer. A philosophy which assumes philosophers
+are incompetent is contradictory onto itself. 
+
+However, that is a philosophical debate, and is not needed to be played down.
+There is no denial of facts, that modern computing world is object oriented.
+Thus, nJexl has objects, even if I never intended it to have.
+Hence, it is strategically placed as the chapter the 13.
+
+\begin{section}{Introduction to Classes}
+
+\begin{subsection}{Defining and Creating}
+\index{oop : def}
+A class is defined by the keyword \emph{def} , just like a method definition.
+The difference is, the method definition must have a $()$ after the keyword,
+while the class definition does not. Thus :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def Hello{}
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+\index{oop : new()}
+creates a class called \emph{Hello}.
+Obviously one needs to create a class, that is created by the \emph{new()} function :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+// reflection style creation 
+h1 = new ( 'Hello' )
+// hard coded creation, Hello resolves to current script
+h2 = new ( Hello ) 
+\end{lstlisting}  
+\end{minipage}\end{center}
+That is all it takes to create classes in nJexl. I sincerely thought about the Pythonic way
+of resolving class name as the creation of new classes, and then decided to go against it.
+In the pythonic way, it is impossible to tell, whether or not this is a class constructor call, 
+or rather a generic function call. Observe this :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+/* a function call or object creation? 
+In nJexl, function call. In Python, anything! */
+h = Hello() 
+// clear object creation in nJexl
+h = new ( Hello ) 
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+and this is why I believe the Pythonic way is ambiguous.
+The nJexl tenet of minimisation of code footprint must not pollute the 
+tenet of maintainability. 
+\end{subsection}
+
+\begin{subsection}{Instance Fields}
+\index{ oop : fields }
+Objects are property buckets. 
+I choose to design nJexl precisely this way, the \href{http://www.w3schools.com/js/js_objects.asp}{JavaScript way}.
+Pitfalls are obvious, and see a nice discussion \href{http://www.2ality.com/2012/01/objects-as-maps.html}{here}.
+Those are not a problem for us here much, and subsequent discussion would show why.
+In any case, object without any fields or rather say properties are meaningless objects.
+Any object can be given any property at runtime. Observe the following :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+// object creation in nJexl
+h = new ( Hello ) 
+h.greet_string = "hello, world" // create a field : greet_string
+print( h.greet_string ) // access the field at runtime
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+Every field is public, and we are Pythonic. 
+As Sai Shankar said \emph{``Never design a tool for fools, while you were designing version 1.0, 
+the fools upgraded themselves to version 2.0'' }. The Java naked field access without any getter 
+and setter is 1.5 times faster than that of the getters and setters.
+
+But we all agree that is a bad way of randomly assigning properties to an object.
+Thus, we want to somewhat put properties inside the object in the time of creation. 
+\end{subsection}
+
+\begin{subsection}{Constructor}
+\index{ oop : constructor }
+This brings to us the notion of constructor. There is no constructor
+in nJexl, nothing actually constructs the class. There is obviously an instance initialiser.
+This is defined as such :
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def Hello{
+   def __new__(me){
+      me.greet_string = 'Hello, World!'
+   } 
+}
+h = new ( Hello )
+print( h.greet_string )
+\end{lstlisting}  
+\end{minipage}\end{center}
+\index{ oop : \_\_new\_\_ } \index{ oop : me }
+Now, this \emph{ \_\_new\_\_ } is a specific function, which is the instance initialiser.
+The special identifier \emph{me} also is a specific identifier, identifying the instance
+of the class being passed, this is pythons \emph{self}. One obviously can pass arguments
+to the constructor :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def Hello{
+   def __new__(me, greetings='Hello, World'){
+      me.greet_string = greetings
+   } 
+}
+// the ordinary folks
+h1 = new ( Hello )
+print( h1.greet_string )
+// from the Penguins of Madagascar
+h2 = new ( Hello  , "Hey, Higher Mammal! Do you read?" )
+print( h2.greet_string )
+\end{lstlisting}  
+\end{minipage}\end{center}
+\end{subsection}
+
+\begin{subsection}{Instance Methods}
+\index{ oop : methods }
+This brings the question of how do we \emph{encapsulate} the state of the object.
+Sometimes, you do not want to let people access stuff. You want to handle
+the properties of an instance yourself. Those are done with the instance methods,
+constructor method is one special type of instance method:
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def Hello{
+   def __new__(me, greetings='Hello, World'){
+      me.greet_string = greetings
+   } 
+   def greet(me){
+      print( me.greet_string )
+   }
+}
+h1 = new ( Hello )
+h1.greet()
+\end{lstlisting}  
+\end{minipage}\end{center}
+Observe that the \emph{me} parameter needs to be passed, to ensure 
+that the method is classified by nJexl as instance method.
+If one misses the \emph{me} parameter, the system would go kaboom, 
+saying there is unknown variable \emph{me}. 
+Obviously one can pass arguments to any instance method:
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def Hello{
+   def __new__(me, greetings='Hello, World'){
+      me.greet_string = greetings
+   } 
+   def greet(me, person="Everyone"){
+      print( 'To @%s : %s\n', person ,  me.greet_string )
+   }
+}
+h1 = new ( Hello )
+h1.greet("Noga")
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+\end{subsection}
+\end{section}
+
+\begin{section}{Inheritance}
+
+\begin{subsection}{Inheriting a Class}
+\index{oop : inheriting }
+To inherit a class, specify the class you 
+want to inherit from by separating it with a colon 
+after the class name :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def Hello2 : Hello{}
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+This means, Hello2 is inherited from Hello.
+This C++ style of inheritance is very succinct, and saves characters.
+Hence, nJexl copied it from C++.
+
+\end{subsection}
+
+\begin{subsection}{Accessing Superclass Field}
+\index{ oop : accessing superclass field }
+Accessing superclass field is easy, because it is 
+it's own field too :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+h_derived = new ( Hello2 )
+// access super class field
+print( h_derived.greet_string )
+\end{lstlisting}  
+\end{minipage}\end{center}
+\end{subsection}
+
+\begin{subsection}{Accessing Superclass Method}
+\index{ oop : accessing superclass method }
+
+Accessing superclass method is easy, because it is 
+it's own method too :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+// calls super class method 
+h_derived.greet()
+\end{lstlisting}  
+\end{minipage}\end{center}
+\end{subsection}
+
+\begin{subsection}{Polymorphism}
+\index{oop : polymorphism}
+What happens when there is a field whose name
+is exactly the same as that of a super class?
+Or, rather what happens when there is a method
+with the same name as that of the super class?
+As it dictates, the child class method or field must
+take precedence :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def Hello2 : Hello{
+   def __new__(me, greetings='Hello, New World'){
+      me.greet_string = greetings
+   } 
+   def greet(me, person="Everyone"){
+      print( '%s to : %s\n', me.greet_string , person )
+   }  
+}
+h = new ( Hello2 )
+//prints : Hello, New World
+print( h.greet_string )
+//prints : Hello, New World to : Noga
+h.greet("Noga")
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+\end{subsection}
+
+\begin{subsection}{The supers Syntax}
+Now, that the method and the fields are being effectively shadowed, 
+how can the child access the superclass fields and the methods?
+The trick is to use the special field called \emph{supers} :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+h = new ( Hello2 )
+// Hello, New World
+print( h.greet_string )
+// Hello, New World to : Noga
+h.greet("Noga")
+//Hello, New World
+print ( h.supers.Hello.greet_string )
+//@Noga : Hello, New World
+h.supers.Hello.greet("Noga")
+\end{lstlisting}  
+\end{minipage}\end{center}
+If you observe the output of the previous snippet,
+you would notice that the superclass string is 
+set to the child class string. This is by design, 
+field names can not be shadowed, ever. 
+There will be a single copy of field of the same name,
+in a class hierarchy. If anyone tries to access
+the field having the same name as the super, 
+the nJexl system would use the super field to serve the access.  
+\end{subsection}
+
+\begin{subsection}{Superclass Initialisation}
+\index{ oop : superclass initialisation}
+How do we call superclass initialiser in the child?
+That is done using the \emph{\_\_anc\_\_} method 
+of any class:
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def Sup{
+   def __new__ ( me , val = "" ){
+      me.value = val 
+   }
+}
+def Child : Sup {
+   def __new__ ( me ){
+      me.__anc__( 'Sup' , "Hello, World")
+   }
+}
+c = new ( 'Child' )
+// prints "Hello, World"
+print ( c.value )
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+Observe how the \emph{\_\_anc\_\_} method 
+was used to call the initialiser of the super class.
+\end{subsection}
+
+
+\begin{subsection}{Multiple Inheritance}
+\index{oop : multiple inheritance}
+
+nJexl supports multiple inheritance. The syntax is
+after the colon, specify multiple comma separated super class.
+Observe :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def Sup1{
+   def __new__ ( me , val = "" ){
+      me.value1 = val
+   }
+}
+def Sup2{
+   def __new__ ( me , val = "" ){
+      me.value2 = val 
+   }
+}
+def Child : Sup1,Sup2 {
+   def __new__ ( me ){
+      me.__anc__( 'Sup1' , "123")
+      me.__anc__( 'Sup2' , "ABC")
+   }
+}
+c = new ( 'Child' )
+// prints "123"
+print ( c.value1 )
+// prints "ABC"
+print ( c.value2 )
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+However, with the advent of multiple inheritance,
+the problem of who calls who's method becomes apparent.
+For example :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def Sup1{
+   def __new__ ( me , val = "" ){
+      me.value1 = val
+   }
+   def print_val(me){ print ( me.value1 )  }
+}
+def Sup2{
+   def __new__ ( me , val = "" ){
+      me.value2 = val 
+   }
+   def print_val(me){ print ( me.value2 )  }
+}
+def Child : Sup1,Sup2 {
+   def __new__ ( me ){
+      me.__anc__( 'Sup1' , "123")
+      me.__anc__( 'Sup2' , "ABC")
+   }  
+}
+c = new ( 'Child' )
+// gives Ambiguous Method! error
+c.print_val()
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+This error came because of the nJexl system
+could not resolve whose method to call, 
+the \emph{Sup1} or \emph{Sup2}. It would not 
+be a problem if the child class had it's 
+own implementation of \emph{print\_val},
+then it would have resolved to itself.
+However, that was not the case.
+The solution to such a nuance is, of course, 
+to tell nJexl use the precise method, by calling 
+\emph{supers} :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+c = new ( 'Child' )
+// prints "123"
+c.supers.Sup1.print_val()
+// prints "ABC"
+c.supers.Sup2.print_val()
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+Thus we understood the pitfall of the multiple inheritance,
+as well as how to call multiple ancestor constructor, 
+as well as how to resolve the problem due to multiple inheritance.
+
+\end{subsection}
+
+\end{section}
+
+\begin{section}{Statics}
+
+To have class level properties and methods, which gets initialised only once,
+we must have \emph{static} constructs.
+
+\begin{subsection}{Static Fields}
+\index{ oop : static fields }
+
+These are class level fields, and can not be accessed using instances.
+This can be accessed by class level accessors :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def MyClass{}
+MyClass.foo = "bar"
+print( MyClass.foo )
+\end{lstlisting}  
+\end{minipage}\end{center}
+Observe, however, if we try to access the static field using instances,
+it would fail :
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+mc = new ( MyClass ) 
+mc.foo // error 
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+\end{subsection}
+
+\begin{subsection}{Static Initialiser}
+\index{oop : static initialiser}
+
+As always, this pose a problem, one must group all the static fields 
+in the same location where they can be initialised. This is done in the 
+specific method \emph{\_\_class\_\_} :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def MyClass{
+   def __class__(me){
+      me.foo = "bar"
+   }
+}
+print( MyClass.foo )
+\end{lstlisting}  
+\end{minipage}\end{center}
+Observe that the static initialiser also has a parameter \emph{me},
+which defines the class structure itself. Thus, we can check what class 
+it actually is :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def MyClass{
+   def __class__(me){
+      me.foo = "bar"
+      // print my name 
+      print( me.name )
+   }
+}
+print( MyClass.foo )
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+More about this later.
+
+\end{subsection}
+
+\begin{subsection}{Static Methods}
+\index{oop : static methods}
+
+Inside a class body, any method not having the first parameter
+as \emph{me} is a static method. However, albeit the me parameter
+is not passed explicitly, the parameter never the less exists,
+and one can access all the class variables using \emph{me} :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def MyClass{
+   def __class__(me){
+      me.foo = "bar"
+      // print my name 
+      print( me.name )
+   }
+   def print_class(){
+      print( me.foo )      
+   }
+}
+// call static method 
+MyClass.print_class()
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+\end{subsection}
+
+\end{section}
+
+
+\begin{section}{Operators}
+
+nJexl supports operator overloading.
+The following operators and functions can be overloaded :
+\index{ oop : operator overloading}
+
+\begin{center}
+\begin{tabular}{| l | l | }
+\hline
+operator          & method       \\ \hline
+toString          & \_\_str\_\_  \\
+hashCode          & \_\_hc\_\_   \\
+equals            & \_\_eq\_\_   \\
+compareTo         & \_\_cmp\_\_  \\
++                 & \_\_add\_\_  \\
+-                 & \_\_sub\_\_  \\
+*                 & \_\_mult\_\_ \\
+/                 & \_\_div\_\_  \\
+**                & \_\_pow\_\_  \\
+unary -           & \_\_neg\_\_  \\
+|                 & \_\_or\_\_   \\
+\&                & \_\_and\_\_  \\
+\textasciicircum  & \_\_xor\_\_  \\ \hline
+\end{tabular}
+\end{center}
+
+
+\begin{subsection}{Example : Complex Number}
+As an example, we present the class Complex number, 
+which overloads lots of operators :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def Complex {
+    def __new__ (me,x=0.0,y=0.0){
+      me.x = Q(x)
+      me.y = Q(y) 
+    }
+    def __str__(me){
+      str:format('(%f,i %f)', me.x, me.y)
+    }
+    def __eq__(me, o ){
+      ( me.x == o.x and me.y == o.y )
+    }
+    def __hc__(me){
+       31 * me.x.hashCode() + me.y.hashCode()
+    }
+    def __neg__(me){
+      return new ('Complex' , -me.x , -me.y)
+    }
+    def __add__(me,o){
+      return new ('Complex' , me.x + o.x , me.y + o.y )
+    }
+    def __sub__(me,o){
+      return new ('Complex' , me.x - o.x , me.y - o.y )
+    }
+    def __mul__(me,o){
+      return new ('Complex' , me.x * o.x  - me.y * o.y , me.x * o.y + me.y * o.x )
+    }
+    def __div__(me,o){
+      x = ( me.x * o.x  + me.y * o.y )/( o.x **2  + o.y **2 )
+      y = ( me.y * o.x  - me.x * o.y )/( o.x **2  + o.y **2 )
+      return new ('Complex' , x, y )
+    }
+}
+// test it out :
+c0 = new (Complex )
+c12 = new (Complex , 1, 2)
+c21 = new (Complex , 2, 1)
+// test some?
+print( -c12 )
+print ( c0 == -c0 )
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+\end{subsection}
+\end{section}
+
+\begin{section}{Java Connectivity}
+
+\begin{subsection}{ScriptClass}
+\index{ScriptClass}
+
+For the special variable \emph{me},
+the specific field $\$$ holds the 
+\href{https://github.com/nmondal/njexl/blob/master/lang/src/main/java/com/noga/njexl/lang/extension/oop/ScriptClass.java}{ScriptClass}, 
+that is the structure of the class itself.
+One example would be necessary :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def MyClass{
+  def __new__(me , x=0){
+    me.x = x 
+  }
+  def print_me(me){
+    print ( 'My Fields Are :')
+    print(me.fields)
+    print ( 'My Methods Are :')
+    print ( me.$.methods.keySet() )
+  }
+}
+mc = new ( MyClass )
+mc.print_me()
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+The fields are abstracted by the map \emph{fields}
+while the methods are abstracted by the map \emph{methods}.
+\end{subsection}
+
+\begin{subsection}{Finding and Using Methods}
+\index{reflection on methods}
+
+Therefore, one can find a method easily and execute it:
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+mc = new ( MyClass )
+method_name = 'print_me'
+method = mc.$.methods[method_name]
+method(mc)
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+Note that the instance methods must be passed the first parameter
+as the instance on which the method should be called.
+
+However, there is another way to do it which does not require
+the method to associate with an instance:
+\index{reflection : instance methods}
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+mc = new ( MyClass )
+method_name = 'print_me'
+// method is already associated with mc
+method = mc[method_name]
+// call method
+method()
+\end{lstlisting}  
+\end{minipage}\end{center}
+
+Same thing is applicable for statics also.
+In this case however :
+\index{reflection : static methods}
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def MyClass{
+  def __new__(me , x=0){
+    me.x = x 
+  }
+  // this is static 
+  def print_me(some_instance){
+    print ( 'My Fields Are :')
+    print(some_instance.fields)
+    print ( 'My Methods Are :')
+    print ( me.methods.keySet() )
+  }
+}
+mc = new ( MyClass )
+method_name = 'print_me'
+method = MyClass[method_name]
+method(mc)
+\end{lstlisting}  
+\end{minipage}\end{center}
+there is no need to pass anything, 
+and the way to use it, is to get it like properties.
+
+\end{subsection}
+
+\end{section}

@@ -1,0 +1,2 @@
+selenium.open('/')
+assert:test{ @@selenium.isElementPresent('xxx') }('Element xxx is present?')
