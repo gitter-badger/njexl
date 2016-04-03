@@ -1,9 +1,9 @@
 " Vim syntax file
 " Language:    jxl 
-" Version:     0.1
+" Version:     0.3
 " Maintainer:  Nabarun Mondal <nabarun.mondal at gmail.com>
 " URL:		    
-" Last Change: 2016 Jan 29
+" Last Change: 2016 April 03
 " Disclaimer:  It's an absolut basic, very simple and by far not finished
 " syntax file! It only recognizes basic keywords and  constructs like comments
 " any help is welcome
@@ -14,23 +14,23 @@ syn clear
 " syntax highlighting for words that are not identifiers:
 " int unit double String Array byte short char long float
 syn keyword jxlExternal		import as 
-syn keyword jxlConditional	if else where break continue
+syn keyword jxlConditional	if else where break continue until
 syn keyword jxlRepeat			while for 
-syn keyword jxlType			bool enum int INT double DEC NUM byte short char long float
+syn keyword jxlType			bool enum int INT double DEC NUM byte short char long float Z Q
 syn keyword jxlType			isa type var
 
 syn keyword jxlStatement		return
 syn keyword	jxlBoolean		true false
 syn keyword jxlConstant		null
 syn keyword	jxlTypedef		my me supers  
-syn keyword jxlLangClass	    set dict list array select date time instant lfold rfold index rindex sqlmath minmax 
-syn keyword jxlLangClass	    system read write json xml matrix thread #atomic atomic random shuffle error bye
+syn keyword jxlLangClass	    set dict list array heap select date time instant lfold rfold index rindex sqlmath minmax 
+syn keyword jxlLangClass	    system range read write print json xml matrix #clock thread #atomic atomic random shuffle error bye
 
 " TODO differentiate the keyword class from MyClass.class -> use a match here
 
 
 syn keyword	jxlOperator		new and or xor not size empty #def def 
-syn keyword	jxlOperator		lt le gt ge ne
+syn keyword	jxlOperator		lt le gt ge ne eq
 
 
 " same number definition as in java.vim
