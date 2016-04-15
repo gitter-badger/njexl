@@ -130,6 +130,8 @@ val = long('42') // val is 42
 val = long(42) // val is 42 
 val = long( 10.1 ) // val is 10 
 val = long( 10.9 ) // val is 10 
+// can get the underlying long for a chrono 
+val = long(date())
 \end{lstlisting}
 
 \end{subsection}
@@ -169,6 +171,7 @@ val = Z('hi',10,42 )// val is 42 int
 val = Z('42121131231313') // val is long 
 val = Z(54,13 ) // val is 42 
 val = Z('4212113123131313131121323131') // val is BigInteger 
+val = Z(date()) // val is Long
 \end{lstlisting}
 \end{minipage}\end{center}
 
@@ -383,7 +386,11 @@ dt = time('2016/02/18', 'yyyy/MM/dd' )
 dt = time('2016-02-18', 'yyyy-MM-dd' ) 
 // dt := 2016-02-18T00:00:00.000+05:30
 \end{lstlisting}
+\end{subsection}
 
+\begin{subsection}{Adjusting Timezones}
+\index{ timezones }
+The \emph{time()} function handles the timezones properly.
 If you want to convert one time to another timezone, you need to give the time, 
 and the \href{http://joda-time.sourceforge.net/timezones.html}{timezone}:
 
@@ -393,6 +400,14 @@ dt_honolulu = time(dt , 'Pacific/Honolulu' )
 // dt_honolulu := 2016-02-17T17:23:02.754-10:00 
 dt_ny = time( dt, 'America/New_York' ) 
 // dt_ny := 2016-02-17T22:23:02.754-05:00
+\end{lstlisting}
+
+Obviously one can convert from a string and specify the timezone 
+in a single call :
+
+\begin{lstlisting}[style=JexlStyle]
+t1 = time('14042016', 'ddMMyyyy' , 'Pacific/Honolulu' )
+//2016-04-13T08:30:00.000-10:00 ## DateTime
 \end{lstlisting}
 
 \end{subsection}

@@ -57,7 +57,7 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>#|[a-zA-Z_][a-zA-Z_0-9]*:[a-zA-Z_][a-zA-Z_0-9]*|\{\S+\}|\*\* \S+|\b&lt;\-|\bint\b|\bINT\b|\bshort\b|\bbyte\b|\bchar\b|\bdouble\b|\blong\b|\bZ\b|\bQ\b|\bNUM\b|\bsub\b|\btime\b|\bbool\b|\bstr\b|\blist\b|\bset\b|\blistLiteral\b|\barray\b|\barrayFromList\b|\bwithin\b|\bdict\b|\brange\b|\bsqlmath\b|\bminmax\b|\btypeof\b|\bselect\b|\bindex\b|\bjson\b|\bxml\b|\bpartition\b|\berror\b|\btest\b|\bLIST\b|\buntil\b|\bread\b|\bwrite\b|\blines\b|\bprint\b|\bmset\b|\bsend\b|\bsorta\b|\bsortb\b|\bjoin\b|\btry\b|\bclock\b|\b[r|l]fold\b|\btokens\b|\bhash\b|\bfopen\b|\bthread\b|\batomic\b|\bheap\b|\berror\b</string>
+			<string>#|[a-zA-Z_][a-zA-Z_0-9]*:[a-zA-Z_][a-zA-Z_0-9]*|\{\S+\}|\*\* \S+|\b&lt;\-|\bint\b|\bINT\b|\bshort\b|\bbyte\b|\bchar\b|\bdouble\b|\blong\b|\bZ\b|\bQ\b|\bNUM\b|\bsub\b|\btime\b|\bbool\b|\bstr\b|\blist\b|\bset\b|\blistLiteral\b|\barray\b|\barrayFromList\b|\bwithin\b|\bdict\b|\brange\b|\bsqlmath\b|\bminmax\b|\btypeof\b|\bselect\b|\bindex\b|\bjson\b|\bxml\b|\bpartition\b|\berror\b|\btest\b|\bLIST\b|\buntil\b|\bread\b|\bwrite\b|\blines\b|\bprint\b|\bmset\b|\bsend\b|\bsorta\b|\bsortd\b|\bjoin\b|\btry\b|\bclock\b|\b[r|l]fold\b|\btokens\b|\bhash\b|\bfopen\b|\bthread\b|\batomic\b|\bheap\b|\berror\b</string>
 			<key>name</key>
 			<string>support.function.jexl</string>
 		</dict>

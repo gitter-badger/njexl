@@ -75,16 +75,22 @@ d = dict(k,v)
 /*  d = { 'a' : 1 , 'b' : 2, 'c' : 3 }  */ 
 \end{lstlisting}
 
+This is formally the operation called \href{https://en.wikipedia.org/wiki/Pairing}{pairing}:
+$$
+D : (K,V) \to T \; ; \; t_i = ( k_i, v_i ) \; ; \; k_i \in K \; ; \; v_i \in V 
+$$
+
 \end{subsection}
 
 \end{section}
 
 
-\begin{section}{Alternate Iteration Flow Constructs}
+\begin{section}{Constructs Altering the Iteration Flow}
+In normal iterative languages, there are \emph{continue} and \emph{break}.
+The ideas are borrowed from them, and improved to give a declarative feel onto it.
 
 \begin{subsection}{Continue and Break}
 \index{Flow Control : continue, break }
-In normal iterative languages, there are continue and break.
 
 The idea of continue would be as follows :
 \begin{lstlisting}[style=JexlStyle]
@@ -222,9 +228,9 @@ So, with a body, the boundary value is included into $break$.
 \end{subsection}
 
 \begin{subsection}{Uses of Partial}
-One can use the $PARTIAL$ for using one one function to substitute another,
+One can use the \emph{PARTIAL} for using one one function to substitute another,
 albeit loosing efficiency.
-Below, we use list to create $effectively$ a set:
+Below, we use list to create \emph{effectively} a set:
 
 \begin{lstlisting}[style=JexlStyle]
 l = list{ continue( $ @ _$_ ) ; $ }( [1,1,2,3,1,3,4] )
@@ -295,7 +301,7 @@ $$
 such that the condition ( \href{https://en.wikipedia.org/wiki/Predicate\_(mathematical\_logic)}{predicate} ) $P(e) = true $. \index{predicate}
 This is what join really means. Formally, then :
 $$
-\{  e \in S_1 \times S_2 \times ... \times S_n \; | \; P(e) \} 
+J(P,e) := \{  e \in S_1 \times S_2 \times ... \times S_n \; | \; P(e) \} 
 $$
 
 \end{subsection}
@@ -329,7 +335,8 @@ for ( a : A ){
 
 \begin{subsection}{Join Function}
 \index{join()}
-Observe that the free join, is really a full cross product, 
+Observe that the free join, that is a join without any predicate, 
+or rather join with predicate defaults to true is really a full cross product, 
 and is available using the power operator :
 
 \begin{lstlisting}[style=JexlStyle]
@@ -354,7 +361,7 @@ p2 = join{  $.0 != $.1 } ( A , A )
 \index{Permutations}
 
 In the last subsection we figured out how to find 2 permutation.
-The problem is when we move beyond 2, the condition can not be aptly specified as $\$.0 != \$.1 $.
+The problem is when we move beyond 2, the condition can not be aptly specified as $\$.0 \ne \$.1 $.
 It has to move beyond. So, for $^3P_3$ we have :
 
 \begin{lstlisting}[style=JexlStyle]
@@ -421,13 +428,30 @@ sub(a,1,-1) // [1, 2, 3]
 \end{lstlisting}
 If you do not like the name $sub()$ , the same function is aliased under $project$.
 
-While project works on a range $(from,to)$ , the generic idea can be expanded. 
+While project works on a range \emph{(from,to)}, the generic idea can be expanded. 
 What if I want to create a newer collection from a collection using a $range$ type? 
 Clearly I can : \index{collection : slicing }
 
 \begin{lstlisting}[style=JexlStyle]
 a =[0, 1, 2, 3, 4]
 a[[0:3:2]] // @[0, 2]
+\end{lstlisting}
+
+Now, given a set of indices, one can define a generic project operation, 
+but that is very easy to do using collection comprehensions :
+
+\begin{lstlisting}[style=JexlStyle]
+a = [0, 1, 2, 3, 4]
+indices = [0,2]
+p_a = array{ continue( _ != $ ) ; a[$] }(indices)  
+\end{lstlisting}
+This simply selects those indices in order from the collection $a$.
+In fact, defining \emph{project()} or \emph{sub()} is easy :
+
+\begin{lstlisting}[style=JexlStyle]
+a = [0, 1, 2, 3, 4]
+indices = [from,to]
+p_a = array{ continue( _ < indices.0 or _ > indices.1 ) ; $ }(a)  
 \end{lstlisting}
 
 \end{subsection}

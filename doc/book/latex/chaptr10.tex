@@ -294,12 +294,12 @@ of error it returns the value passed in the argument, default for that is $null$
 Observe :
 
 \begin{lstlisting}[style=JexlStyle]
-import 'java.lang.Integer' as INT 
-n = try{ INT:parseInt('42') }()   // n := 42 int 
+import 'java.lang.Integer' as Int 
+n = try{ Int:parseInt('42') }()   // n := 42 int 
 // error will be raised and caught 
-n = try{ INT:parseInt('xx42') }()   // n := null
+n = try{ Int:parseInt('xx42') }()   // n := null
 // error and 0 value would be assigned 
-n = try{ INT:parseInt('xx42') }(0)   // n := 0
+n = try{ Int:parseInt('xx42') }(0)   // n := 0
 \end{lstlisting}
 
 \end{subsection}
@@ -334,10 +334,10 @@ that error was raised, actually. It lets one go ahead with the default value.
 To solve this issue, there is multiple return, on error.
 
 \begin{lstlisting}[style=JexlStyle]
-import 'java.lang.Integer' as INT 
-#(n,:e)  =  INT:parseInt('42') // n := 42 int, e := null 
+import 'java.lang.Integer' as Int 
+#(n,:e)  =  Int:parseInt('42') //n := 42 int, e := null 
 // error will be raised and caught 
-#(n, :e) = INT:parseInt('xx42')  // n := null, e:= NumberFormatException 
+#(n,:e) = Int:parseInt('xx42') //n := null, e:= NumberFormatException 
 \end{lstlisting}
 
 Observe the ``:'' before the last argument $e$, to tag it as the error container.
@@ -345,8 +345,8 @@ Thus, the system knows that the error needs to be filled into that specific vari
 Thus, one can write almost linear code like this:
 \begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
-import 'java.lang.Integer' as INT 
-#(n,:e)  =  INT:parseInt(str_val)
+import 'java.lang.Integer' as Int 
+#(n,:e)  =  Int:parseInt(str_val)
 empty(e) or bye('failure in parsing ', str_val )  
 \end{lstlisting}
 \end{minipage}\end{center}

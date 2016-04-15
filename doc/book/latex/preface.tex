@@ -1,8 +1,9 @@
 \chapter{Preface}
  
 {\LARGE nJexl} initially was a continuation of \href{http://commons.apache.org/proper/commons-jexl}{Apache Jexl}\index{apache jexl} project.
-That project was not active for 17 months, and I needed to use it, found so many dangling issues, 
-so I was forced to fork and maintain it. The reasons for further modifications are to be found below.
+That project was not active for 17 months, and I needed to use it. With so many dangling issues, 
+I was literally forced to fork and maintain it for a full year. But I did not stop there, and modified the sources further.
+The reasons for further modifications are to be found below.
 
 \begin{subsection}{A brief History}
 \index{ nJexl : history }
@@ -10,12 +11,13 @@ All I wanted is a language where I can write my test automation freely - i.e. us
 The standard book, and there is only one for formal software testing is 
 that of \href{http://www.amazon.com/Software-Testing-Techniques-2nd-Edition/dp/1850328803}{Beizer}.\index{Beizer}
 
-There was no language available which lets me intermingle with Java POJOs and let me write my test automation (validation and verifications). 
+There was no language available which lets me intermingle with Java \href{https://en.wikipedia.org/wiki/Plain\_Old\_Java\_Object}{POJO}s and let me write my test automation (validation and verifications). 
 Worse still - one can not write test automation freely using Java. 
 As almost all of modern enterprise application are written using Java, it is impossible to avoid Java 
 and write test automation : in many cases you would need to call appropriate Java methods to automate APIs.
 
-Thus, one really needs a JVM scripting language that can freely call and act on POJOs.
+Thus, one really needs a \href{https://en.wikipedia.org/wiki/Java\_virtual\_machine}{JVM} 
+scripting language that can freely call and act on POJOs.
 The idea of extending JEXL thus came into my mind : a language that has all the good stuffs from
 the vast Java libraries, but clearly not verbose enough.
 
@@ -23,23 +25,25 @@ After cloning JEXL - and modifying it real heavy - a public release in a public 
 seemed a better approach. There, multiple people can look into it, rather than one lone ranger working from his den.
 And hence nJexl was born. The \emph{n} stands for \emph{Neo,New}, 
 not \href{https://nmandalh.wordpress.com}{Noga}, which is, by the way, my nick name.
-The stylised form $nJexl$ has capital $J$ because it is fed by $JVM$.
+The stylised form \emph{nJexl} has capital $J$ because it is fed by \emph{JVM}.
 
 \end{subsection}
 
 \begin{subsection}{An Open Challenge From Java Land}
 \index{ nJexl : challenge from Java Land}
 
-This actually was an \href{http://steve-yegge.blogspot.in/2006/03/execution-in-kingdom-of-nouns.html}{open challenge},\\
-A \emph{noted PhD} from Sun, read that essay, and had this to say: \\
+Another motivation came from a blog here : 
+\href{http://steve-yegge.blogspot.in/2006/03/execution-in-kingdom-of-nouns.html}{open challenge},\\
+A \emph{noted PhD} from Sun, after reading that essay (on which I almost surely agree), had this to say: \\
 
 \emph{ 
 ``hmm, chuckle :) This guy has too much time on his hands ! he should be doing useful work, or inventing a new language to solve the problems. Its easy to throw stones - harder to actually roll up your sleeves and fix an issue or two, or write/create a whole new language, and then he should be prepared to take the same criticism from his peers the way he's dishing it out for others. Shame - I thought developers were constructive guys and girls looking to make the lives of future software guys and girls easier and more productive, not self enamouring pseudo-intellectual debaters, as an old manager of mine used to say in banking IT - `do some work' !''}
 
 
-And I like to think that I just did. That too, while at home, in vacation time, and in night time 
+And I like to think that I just did whatever the noted PhD said us programmers to do. 
+That too, while at home, in vacation time, and in night time  outside office hours.
 ( from 8 PM to 3 AM. - see the \href{https://github.com/nmondal/njexl/commits/master}{check-ins}.)
-Alone. But the users are the best judge.
+And that too, being a lone ranger, alone. But the users are the best judge whether I actually won the challenge or not.
 
 \end{subsection}
 

@@ -1,13 +1,42 @@
 \chapter{Formal Constructs}\label{using-predicates}
 
-{\LARGE F}ormalism is the last thing that stays in a software developers mind nowadays. This is a result of mismanaging expectation - software may be art, but is not science at all. Most of the cases, a bit of formal thinking solves a lot of the problems that can come.
-This section would be specifically to understand what sort of formalism we can use in practice.
+{\LARGE F}ormalism is the last thing that stays in a software developers mind nowadays. 
+This is a result of mismanaging expectation of how software and coding is taught and practiced in industry.
+The majority view in the Industry is :
+\begin{center}
+\emph{Software is a form of art, and is not science at all}. 
+\end{center}
+It is easy to showcase that this is the prevailing feeling. When the last time people
+actually did any mathematics to reach any conclusion like - what would be the optimal
+object hierarchy size if any? What should be the optimal pool size for an application?
+How one can optimally transform the data? 
+
+Most of these cases, a bit of formal thinking solves a lot of the problems that can come due to bad design,
+if there was a design in the first place (for most parts, there are none). 
+That is, because software is nothing but formally applied computer science, and industry lacks computer science.
+What can be done by 100 can also be done by 10 people, and no, they do not have to be really really smart,
+they only have to be understanding the underlying structure. 
+In reality software is :
+
+\begin{center}
+\emph{Software is to Applied Computation is what Architecture is to applied sciences, i.e. Engineering.}
+\end{center}
+Unless you have an idea of the underlying mechanism, most won't work,
+and those who would luckily work - would simply fail in a slightly longer timeframe.
+Moreover, user does not care about brilliant design and optimal code, user care about getting his/her problem 
+solved, fast. It is business who should care about how to do things optimally and repeatedly, otherwise,
+the business model won't sustain. 
+
+This section would be specifically to understand what sort of formalism from computation 
+we can use in practice to develop and test software to aid business. Because in the end, profit and revenue 
+runs the show.
 
 \begin{section}{Conditional Building Blocks}
 
 \begin{subsection}{Formalism}
 \index{Predicate Logic}
-In a formal logic like FOPL, the statements can be made from the basic ingredients, 
+In a formal logic like \href{https://en.wikipedia.org/wiki/First-order\_logic}{FOPL}, 
+the statements can be made from the basic ingredients, 
 \emph{``there exist''} and \emph{``for all''}. We need to of course put some logical stuff like $AND$, $OR$,
 and some arithmetic here and there, but that is what it is.
 
@@ -85,8 +114,9 @@ in = l @ l // true
 \end{lstlisting}
 \end{minipage}\end{center}
 
-This was not simply put in the place simply because we dislike $x.contains(y)$, in fact we do.
-We dislike the form of object orientation where there is no guarantee that $x$ would be null or not.
+This was not simply put in the place simply because we simply dislike $x.contains(y)$. 
+In fact we do dislike the form of object orientation where there is no guarantee that $x$ would be null or not.
+Worse, it is impossible to test for \emph{null} always, such is the prevailing nature of the bad code in Industry. 
 Formally, then :
 
 \begin{lstlisting}[style=JexlStyle]
@@ -210,7 +240,20 @@ i = index{  $ > 42 }(l) // i : -1, failed
 
 The way index function operates is: the statements inside the anonymous block are executed.
 If the result of the execution is true, the index function returns the index in the collection.
-If none of the elements matches the true value, it returns $-1$.
+If for none of the elements the anonymous block assumes the true value, it returns a failure by returning $-1$.
+
+NOTE that in the nJexl negative indices are proper indices into a collection.
+Thus, a code like this is tantamount to be a disaster waiting to happen:
+ 
+\begin{lstlisting}[style=JexlStyle]
+l = [ 1, 2, 3, 4, 5, 6 ]
+// search an element   
+i = index{ $ > 42 }(l) // i : -1
+// now I have found the element, so :
+x = l[i] // no, x is 6. we must check the index value for >=0
+\end{lstlisting}
+
+
 Index function runs from left to right, and there is a variation $rindex()$ \index{index()}
 which runs from right to left.
 
@@ -490,6 +533,7 @@ gate_2 = b*b // [ [0,0],[0,1],[1,0],[1,1] ]
 another_gate_2 = b ** 2 // same as b*b 
 gate_3 = b ** 3 // well, all truth values for 3 input gate 
 gate_4 = b ** 4 // all truth values for 4 input gate 
+b ** 0 // [] : power zero is empty collection
 \end{lstlisting}
 
 String is also a collection, and all of these are applicable for string too.
@@ -501,6 +545,37 @@ s2 = s**2 // "HelloHello"
 s_1 = s**-1 // "olleH"
 s_2 = s**-2 // "olleHolleH"
 \end{lstlisting}
+
+One interesting case is that of negative power, which simply reverses a collection, 
+if such thing is possible : \index{collections : reverse}
+
+\begin{lstlisting}[style=JexlStyle]
+b = [0,1]
+rb = b** -1 // [1 , 0 ]
+s = "hello" 
+rs = s**-1 // "olleh" 
+\end{lstlisting}
+
+A negative power is a valid power, thus:
+
+\begin{lstlisting}[style=JexlStyle]
+b = [0,1]
+rb = b** -2 // [[1, 0], [1, 1], [0, 0], [0, 1]]
+s = "hello" 
+rs = s**-2 // "olleholleh" 
+\end{lstlisting}
+
+these are simply not there, in the examples section
+we will see how they ease out some interesting algorithms.
+A very practical use case of power operator for string
+is padding by zeros for a binary integer of a fixed size:
+
+\begin{lstlisting}[style=JexlStyle]
+n = 23
+bn = str(n,2) // convert into binary string
+padded_8 = "0" ** (8 - #|bn| ) + bn // 00010111 : convert to 8 bit 
+\end{lstlisting}
+
 \end{subsection}
 
 \begin{subsection}{Collection Relation Comparisons}
@@ -577,6 +652,7 @@ s = set(1,2,3)
 l = list(1,3,3,2)
 sub = s < l  // true  
 sup = l > s // true 
+s == l // false : promotes both to list and checks
 u = l | s // u = [1,2,3,3 ]
 \end{lstlisting}
 \end{minipage}\end{center}
@@ -634,7 +710,98 @@ sw = s #^ prefix // true
 ew = s #$ suffix // true 
 \end{lstlisting}
 
+These are not fancy stuffs. These are necessary to move over from the stupidity that is known 
+as \emph{null based programming} where lots of efforts gets nullified by the stupidity of null.
+Observe, the same null thing:
+
+\begin{lstlisting}[style=JexlStyle]
+s = 'abracadabra'
+prefix = 'abra'
+null #^ s // false 
+prefix #^ null // false 
+[null,null] #^ null // true 
+\end{lstlisting}
+
+and thus, we can see where it does the value add.
+Python fails in this case, because none of it's syntaxes permits None type
+to be used as collection to yield True/False for \emph{in} or \emph{matches}.  
+
+There is this other operator called \emph{InOrder : \#@ } \index{collections : in order} which
+tells whether a sub collection exists in order, as tuple in the larger collection 
+when the larger collection is considered as tuple:
+
+\begin{lstlisting}[style=JexlStyle]
+l = [0,1,2,3,4]
+[1,2] #@ l // true 
+[2] #@ l // true 
+[2,1] #@ l // false 
+\end{lstlisting}
+as usual, they are all null ready.    
+The \emph{in : @} operator is different from \emph{in order},
+because clearly :
+
+\begin{lstlisting}[style=JexlStyle]
+l = [0,1,2,3,4]
+[2,1] #@ l // false 
+[2,1] @ l // true 
+\end{lstlisting}
+ 
+Thus, in order is precisely what it is, if the items from the passed collection
+occurs as sub tuples ( can be build by projection operations ) of the parent collection. 
+Formally, let's end this with a bit of formalism as we have started it.
+
+Define a projection operation $\Pi_{i,j}(C) $ with $i \le j $ which slice the collection $C$
+from index $i$ to index $j$, or rather a \emph{sub()} function. 
+The following are defined as such :
+
+\begin{enumerate}
+\item{
+  \textbf{ In Order :} \\
+   $ x \; \#@ \; C $ iff $\exists (i,j)$ such that $\Pi_{i,j}(C) = x $.  
+}
+\item{
+  \textbf{ Starts With :} \\
+   $ C \; \# \textasciicircum \; x $ iff $\exists j$ such that $\Pi_{0,j}(C) = x $.  
+}
+\item{
+  \textbf{ Ends With :} \\
+   $ C \; \#\$ \; x $ iff $\exists i$ such that $\Pi_{i,|C|-1}(C) = x $,
+   where $|C|$ is the cardinality of collection C.
+}
+\end{enumerate}
 \end{subsection}
+
+\begin{subsection}{Finding the Relation between Collections}
+Sometimes it is necessary to find relation between collections.
+Instead of going about it in a round about way, nJexl lets you do so
+in a genuine manner, by using the \emph{SetOperations} class.
+Observe when \emph{set:} is aliased to the class:
+\index{ collection : set\_relation() }
+\begin{lstlisting}[style=JexlStyle]
+A = [0,1,2,3,4]
+B = [1,2,4]
+C = [4,6,9]
+D = [0,2,3]
+// treat each collection as sets
+r1 = set:set_relation(B,A) // SUBSET
+r2 = set:set_relation(A,B) // SUPERSET
+r3 = set:set_relation(B,C) // OVERLAP
+r4 = set:set_relation(D,C) // INDEPENDENT
+// thus due to conversation of both the inputs to sets...
+r5 = set:set_relation([0,2,2],[2,0]) // EQUAL !!!
+\end{lstlisting}
+Hence, to avoid such issues use \emph{list\_relation} method :
+\index{ collection : list\_relation() }
+\begin{lstlisting}[style=JexlStyle]
+// treat each collection as lists
+r5 = set:list_relation([0,2,2],[2,0]) // SUPERSET
+r6 = set:list_relation([2,0],[0,2,2]) // SUBSET
+\end{lstlisting}
+
+
+\end{subsection}
+
+
 
 \end{section}
 

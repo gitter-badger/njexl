@@ -130,8 +130,18 @@ lfold{
    transform_function($)
 }(items)
 \end{lstlisting}
+And we have practically nothing there to write. 
+Fold is nothing but a substitute of \emph{for} with the iterating item
+is defined as \emph{\$}, so the above code can be written explicitly as :
 
-And we have practically nothing there to write. This sort of description of the problem induces what is known as 
+\begin{lstlisting}[style=JexlStyle]
+for ( $ : items ){
+   transform_function = find_appropriate_transform($)
+   transform_function($)
+}
+\end{lstlisting}
+but, this would be less succinct (but faster, in general).  
+This sort of description of the problem induces what is known as 
 \href{https://en.wikipedia.org/wiki/Minimum_description_length}{Minimum Description Length}\index{Minimum Description Length}. 
 This is closely linked with \href{https://en.wikipedia.org/wiki/Kolmogorov_complexity}{Chaitin Solomonoff Kolmogorov complexity}.
 \index{Chaitin Solomonoff Kolmogorov complexity}\index{CSK complexity} 

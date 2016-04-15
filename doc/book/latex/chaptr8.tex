@@ -21,8 +21,8 @@ nJexl has 3 types of functions.
 \begin{enumerate}
 \item{Explicit Functions :
 \index{function : explicit}
-This functions are defined using the $def$ keywords.
-They are the $normal$ sort of functions, which everyone is aware of.
+This functions are defined using the \emph{def} keywords.
+They are the \emph{normal} sort of functions, which everyone is aware of.
 As an example take this :
 
 \begin{lstlisting}[style=JexlStyle]
@@ -207,7 +207,7 @@ and we are done. This is as declarative as one can get.
 
 \begin{subsection}{Recursion}
 \index{function : recursion}
-It is customary to introduce recursing with \href{https://en.wikipedia.org/wiki/Factorial}{factorial}.
+It is customary to introduce recursion with \href{https://en.wikipedia.org/wiki/Factorial}{factorial}.
 We would not do that, we would introduce the concept delving the very heart of the foundation of mathematics, 
 by introducing \href{https://en.wikipedia.org/wiki/Peano_axioms}{Peano Axioms}.
 \index{function : Peano Axioms}
@@ -230,7 +230,10 @@ def add(a,b){
 These functions do not only show the trivial addition in a non trivial manner, 
 it also shows that the natural number system is recursive.
 Thus, a system is recursive if and only if it is in 1-1 correspondence with the natural number system.
-Observe that the addition function does not even have any addition symbol anywhere!
+Observe that the function \emph{add()} does not even have any addition symbol anywhere!
+This is obviously cheating, because one can not use minus operator to define plus operation.
+A better less cheating solution is to use function composition and power operator :
+$a+b := s(...s(s(a)))$ b times, that is $s^b(a)$, which we would discuss later.
 
 Now we test the functions:
 
@@ -274,9 +277,9 @@ Now let us take another piece of code:
 multiplier = def (i) {  i * factor } 
 \end{lstlisting}
 
-There are two free variables in multiplier: $i$ and $factor$. One of them, $i$, is a formal parameter to the function. 
+There are two free variables in multiplier: $i$ and \emph{factor}. One of them, $i$, is a formal parameter to the function. 
 Hence, it is bound to a new value each time multiplier is called. 
-However, $factor$ is not a formal parameter, then what is this? 
+However, \emph{factor} is not a formal parameter, then what is this? 
 Let us add one more line of code:
 
 \begin{lstlisting}[style=JexlStyle]
@@ -450,8 +453,14 @@ factorial_n = f**n
 r = factorial_n(0,1)
 write ( r[1] ) // prints 120
 \end{lstlisting}
-
-Now, we can do Fibonacci :
+What we did there is double wiring. Assume a function block taking
+two inputs and two outputs, i.e. a vector function. 
+Then we can split the definition of factorial as :
+$$
+Fact : < n-1, f(n-1) > \to < n , n f(n-1) >
+$$
+and we have the factorial moving over with $n=1$, thus making $f(0) = 1$.
+Now, we can do Fibonacci in the same way:
 \index{Fibonacci}
 \begin{lstlisting}[style=JexlStyle]
 def f( ) { p = __args__ ; n = p[0] + p[1] ; [ p[1] , n ] }
@@ -460,6 +469,8 @@ fibonacci_n = f**n
 r = fibonacci_n(0,1)
 write ( r[1] ) // prints 8 
 \end{lstlisting}
+
+
 \end{subsection}
 
 \begin{subsection}{Eventing}
@@ -836,7 +847,7 @@ But some condition can never be removed even in this way.
 
 \begin{subsection}{Dictionaries and Functions}
 \index{function : in a dictionary}
-Suppose we are given a charter to verify a sorting function.
+Suppose we are given the charter to verify a sorting function.
 Observe that we have already verified it, but this time, 
 it comes with a twist, sorting can be both ascending and descending.
 
@@ -928,7 +939,7 @@ We start with some functions we have discussed, and some functionalities which w
 
 \begin{subsection}{Range Objects in Detail}
 \index{range()} \index{range : date} \index{range : char }
-The $for$ loop becomes declarative, the moment we put a range in it.
+The \emph{for} loop becomes declarative, the moment we put a range in it.
 Till this time we only discussed part of the range type, only the numerical one.
 We would discuss the $Date$ and the $Symbol$ type range.
 
@@ -1087,7 +1098,7 @@ Finding match index of a collection : \index{fold : index}
 inx = lfold{ break ( $  > 3 ){  _$_ = _ }  }( [1,2,1,2,3,4,5]  )
 \end{lstlisting}
 
-So, as we can see, the $fold$ functions are the basis of every other functions
+So, as we can see, the \emph{fold} functions are the basis of every other functions
 that we have seen. We show how to replace select function using fold: 
 \index{fold : select}
 \begin{lstlisting}[style=JexlStyle]
