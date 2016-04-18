@@ -1,0 +1,13 @@
+def try_matching(x){
+    #match(x){
+          case 42 : "Answer to life Universe and Everything!"
+          case $ < 1000 : "Less than 1000!"
+          case $ : $  /* return the value itself */
+        }
+}
+
+y = try_matching(42)
+print(y)
+y = try_matching(0)
+print(y)
+try_matching("Default")

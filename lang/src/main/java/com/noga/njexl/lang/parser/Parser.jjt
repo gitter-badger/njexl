@@ -100,6 +100,8 @@ PARSER_END(Parser)
     | < AS : "as" >
     | < ATOMIC : "#atomic" > /* To ensure that the code block stays atomic */
     | < CLOCK : "#clock" > /* To benchmark a block */
+    | < CASE : "case" > /* Case statement */
+    | < MATCH : "#match" > /* Match block for casing on first match basis */
 }
 
 
@@ -240,6 +242,17 @@ void Statement() #void : {}
     | LabelledStatement()
     | AtomicStatement()
     | ClockStatement()
+    | MatchStatement()
+}
+
+void CaseStatement() #CaseStatement : {}
+{
+    <CASE>  Expression()  <COLON> Expression() ( <SEMICOL> (<LINE>)* | (<LINE> )+ )
+}
+
+void MatchStatement() : {}
+{
+    <MATCH> <LPAREN> Expression() <RPAREN> <LCURLY> (<LINE>)* ( CaseStatement() )+ <RCURLY>
 }
 
 void GoToStatement() : {}
@@ -357,6 +370,8 @@ void Expression() #void : {}
                         Expression()
                         |
                         ClockStatement()
+                        |
+                        MatchStatement()
                       )
                      #Assignment(2) )?
 }

@@ -717,6 +717,12 @@ public class ExtendedScriptTest extends JexlTestCase {
     }
 
     @Test
+    public void testCasing() throws Exception{
+        Object o = runScript(JEXL, "samples/casing");
+        assertEquals( "Default", o );
+    }
+
+    @Test
     public void testSoapCall() throws Exception{
         Object o = runScript(JEXL, "samples/soap.jxl");
         assertTrue((Boolean) o);

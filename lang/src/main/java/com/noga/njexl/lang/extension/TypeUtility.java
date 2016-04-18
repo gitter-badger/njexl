@@ -28,6 +28,7 @@ import com.noga.njexl.lang.extension.iterators.*;
 import com.noga.njexl.lang.extension.oop.ScriptClassInstance;
 import com.noga.njexl.lang.internal.Introspector;
 import com.noga.njexl.lang.parser.*;
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
@@ -365,10 +366,11 @@ public final class TypeUtility {
             anon = (AnonymousParam) args[0];
             args = shiftArrayLeft(args, 1);
         }
-        if (args.length < 2) return false;
-        String text = args[0].toString();
-        String regex = args[1].toString();
         int flags = Pattern.DOTALL | Pattern.MULTILINE;
+        // in case a string is given, use this as regex and return a pattern
+        if (args.length < 2) return Pattern.compile(String.valueOf(args[0]), flags);
+        String text = String.valueOf(args[0]) ;
+        String regex = String.valueOf(args[1]);
         if (args.length > 2) {
             if (castBoolean(args[2])) {
                 flags |= Pattern.CASE_INSENSITIVE;

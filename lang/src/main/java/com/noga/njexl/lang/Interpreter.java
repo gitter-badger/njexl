@@ -2903,6 +2903,46 @@ public class Interpreter implements ParserVisitor {
     /**
      * {@inheritDoc}
      */
+    @Override
+    public Object visit(ASTCaseStatement node, Object data) {
+        // it should  never get called...
+        return data;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object visit(ASTMatchStatement node, Object data) {
+        boolean itemExists = context.has(Script._ITEM_);
+        Object old = context.get(Script._ITEM_);
+        try {
+            Object match = node.jjtGetChild(0).jjtAccept(this, data);
+            context.set(Script._ITEM_, match);
+            int n = node.jjtGetNumChildren();
+            for (int i = 1; i < n; i++) {
+                JexlNode caseNode = node.jjtGetChild(i);
+                Object expression = caseNode.jjtGetChild(0).jjtAccept(this, data);
+                if (expression == null) continue;
+                boolean bMatch = expression instanceof Boolean && (Boolean)expression ;
+                if ( bMatch || Objects.equals( expression, match )){
+                    return  caseNode.jjtGetChild(1).jjtAccept(this,data);
+                }
+            }
+            throw new UnsupportedOperationException("None of the cases matched!") ;
+        }finally {
+            // reset $
+            if ( itemExists ){
+                context.set(Script._ITEM_, old );
+            }else{
+                context.remove(Script._ITEM_);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Object visit(ASTGoToStatement node, Object data) {
         boolean jump = true;
         if (node.jjtGetNumChildren() > 1) {

@@ -942,6 +942,34 @@ public final class Debugger implements ParserVisitor {
         return data;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object visit(ASTCaseStatement node, Object data) {
+        builder.append("case ");
+        accept(node.jjtGetChild(0), data);
+        builder.append( " : ") ;
+        acceptStatement(node.jjtGetChild(1), data);
+        return data;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object visit(ASTMatchStatement node, Object data) {
+        builder.append("#match (");
+        accept(node.jjtGetChild(0), data);
+        builder.append("){ ");
+        int n = node.jjtGetNumChildren();
+        for ( int i = 1; i < n; i++ ){
+            accept(node.jjtGetChild(i),data);
+        }
+        builder.append("}");
+        return data ;
+    }
+
     /** {@inheritDoc} */
     public Object visit(ASTGoToStatement node, Object data) {
         builder.append("goto ");
