@@ -13,8 +13,9 @@ I believe in the [Mozilla Manifesto](https://www.mozilla.org/en-US/about/manifes
 
 For including this programmatically into your JVM code see the examples [here](http://commons.apache.org/proper/commons-jexl/reference/examples.html).
 
-The improved language manual can be found ( always updated ) in the wiki.
-Also a cached summarized [pdf booklet](https://github.com/nmondal/njexl/blob/master/doc/pdfs/nJexl-Merged.pdf) is maintained.
+The improved language manual can be found ( always updated ) in the wiki. As github does not have search manual options,
+suggested way to access manual is to search google with "njexl topic_name wiki" :)
+Also a full [pdf manual](https://github.com/nmondal/njexl/blob/master/doc/pdfs/njexl.pdf) is maintained which is always updated. 
 
 ## Summary
 
