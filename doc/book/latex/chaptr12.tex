@@ -1033,6 +1033,44 @@ print(ss)
 
 \end{subsection}
 
+\begin{subsection}{Find all sublists summing upto N}\index{sublist power sum}
+The problem statement is, given a list $l$, find all possible sublists such that
+the sum of elements in the sublists is a number $N$.
+Formally, find the list $l_N$ such that:
+$$
+l_N = \{ x \; | \; x \subset l \text{ and } \sum_{y \in x } y = N \}
+$$
+that is, $l_N \subset 2^l$ where $2^l$ is the \href{https://en.wikipedia.org/wiki/Power\_set}{power list(set)} of list $l$.
+We use the same idea as Ramanujan Partition, but this time use the index set as the bitmap \index{bitmap}:
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def find_sublists(l,N){
+   L = size(l) 
+   // total no of subsets ( cardinality of power set)
+   n = 2 ** L
+   lfold{
+     // right bitmap 
+     bit_map = str($,2)
+     items = rfold{ // that is why read from right
+        continue($ == '0')  
+        /* put items whose indices are to be selected 
+         -ve indices read from right! */
+        _$_.add(0, l[- _ - 1] ) ; _$_  
+     }(bit_map.toCharArray() , list() )
+     // sum them up 
+     #(m,M,sum) = sqlmath(items)
+     continue(sum != N)
+     // add them up 
+     _$_.add( items ) ; _$_   
+   }([1:n],set())   
+}
+\end{lstlisting}  
+\end{minipage}\end{center} 
+\end{subsection}
+
+
+
 \end{section}
 
 
