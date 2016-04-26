@@ -1126,6 +1126,43 @@ selected = rfold{
                 break ( $  < 3 ) { _ }   
            }( [1,2,1,2,3,4,5] )
 \end{lstlisting}
+\end{subsection}
+
+\begin{subsection}{Matching}\index{match}\index{case}
+There is \emph{if}, and there is \emph{else} and switch-case 
+seems to be missing in nJexl. Fear not, the omniscient \emph{\#match} exists.
+To demonstrate :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+// match  item 
+item = 10 
+selected = #match(item){ 
+              case 1 : "I am one" 
+              case $ < 5 :  "I am less than 5"
+              /* Default match is $ itself, note that :
+              inside match you must use block comments */
+              case $ : "yes, I could not match anything!"       
+           }
+\end{lstlisting}
+\end{minipage}\end{center}
+
+Observe these important things about match:
+
+\begin{enumerate}
+\item{ Match works with case expression after colon, evaluating to \emph{true} 
+       or expression using \emph{Object.equals(expr,item)}. Thus, string 0 won't match `0'. 
+       This is a design decision chosen to be compatible with switch case. To match such stuff, use \emph{ \$ == expr },
+       which would use nJexl expression evaluation. }
+\item{ The only comments which are allowed are block comments. }
+\item{ The \emph{\$} signifies the item, and thus a \emph{case} like \emph{ case  \$ } must be the last item. }
+\item{ Any expression is permitted in the case statement, \emph{\#match} returns the body value of the matching case.
+       Thus, unlike ordinary switch-case, it returns a proper value. Thus, it is more succint to put it 
+       at the end of a choice function.
+     }       
+\end{enumerate}
 
 \end{subsection}
+
+
 \end{section}

@@ -1,0 +1,44 @@
+def park(i,src,tgt, map_src,map_tgt){
+   pos_fut = map_tgt[i]
+   j = src[pos_fut]
+   if ( j == 0 ) return 0 
+   // move j out to 0 position 
+   pos_0 = map_src[0]
+   src[pos_fut] = 0 
+   src[pos_0] = j 
+   // store new address 
+   map_src[j] = pos_0 
+   print(str(src))
+   // now move i to that position
+   pos_i = map_src[i]
+   src[pos_i] = 0 
+   src[pos_fut] = i 
+   map_src[i] = pos_fut 
+   map_src[0] = pos_i 
+   print(str(src))
+   j
+}
+
+def transform(src,tgt){
+   print(str(src))
+   map_src = dict{ [$,_] }(src)
+   map_tgt = dict{ [$,_] }(tgt)
+   visited = set()
+   i = 1 
+   while( not (i @ visited ) ){
+      visited += i
+      i = park(i,src,tgt,map_src,map_tgt )
+   }
+   // out of here, swap the 0 and the last no now 
+   pos_0 = map_src[0]
+   next = tgt[pos_0]
+   next_pos = map_src[next]
+   src[next_pos] = 0 
+   src[pos_0] = next
+   print(str(src))
+   print(str(tgt))
+}
+
+src = [ 1, 3, 0, 2, 4 ]
+tgt = [ 3, 2, 4, 1, 0]
+transform(src,tgt)
