@@ -652,27 +652,36 @@ public class Interpreter implements ParserVisitor {
                 JexlNode op = node.jjtGetChild(c - 1);
                 if (op instanceof ASTAdditiveOperator) {
                     String which = op.image;
-                    if ("+".equals(which)) {
-                        left = arithmetic.add(left, right);
-                        continue;
+                    switch(which) {
+                        case "+" :
+                            left = arithmetic.add(left, right);
+                            continue;
+                        case "-" :
+                            left = arithmetic.subtract(left, right);
+                            continue;
+                        case "+=" :
+                            left = arithmetic.addMutable(left, right);
+                            //assign
+                            assignToNode(-1, node, leftNode, left);
+                            continue;
+                        case "-=" :
+                            left = arithmetic.subtractMutable(left, right);
+                            //assign
+                            assignToNode(-1, node, leftNode, left);
+                            continue;
+                        case "*=":
+                            left = arithmetic.multiply(left, right);
+                            //assign
+                            assignToNode(-1, node, leftNode, left);
+                            continue;
+                        case "/=":
+                            left = arithmetic.divide(left, right);
+                            //assign
+                            assignToNode(-1, node, leftNode, left);
+                            continue;
+                        default:
+                            throw new UnsupportedOperationException("unknown additive operator " + which);
                     }
-                    if ("-".equals(which)) {
-                        left = arithmetic.subtract(left, right);
-                        continue;
-                    }
-                    if ("+=".equals(which)) {
-                        left = arithmetic.addMutable(left, right);
-                        //assign
-                        assignToNode(-1, node, leftNode, left);
-                        continue;
-                    }
-                    if ("-=".equals(which)) {
-                        left = arithmetic.subtractMutable(left, right);
-                        //assign
-                        assignToNode(-1, node, leftNode, left);
-                        continue;
-                    }
-                    throw new UnsupportedOperationException("unknown additive operator " + which);
                 }
                 throw new IllegalArgumentException("unknown non-additive operator " + op);
             } catch (ArithmeticException xrt) {

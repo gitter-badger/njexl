@@ -145,17 +145,19 @@ PARSER_END(Parser)
     | < end_with : "#$"  >
     | < in_order : "#@" >
 }
-
+/* xxa stands for xx-assignment */
 <*> TOKEN : { /* OPERATORS */
       < assign : "=" >
     | < mod : "%" | "mod" >
     | < div : "/" | "div" >
+    | < diva : "/=" >
     | < not : "!" | "not" >
     | < plus : "+" (<LINE>)? >
     | < minus : "-" (<LINE>)? >
     | < plusa : "+=" >
     | < minusa : "-=" >
     | < mult : "*" >
+    | < multa : "*=" >
     | < tilda : "~" >
     | < and : "&" >
     | < or : "|" >
@@ -535,12 +537,14 @@ void AdditiveOperator() : {}
     <plus> { jjtThis.image = "+"; }
 |
     <minus> { jjtThis.image = "-"; }
-
 |
     <plusa>  { jjtThis.image = "+="; }
 |
     <minusa> { jjtThis.image = "-="; }
-
+|
+    <diva>  { jjtThis.image = "/="; }
+|
+    <multa> { jjtThis.image = "*="; }
 }
 
 void MultiplicativeExpression() #void : {}
