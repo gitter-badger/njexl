@@ -1041,11 +1041,13 @@ $$
 l_N = \{ x \; | \; x \subset l \text{ and } \sum_{y \in x } y = N \}
 $$
 that is, $l_N \subset 2^l$ where $2^l$ is the \href{https://en.wikipedia.org/wiki/Power\_set}{power list(set)} of list $l$.
-We use the same idea as Ramanujan Partition, but this time use the index set as the bitmap \index{bitmap}:
+We use the same idea as Ramanujan Partition, but this time use the index set as the bitmap \index{bitmap}.
+We also generalise the notion of sum using a generic predicate:
 
 \begin{center}\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=JexlStyle]
-def find_sublists(l,N){
+P = def(a){ #(m,M,s) = sqlmath(a) ; s == N } // P is a closure
+def find_sublists(l,P){
    L = size(l) 
    // total no of subsets ( cardinality of power set)
    n = 2 ** L
@@ -1058,9 +1060,7 @@ def find_sublists(l,N){
          -ve indices read from right! */
         _$_.add(0, l[- _ - 1] ) ; _$_  
      }(bit_map.toCharArray() , list() )
-     // sum them up 
-     #(m,M,sum) = sqlmath(items)
-     continue(sum != N)
+     continue( not P(items) )
      // add them up 
      _$_.add( items ) ; _$_   
    }([1:n],set())   
