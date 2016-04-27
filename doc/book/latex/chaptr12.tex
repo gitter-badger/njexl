@@ -1033,8 +1033,8 @@ print(ss)
 
 \end{subsection}
 
-\begin{subsection}{Find all sublists summing upto N}\index{sublist power sum}
-The problem statement is, given a list $l$, find all possible sublists such that
+\begin{subsection}{Find all subsequences where Predicate }\index{sublist predicate}
+One problem statement is, given a list $l$, find all possible sublists such that
 the sum of elements in the sublists is a number $N$.
 Formally, find the list $l_N$ such that:
 $$
@@ -1067,6 +1067,41 @@ def find_sublists(l,P){
 }
 \end{lstlisting}  
 \end{minipage}\end{center} 
+
+What about another problem? Given a list $l$, find the maximal subsequence, 
+such that the subsequence $ss$ can be written as a catenation of two lists : $ss = l_i + l_d$
+such that $l_i$ is in increasing order, while $l_d$ is in decreasing order.
+The idea is again going back to bit maps :
+
+\begin{center}\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=JexlStyle]
+def increasing_decreasing(a){
+   lfold {
+     continue ( not _$_ and a[$-1] >= a[$]){ _$_ = true }
+     break( _$_ and a[$-1] <= a[$] ){ _$_ = false }
+     _$_  }([1:#|a|] , false )
+}
+def find_subsequence(l){
+   L = size(l) 
+   n = 2 ** L
+   lfold{
+      bit_map = str($,2)
+      bit_map = '0' ** ( L - #|bit_map| ) + bit_map
+      sub_seq = lfold{
+         continue( $$[_] == '0' )
+         _$_ += l[_]  
+      }( bit_map.toCharArray() , list())
+      continue( #|sub_seq| <= #|_$_| )
+      continue( not increasing_decreasing( sub_seq ) )
+      _$_ = sub_seq
+   }([3:n], [] ) 
+}
+\end{lstlisting}  
+\end{minipage}\end{center} 
+
+I am not providing any comment for it, figure it on your own!
+
+
 \end{subsection}
 
 
