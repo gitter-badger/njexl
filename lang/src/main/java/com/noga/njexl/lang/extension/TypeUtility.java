@@ -459,7 +459,8 @@ public final class TypeUtility {
                     }
                     partial = r;
                 } catch (Throwable e) {
-                    System.err.println(e);
+                    // log?
+                    throw e;
                 }
             }
             return partial;
@@ -505,7 +506,8 @@ public final class TypeUtility {
                 }
                 partial = r;
             } catch (Throwable e) {
-                System.err.println(e);
+                //log?
+                throw e;
             }
         }
         return partial;
