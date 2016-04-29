@@ -1,5 +1,7 @@
 # nJexl
 
+[![Join the chat at https://gitter.im/nmondal/njexl](https://badges.gitter.im/nmondal/njexl.svg)](https://gitter.im/nmondal/njexl?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A  language based on [apache JEXL](http://commons.apache.org/proper/commons-jexl/) for Business Programming as well as software testing needs.
 This is a result of my experience and experiment with software development for over a decade.
 A wise man once told me  "Never build a fool proof software. When you complete building one 1.0 version, 
