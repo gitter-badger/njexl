@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Njexl by nmondal</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-dark.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Njexl</h1>
+        <p>A  language based on apache jexl for software testing &amp; Business Programming needs</p>
+        <p class="view"><a href="https://github.com/nmondal/njexl">View the Project on GitHub <small>nmondal/njexl</small></a></p>
+        <ul>
+          <li><a href="https://github.com/nmondal/njexl/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/nmondal/njexl/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/nmondal/njexl">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="njexl" class="anchor" href="#njexl" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>nJexl</h1>
+
+<p>A  language based on <a href="http://commons.apache.org/proper/commons-jexl/">apache JEXL</a> for Business Programming as well as software testing needs.
+This is a result of my experience and experiment with software development for over a decade.
+A wise man once told me  "Never build a fool proof software. When you complete building one 1.0 version, 
+the fool will release foolishness 2.0.". He was 15 years in Industry then, and is an MBA from IIM-A.
+My team mates in Microsoft judged him the smartest and wisest man in the team. Thus, it is our opinion.
+Our personal opinion, not of my company, not of my friends, family or foes. Entirely mine.
+It also is a software testing framework, and for multibrowser/multisystem testing
+this project use and reccomends <a href="www.browserstack.com/">BrowserStack</a> for the web testing part.
+I belive that resources in the internet should remain open, and free of cost.
+I believe in the <a href="https://www.mozilla.org/en-US/about/manifesto/">Mozilla Manifesto</a>.</p>
+
+<p>For including this programmatically into your JVM code see the examples <a href="http://commons.apache.org/proper/commons-jexl/reference/examples.html">here</a>.</p>
+
+<p>The improved language manual can be found ( always updated ) in the wiki. As github does not have search manual options,
+suggested way to access manual is to search google with "njexl topic_name wiki" :)
+Also a full <a href="https://github.com/nmondal/njexl/blob/master/doc/pdfs/nJexl.pdf">pdf manual</a> is maintained which is always updated. </p>
+
+<h2>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Summary</h2>
+
+<p>Software Testing &amp; Automation has become messy, stagnant  trivial <em>record and playback</em>.
+Yes, anyone should be able to automate, that does not really mean <em>anyone can automate</em>.
+That actually means : <em>a great automation engineer can come from anywhere</em>. </p>
+
+<p>These so called <em>automation tools</em> promise too much, deliver too little. 
+These promises are faulty never the less, because the aspect they tackled is the driving aspect of the UI. 
+NONE, and I repeat, <em>NO Tool designed ever bothers about the VALIDATION aspect of the software testing</em>.</p>
+
+<p>NJEXL is a small step in fixing this. A small step by one random <em>lone ranger</em>.
+Perhaps this going to be a big step in the direction of <em>THINK VALIDATION</em> philosophy in software testing,
+which none of the <em>frameworks</em>  exhibit now.</p>
+
+<h2>
+<a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Motivation</h2>
+
+<p>Declarative/functional programming style is easy to be implemented as a testing validation philosophy.<br>
+However, the so called <em>TEST FRAMEWORKS</em> only give you asserts. 
+Those asserts gets used to compare objects, nulls, not nulls. If they designed it real smart, really smart, perhaps 
+they would compare list even. That is a matter of some <em>serious concern</em>. 
+Real software is not about matching nulls, and equaling objects. Yes, 99% of the so called software people believe that.
+But no, what you are doing is a real <em>tiny winy</em> part of <em>Unit Tests</em>.
+<em>Real Testing</em> does not happen using asserts equaling objects.
+Real software testing is validating conditions and data. Testing is not easy. Testing is not trivial.
+In short testing is what computer theorists call predicate operations ( predicate logic ).</p>
+
+<h2>
+<a id="predicate-formulation-of-truth" class="anchor" href="#predicate-formulation-of-truth" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Predicate Formulation of Truth</h2>
+
+<p>The formulation is : <em>Is the STATEMENT "S(x)" true for value "x" ?</em>
+That is indeed the predicate formulation of testing.
+Thus, every test, if exposed in terms of predicate formulation, and the underlying framework supports 
+the predicate formulation, then the TEST code need not to be tested at all!
+All you really would be testing is : whether the formula - or predicate is the correct one.
+The SQL team tests SQL. Users use SQL, and checks that the used SQL is indeed correct.
+Take a look around the expressive power of declarative programming : </p>
+
+<pre><code>// for all i &gt; 0 check if l[i] &lt;  l[i-1] --&gt; then the list is NOT sorted
+/*  This is how you do it in nJexl */
+// '_' is the index , '$'' is the implicit loop variable: 
+empty ( select{ _ &gt; 0 and $ &lt; $[_-1] }(l) )  // checks if a list is in sorted order    
+// select select items from a list to a new list, 
+//empty() checks if something is size 0 or null  
+</code></pre>
+
+<h2>
+<a id="business-process-automation" class="anchor" href="#business-process-automation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Business Process Automation</h2>
+
+<p>That begs a bigger question. If the test code can be written in such small pieces of predicate logic,
+how come the actual code is so much more complex and bigger than the test code? 
+There is something obviously wrong. The Business Programming front, people are actually making a complete mess of what are actually pretty trivial business processes. </p>
+
+<p>Lesson no 1 learned in any business:  </p>
+
+<blockquote>
+<blockquote>
+<p>Neither bomb, not grenade, nor knife but Only gray cells reign supreme.</p>
+</blockquote>
+</blockquote>
+
+<p>Business logic should reside outside code. This is a lesson tried and tested and taught by SAP.</p>
+
+<p>Lesson no 2 learned if anyone studied computer science ( not software ) :</p>
+
+<blockquote>
+<blockquote>
+<p>No Business Process is beyond Turing Complete, never will be. So preaching complexity does not help. 
+   Objective should be <em>to reduce complexity</em>,  not to add more into it.</p>
+</blockquote>
+</blockquote>
+
+<p>Over dependence on Java is the root cause in here, which is a terrible choice at business programming (in fact any decent programming),  the verbosity makes it a killer on the loose. Python can do things in 10 lines what Java can do in 100. Scala is a good language and utmost geeky - impractical for business user and use. Python can not talk to Java business objects (Jython does not count, really), 
+and then Python is not a business process automation language or a software testing language.
+But it is a beautiful language never the less.  </p>
+
+<blockquote>
+<blockquote>
+<p>Git was developed in 14 Days. Old Rome was not. Git exists as of now, while Old Rome does not.</p>
+</blockquote>
+</blockquote>
+
+<p>Testing and Business Programming should be less talk, more work. 
+If the work takes more than 14 days, you have a talent problem.</p>
+
+<p>Who tests the test code? Who watches the watchers? 
+How business code can ever be <em>tested</em> ? Pure theory says never. </p>
+
+<h2>
+<a id="business-is-not-technology" class="anchor" href="#business-is-not-technology" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Business IS NOT Technology</h2>
+
+<p>I remember what people told me about XP when I was working on Windows 7. 
+<em>World SIMPLY needs XP on drugs</em>. No fancy stuff, simply XP on drugs. That works.
+Business runs in EXCEL. 
+Thus, a language, which is a de-facto EXCEL on the drugs (with data in back-end) solves every business need. </p>
+
+<p>What we clearly do not need is  : <a href="http://projects.haykranen.nl/java/">Enterprisification</a>, albeit world runs on it.
+Real engineering is about taking complex ideas, and making them simply usable and reusable to customer.</p>
+
+<h2>
+<a id="philosophy" class="anchor" href="#philosophy" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Philosophy</h2>
+
+<p>Thus nJexl is a language with it's full focus on <em>Business Process Automation and Software Testing &amp; Validation</em>,
+not on commercial fads. This has one singular focus in mind : brevity. It also says <em>Optmize</em>.
+What can be done with 1 people, in 10 days, get it done in 1 day by one guy.</p>
+
+<p>Thus, following is the philosophy of the Language:</p>
+
+<ul>
+<li>Reduce the number of lines of the code;</li>
+<li>In every line, reduce the number of characters; </li>
+<li>To boldly go where no developer has gone before - attaining Nirvana in terms of coding;
+
+<ul>
+<li>get out of the cycle of bugs and fixes by writing scientific code ( see  <a href="http://en.wikipedia.org/wiki/Minimum_description_length">Minimum Description length</a> ).</li>
+</ul>
+</li>
+</ul>
+
+<h2>
+<a id="for-the-users" class="anchor" href="#for-the-users" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>For the Users</h2>
+
+<p>The WIKI page showcases syntax and power of NJEXL. 
+This is a language, like SAP's ABAP to ensure anyone can write effective business code, with a little bit of training. 
+Yes, connect to DB get Business Data and manipulate them, like you do in excel. It is better than ABAP.
+YES. ANYONE can do it. That is the motto. It should just work. </p>
+
+<p>It is wrong believe that <em>writing more code makes one superior</em>. 
+No, the opposite is what great developers think. From <a href="http://en.wikipedia.org/wiki/Donald_Knuth">Knuth</a> 
+to <a href="http://en.wikipedia.org/wiki/Mark_Russinovich">Russhinovich</a>, everyone agrees there.
+Thus, the aim is to understand : <em>any code is faulty code!</em> . 
+Thus, <em>less code written is less bugs added</em>.
+That is <em>the</em> motto of nJexl. Reduce the coding effort to such a minimum that nothing extra remains.
+Make things simple but not simpler as Einstein have said.</p>
+
+<h2>
+<a id="final-words" class="anchor" href="#final-words" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Final Words</h2>
+
+<p>The language is (unfortunately) written in Java, and mostly bears no resemblance with it's parent, 
+some occasional use Java DNA can be seen when we use imported Java Objects and fields. </p>
+
+<p>Why not C/C++? Lack of time. This was entirely written
+when at home, holidaying ( no, a real Engineer never goes in a Holiday, 
+ask Donald Knuth about <a href="http://www-cs-faculty.stanford.edu/%7Euno/cl.html">his honeymoon</a> ), 
+and after office at home, 7p.m to 2a.m in the nights one can check the statistics of the check-ins.</p>
+
+<p>I wrote this so that I, personally can use a language that makes sense to ME 
+and I can use it for my own daily work - automation validation. 
+Let me know what you think of the style of the language. 
+Live long, and Prosper.</p>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/nmondal">nmondal</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
